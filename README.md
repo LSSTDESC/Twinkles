@@ -6,8 +6,8 @@
 
 We are interested in making high accuracy cosmological measurements of type IA supernovae and strong gravitational lens time delays with the Large Synoptic Survey Telescope data. To do this, we need to build a number of software instruments, and these must be tested and validated against realistic simulated data. We are using the LSST photon simulator `PhoSim` to generate a ten year, 6-filter set of mock images of a small patch of moderate Galactic latitude sky, containing an unrealistic overdensity of supernovae and lensed quasars but with realistic observing conditions and cadence. See the documents below for more details of our evolving plans and progress to date.
 
-* [Scientific and Technical Motivation](https://github.com/DarkEnergyScienceCollaboration/Twinkles/Motivation.md)
-* [Survey Design](https://github.com/DarkEnergyScienceCollaboration/Twinkles/Design.md)
+* [Scientific and Technical Motivation](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/Motivation.md)
+* [Survey Design](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/Design.md)
 
 ### People
 
