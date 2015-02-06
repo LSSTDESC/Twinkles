@@ -33,26 +33,27 @@ class sprinkler():
         # For each galaxy in the catsim catalog
         updated_catalog = self.catalog.copy()
         for row in self.catalog:
-            candidates = self.find_lens_candidates(row['redshift'])
-        # If there aren't any lensed sources at this redshift from OM10 move on the next object
-            if len(candidates) > 0:
-                # Randomly choose one the lens systems
-                # (can decide with or without replacement)
-                newlens = random.choice(candidates)
+            if not np.isnan(row['magNorm']):
+                candidates = self.find_lens_candidates(row['redshift'])
+            # If there aren't any lensed sources at this redshift from OM10 move on the next object
+                if len(candidates) > 0:
+                    # Randomly choose one the lens systems
+                    # (can decide with or without replacement)
+                    newlens = random.choice(candidates)
 
-                # Append the lens galaxy
-                # For each image, append the lens images
-                for i in range(newlens['NIMG']):
-                    lensrow = row.copy()
-                    # XIMG and YIMG are in arcseconds
-                    # raPhSim and decPhoSim are in decimal degrees
-                    import pdb; pdb.set_trace()
-                    lensrow['raPhoSim'] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0
-                    lensrow['decPhoRim'] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0
-                    lensrow['magnorm'] += newlens['MAG'][i]
-                    updated_catalog.append(lensrow)
+                    # Append the lens galaxy
+                    # For each image, append the lens images
+                    for i in range(newlens['NIMG']):
+                        lensrow = row.copy()
+                        # XIMG and YIMG are in arcseconds
+                        # raPhSim and decPhoSim are in decimal degrees
+                        import pdb; pdb.set_trace()
+                        lensrow['raJ2000'] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0
+                        lensrow['decJ2000'] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0
+                        lensrow['magNorm'] += newlens['MAG'][i]
+                        updated_catalog.append(lensrow)
 
-                # TODO: Maybe Lens original AGN or delete original source
+                    # TODO: Maybe Lens original AGN or delete original source
 
         return updated_catalog
 
