@@ -6,10 +6,13 @@ Created on Feb 6, 2015
 import om10
 import numpy as np
 from lsst.sims.catalogs.generation.db import CatalogDBObject
+import random
 
 
 class sprinklerdb(CatalogDBObject):
     def _final_pass(self, results):
+        # sp = sprinkler(results)
+        # results = sp.sprinkle()
         return results
 
 
@@ -23,10 +26,19 @@ class sprinkler():
 
     def sprinkle(self):
         # For each galaxy in the catsim catalog
-        self.find_lens_candidates()
+        for row in self.catalog:
+            candidates = self.find_lens_candidates(self.catalog['z'])
         # If there aren't any lensed sources at this redshift from OM10 move on the next object
-        # Randomly choose one the lens systems (can decide with or without replacement)
-        return
+            if len(candidates) > 0:
+                # Randomly choose one the lens systems
+                # (can decide with or without replacement)
+                random.choice(candidates)
+                # Append the lens galaxy
+                
+                # For each image, append the lens images
+                
+                # TODO: Maybe Lens original AGN or delete original source
+        return self.catalog
 
     def find_lens_candidates(self, galz):
         # search the OM10 catalog for all sources +- 0.05 in redshift from the catsim source
