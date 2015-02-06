@@ -9,7 +9,7 @@ from lsst.sims.catalogs.generation.db import CatalogDBObject
 import random
 
 
-class sprinklerdb(CatalogDBObject):
+class sprinklerdb(CatalogDBObject.DBObject):
     def _final_pass(self, results):
         sp = sprinkler(results)
         results = sp.sprinkle()
