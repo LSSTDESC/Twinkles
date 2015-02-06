@@ -24,7 +24,7 @@ class sprinkler():
     def __init__(self, catsim_cat):
         self.catalog = catsim_cat
         # ****** THIS ASSUMES THAT THE ENVIRONMENT VARIABLE OM10_DIR IS SET *******
-        lensdb = om10.DB(catalog="data/qso_mock.fits")
+        lensdb = om10.DB(catalog=os.environ['OM10_DIR']+"/data/qso_mock.fits")
         self.lenscat = lensdb.lenses.copy()
         return
 
