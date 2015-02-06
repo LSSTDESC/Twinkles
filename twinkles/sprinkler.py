@@ -34,6 +34,7 @@ class sprinkler():
         updated_catalog = self.catalog.copy()
         for row in self.catalog:
             if not np.isnan(row['magNorm']):
+                print('Added a lens')
                 candidates = self.find_lens_candidates(row['redshift'])
             # If there aren't any lensed sources at this redshift from OM10 move on the next object
                 if len(candidates) > 0:
