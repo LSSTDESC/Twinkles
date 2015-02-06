@@ -11,8 +11,8 @@ import random
 
 class sprinklerdb(CatalogDBObject):
     def _final_pass(self, results):
-        # sp = sprinkler(results)
-        # results = sp.sprinkle()
+        sp = sprinkler(results)
+        results = sp.sprinkle()
         return results
 
 
@@ -26,19 +26,29 @@ class sprinkler():
 
     def sprinkle(self):
         # For each galaxy in the catsim catalog
+        updated_catalog = self.catalog.copy()
         for row in self.catalog:
             candidates = self.find_lens_candidates(self.catalog['z'])
         # If there aren't any lensed sources at this redshift from OM10 move on the next object
             if len(candidates) > 0:
                 # Randomly choose one the lens systems
                 # (can decide with or without replacement)
-                random.choice(candidates)
+                newlens = random.choice(candidates)
+
                 # Append the lens galaxy
-                
                 # For each image, append the lens images
-                
+                for i in range(newlens['NIMG']):
+                    lensrow = row.copy()
+                    # XIMG and YIMG are in arcseconds
+                    # raPhSim and decPhoSim are in decimal degrees
+                    lensrow['raPhoSim'] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0
+                    lensrow['decPhoRim'] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0
+                    lensrow['magnorm'] += newlens['MAG'][i]
+                    updated_catalog.append(lensrow)
+
                 # TODO: Maybe Lens original AGN or delete original source
-        return self.catalog
+
+        return updated_catalog
 
     def find_lens_candidates(self, galz):
         # search the OM10 catalog for all sources +- 0.05 in redshift from the catsim source
