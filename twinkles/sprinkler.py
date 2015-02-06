@@ -5,7 +5,7 @@ Created on Feb 6, 2015
 '''
 import om10
 import numpy as np
-from lsst.sims.catutils.baseCatalogModels import GalaxyAgnObj
+from lsst.sims.catUtils.baseCatalogModels import GalaxyAgnObj
 import random
 
 
