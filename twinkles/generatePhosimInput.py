@@ -3,6 +3,9 @@
 Created on Fri Feb  6 14:29:08 2015
 
 @author: Bryce
+Based upon examples by Scott Daniel found here:
+https://stash.lsstcorp.org/projects/SIM/repos/sims_catutils/browse/python/lsst/sims/
+        catUtils/exampleCatalogDefinitions/phoSimCatalogExamples.py
 """
 
 from __future__ import with_statement
