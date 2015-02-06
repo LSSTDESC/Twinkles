@@ -5,12 +5,16 @@ Created on Feb 6, 2015
 '''
 import om10
 import numpy as np
-from lsst.sims.catalogs.generation.db import CatalogDBObject
+from lsst.sims.catutils.baseCatalogModels import GalaxyAgnObj
 import random
 
 
-class sprinklerdb(CatalogDBObject.DBObject):
+class sprinklerAGN(GalaxyAgnObj):
+    objid = 'sprinklerAGN'
+    objectTypeID = 1024
+
     def _final_pass(self, results):
+        print('got here.')
         sp = sprinkler(results)
         results = sp.sprinkle()
         return results
