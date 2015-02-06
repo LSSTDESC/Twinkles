@@ -47,7 +47,6 @@ class sprinkler():
                         lensrow = row.copy()
                         # XIMG and YIMG are in arcseconds
                         # raPhSim and decPhoSim are in decimal degrees
-                        import pdb; pdb.set_trace()
                         lensrow['raJ2000'] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0
                         lensrow['decJ2000'] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0
                         lensrow['magNorm'] += newlens['MAG'][i]
