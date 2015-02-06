@@ -7,6 +7,7 @@ import om10
 import numpy as np
 from lsst.sims.catUtils.baseCatalogModels import GalaxyAgnObj
 import random
+import os
 
 
 class sprinklerAGN(GalaxyAgnObj):
