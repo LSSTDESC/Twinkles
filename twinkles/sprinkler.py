@@ -50,7 +50,7 @@ class sprinkler():
                         lensrow['raJ2000'] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0
                         lensrow['decJ2000'] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0
                         lensrow['magNorm'] += newlens['MAG'][i]
-                        np.append(updated_catalog.append, lensrow)
+                        np.append(updated_catalog, lensrow)
 
                     # TODO: Maybe Lens original AGN or delete original source
 
