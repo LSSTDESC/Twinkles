@@ -33,7 +33,7 @@ class sprinkler():
         # For each galaxy in the catsim catalog
         updated_catalog = self.catalog.copy()
         for row in self.catalog:
-            candidates = self.find_lens_candidates(self.catalog['redshift'])
+            candidates = self.find_lens_candidates(row['redshift'])
         # If there aren't any lensed sources at this redshift from OM10 move on the next object
             if len(candidates) > 0:
                 # Randomly choose one the lens systems
