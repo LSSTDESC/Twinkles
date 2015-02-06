@@ -57,7 +57,7 @@ class sprinkler():
 
     def find_lens_candidates(self, galz):
         # search the OM10 catalog for all sources +- 0.05 in redshift from the catsim source
-        w = np.where(np.abs(self.lenses['ZSRC'] - galz) <= 0.05)[0]
+        w = np.where(np.abs(self.lenscat['ZSRC'] - galz) <= 0.05)[0]
         lens_candidates = self.lenscat[w]
 
         return lens_candidates
