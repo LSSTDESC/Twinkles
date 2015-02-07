@@ -37,6 +37,11 @@ class sprinklerLens(GalaxyBulgeObj):
         # create a new row based on the lens data
             newrow = template_row.copy()
             newrow['redshift'] = row[2]
+        # Fix ME
+        if row[-1] == 0:
+            reff = 0.5
+        else:
+            reff  = row[-1]
             newrow['minorAxis']
             newrow['majorAxis']
             newrow['positionAngle']
@@ -79,6 +84,7 @@ class sprinkler():
                         lensrow = row.copy()
                         # XIMG and YIMG are in arcseconds
                         # raPhSim and decPhoSim are in radians
+                        print (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0 / 180.0 * np.pi
                         lensrow['raJ2000'] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0 / 180.0 * np.pi
                         lensrow['decJ2000'] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0 / 180.0 * np.pi
                         lensrow['magNorm'] += newlens['MAG'][i]
