@@ -84,6 +84,7 @@ class sprinkler():
                         lensrow = row.copy()
                         # XIMG and YIMG are in arcseconds
                         # raPhSim and decPhoSim are in radians
+                        print lensrow['raJ2000']
                         print (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0 / 180.0 * np.pi
                         lensrow['raJ2000'] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0 / 180.0 * np.pi
                         lensrow['decJ2000'] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0 / 180.0 * np.pi
