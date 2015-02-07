@@ -89,6 +89,7 @@ class sprinkler():
                         lensrow['raJ2000'] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0 / 180.0 * np.pi
                         lensrow['decJ2000'] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0 / 180.0 * np.pi
                         lensrow['magNorm'] += newlens['MAG'][i]
+                        print lensrow['raJ2000']
                         updated_catalog = np.append(updated_catalog, lensrow)
                         
                         #Write out info about the lens galaxy to a text file
