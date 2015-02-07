@@ -31,11 +31,20 @@ class sprinklerLens(GalaxyBulgeObj):
                 template_row = row.copy()
                 break
         # Read in the lens data file
-        d = np.genfromtxt('lens.dat').transpose()
+        lensdata = np.genfromtxt('lens.dat')
         # For each lens
-        for i in range(d.shape[1]):
+        for row in lensdata:
         # create a new row based on the lens data
             newrow = template_row.copy()
+            newrow['redshift'] = row[2]
+            newrow['minorAxis']
+            newrow['majorAxis']
+            newrow['positionAngle']
+            newrow['raJ2000']
+            newrow['decJ2000']
+            #This is just normalized to I which should be fixed
+            newrow['magNorm']
+            newrow['sedFilename']
             import pdb; pdb.set_trace()
         # Append the row to the results
         
@@ -69,14 +78,14 @@ class sprinkler():
                     for i in range(newlens['NIMG']):
                         lensrow = row.copy()
                         # XIMG and YIMG are in arcseconds
-                        # raPhSim and decPhoSim are in decimal degrees
-                        lensrow['raJ2000'] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0
-                        lensrow['decJ2000'] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0
+                        # raPhSim and decPhoSim are in radians
+                        lensrow['raJ2000'] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0 / 180.0 * np.pi
+                        lensrow['decJ2000'] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0 / 180.0 * np.pi
                         lensrow['magNorm'] += newlens['MAG'][i]
                         updated_catalog = np.append(updated_catalog, lensrow)
                         
                         #Write out info about the lens galaxy to a text file
-                        lenslines.append('%f %f %f %f %f %f\n'%(lensrow['raJ2000'], lensrow['decJ2000'], newlens['APMAG_I'],
+                        lenslines.append('%f %f %f %f %f %f %f\n'%(lensrow['raJ2000'], lensrow['decJ2000'], newlens['ZSRC'], newlens['APMAG_I'],
                                          newlens['ELLIP'], newlens['PHIE'], newlens['REFF']))
 
                     # TODO: Maybe Lens original AGN or delete original source
