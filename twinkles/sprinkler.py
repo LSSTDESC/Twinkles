@@ -5,7 +5,7 @@ Created on Feb 6, 2015
 '''
 import om10
 import numpy as np
-from lsst.sims.catUtils.baseCatalogModels import GalaxyAgnObj
+from lsst.sims.catUtils.baseCatalogModels import GalaxyAgnObj, GalaxyBulgeObj
 import random
 import os
 
@@ -15,9 +15,30 @@ class sprinklerAGN(GalaxyAgnObj):
     objectTypeID = 1024
 
     def _final_pass(self, results):
-        print('got here.')
         sp = sprinkler(results)
         results = sp.sprinkle()
+        return results
+
+
+class sprinklerLens(GalaxyBulgeObj):
+    objid = 'sprinklerLens'
+    objectTypeID = 1025
+
+    def _final_pass(self, results):
+        # Find the first non nan magNorm
+        for row in results:
+            if not np.isnan(row['magNorm']):
+                template_row = row.copy()
+                break
+        # Read in the lens data file
+        d = np.genfromtxt('lens.dat').transpose()
+        # For each lens
+        for i in range(d.shape[1]):
+        # create a new row based on the lens data
+            newrow = template_row.copy()
+            import pdb; pdb.set_trace()
+        # Append the row to the results
+        
         return results
 
 
@@ -30,6 +51,8 @@ class sprinkler():
         return
 
     def sprinkle(self):
+        # Define a list that we can write out to a text file
+        lenslines = []
         # For each galaxy in the catsim catalog
         updated_catalog = self.catalog.copy()
         for row in self.catalog:
@@ -51,9 +74,15 @@ class sprinkler():
                         lensrow['decJ2000'] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0
                         lensrow['magNorm'] += newlens['MAG'][i]
                         updated_catalog = np.append(updated_catalog, lensrow)
+                        
+                        #Write out info about the lens galaxy to a text file
+                        lenslines.append('%f %f %f %f %f %f\n'%(lensrow['raJ2000'], lensrow['decJ2000'], newlens['APMAG_I'],
+                                         newlens['ELLIP'], newlens['PHIE'], newlens['REFF']))
 
                     # TODO: Maybe Lens original AGN or delete original source
-
+        f = open('lens.dat','w')
+        f.writelines(lenslines)
+        f.close()
         return updated_catalog
 
     def find_lens_candidates(self, galz):
