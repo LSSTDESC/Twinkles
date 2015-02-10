@@ -15,6 +15,7 @@ class sprinklerAGN(GalaxyAgnObj):
     objectTypeID = 1024
 
     def _final_pass(self, results):
+        GalaxyAgnObj._final_pass(self, results)
         sp = sprinkler(results)
         results = sp.sprinkle()
         return results
@@ -84,14 +85,11 @@ class sprinkler():
                         lensrow = row.copy()
                         # XIMG and YIMG are in arcseconds
                         # raPhSim and decPhoSim are in radians
-                        print lensrow['raJ2000']
-                        print (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0 / 180.0 * np.pi
                         lensrow['raJ2000'] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0 / 180.0 * np.pi
                         lensrow['decJ2000'] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0 / 180.0 * np.pi
                         lensrow['magNorm'] += newlens['MAG'][i]
-                        print lensrow['raJ2000']
                         updated_catalog = np.append(updated_catalog, lensrow)
-                        
+
                         #Write out info about the lens galaxy to a text file
                         lenslines.append('%f %f %f %f %f %f %f\n'%(lensrow['raJ2000'], lensrow['decJ2000'], newlens['ZSRC'], newlens['APMAG_I'],
                                          newlens['ELLIP'], newlens['PHIE'], newlens['REFF']))
