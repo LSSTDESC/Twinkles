@@ -15,6 +15,7 @@ class sprinklerAGN(GalaxyAgnObj):
     objectTypeID = 1024
 
     def _final_pass(self, results):
+        GalaxyAgnObj._final_pass(self, results)
         sp = sprinkler(results)
         results = sp.sprinkle()
         return results
