@@ -19,4 +19,4 @@ The Twinkles philosophy is to make the simulated data *as realistic as possible,
 
 Rome wasn't built in a day.
 
-* Run 1: simplest possible implementation of the above basic features, with many corners cut to get started.
+* **[Run 1](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Run1.md)**: simplest possible implementation of the above basic features, with many corners cut to get started.
