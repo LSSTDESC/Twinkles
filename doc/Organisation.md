@@ -31,4 +31,5 @@ This machine generates the input that `PhoSim` needs, and can be based on the `s
 
 # Pipeline Infrastructure: the Workflow Engines
 
+We have several general-purpose "Workflow Engines" at our disposal. We also need a very simple script that performs the same function, so that anyone can run the entire pipeline. See [issue #25](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/25) for discussion of this. 
 
