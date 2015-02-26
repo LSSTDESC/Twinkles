@@ -15,8 +15,8 @@ We are interested in making high accuracy cosmological measurements of type IA s
 
 ### Read More
 
-* [Scientific and Technical Motivation](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/Motivation.md)
-* [Survey Design](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/Design.md)
+* [Scientific and Technical Motivation](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Motivation.md)
+* [Survey Design](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Design.md)
 
 ### People
 
