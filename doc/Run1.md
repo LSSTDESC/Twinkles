@@ -1,15 +1,15 @@
-# [Run 1]: Run 1
+# <a name="Run1"></a> Run 1
 
 The simplest possible Twinkles simulation, that contains the features we care about. 
 Initial design chosen for speed of implementation.
 
 **Table of Contents**:
-* [Observations](Observations)
-* [Astronomical Objects]
-* * [Lensed Quasars]
-* * [Supernovae]
+* [Observations](#Observations)
+* [Astronomical Objects](#AstronomicalObjects)
+* * [Lensed Quasars](#LensedQuasars)
+* * [Supernovae](#Supernovae)
 
-## [Observations]: Observations
+## <a name="Observations"></a> Observations
 
 Let's choose a field from one of the [extragalactic deep drilling fields](http://www.lsst.org/News/enews/deep-drilling-201202.html) in `OpSim 3.61`. Here's the
 Extended Chandra Deep Field South:
@@ -23,16 +23,16 @@ Dithers should be small, just enough to cover chip gaps (~10 arcsec?). If we kee
 
 Observing strategy to be extracted from `OpSim 3.61` as above. 
 
-## [Astronomical Objects]: Astronomical Objects
+## <a name="AstronomicalObjects"></a> Astronomical Objects
 
 We are sprinkling interesting features onto existing `CatSim` objects. Galaxies can either have supernovae or AGN added, and in half the cases, a massive lens galaxy placed in front of them. All inserted objects need to have plausible properties: this is taken care of by the `sprinkler` code. Stars will also be present, which should help with some tests, and basic PSF modeling.
 
-#### [Lensed Quasars]: Lensed Quasars
+#### <a name="Lensed Quasars"></a> Lensed Quasars
 
 These are simply taken from the OM10 catalog, as in [issue #21](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/21), by the `sprinkler` code. For each galaxy in a `CatSim` catalog, we search the OM10 catalog for all sources within +/-0.05 in redshift from the `CatSim` source. If there aren't any OM10 lensed sources at this redshift, we move on the next object. Otherwise, we randomly choose one of the lens systems. Then, we remove the `CatSim` object from the catalog and instead add lensed images, with appropriately magnified source brightness, and finally add a model lens galaxy to the catalog. Not all the galaxies are placed behind lenses in this way - we stop after reaching a certain number, perhaps 100.
 
 
-#### [Supernovae]: Supernovae
+#### <a name="Supernovae"></a> Supernovae
 
 
-[Back to the top.][Run 1]
+[Back to the top.](#Run1)
