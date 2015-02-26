@@ -21,8 +21,9 @@ Observing strategy to be extracted from `OpSim 3.61` as above.
 
 We are sprinkling interesting features onto existing `CatSim` objects. Galaxies can either have supernovae or AGN added, and in half the cases, a massive lens galaxy placed in front of them. All inserted objects need to have plausible properties: this is taken care of by the `sprinkler` code. Stars will also be present, which should help with some tests, and basic PSF modeling.
 
-### Lensed Quasars
+#### Lensed Quasars
 
-These are simply taken from the OM10 catalog, as in [issue #21](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/21), by the `sprinkler` code. For each galaxy in a `CatSim` catalog, we search the OM10 catalog for all sources within +/-0.05 in redshift from the `CatSim` source. If there aren't any OM10 lensed sources at this redshift, move on the next object. Otherwise, randomly choose one the lens systems. Then, we remove the `CatSim` object from the catalog and instead add lensed images, with appropriately magnified source brightness. Then we add a model lens galaxy to the catalog, and then pass the modified catalog to `PhoSim` to make images.
+These are simply taken from the OM10 catalog, as in [issue #21](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/21), by the `sprinkler` code. For each galaxy in a `CatSim` catalog, we search the OM10 catalog for all sources within +/-0.05 in redshift from the `CatSim` source. If there aren't any OM10 lensed sources at this redshift, we move on the next object. Otherwise, we randomly choose one of the lens systems. Then, we remove the `CatSim` object from the catalog and instead add lensed images, with appropriately magnified source brightness, and finally add a model lens galaxy to the catalog. Not all the galaxies are placed behind lenses in this way - we stop after reaching a certain number, perhaps 100.
 
-### Supernovae
+
+#### Supernovae
