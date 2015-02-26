@@ -7,7 +7,7 @@ The Twinkles philosophy is to make the simulated data *as realistic as possible,
 
 ## Basics
 
-* A 10 year survey with realistic extragalactic deep drilling field cadence, but with the observations flagged so that N realistic wide-deep-fast main survey data subsets can be extracted. We will use `OpSim` outputs for the observing schedule, with additional realistic dithering and field rotation.
+* A 10 year survey with realistic extragalactic deep drilling field cadence, but with the observations flagged so that N realistic wide-deep-fast main survey data subsets can be extracted. We will use `OpSim 3.61` outputs for the observing schedule, with additional realistic dithering and field rotation.
 
 * Small sky area, overloaded with supernovae and lensed quasars. These need to be sufficiently well-separated to avoid implausible cross-talk. The number of objects required by the validation will drive the survey area given this separation. Initial estimates were that a 10 arcminute square sky patch woudl be sufficient.
 
@@ -15,16 +15,13 @@ The Twinkles philosophy is to make the simulated data *as realistic as possible,
 
 * A real sky patch, from the CFHTLS Deep field, could complement the Twinkles survey by providing real stars and galaxies for comparison. LSST DM stack reprocessing of CFHTLS is underway, led by DESC members at IN2P3.
 
+## Details
 
-## Justification
+### Pointing/Field Center
 
-We now justify the design outlined above, piece by piece.
+Let's choose a field from one of the [extragalactic deep drilling fields](http://www.lsst.org/News/enews/deep-drilling-201202.html) in `OpSim 3.61`. Here's the
+Extended Chandra Deep Field South:
 
-#### Survey Area
-
-Driven by numbers of lenses and supernovae required.
-
-#### Additional Contents
-
-Stars, galaxies etc.
+* (RA, Dec) = (03:32:30, 10:00:24)
+* (l,b) = (224.07, -54.47)
 
