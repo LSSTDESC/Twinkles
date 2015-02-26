@@ -9,6 +9,8 @@ Initial design chosen for speed of implementation.
   * [Lensed Quasars](#LensedQuasars)
   * [Supernovae](#Supernovae)
 
+_____
+
 ## <a name="Observations"></a> Observations
 
 Let's choose a field from one of the [extragalactic deep drilling fields](http://www.lsst.org/News/enews/deep-drilling-201202.html) in `OpSim 3.61`. Here's the
