@@ -1,6 +1,6 @@
 # Twinkles Set-up
 
-Ti run your own `twinkles` simulations, you will need to have followed the following steps.
+To run your own `twinkles` simulations, you will need to have taken the following steps.
 
 ## LSST Sims Setup
 
