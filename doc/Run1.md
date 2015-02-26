@@ -1,10 +1,10 @@
-# [Run 1]: Run 1
+# [Run 1][Run 1]
 
 The simplest possible Twinkles simulation, that contains the features we care about. 
 Initial design chosen for speed of implementation.
 
 **Table of Contents**:
-* [Observations]
+* [Observations][Observations]
 * [Astronomical Objects]
 * * [Lensed Quasars]
 * * [Supernovae]
