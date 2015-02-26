@@ -4,6 +4,6 @@ Twinkles simulations must be reproducible - which means laying out a transparent
 
 The flow chart below shows the initial pipeline design, color coded to show what remains to be built in red.
 
-![The initial (Feb 2015) Twinkles flow chart]()
+![The initial (Feb 2015) Twinkles flow chart](https://github.com/DarkEnergyScienceCollaboration/Twinkles/raw/master/doc/flowchart.png)
 
 This confluence-hosted pipeline design chart is evolving with time [here](https://confluence.slac.stanford.edu/display/LSSTDESC/Twinkles+flow+chart). We'll update this page periodically with newer versions.
