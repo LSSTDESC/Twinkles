@@ -6,8 +6,8 @@ Initial design chosen for speed of implementation.
 **Table of Contents**:
 * [Observations](#Observations)
 * [Astronomical Objects](#AstronomicalObjects)
-* * [Lensed Quasars](#LensedQuasars)
-* * [Supernovae](#Supernovae)
+  * [Lensed Quasars](#LensedQuasars)
+  * [Supernovae](#Supernovae)
 
 ## <a name="Observations"></a> Observations
 
