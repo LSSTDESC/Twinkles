@@ -12,7 +12,7 @@ We are interested in making high accuracy cosmological measurements of type IA s
 
 * **[Twinkles is on the sky!](http://nbviewer.ipython.org/github/DarkEnergyScienceCollaboration/Twinkles/blob/master/notebooks/First%20Light.ipynb)**  LSST DESC Hack Day, February 2015.
 * **[Initial design for the Twinkles pipeline](https://confluence.slac.stanford.edu/display/LSSTDESC/Twinkles+flow+chart)** LSST DESC Hack Day, February 2015.
-* **[Run 1 Planning](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Run1.md)**
+* **[Run 1 planning](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Run1.md)** Jan 28 telecon, post Hack Day consolidation.
 
 
 ### Read More
