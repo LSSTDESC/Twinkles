@@ -1,16 +1,15 @@
 
 # DESC Taskforce 2015 Proposal: Twinkles
 
-|---------------------------------------|---------------------------- ----------------------------------|
-| Title                                 | Twinkles                                                      |---------------------------------------|---------------------------- ----------------------------------|
-| Primary Lead(s)                       | Marshall, Wood-Vasey, Dubois                                  |---------------------------------------|---------------------------- ----------------------------------|
-| Interested DESC Members               | Krughoff, Fassnacht, Jha, Dodelson, Walter, Peterson, Connolly, Glanzman, Digel, Sehrish, Johnson
-|---------------------------------------|---------------------------- ----------------------------------|
-| DESC Working Groups                   | SN, SL, CI, SIMS                                              |---------------------------------------|---------------------------- ----------------------------------|
-| Start Date (approximate)              | September 2015                                                     |---------------------------------------|---------------------------- ----------------------------------|
-| End Date (approximate)                | December 2016                                                     |---------------------------------------|---------------------------- ----------------------------------|
+| Title|Twinkles|
+|----------|-------------------------|
+| Primary Lead(s)                       | Marshall, Wood-Vasey, Dubois |                                  |---------------------------------------|--------------------------------------------------------------|
+| Interested DESC Members               | Krughoff, Fassnacht, Jha, Dodelson, Walter, Peterson, Connolly, Glanzman, Digel, Sehrish, Johnson|
+| DESC Working Groups                   | SN, SL, CI, SIMS                                              |---------------------------------------|--------------------------------------------------------------|
+| Start Date (approximate)              | September 2015                                                     |---------------------------------------|--------------------------------------------------------------|
+| End Date (approximate)                | December 2016                                                     |---------------------------------------|--------------------------------------------------------------|
 | Working Deliverable Publication Title | Twinkles Data Release 1: A Tiny Simulated LSST Imaging Survey |
-| Intermediate Milestones               | Twinkles v1.0 Survey Requirements Document (Fall 2015); Twinkles v1.0 Pipeline (Summer 2016); Twinkles v1.0 Imaging Dataset (Summer 2016); Twinkles v1.0 Level 2 Catalog (Summer 2016) ; Twinkles v1.0 Validation Report (Fall 2016)                                                             |---------------------------------------|---------------------------- ----------------------------------|
+| Intermediate Milestones               | Twinkles v1.0 Survey Requirements Document (Fall 2015); Twinkles v1.0 Pipeline (Summer 2016); Twinkles v1.0 Imaging Dataset (Summer 2016); Twinkles v1.0 Level 2 Catalog (Summer 2016) ; Twinkles v1.0 Validation Report (Fall 2016)                                                             |---------------------------------------|--------------------------------------------------------------|
 
 
 ### Why is this project a priority?
