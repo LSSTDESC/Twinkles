@@ -18,7 +18,9 @@ It addresses the following key technical issues:
 
 * The Twinkles data release will stimulate and drive the development of level 3 and 4 DESC analysis software for: 1) finding strong lenses and supernovae, 2) extracting high accuracy light curves for strong lenses and supernovae, 3) modeling light curves (by providing fluxes with realistic, correlated, statistical and systematic uncertainties).
 
-* The Twinkles simulation and end-to-end data simulation and reduction pipeline, assembled from component parts provided by the LSST project (CatSim, OpSim, PhoSim, DM Stack), can serve as a pathfinder for the pipeline that DESC will need to run at much larger scale to provide collaboration wide simulated data at DC2 and DC3.
+* The Twinkles simulation and end-to-end data simulation and reduction pipeline, assembled from component parts provided by the LSST project (CatSim, OpSim, GalSim, PhoSim, DM Stack), can serve as a pathfinder for the pipeline that DESC will need to run at much larger scale to provide collaboration wide simulated data at DC2 and DC3.
+
+* Twinkles can also provide a test bed for the DESC computing infrastructure: we plan to develop and employ tools for managing large numbers of processing jobs and tracking the resulting data. It will also help drive and test various other aspects of the collaboration's software engineering capability, including its use of repositories, issues tracking, coding standards, build environment, and automated builds.
 
 ### Computing Resource Requirements
 
