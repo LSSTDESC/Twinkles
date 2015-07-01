@@ -8,7 +8,7 @@
 | DESC Working Groups                   | SN, SL, CI, SIMS                                              |---------------------------------------|--------------------------------------------------------------|
 | Start Date (approximate)              | September 2015                                                     |---------------------------------------|--------------------------------------------------------------|
 | End Date (approximate)                | December 2016                                                     |---------------------------------------|--------------------------------------------------------------|
-| Working Deliverable Publication Title | Twinkles Data Release 1: A Tiny Simulated LSST Imaging Survey |
+| Working Deliverable Publication Title | Twinkles v1.0: Cosmological Light Curve Extraction in a Tiny Simulated LSST Imaging Survey |
 | Intermediate Milestones               | Twinkles v1.0 Survey Requirements Document (Fall 2015); Twinkles v1.0 Pipeline (Summer 2016); Twinkles v1.0 Imaging Dataset (Summer 2016); Twinkles v1.0 Level 2 Catalog (Summer 2016) ; Twinkles v1.0 Validation Report (Fall 2016)                                                             |---------------------------------------|--------------------------------------------------------------|
 
 
