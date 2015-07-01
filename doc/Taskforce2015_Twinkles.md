@@ -4,7 +4,7 @@
 | Title|Twinkles|
 |----------|-------------------------|
 | Primary Lead(s)                       | Marshall, Wood-Vasey, Dubois |                                  |---------------------------------------|--------------------------------------------------------------|
-| Interested DESC Members               | Krughoff, Fassnacht, Jha, Dodelson, Walter, Peterson, Connolly, Glanzman, Digel, Sehrish, Johnson, McCully |
+| Interested DESC Members               | Krughoff, Fassnacht, Jha, Dodelson, Walter, Peterson, Connolly, Glanzman, Digel, Sehrish, Johnson, McCully, Li |
 | DESC Working Groups                   | SN, SL, CI, SIMS                                              |---------------------------------------|--------------------------------------------------------------|
 | Start Date (approximate)              | September 2015                                                     |---------------------------------------|--------------------------------------------------------------|
 | End Date (approximate)                | December 2016                                                     |---------------------------------------|--------------------------------------------------------------|
