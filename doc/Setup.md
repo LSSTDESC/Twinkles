@@ -50,5 +50,17 @@ Images show up in the "output" directory.
 
 ## Gravitational Lens Sprinkling Setup
 
-## Supernova Sprinkling Setup
+1) Follow instructions above to setup LSST Sims
 
+2) Install and setup [OM10](https://github.com/drphilmarshall/OM10).
+
+3) Open an SSH tunnel for database connection to UW. See
+[here](https://confluence.lsstcorp.org/display/SIM/Accessing+the+UW+CATSIM+Database) for more information.
+This is where the objects that will populate the catalog are stored.
+
+4) Now you're ready to go with:
+```
+$> python generatePhosimInput.py
+```
+
+## Supernova Sprinkling Setup
