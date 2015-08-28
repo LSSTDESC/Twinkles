@@ -80,14 +80,6 @@ class sprinkler():
                     #Replace original entry with new entry
                     updated_catalog[rowNum] = row
 
-                    #Write out info about the lens galaxy to a text file
-                    #lenslines.append('%f %f %f %f %f %f %f\n'%(lensrow['galaxyAgn_raJ2000'], lensrow['galaxyAgn_decJ2000'], newlens['ZLENS'], newlens['APMAG_I'],
-                    #                     newlens['ELLIP'], newlens['PHIE'], newlens['REFF']))
-
-                    # TODO: Maybe Lens original AGN or delete original source
-        f = open('lens.dat','w')
-        f.writelines(lenslines)
-        f.close()
         return updated_catalog
 
     def find_lens_candidates(self, galz):
