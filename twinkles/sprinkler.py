@@ -5,17 +5,16 @@ Created on Feb 6, 2015
 '''
 import om10
 import numpy as np
-from lsst.sims.catUtils.baseCatalogModels import GalaxyAgnObj, GalaxyBulgeObj
+from lsst.sims.catUtils.baseCatalogModels import GalaxyAgnObj, GalaxyBulgeObj, GalaxyTileCompoundObj
 import random
 import os
 
 
-class sprinklerAGN(GalaxyAgnObj):
-    objid = 'sprinklerAGN'
+class sprinklerCompound(GalaxyTileCompoundObj):
+    objid = 'sprinklerCompound'
     objectTypeID = 1024
 
     def _final_pass(self, results):
-        GalaxyAgnObj._final_pass(self, results)
         sp = sprinkler(results)
         results = sp.sprinkle()
         return results
@@ -53,7 +52,7 @@ class sprinklerLens(GalaxyBulgeObj):
             newrow['sedFilename']
             import pdb; pdb.set_trace()
         # Append the row to the results
-        
+
         return results
 
 
@@ -71,8 +70,8 @@ class sprinkler():
         # For each galaxy in the catsim catalog
         updated_catalog = self.catalog.copy()
         for row in self.catalog:
-            if not np.isnan(row['magNorm']):
-                candidates = self.find_lens_candidates(row['redshift'])
+            if not np.isnan(row['galaxyAgn_magNorm']):
+                candidates = self.find_lens_candidates(row['galaxyAgn_redshift'])
             # If there aren't any lensed sources at this redshift from OM10 move on the next object
                 if len(candidates) > 0:
                     # Randomly choose one the lens systems
@@ -85,13 +84,16 @@ class sprinkler():
                         lensrow = row.copy()
                         # XIMG and YIMG are in arcseconds
                         # raPhSim and decPhoSim are in radians
-                        lensrow['raJ2000'] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0 / 180.0 * np.pi
-                        lensrow['decJ2000'] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0 / 180.0 * np.pi
-                        lensrow['magNorm'] += newlens['MAG'][i]
+                        #Shift all parts of the lensed object, not just it's agn part
+                        for lensPart in ['galaxyBulge', 'galaxyDisk', 'galaxyAgn']:
+                            lensrow[str(lensPart + '_raJ2000')] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0 / 180.0 * np.pi
+                            lensrow[str(lensPart + '_decJ2000')] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0 / 180.0 * np.pi
+                        ### ?: Is this the right decision? To just add the magnitude to the agn part?
+                        lensrow['galaxyAgn_magNorm'] += newlens['MAG'][i]
                         updated_catalog = np.append(updated_catalog, lensrow)
 
                         #Write out info about the lens galaxy to a text file
-                        lenslines.append('%f %f %f %f %f %f %f\n'%(lensrow['raJ2000'], lensrow['decJ2000'], newlens['ZSRC'], newlens['APMAG_I'],
+                        lenslines.append('%f %f %f %f %f %f %f\n'%(lensrow['galaxyAgn_raJ2000'], lensrow['galaxyAgn_decJ2000'], newlens['ZSRC'], newlens['APMAG_I'],
                                          newlens['ELLIP'], newlens['PHIE'], newlens['REFF']))
 
                     # TODO: Maybe Lens original AGN or delete original source
