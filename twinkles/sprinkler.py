@@ -84,11 +84,10 @@ class sprinkler():
                         lensrow = row.copy()
                         # XIMG and YIMG are in arcseconds
                         # raPhSim and decPhoSim are in radians
-                        #Shift all parts of the lensed object, not just it's agn part
+                        #Shift all parts of the lensed object, not just its agn part
                         for lensPart in ['galaxyBulge', 'galaxyDisk', 'galaxyAgn']:
                             lensrow[str(lensPart + '_raJ2000')] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0 / 180.0 * np.pi
                             lensrow[str(lensPart + '_decJ2000')] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0 / 180.0 * np.pi
-                        ### ?: Is this the right decision? To just add the magnitude to the agn part?
                         lensrow['galaxyAgn_magNorm'] += newlens['MAG'][i]
                         updated_catalog = np.append(updated_catalog, lensrow)
 

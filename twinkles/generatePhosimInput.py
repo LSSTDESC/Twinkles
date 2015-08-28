@@ -17,25 +17,30 @@ from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
         PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogZPoint
 from sprinkler import sprinklerCompound
 
-starObjNames = ['msstars', 'bhbstars', 'wdstars', 'rrlystars', 'cepheidstars']
+def generatePhosimInput():
 
-obsMD = OpSim3_61DBObject()
-obs_metadata = obsMD.getObservationMetaData(88625744, 0.05, makeCircBounds = True)
+    starObjNames = ['msstars', 'bhbstars', 'wdstars', 'rrlystars', 'cepheidstars']
 
-compoundICList = []
+    obsMD = OpSim3_61DBObject()
+    obs_metadata = obsMD.getObservationMetaData(88625744, 0.05, makeCircBounds = True)
 
-#Add Instance Catalogs for phoSim stars
-for starName in starObjNames:
-    starDBObj = CatalogDBObject.from_objid(starName)
-    compoundICList.append(PhoSimCatalogPoint(starDBObj, obs_metadata=obs_metadata))
+    compoundICList = []
 
-#Add phosim Galaxy Instance Catalogs to compound Instance Catalog
-galsBulge = CatalogDBObject.from_objid('galaxyBulge')
-compoundICList.append(PhoSimCatalogSersic2D(galsBulge, obs_metadata=obs_metadata))
-galsDisk = CatalogDBObject.from_objid('galaxyDisk')
-compoundICList.append(PhoSimCatalogSersic2D(galsDisk, obs_metadata=obs_metadata))
-galsAGN = CatalogDBObject.from_objid('galaxyAgn')
-compoundICList.append(PhoSimCatalogZPoint(galsAGN, obs_metadata=obs_metadata))
+    #Add Instance Catalogs for phoSim stars
+    for starName in starObjNames:
+        starDBObj = CatalogDBObject.from_objid(starName)
+        compoundICList.append(PhoSimCatalogPoint(starDBObj, obs_metadata=obs_metadata))
 
-totalCat = CompoundInstanceCatalog(compoundICList, obs_metadata=obs_metadata, compoundDBclass=sprinklerCompound)
-totalCat.write_catalog("phosim_example.txt")
+    #Add phosim Galaxy Instance Catalogs to compound Instance Catalog
+    galsBulge = CatalogDBObject.from_objid('galaxyBulge')
+    compoundICList.append(PhoSimCatalogSersic2D(galsBulge, obs_metadata=obs_metadata))
+    galsDisk = CatalogDBObject.from_objid('galaxyDisk')
+    compoundICList.append(PhoSimCatalogSersic2D(galsDisk, obs_metadata=obs_metadata))
+    galsAGN = CatalogDBObject.from_objid('galaxyAgn')
+    compoundICList.append(PhoSimCatalogZPoint(galsAGN, obs_metadata=obs_metadata))
+
+    totalCat = CompoundInstanceCatalog(compoundICList, obs_metadata=obs_metadata, compoundDBclass=sprinklerCompound)
+    totalCat.write_catalog("phosim_example.txt")
+
+if __name__ == "__main__":
+    generatePhosimInput()
