@@ -5,7 +5,7 @@ Created on Feb 6, 2015
 '''
 import om10
 import numpy as np
-from lsst.sims.catUtils.baseCatalogModels import GalaxyAgnObj, GalaxyBulgeObj, GalaxyTileCompoundObj
+from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
 import random
 import os
 
@@ -18,43 +18,6 @@ class sprinklerCompound(GalaxyTileCompoundObj):
         sp = sprinkler(results)
         results = sp.sprinkle()
         return results
-
-
-class sprinklerLens(GalaxyBulgeObj):
-    objid = 'sprinklerLens'
-    objectTypeID = 1025
-
-    def _final_pass(self, results):
-        # Find the first non nan magNorm
-        for row in results:
-            if not np.isnan(row['magNorm']):
-                template_row = row.copy()
-                break
-        # Read in the lens data file
-        lensdata = np.genfromtxt('lens.dat')
-        # For each lens
-        for row in lensdata:
-        # create a new row based on the lens data
-            newrow = template_row.copy()
-            newrow['redshift'] = row[2]
-        # Fix ME
-        if row[-1] == 0:
-            reff = 0.5
-        else:
-            reff  = row[-1]
-            newrow['minorAxis']
-            newrow['majorAxis']
-            newrow['positionAngle']
-            newrow['raJ2000']
-            newrow['decJ2000']
-            #This is just normalized to I which should be fixed
-            newrow['magNorm']
-            newrow['sedFilename']
-            import pdb; pdb.set_trace()
-        # Append the row to the results
-
-        return results
-
 
 class sprinkler():
     def __init__(self, catsim_cat):
@@ -69,7 +32,7 @@ class sprinkler():
         lenslines = []
         # For each galaxy in the catsim catalog
         updated_catalog = self.catalog.copy()
-        for row in self.catalog:
+        for rowNum, row in enumerate(self.catalog):
             if not np.isnan(row['galaxyAgn_magNorm']):
                 candidates = self.find_lens_candidates(row['galaxyAgn_redshift'])
             # If there aren't any lensed sources at this redshift from OM10 move on the next object
@@ -88,12 +51,38 @@ class sprinkler():
                         for lensPart in ['galaxyBulge', 'galaxyDisk', 'galaxyAgn']:
                             lensrow[str(lensPart + '_raJ2000')] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0 / 180.0 * np.pi
                             lensrow[str(lensPart + '_decJ2000')] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0 / 180.0 * np.pi
+                        ###Should this 'mag' be added to all parts? How should we update the ids for the lensed objects?
                         lensrow['galaxyAgn_magNorm'] += newlens['MAG'][i]
                         updated_catalog = np.append(updated_catalog, lensrow)
 
-                        #Write out info about the lens galaxy to a text file
-                        lenslines.append('%f %f %f %f %f %f %f\n'%(lensrow['galaxyAgn_raJ2000'], lensrow['galaxyAgn_decJ2000'], newlens['ZSRC'], newlens['APMAG_I'],
-                                         newlens['ELLIP'], newlens['PHIE'], newlens['REFF']))
+                    #Now manipulate original entry to be the lens galaxy with desired properties
+                    #Start by deleting Disk and AGN properties
+                    if not np.isnan(row['galaxyDisk_magNorm']):
+                        row['galaxyDisk_majorAxis'] = 0.0
+                        row['galaxyDisk_minorAxis'] = 0.0
+                        row['galaxyDisk_positionAngle'] = 0.0
+                        row['galaxyDisk_internalAv'] = 0.0
+                        row['galaxyDisk_magNorm'] = np.nan
+                        row['galaxyDisk_sedFilename'] = None
+                    row['galaxyAgn_magNorm'] = np.nan
+                    row['galaxyAgn_sedFilename'] = None
+                    #Now insert desired Bulge properties
+                    row['galaxyBulge_sedFilename'] = 'Burst.25E09.02Z.spec'
+                    row['galaxyBulge_redshift'] = newlens['ZLENS']
+                    row['galaxyDisk_redshift'] = newlens['ZLENS']
+                    row['galaxyAgn_redshift'] = newlens['ZLENS']
+                    row['galaxyBulge_magNorm'] = newlens['APMAG_I'] #Need to convert this to correct band
+                    arcsec = 4.84813681109536e-06 #To convert from arcsec to radians for catalog
+                    row['galaxyBulge_majorAxis'] = newlens['REFF'] * arcsec
+                    row['galaxyBulge_minorAxis'] = newlens['REFF'] * (1 - newlens['ELLIP']) * arcsec
+                    #Convert orientation angle to west of north from east of north by *-1.0 and convert to radians
+                    row['galaxyBulge_positionAngle'] = newlens['PHIE']*(-1.0)*np.pi/180.0
+                    #Replace original entry with new entry
+                    updated_catalog[rowNum] = row
+
+                    #Write out info about the lens galaxy to a text file
+                    #lenslines.append('%f %f %f %f %f %f %f\n'%(lensrow['galaxyAgn_raJ2000'], lensrow['galaxyAgn_decJ2000'], newlens['ZLENS'], newlens['APMAG_I'],
+                    #                     newlens['ELLIP'], newlens['PHIE'], newlens['REFF']))
 
                     # TODO: Maybe Lens original AGN or delete original source
         f = open('lens.dat','w')
