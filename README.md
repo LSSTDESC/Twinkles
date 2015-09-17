@@ -35,6 +35,7 @@ We are interested in making high accuracy cosmological measurements of type IA s
 * Bryce Kalmbach (UW)
 * Tony Johnson (SLAC)
 * Saba Sehrish (Fermilab)
+* Seth Digel (SLAC)
 
 
 ### Credits etc
