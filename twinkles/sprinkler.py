@@ -72,9 +72,10 @@ class sprinkler():
                     row['galaxyDisk_redshift'] = newlens['ZLENS']
                     row['galaxyAgn_redshift'] = newlens['ZLENS']
                     row['galaxyBulge_magNorm'] = newlens['APMAG_I'] #Need to convert this to correct band
-                    arcsec = 4.84813681109536e-06 #To convert from arcsec to radians for catalog
-                    row['galaxyBulge_majorAxis'] = newlens['REFF'] * arcsec
-                    row['galaxyBulge_minorAxis'] = newlens['REFF'] * (1 - newlens['ELLIP']) * arcsec
+                    arcsec2rad = 4.84813681109536e-06 #To convert from arcsec to radians for catalog
+                    newlens['REFF'] = 1.0 #Hard coded for now. See issue in OM10 github.
+                    row['galaxyBulge_majorAxis'] = newlens['REFF'] * arcsec2rad
+                    row['galaxyBulge_minorAxis'] = newlens['REFF'] * (1 - newlens['ELLIP']) * arcsec2rad
                     #Convert orientation angle to west of north from east of north by *-1.0 and convert to radians
                     row['galaxyBulge_positionAngle'] = newlens['PHIE']*(-1.0)*np.pi/180.0
                     #Replace original entry with new entry
