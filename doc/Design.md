@@ -7,7 +7,7 @@ The Twinkles philosophy is to make the simulated data *as realistic as possible,
 
 ## Basics
 
-* A 10 year survey with realistic extragalactic deep drilling field cadence, but with the observations flagged so that N realistic wide-deep-fast main survey data subsets can be extracted. We will use `OpSim 3.61` outputs for the observing schedule, with additional realistic dithering and field rotation.
+* A 10 year survey with realistic extragalactic deep drilling field cadence, but with the observations flagged so that N realistic wide-deep-fast main survey data subsets can be extracted. We will use `enigma_1189` outputs for the observing schedule, with additional realistic dithering and field rotation.
 
 * Small sky area, overloaded with supernovae and lensed quasars. These need to be sufficiently well-separated to avoid implausible cross-talk. The number of objects required by the validation will drive the survey area given this separation. Initial estimates were that a 10 arcminute square sky patch would be sufficient.
 
