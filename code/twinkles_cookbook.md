@@ -53,7 +53,17 @@ root.indexFiles = ['index-102815000.fits', 'index-102815001.fits', 'index-102815
 'index-102815004.fits']
 ```
 Now process the data.  I have only gotten through coaddition.  First you'll need to build the stack using tickets/DM-4302
-of obs_lsstSim and tickets/DM-4305 of pipe_tasks.  This assumes the simulated images have landed in a directory called ```images```
+of obs_lsstSim and tickets/DM-4305 of pipe_tasks.  In order to patch a branch version onto a pre-existing stack you can do something like the following.
+
+1. Build a master stack.  I suggest using [lsstsw](https://confluence.lsstcorp.org/display/LDMDG/The+LSST+Software+Build+Tool)
+2. Set up the stack: e.g. `$> setup obs_lsstSim -t bNNNN`
+3. Clone the package you want to patch on top of your stack `$> clone git@github.com:lsst/obs_lsstSim.git; cd obs_lsstSim`
+4. Get the branch: `$> checkout tickets/DM-4305`
+5. Set up just (-j) the cloned package (since the rest of the packages are already set up): `$> setup -j -r .`
+6. Build the cloned package (this is necessary even for pure python packages): `$> scons opt=3`
+7. Optionally install it in your stack: `$> scons install declare`
+
+This assumes the simulated images have landed in a directory called ```images```
 in the current directory.  In the images directory, you'll need a ```_mapper``` file with contents
 ```
 lsst.obs.lsstSim.LsstSimMapper
@@ -65,5 +75,10 @@ $> ingestImages.py images images/lsst_*.fits.gz --mode link --configfile ingest.
 $> setup -m none -r and_files astrometry_net_data
 $> processEimage.py input_data/ --id visit=840^841^842^843^844^845^846^847^848 --output output_data
 $> makeDiscreteSkyMap.py output_data/ --id visit=840^841^842^843^844^845^846^847^848
-$> makeCoaddTempExp.py output_data/ --selectId visit=840^841^842^843^844^845^846^847^848 --id filter=r patch=0,0 tract=0
-$> assembleCoadd.py output_data/ --selectId visit=840^841^842^843^844^845^846^847^848 --id filter=r patch=0,0 tract=0 --config cofnig.doInterp=False
+$> makeCoaddTempExp.py output_data/ --selectId visit=840^841^842^843^844^845^846^847^848 --id filter=r patch=0,0 tract=0 --config bgSubtracted=True
+$> assembleCoadd.py output_data/ --selectId visit=840^841^842^843^844^845^846^847^848 --id filter=r patch=0,0 tract=0 --config config.doInterp=True
+$> detectCoaddSources.py output_data/ --id tract=0 patch=0,0 filter='r'
+$> mergeCoaddDetections.py output_data/ --id tract=0 patch=0,0 filter='r'
+$> mergeCoaddMeasurements.py output_data/ --id tract=0 patch=0,0 filter='r'
+$> forcedPhotCcd.py output_data/ --id tract=0 filter='r' visit=840^841^842^843^844^845^846^847^848 sensor=1,1 raft=2,2 --config measurement.doApplyApCorr='yes'
+```
