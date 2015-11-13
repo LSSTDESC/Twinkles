@@ -58,3 +58,6 @@ target/
 
 # Extraneous cruft:
 *docx
+
+# Literature
+doc/litter
