@@ -75,7 +75,7 @@ $> setup obs_lsstSim
 
 # Ingest the images from a directory called images to a repository called input_data
 # there are some config overrides in the ingest.py file
-$> ingestImages.py images images/lsst_*.fits.gz --mode link --configfile ingest.py --output input_data
+$> ingestImages.py images images/lsst_*.fits.gz --mode link --output input_data
 
 # Setup the reference catalog for photometric and astrometric calibration
 $> setup -m none -r and_files astrometry_net_data
