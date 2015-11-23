@@ -39,7 +39,7 @@ In order to run Twinkles from bash, one need only to source the LSST Stack
 and Twinkles set up scripts:
 ```
 $ source ${LSST_HOME}/loadLSST.bash
-$ source <Twinkles top level directory>/setup/loadTwinkles.bash
+$ source <Twinkles top level directory>/Twinkles/setup/loadTwinkles.bash
 ```
 
 To run the catsim code, one needs to be able to access the UW catsim
