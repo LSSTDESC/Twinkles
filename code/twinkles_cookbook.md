@@ -55,7 +55,7 @@ root.indexFiles = ['index-102815000.fits', 'index-102815001.fits', 'index-102815
 Now process the data.  I have only gotten through coaddition.  First you'll need to build the stack using tickets/DM-4302
 of obs_lsstSim and tickets/DM-4305 of pipe_tasks.  In order to patch a branch version onto a pre-existing stack you can do something like the following.
 
-1. Build a master stack.  I suggest using [lsstsw](https://confluence.lsstcorp.org/display/LDMDG/The+LSST+Software+Build+Tool)
+1. Build a master stack.  I suggest using [lsstsw](https://confluence.lsstcorp.org/display/LDMDG/The+LSST+Software+Build+Tool).
 2. Set up the stack: e.g. `$> setup obs_lsstSim -t bNNNN`
 3. Clone the package you want to patch on top of your stack `$> clone git@github.com:lsst/obs_lsstSim.git; cd obs_lsstSim`
 4. Get the branch: `$> checkout tickets/DM-4305`
@@ -79,7 +79,9 @@ $> ingestImages.py images images/lsst_*.fits.gz --mode link --output input_data
 
 # Setup the reference catalog for photometric and astrometric calibration
 $> setup -m none -r and_files astrometry_net_data
-
+```
+In order to try out the cookbook, you can download the input_data repository and the and_files astrometry_net_data files as a tarball from [here](https://lsst-web.ncsa.illinois.edu/~krughoff/data/twinkles_first_9.tar.gz).
+```
 # Create calibrated images from the input eimages.  This will write to a repository called output_data.  The --id argument
 # defines the data to operate on.  In this case, it means run visit 840 and 841 and 842 and ....  There can be more than one
 # --id argument.
