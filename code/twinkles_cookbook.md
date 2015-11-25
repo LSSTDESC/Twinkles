@@ -97,7 +97,7 @@ $> makeCoaddTempExp.py output_data/ --selectId visit=840^841^842^843^844^845^846
 
 # This is the second step which actually coadds the warped images.  The doInterp config option is required if there
 # are any NaNs in the image (which there will be for this set since the images do not cover the whole patch).
-$> assembleCoadd.py output_data/ --selectId visit=840^841^842^843^844^845^846^847^848 --id filter=r patch=0,0 tract=0 --config config.doInterp=True
+$> assembleCoadd.py output_data/ --selectId visit=840^841^842^843^844^845^846^847^848 --id filter=r patch=0,0 tract=0 --config doInterp=True
 
 # Detect sources in the coadd and then merge detections from multiple bands (we only have one here).
 $> detectCoaddSources.py output_data/ --id tract=0 patch=0,0 filter='r'
