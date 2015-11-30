@@ -2,6 +2,7 @@ import lsst.daf.persistence as dp
 import lsst.afw.image as afw_image
 import numpy
 import matplotlib.pylab as plt
+from calc_snr import make_invsnr_arr
 
 # get a butler
 butler = dp.Butler('output_data')
@@ -45,7 +46,11 @@ for visit, forced_src in forced_srcs.iteritems():
 for lightcurve in lightcurve_fluxes.values():
     if len(lightcurve) == 9:
         plt.scatter(afw_image.abMagFromFlux(numpy.median(lightcurve)), 
-                    numpy.std(lightcurve)/numpy.median(lightcurve))
+                    numpy.std(lightcurve)/numpy.median(lightcurve), alpha=0.5)
+mags, invsnrs = make_invsnr_arr()
+plt.plot(mags, invsnrs, color='red', linewidth=2, alpha=0.75)
 plt.xlabel("Calibrated magnitude of median flux")
 plt.ylabel("stdev(flux)/median(flux)")
+plt.xlim(15.5, 25)
+plt.ylim(0., 0.5)
 plt.show()
