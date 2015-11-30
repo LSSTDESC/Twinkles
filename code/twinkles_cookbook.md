@@ -53,12 +53,12 @@ root.indexFiles = ['index-102815000.fits', 'index-102815001.fits', 'index-102815
 'index-102815004.fits']
 ```
 Now process the data.  I have only gotten through coaddition.  First you'll need to build the stack using tickets/DM-4302
-of obs_lsstSim and tickets/DM-4305 of pipe_tasks.  In order to patch a branch version onto a pre-existing stack you can do something like the following.
+of obs_lsstSim.  In order to patch a branch version onto a pre-existing stack you can do something like the following.
 
 1. Build a master stack.  I suggest using [lsstsw](https://confluence.lsstcorp.org/display/LDMDG/The+LSST+Software+Build+Tool).
 2. Set up the stack: e.g. `$> setup obs_lsstSim -t bNNNN`
 3. Clone the package you want to patch on top of your stack `$> clone git@github.com:lsst/obs_lsstSim.git; cd obs_lsstSim`
-4. Get the branch: `$> checkout tickets/DM-4305`
+4. Get the branch: `$> checkout tickets/DM-4302`
 5. Set up just (-j) the cloned package (since the rest of the packages are already set up): `$> setup -j -r .`
 6. Build the cloned package (this is necessary even for pure python packages): `$> scons opt=3`
 7. Optionally install it in your stack: `$> scons install declare`
@@ -109,6 +109,6 @@ $> mergeCoaddMeasurements.py output_data/ --id tract=0 patch=0,0 filter='r'
 # Use the detections from the coadd to do forced photometry on all the single frame data.
 $> forcedPhotCcd.py output_data/ --id tract=0 filter='r' visit=840^841^842^843^844^845^846^847^848 sensor=1,1 raft=2,2 --config measurement.doApplyApCorr='yes'
 ```
-Once the forced photometry is done, you can look at the output by loading the measurements using the butler.  [This script](plot_point_mags.py) shows how to start looking at the measurements.  It produces the following image.  Note that the line is *not* a fit to the data it is the result of a naive approximation.  Specifically, the assumptions are flat spectrum (zero AB color), S/R = 5. at r=24.5, and a systematic floor at 2%.
+Once the forced photometry is done, you can look at the output by loading the measurements using the butler.  [This script](plot_point_mags.py) shows how to start looking at the measurements.  It produces the following image.  Note that the line is *not* a fit to the data.  It is the result of a naive approximation.  Specifically, the assumptions are flat spectrum (zero AB color), S/R = 5. at r=24.5, and a systematic floor at 2%.
 
 ![Repeat figure](repeat.png)
