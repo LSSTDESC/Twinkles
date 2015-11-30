@@ -109,3 +109,6 @@ $> mergeCoaddMeasurements.py output_data/ --id tract=0 patch=0,0 filter='r'
 # Use the detections from the coadd to do forced photometry on all the single frame data.
 $> forcedPhotCcd.py output_data/ --id tract=0 filter='r' visit=840^841^842^843^844^845^846^847^848 sensor=1,1 raft=2,2 --config measurement.doApplyApCorr='yes'
 ```
+Once the forced photometry is done, you can look at the output by loading the measurements using the butler.  [This script](plot_point_mags.py) shows how to start looking at the measurements.  It produces the following image.  Note that the line is *not* a fit to the data it is the result of a naive approximation.  Specifically, the assumptions are flat spectrum (zero AB color), S/R = 5. at r=24.5, and a systematic floor at 2%.
+
+![Repeat figure](repeat.png)
