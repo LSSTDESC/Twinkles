@@ -104,6 +104,7 @@ $> detectCoaddSources.py output_data/ --id tract=0 patch=0,0 filter='r'
 $> mergeCoaddDetections.py output_data/ --id tract=0 patch=0,0 filter='r'
 
 # Do measurement on the sources detected in the above steps and merge the measurements from multiple bands (we only have one).
+$> measureCoaddSources.py output_data/ --id tract=0 patch=0,0 filte='r'
 $> mergeCoaddMeasurements.py output_data/ --id tract=0 patch=0,0 filter='r'
 
 # Use the detections from the coadd to do forced photometry on all the single frame data.
