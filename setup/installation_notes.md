@@ -22,13 +22,13 @@ $ git clone git@github.com:lsst/pipe_tasks.git
 $ git clone git@github.com:lsst/obs_lsstSim.git
 ```
 
-Set up the LSST Stack and build the needed development branches of
-pipe_tasks and obs_lsstSim:
+Set up the LSST Stack and build the master branch of pipe_tasks and the 
+needed development branch of obs_lsstSim:
 ```
 $ source ${LSST_HOME}/loadLSST.bash
 $ setup obs_lsstSim
 $ cd pipe_tasks
-$ git checkout tickets/DM-4305
+$ git checkout master
 $ scons opt=3
 $ cd ../obs_lsstSim
 $ git checkout tickets/DM-4302
