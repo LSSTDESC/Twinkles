@@ -74,3 +74,6 @@ desc-logo.png
 doc_settings.tex 
 apj.bst          
 doc_macros.tex
+
+# Don't look in the attic!
+attic
