@@ -12,11 +12,11 @@ BIB = bibtex
 #
 # Base name of the document:
 #
-DOCUMENT = main
+DOCUMENT = dc1
 #
 # All tex files used:
 #
-DEPENDENCIES=doc_settings.tex doc_macros.tex twinkles1.tex
+DEPENDENCIES=doc_settings.tex doc_macros.tex twinkles1/*.tex
 #
 # This line helps prevent make from getting confused in the case where you
 # have a file named 'clean'.
@@ -31,12 +31,12 @@ DEPENDENCIES=doc_settings.tex doc_macros.tex twinkles1.tex
 #
 # Main instructions, including dependencies:
 #
-main.pdf: main.tex $(DEPENDENCIES)
-	$(TEX) -halt-on-error main.tex
-	$(TEX) -halt-on-error main.tex
-	$(BIB) main
-	$(TEX) -halt-on-error main.tex
-	$(TEX) -halt-on-error main.tex
+main.pdf: $(DOCUMENT).tex $(DEPENDENCIES)
+	$(TEX) -halt-on-error $(DOCUMENT).tex
+	$(TEX) -halt-on-error $(DOCUMENT).tex
+	$(BIB) $(DOCUMENT)
+	$(TEX) -halt-on-error $(DOCUMENT).tex
+	$(TEX) -halt-on-error $(DOCUMENT).tex
 #
 # This will compile the document
 #
@@ -47,6 +47,7 @@ all: clean $(DOCUMENT).pdf
 #
 clean:
 	- $(RM) *.aux *.toc *.out *.log *.bbl *.blg *.wrt *~
+	- $(RM) */*.aux */*.toc */*.out */*.log */*.bbl */*.blg */*.wrt *~
 #
 vclean:	clean
 	- $(RM) $(DOCUMENT).pdf
