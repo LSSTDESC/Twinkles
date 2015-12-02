@@ -1,44 +1,52 @@
 These notes describe how to install Twinkles and the other packages on
 which it depends, assuming that the LSST Stack (including the sims
-packages) is already installed in ${LSST_HOME} 
+packages) is already installed in `${LSST_HOME}`.
 
-(Here are [instructions for building the LSST Stack from
+It's probably best to install the LSST Stack and sims packages using
+lsstsw.  Following the instructions
+[here](https://confluence.lsstcorp.org/display/LDMDG/The+LSST+Software+Build+Tool),
+you'll get the master of every package.  Then in order to
+install the sims packages, do
+```
+$ rebuild lsst_sims
+```
+
+Note that v11.0 of the Stack that one obtains by following [these
+instructions for building the LSST Stack from
 source](https://confluence.lsstcorp.org/display/LSWUG/Building+the+LSST+Stack+from+Source)
-and [instructions for the sims
-packages](https://confluence.lsstcorp.org/display/SIM/Catalogs+and+MAF).)
+or the w.2015.39 version that one obtains by following [these
+instructions for the sims
+packages](https://confluence.lsstcorp.org/display/SIM/Catalogs+and+MAF)
+may have memory issues on rhel6 in the assembleCoadd.py step of the
+[cookbook](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/code/twinkles_cookbook.md).
 
-To start, cd to the top level directory where you want Twinkles et
-al. to live:
+Assuming you have the Stack set up via 
+``` 
+$ . ${LSST_HOME}/bin/setup.sh
+$ setup obs_lsstSims -t bNNNN
+```
+where `bNNNN` is the most recent tag found in `${LSST_HOME}/stack/ups_db/obs_lsstSim`, cd to the top level directory where you want Twinkles et al. to live:
 ```
 $ cd <Twinkles top level directory>
 ```
 
-Clone the Twinkles, OM10, pipe_tasks, and obs_lsstSim respositories
-into that area:
+Clone the Twinkles, OM10, and obs_lsstSim respositories into that area:
 ```
 $ git clone git@github.com:DarkEnergyScienceCollaboration/Twinkles.git
 $ git clone git@github.com:drphilmarshall/OM10.git
-$ git clone git@github.com:lsst/pipe_tasks.git
 $ git clone git@github.com:lsst/obs_lsstSim.git
 ```
 
-Set up the LSST Stack and build the master branch of pipe_tasks and the 
-needed development branch of obs_lsstSim:
+and build the needed development branch of obs_lsstSim:
 ```
-$ source ${LSST_HOME}/loadLSST.bash
-$ setup obs_lsstSim
-$ cd pipe_tasks
-$ git checkout master
-$ scons opt=3
-$ cd ../obs_lsstSim
+$ cd obs_lsstSim
 $ git checkout tickets/DM-4302
 $ scons opt=3
 ```
 
-In order to run Twinkles from bash, one need only to source the LSST Stack
-and Twinkles set up scripts:
+In order to run Twinkles from bash, one needs to setup the Stack as
+shown above and source the Twinkles set up script:
 ```
-$ source ${LSST_HOME}/loadLSST.bash
 $ source <Twinkles top level directory>/Twinkles/setup/loadTwinkles.bash
 ```
 
