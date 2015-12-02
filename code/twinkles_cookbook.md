@@ -53,17 +53,63 @@ root.indexFiles = ['index-102815000.fits', 'index-102815001.fits', 'index-102815
 'index-102815004.fits']
 ```
 Now process the data.  I have only gotten through coaddition.  First you'll need to build the stack using tickets/DM-4302
-of obs_lsstSim and tickets/DM-4305 of pipe_tasks.  This assumes the simulated images have landed in a directory called ```images```
+of obs_lsstSim.  In order to patch a branch version onto a pre-existing stack you can do something like the following.
+
+1. Build a master stack.  I suggest using [lsstsw](https://confluence.lsstcorp.org/display/LDMDG/The+LSST+Software+Build+Tool).
+2. Set up the stack: e.g. `$> setup obs_lsstSim -t bNNNN`
+3. Clone the package you want to patch on top of your stack `$> clone git@github.com:lsst/obs_lsstSim.git; cd obs_lsstSim`
+4. Get the branch: `$> checkout tickets/DM-4302`
+5. Set up just (-j) the cloned package (since the rest of the packages are already set up): `$> setup -j -r .`
+6. Build the cloned package (this is necessary even for pure python packages): `$> scons opt=3`
+7. Optionally install it in your stack: `$> scons install declare`
+
+This assumes the simulated images have landed in a directory called ```images```
 in the current directory.  In the images directory, you'll need a ```_mapper``` file with contents
 ```
 lsst.obs.lsstSim.LsstSimMapper
 ```
 The above file will tell the stack where to put the raw files and eimages.
 ```
+# Setup the stack environment.  This will make the LsstSimMapper class available
 $> setup obs_lsstSim
-$> ingestImages.py images images/lsst_*.fits.gz --mode link --configfile ingest.py --output input_data
+
+# Ingest the images from a directory called images to a repository called input_data
+# there are some config overrides in the ingest.py file
+$> ingestImages.py images images/lsst_*.fits.gz --mode link --output input_data
+
+# Setup the reference catalog for photometric and astrometric calibration
 $> setup -m none -r and_files astrometry_net_data
+```
+In order to try out the cookbook, you can download the input_data repository and the and_files astrometry_net_data files as a tarball from [here](https://lsst-web.ncsa.illinois.edu/~krughoff/data/twinkles_first_9.tar.gz).
+```
+# Create calibrated images from the input eimages.  This will write to a repository called output_data.  The --id argument
+# defines the data to operate on.  In this case, it means run visit 840 and 841 and 842 and ....  There can be more than one
+# --id argument.
 $> processEimage.py input_data/ --id visit=840^841^842^843^844^845^846^847^848 --output output_data
+
+# Make a skyMap to use as the basis for the astrometic system for the coadds.  This can't be done up front because
+# makeDiscreteSkyMap decides how to build the patches and tracts for the skyMap based on the data.
 $> makeDiscreteSkyMap.py output_data/ --id visit=840^841^842^843^844^845^846^847^848
-$> makeCoaddTempExp.py output_data/ --selectId visit=840^841^842^843^844^845^846^847^848 --id filter=r patch=0,0 tract=0
-$> assembleCoadd.py output_data/ --selectId visit=840^841^842^843^844^845^846^847^848 --id filter=r patch=0,0 tract=0 --config cofnig.doInterp=False
+
+# Coadds are done in two steps.  Step one is to warp the data to a common astrometric system.  The following does that.
+# The config option is to use background subtracted exposures as inputs.
+$> makeCoaddTempExp.py output_data/ --selectId visit=840^841^842^843^844^845^846^847^848 --id filter=r patch=0,0 tract=0 --config bgSubtracted=True
+
+# This is the second step which actually coadds the warped images.  The doInterp config option is required if there
+# are any NaNs in the image (which there will be for this set since the images do not cover the whole patch).
+$> assembleCoadd.py output_data/ --selectId visit=840^841^842^843^844^845^846^847^848 --id filter=r patch=0,0 tract=0 --config doInterp=True
+
+# Detect sources in the coadd and then merge detections from multiple bands (we only have one here).
+$> detectCoaddSources.py output_data/ --id tract=0 patch=0,0 filter='r'
+$> mergeCoaddDetections.py output_data/ --id tract=0 patch=0,0 filter='r'
+
+# Do measurement on the sources detected in the above steps and merge the measurements from multiple bands (we only have one).
+$> measureCoaddSources.py output_data/ --id tract=0 patch=0,0 filte='r'
+$> mergeCoaddMeasurements.py output_data/ --id tract=0 patch=0,0 filter='r'
+
+# Use the detections from the coadd to do forced photometry on all the single frame data.
+$> forcedPhotCcd.py output_data/ --id tract=0 filter='r' visit=840^841^842^843^844^845^846^847^848 sensor=1,1 raft=2,2 --config measurement.doApplyApCorr='yes'
+```
+Once the forced photometry is done, you can look at the output by loading the measurements using the butler.  [This script](plot_point_mags.py) shows how to start looking at the measurements.  It produces the following image.  Note that the line is *not* a fit to the data.  It is the result of a naive approximation.  Specifically, the assumptions are flat spectrum (zero AB color), S/R = 5. at r=24.5, and a systematic floor at 2%.
+
+![Repeat figure](repeat.png)
