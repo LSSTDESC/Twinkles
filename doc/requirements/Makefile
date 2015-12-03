@@ -16,7 +16,7 @@ DOCUMENT = dc1
 #
 # All tex files used:
 #
-DEPENDENCIES=doc_settings.tex doc_macros.tex twinkles1/*.tex
+DEPENDENCIES=twinkles1/*.tex
 #
 # This line helps prevent make from getting confused in the case where you
 # have a file named 'clean'.
@@ -32,6 +32,11 @@ DEPENDENCIES=doc_settings.tex doc_macros.tex twinkles1/*.tex
 # Main instructions, including dependencies:
 #
 main.pdf: $(DOCUMENT).tex $(DEPENDENCIES)
+ifeq ($(wildcard doc_macros.tex),)
+	$(error Science Roadmap doc_macros.tex not linked yet, set environment variable SRM_DIR and run 'make links')
+else
+	@echo "Got macros, compiling latex"
+endif
 	$(TEX) -halt-on-error $(DOCUMENT).tex
 	$(TEX) -halt-on-error $(DOCUMENT).tex
 	$(BIB) $(DOCUMENT)
@@ -58,9 +63,9 @@ vclean:	clean
 #
 testenv:
 ifdef SRM_DIR
-	@echo "SRM environment varable SRM_DIR = ${SRM_DIR}"
+	@echo "SRM environment variable SRM_DIR = ${SRM_DIR}"
 else
-	$(error SRM environment varable SRM_DIR is not set)
+	$(error Science Roadmap environment variable SRM_DIR is not set)
 endif
 #
 links: testenv
