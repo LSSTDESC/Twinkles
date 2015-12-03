@@ -1,0 +1,48 @@
+% ====================================================================
+\chapter*{\TwinklesOne}
+\def\chpname{chp:twinkles1}
+\label{\chpname}
+\addcontentsline{toc}{chapter}{Twinkles 1} % Needed for \chapter*{}
+% ====================================================================
+
+% Contact list - repo in URL must be set correctly to enable queries
+% to be made:
+\renewcommand{\contact}[2]{%
+\href{https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/new?title=Question:\%20\&body=#2:\%20}{{\it #1}}%
+}
+
+\contact{Phil Marshall}{@drphilmarshall},
+\contact{Michael Wood-Vasey}{@wmwv},
+\contact{Richard Dubois}{@richardxdubois}
+
+% --------------------------------------------------------------------
+
+% Brief introduction, giving motivation for the Twinkles 1 survey.
+\input{twinkles1/motivation}
+
+% Planned science analysis developments that will drive the
+% Twinkles 1 design, and subsequent requirements.
+\input{twinkles1/science}
+
+% The design of the Twinkles 1 dataset, resulting from the science
+% analyses defined in the previous section.
+\input{twinkles1/design}
+
+% The consequent requirements on the simulation tools. Subsections
+% for OpSim, CatSim, and PhoSim, and their associated inputs and
+% interfaces.
+\input{twinkles1/simulations}
+
+% The consequent requirements on the analysis software. Subsections
+% for DM Levels 1 and 2, DM+DESC Level 3, and DESC Level 4 code.
+\input{twinkles1/analysis}
+
+% The consequent requirements on the DESC computing infrastructure
+% needed to enable execution of the above simulations and analysis
+% at the required scale.
+\input{twinkles1/infrastructure}
+
+% Discussion of the above flowdown, and comments for future challenges.
+\input{twinkles1/comments}
+
+% ====================================================================

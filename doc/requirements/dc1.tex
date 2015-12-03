@@ -1,0 +1,74 @@
+% ====================================================================
+
+\documentclass[12pt]{report}
+
+\include{doc_settings} % formatting for doc, from SRM
+\include{doc_macros}   % commands and abbreviations from SRM
+
+%%%%% MACROS FOR REQUIREMENTS DOCS
+\newcommand{\docheader}{{DC1 Requirements}}
+\newcommand{\Twinkles}{{\bf\texttt{Twinkles}}\xspace}
+\newcommand{\TwinklesOne}{\hyperref[chp:twinkles1]{{\bf\texttt{Twinkles\,1}}}\xspace}
+\newcommand{\CoaddSource}{\texttt{CoaddSource}}
+\newcommand{\ForcedSource}{\texttt{ForcedSource}}
+
+% ====================================================================
+
+\begin{document}
+
+%%%%% TITLE PAGE
+\pagestyle{empty}
+
+\vspace*{0.3\textheight}
+
+\begin{center}
+{\Huge\bfseries \docheader}
+\end{center}
+
+\begin{figure}[!b]
+\centering\includegraphics[width=5cm,angle=0]{desc-logo.png}
+\end{figure}
+
+%%%%% TABLE OF CONTENTS
+\clearpage
+\maketoc
+\label{toc}
+
+%%%%%%%% FOOTER
+\pagestyle{fancy}
+\fancyfoot{} % clear all footer fields
+\fancyfoot[R]{\thepage}  % page number in "outer" position of footer line
+
+%%%%%%%% HEADER
+\fancyhead[L]{}
+\fancyhead[R]{\descheader}
+\renewcommand{\footrulewidth}{1pt}
+
+% ====================================================================
+
+%%%%%%%% PREAMBLE
+
+\include{preamble}
+
+% ====================================================================
+
+%%%%%%%% TWINKLES 1
+
+\include{twinkles1/main}
+
+% ====================================================================
+
+%%%%%%%% END MATTER
+
+% \include{appendices}
+
+% \include{acknowledgements}
+
+\bibliographystyle{apj}
+\bibliography{references}
+
+% ====================================================================
+
+\end{document}
+
+% ====================================================================
