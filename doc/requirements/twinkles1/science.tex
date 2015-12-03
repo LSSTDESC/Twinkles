@@ -1,0 +1,126 @@
+% ====================================================================
+\section{Science Analysis}
+\def\secname{\chpname:science}
+\label{\secname}
+% ====================================================================
+
+\contact{Phil Marshall}{@drphilmarshall},
+\contact{Michael Wood-Vasey}{@wmwv},
+
+Below we describe the supernova and strong lensing science analysis
+that we want to do with the \TwinklesOne data. In each case we first
+introducing the measurement issues we face, and then define the
+investigations of them that we want to do. These then dictate the
+requirements we have on the challenge dataset design.
+
+% --------------------------------------------------------------------
+
+\subsection{Supernovae}
+\label{\secname:supernovae}
+
+Introduction to supernova analysis in \TwinklesOne.
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+\subsubsection{Light Curve Extraction Issues}
+\label{\secname:supernovae:monitor}
+
+Photometric calibration.
+
+Forced photometry accuracy.
+
+Host galaxy light contamination.
+
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+\subsubsection{Distance Measurement Issues}
+\label{\secname:supernovae:distance}
+
+Host galaxy photometry and structure.
+
+Photometric error accuracy.
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+\subsubsection{Proposed Analyses}
+\label{\secname:supernovae:analyses}
+
+
+% --------------------------------------------------------------------
+
+\subsection{Strong Lensing}
+\label{\secname:stronglensing}
+
+From the first Time Delay Challenge we know that around 400 lensed
+quasars (defined here as the ``Gold Sample'') should be measurable
+with cosmological accuracy with LSST, provided that a) 6 day cadence
+can be achieved and b) the light curves extracted from the LSST images
+are as clean as those in the challenge.
+
+6-day cadence requires 5 filters to be used: TDC2 will test
+assumption a) above, that  a 5-6 filter light curve can be modeled as
+accurately as a single filter light curve. The fidelity of the light
+curves depends on our ability to extract them, and this requires image
+simulations of very high realism to be analyzed with the tools of
+sufficient sharpness.
+
+In \TwinklesOne we will test assumption b), and assess the fidelity of
+lensed quasar light curves as observed and measured with the LSST system.
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+\subsubsection{Light Curve Extraction Issues}
+\label{\secname:stronglensing:monitor}
+
+Point image separation (deblending).
+
+Photometric accuracy (forced photometry).
+
+Lens and host galaxy light contamination.
+
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+\subsubsection{Time Delay Measurement Issues}
+\label{\secname:stronglensing:timedelay}
+
+Correlated photometric error accuracy and mitigation.
+
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+\subsubsection{Proposed Analyses}
+\label{\secname:stronglensing:analyses}
+
+We propose to answer the following questions:
+\begin{itemize}
+\item Was the quality of the DC1 Gold Sample photometry realistic?
+\item How can we better model LSST lensed quasar photometry in future time delay challenges?
+\end{itemize}
+
+For this we will need the \TwinklesOne survey to have the following
+properties:
+\begin{itemize}
+\item The field should contain a significant random fraction (at least
+25\%,  and preferably 100\%) of the TDC1 Gold Sample of 400 lensed
+quasars,  which should vary in the same way as the TDC1 objects (at
+least with regard to their  AGN variability, which domiates over
+microlensing).
+\item The survey should simulate 10 years of LSST observing in
+wide-deep-fast strategy, with realistic observing conditions.
+\item Images should be in either $r$ or $i$-band, as assumed in TDC1.
+\item The survey can be single filter, but the mean night to night
+cadence needs to be 6 days, to allow comparison with TDC1.
+\end{itemize}
+
+After light curve extraction we will then perform the following tests:
+\begin{itemize}
+\item The noise properties of the \TwinklesOne and TDC1 light curves
+will be summarized and compared.
+\item Time delays will be measured for each system using the fiducial
+TDC1 algorithm, and the mean accuracy compared against that in TDC1.
+\end{itemize}
+
+
+% ====================================================================

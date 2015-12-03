@@ -8,8 +8,28 @@
 \contact{Michael Wood-Vasey}{@wmwv},
 \contact{Richard Dubois}{@richardxdubois}
 
-% --------------------------------------------------------------------
+Type Ia supernovae and time delay lenses share the property that their
+light curves must be extracted with sufficient fidelity that time
+domain model parameters (such as stretch and time delay) can be
+inferred. Our ability to do cosmography using these objects depends on
+our ability to make these measurements {\it accurately} given the LSST
+data. In the next section we define a set of analyses that we need to do
+as part of this accuracy demonstration program, and that can be done
+in the 2016--2017 time frame using available simulation and analysis
+technology and computing infrastructure.
 
-Motivational text goes here.
+A note on terminology: we refer to the process of light curve
+extraction as ``Monitoring.'' Supernova light curve extraction will be
+performed by a  tool referred to as \SNMonitor, and strong lens light
+curve extraction  by a related piece of software called \SLMonitor.
+For strong lenses, the key parameter to be inferred  from a set of
+light curves is the time delay, and so we refer to the software tool
+that  performs that inference as \SLTimer. Supernova light curve
+parameters  are typically inferred with tools known as
+``light curve fitters,'' to be deployed by the code \SNDistance.
+
+% A note here on what we are *not* trying to investigate?
+
+% A note here on infrastructure build-up?
 
 % ====================================================================
