@@ -1,0 +1,1 @@
+ingestImages.py ${INPUT_DATA_DIR} ${INPUT_DATA_DIR}/lsst_*.fits.gz --mode link --output ${WORK_DIR}
