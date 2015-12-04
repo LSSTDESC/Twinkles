@@ -68,11 +68,16 @@ doc/litter
 *.bbl
 *.toc
 *.wrt
+*.blg
+*.out
+
+# Products
+TwinklesRQ.pdf
 
 # Links to SRM files
-desc-logo.png    
-doc_settings.tex 
-apj.bst          
+desc-logo.png
+doc_settings.tex
+apj.bst
 doc_macros.tex
 
 # Don't look in the attic!
