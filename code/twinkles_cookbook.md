@@ -18,7 +18,7 @@ $> awk '{if(NR < 21 || $5 > 13) print $0}' phosim_input_848.txt >phosim_input_84
 Build the index files for astrometry.net.  I used a hacked up version of one of the instance files.  The
 result reference file looks like:
 ```
-#id RA DEC r starnontgal
+#id RA DEC r starnotgal
 992887068677 52.9947735 -27.382232 26.033589 1
 1605702564869 53.0078711 -27.3569529 27.6050492 1
 1277139994629 52.9968482 -27.3624426 24.8995206 1
@@ -27,6 +27,7 @@ result reference file looks like:
 1605694183429 52.9937238 -27.326823 25.2046127 1
 1605694345221 52.9976002 -27.3269112 19.2262528 1
 1277138139141 52.9994853 -27.3337649 24.169532 1
+...
 ```
 Setup astrometry_net and pyfits packages and build the files.
 ```
@@ -45,7 +46,7 @@ $> mv index-10281500* and_files
 ```
 The andConfig.py looks like this:
 ```
-root.starGalaxyColumn = "starnontgal"
+root.starGalaxyColumn = "starnotgal"
 filters = ('u', 'g', 'r', 'i', 'z')
 root.magColumnMap = dict([(f,'r') for f in filters])
 root.indexFiles = ['index-102815000.fits', 'index-102815001.fits', 'index-102815002.fits',
