@@ -6,6 +6,8 @@ set -e # exit on error
 # Set up a unique work directory for this pipeline stream
 stream=$(echo $PIPELINE_STREAMPATH | cut -f1 -d.)
 export WORK_DIR=${OUTPUT_DATA_DIR}/work/${stream}
+# Workaround for EUPS trying to write to home directory
+export HOME=`pwd`
 
 # Test which version of RHEL we are using
 majversion=$(lsb_release -rs | cut -f1 -d.)
