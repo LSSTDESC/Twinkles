@@ -12,7 +12,7 @@ BIB = bibtex
 #
 # Base name of the document:
 #
-DOCUMENT = dc1
+DOCUMENT = TwinklesRQ
 #
 # All tex files used:
 #
