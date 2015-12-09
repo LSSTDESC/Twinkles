@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline xmlns="http://glast-ground.slac.stanford.edu/pipeline" 
+          xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" 
+          xs:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline 
+          http://srs.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
+
+<task name="Twinkles0" version="0.3" type="LSST">
+
+      <notation>
+               First attempt to assemble pieces for the LSST SNe/SL Twinkles project
+      </notation>
+
+      <variables>  <!-- Task-level -->
+            <var name="LSST_ROOT">/nfs/farm/g/lsst</var>
+
+<!-- Job control variables -->
+            <var name="TW_ROOT">${LSST_ROOT}/u1/Pipeline-tasks/Twinkles0</var>
+            <var name="TW_CONFIGDIR">${TW_ROOT}/config</var>
+            <var name="TW_SIXDIGSTREAM">${format(pipeline.stream,&quot;%06d&quot;)}</var>
+            <var name="logRoot">${TW_ROOT}/logs</var>
+
+            <var name="TW_BATCHOPTIONS"> -sp 50 </var>       <!-- batch priority -->
+            <var name="TW_BATCHRESOURCES">select[(scratch&gt;20 || bullet) &amp;&amp; maxmem&gt;2000]</var> <!-- at least 20 GB scratch space, and require at least 2GB system memory -->
+            <var name="TW_XTRABATCHRESOURCES"></var>         <!-- intentionally left EMPTY - for rollback -->
+            <var name="TW_XTRABATCHOPTIONS"></var>           <!-- intentionally left EMPTY - for rollback -->
+
+            <!-- RunTime: batch estimated (We) and absolute (W) run time limits (in minutes) -->
+ 	    <var name="phoSimRT"> -We 30 -W 120 </var>  
+ 	    <var name="detectionMeasurement1RT"> -We 30 -W 120 </var>  
+ 	    <var name="singleObsDoneRT"> -We 2 -W 30 </var>  
+
+   </variables>
+
+
+<!--========================================================================================-->
+
+<!-- Run CatSim to generate N instance catalogs for phoSim -->
+     <process name="catSim">
+       <job
+	  executable="${TW_CONFIGDIR}/catSim.py"
+	  batchOptions="${catSimRT} ${TW_BATCHOPTIONS} ${TW_XTRABATCHOPTIONS} -R  &quot;${TW_XTRABATCHRESOURCES}&quot;"
+       />
+     </process>
+
+
+<!-- Set up and dispatch some number of phoSim instances -->
+      <process name="setupPhoSim-jy">
+         <script><![CDATA[ 
+
+execfile(TW_CONFIGDIR+"/setupPhoSim.jy")
+
+           ]]>
+         </script>
+       <depends>
+	 <after process="catSim" status="SUCCESS"></after>
+       </depends>
+         <createsSubtasks>
+           <subtask>singleObservation</subtask>
+         </createsSubtasks>
+      </process>
+
+
+<!-- Perform DMstack coadd on all images, construct deep detection and measurement -->
+
+     <process name="detectionMeasurement2">
+       <job
+	  executable="${TW_CONFIGDIR}/detectionMeasurement2.py"
+	  batchOptions="${detectionMeasurement2RT} ${TW_BATCHOPTIONS} ${TW_XTRABATCHOPTIONS} -R  &quot;${TW_XTRABATCHRESOURCES}&quot;"
+       />
+       <depends>
+	 <after process="singleObservation.singleObsDone" status="SUCCESS"></after>
+       </depends>
+     </process>
+
+
+
+<!-- Perform DMstack forced photometry -->
+
+     <process name="forcedPhotometry">
+       <job
+	  executable="${TW_CONFIGDIR}/forcedPhotometry.py"
+	  batchOptions="${forcedPhotometryRT} ${TW_BATCHOPTIONS} ${TW_XTRABATCHOPTIONS} -R  &quot;${TW_XTRABATCHRESOURCES}&quot;"
+       />
+       <depends>
+	 <after process="detectionMeasurement2" status="SUCCESS"></after>
+       </depends>
+     </process>
+
+
+
+<!-- Wrap-up, registration, reports, etc. -->
+
+     <process name="wrapUp">
+       <job
+	  executable="${TW_CONFIGDIR}/wrapUp.py"
+	  batchOptions="${wrapUpRT} ${TW_BATCHOPTIONS} ${TW_XTRABATCHOPTIONS} -R  &quot;${TW_XTRABATCHRESOURCES}&quot;"
+       />
+       <depends>
+	 <after process="forcedPhotometry" status="SUCCESS"></after>
+       </depends>
+     </process>
+
+
+
+
+
+<!-- ======================================================================================================== -->
+<!-- ======================================================================================================== -->
+
+<!-- SUBTASK for parallelized phoSim/DM processing -->
+     <task name="singleObservation" version="1.0" type="LSST">
+
+<!--  Run phoSim for a specific observation -->
+      <process name="phoSim">                                                                                                                      
+         <job
+              executable="${TW_CONFIGDIR}/runPhoSim.sh"
+              batchOptions="${phoSimRT} ${TW_BATCHOPTIONS} ${TW_XTRABATCHOPTIONS} -R  &quot;${TW_XTRABATCHRESOURCES}&quot;"
+         />
+      </process>
+
+
+<!-- Register phoSim output files -->
+     <process name="regPhoSim-jy">
+         <script><![CDATA[ 
+
+execfile(TW_CONFIGDIR+"/regPhoSim.jy")
+
+           ]]>
+         </script>
+       <depends>
+	 <after process="phoSim" status="SUCCESS"></after>
+       </depends>
+     </process>
+
+<!-- Perform DMstack detection and measurement on single images -->
+     <process name="detectionMeasurement1">
+       <job
+	  executable="${TW_CONFIGDIR}/detectionMeasurement1.py"
+	  batchOptions="${detectionMeasurementRT} ${TW_BATCHOPTIONS} ${TW_XTRABATCHOPTIONS} -R  &quot;${TW_XTRABATCHRESOURCES}&quot;"
+       />
+       <depends>
+	 <after process="regPhoSim-jy" status="SUCCESS"></after>
+       </depends>
+     </process>
+
+<!-- Wrap-up after one image generation/analysis -->
+     <process name="singleObsDone">
+       <job
+	  executable="${TW_CONFIGDIR}/singleObsDone.py"
+	  batchOptions="${singleObsDoneRT} ${TW_BATCHOPTIONS} ${TW_XTRABATCHOPTIONS} -R  &quot;${TW_XTRABATCHRESOURCES}&quot;"
+       />
+       <depends>
+	 <after process="detectionMeasurement1" status="SUCCESS"></after>
+       </depends>
+     </process>
+
+   </task>  <!-- singleObservation -->
+
+<!-- ======================================================================================================== -->
+<!-- ======================================================================================================== -->
+
+
+   </task> <!-- end of Twinkles0 top-level task definition -->
+
+</pipeline>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
