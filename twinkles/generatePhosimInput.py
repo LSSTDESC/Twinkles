@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Feb  6 14:29:08 2015
-
-@author: Bryce Kalmbach (jbkalmbach@gmail.com)
-Based upon examples by Scott Daniel (scottvalscott@gmail.com) found here:
-https://stash.lsstcorp.org/projects/SIM/repos/sims_catutils/browse/python/lsst/sims/
-        catUtils/exampleCatalogDefinitions/phoSimCatalogExamples.py
+Generate phoSim input catalog that has sprinkled lens systems inside.
 """
 
 from __future__ import with_statement
+import os
+import numpy
 from lsst.sims.catalogs.measures.instance import InstanceCatalog, CompoundInstanceCatalog
 from lsst.sims.utils import ObservationMetaData
+from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
 from lsst.sims.catalogs.generation.db import CatalogDBObject
 from lsst.sims.catUtils.baseCatalogModels import OpSim3_61DBObject
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
@@ -19,28 +17,77 @@ from sprinkler import sprinklerCompound
 
 def generatePhosimInput():
 
+    opsimDB = os.path.join('.','enigma_1189_sqlite.db')
+
+    #you need to provide ObservationMetaDataGenerator with the connection
+    #string to an OpSim output database.  This is the connection string
+    #to a test database that comes when you install CatSim.
+    generator = ObservationMetaDataGenerator(database=opsimDB, driver='sqlite')
+    obsMetaDataResults = generator.getObservationMetaData(fieldRA=(53, 54), fieldDec=(-29, -27), boundLength=0.3)
+
+    rVisits = []
+    for md in obsMetaDataResults:
+        if md.bandpass == 'r':
+            rVisits.append(md)
+
     starObjNames = ['msstars', 'bhbstars', 'wdstars', 'rrlystars', 'cepheidstars']
 
-    obsMD = OpSim3_61DBObject()
-    obs_metadata = obsMD.getObservationMetaData(88625744, 0.05, makeCircBounds = True)
+    for obs_metadata in rVisits[:10]:
+        filename = "phosim_input_%s.txt"%(obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
+        obs_metadata.phoSimMetaData['SIM_NSNAP'] = (1, numpy.dtype(int))
+        obs_metadata.phoSimMetaData['SIM_VISTIME'] = (30, numpy.dtype(float))
+        print 'Starting Visit: ', obs_metadata.phoSimMetaData['Opsim_obshistid'][0]
 
-    compoundICList = []
+        compoundICList = []
 
-    #Add Instance Catalogs for phoSim stars
-    for starName in starObjNames:
-        starDBObj = CatalogDBObject.from_objid(starName)
-        compoundICList.append(PhoSimCatalogPoint(starDBObj, obs_metadata=obs_metadata))
+        #Add Instance Catalogs for phoSim stars
+        for starName in starObjNames:
+            while True:
+                try:
+                    starDBObj = CatalogDBObject.from_objid(starName)
+                    compoundICList.append(PhoSimCatalogPoint(starDBObj, obs_metadata=obs_metadata))
+                    break
+                except RuntimeError:
+                    continue
+            print starName
 
-    #Add phosim Galaxy Instance Catalogs to compound Instance Catalog
-    galsBulge = CatalogDBObject.from_objid('galaxyBulge')
-    compoundICList.append(PhoSimCatalogSersic2D(galsBulge, obs_metadata=obs_metadata))
-    galsDisk = CatalogDBObject.from_objid('galaxyDisk')
-    compoundICList.append(PhoSimCatalogSersic2D(galsDisk, obs_metadata=obs_metadata))
-    galsAGN = CatalogDBObject.from_objid('galaxyAgn')
-    compoundICList.append(PhoSimCatalogZPoint(galsAGN, obs_metadata=obs_metadata))
+        #Add phosim Galaxy Instance Catalogs to compound Instance Catalog
+        while True:
+            try:
+                galsBulge = CatalogDBObject.from_objid('galaxyBulge')
+                compoundICList.append(PhoSimCatalogSersic2D(galsBulge, obs_metadata=obs_metadata))
+                break
+            except RuntimeError:
+                continue
+        print 'bulge'
 
-    totalCat = CompoundInstanceCatalog(compoundICList, obs_metadata=obs_metadata, compoundDBclass=sprinklerCompound)
-    totalCat.write_catalog("phosim_example.txt")
+        while True:
+            try:
+                galsDisk = CatalogDBObject.from_objid('galaxyDisk')
+                compoundICList.append(PhoSimCatalogSersic2D(galsDisk, obs_metadata=obs_metadata))
+                break
+            except RuntimeError:
+                continue
+        print 'disk'
+
+        while True:
+            try:
+                galsAGN = CatalogDBObject.from_objid('galaxyAgn')
+                compoundICList.append(PhoSimCatalogZPoint(galsAGN, obs_metadata=obs_metadata))
+                break
+            except RuntimeError:
+                continue
+        print 'agn'
+
+        while True:
+            try:
+                totalCat = CompoundInstanceCatalog(compoundICList, obs_metadata=obs_metadata, compoundDBclass=sprinklerCompound)
+                break
+            except RuntimeError:
+                continue
+
+        totalCat.write_catalog(filename)
+        print "Finished Writing Visit: ", obs_metadata.phoSimMetaData['Opsim_obshistid'][0]
 
 if __name__ == "__main__":
     generatePhosimInput()

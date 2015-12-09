@@ -20,23 +20,42 @@ class sprinklerCompound(GalaxyTileCompoundObj):
         return results
 
 class sprinkler():
-    def __init__(self, catsim_cat):
+    def __init__(self, catsim_cat, density_param = 0.1):
+        """
+        Input:
+        catsim_cat:
+            The results array from an instance catalog.
+
+        density_param:
+            A float between 0. and 1.0 that determines the fraction of eligible agn objects that become lensed.
+
+        Output:
+        updated_catalog:
+            A new results array with lens systems added.
+        """
+
+
         self.catalog = catsim_cat
         # ****** THIS ASSUMES THAT THE ENVIRONMENT VARIABLE OM10_DIR IS SET *******
         lensdb = om10.DB(catalog=os.environ['OM10_DIR']+"/data/qso_mock.fits")
         self.lenscat = lensdb.lenses.copy()
-        return
+        self.density_param = density_param
+        #return
 
     def sprinkle(self):
         # Define a list that we can write out to a text file
         lenslines = []
         # For each galaxy in the catsim catalog
         updated_catalog = self.catalog.copy()
+        print "Running sprinkler. Catalog Length: ", len(self.catalog)
         for rowNum, row in enumerate(self.catalog):
+            if rowNum % 1000 == 0:
+                print "Gone through ", rowNum, " lines of catalog."
             if not np.isnan(row['galaxyAgn_magNorm']):
                 candidates = self.find_lens_candidates(row['galaxyAgn_redshift'])
+                pick_value = np.random.uniform()
             # If there aren't any lensed sources at this redshift from OM10 move on the next object
-                if len(candidates) > 0:
+                if ((len(candidates) > 0) and (pick_value <= self.density_param)):
                     # Randomly choose one the lens systems
                     # (can decide with or without replacement)
                     newlens = random.choice(candidates)

@@ -58,7 +58,9 @@ Images show up in the "output" directory.
 [here](https://confluence.lsstcorp.org/display/SIM/Accessing+the+UW+CATSIM+Database) for more information.
 This is where the objects that will populate the catalog are stored.
 
-4) Now you're ready to go with:
+4) You'll also need the OpSim sqlite repository from [this page](https://confluence.lsstcorp.org/display/SIM/OpSim+Datasets+for+Cadence+Workshop+LSST2015)
+
+5) Now you're ready to go with:
 ```
 $> python generatePhosimInput.py
 ```
