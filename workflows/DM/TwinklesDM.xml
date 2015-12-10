@@ -3,11 +3,11 @@
           xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" 
           xs:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline 
           http://srs.slac.stanford.edu/Pipeline-II/schemas/2.1/pipeline.xsd">
-    <task name="TwinklesDM" type="LSST" version="1.3">
+    <task name="TwinklesDM" type="LSST" version="1.5">
         <notation>A simple task for running the DM part of Twinkles</notation>
         <variables>
             <var name="MAXCPU">100000</var>
-            <var name="BATCH_OPTIONS">-R rhel70 -q rhel7</var>
+            <var name="BATCH_OPTIONS">-R rhel60</var>
             <!-- Default location from which to setup DM -->
             <var name="DM_DIR">/nfs/farm/g/desc/u1/Twinkles</var>
             <var name="DM_SETUP">setup.bash</var>
@@ -41,6 +41,27 @@
                 <subtask>runDM</subtask>
             </createsSubtasks>
         </process>
+        <process name="assembleCoadd">
+            <notation>Assemble coadd</notation>
+            <job maxCPU="${MAXCPU}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
+            <depends>
+                <after process="runDM.processEimage"/>
+            </depends>
+        </process>
+        <process name="forcedPhotometry">
+            <notation>Forced Photometry</notation>
+            <job maxCPU="${MAXCPU}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
+            <depends>
+                <after process="assembleCoadd"/>
+            </depends>
+        </process>
+        <process name="wrapup">
+            <notation>Generate plots</notation>
+            <job maxCPU="${MAXCPU}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
+            <depends>
+                <after process="forcedPhotometry"/>
+            </depends>
+        </process>
         <process name="report">
             <notation>Report final status of job</notation>
             <script><![CDATA[ 
@@ -49,7 +70,7 @@
       ]]>
             </script>
             <depends>
-                <after process="runDM.processEimage" status="DONE"/>
+                <after process="wrapup" status="DONE"/>
             </depends>
         </process>
         <task name="runDM" type="LSST">

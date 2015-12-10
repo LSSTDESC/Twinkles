@@ -1,7 +1,4 @@
 setup -m none -r ${AND_DIR} astrometry_net_data
-export OUT_DIR=${WORK_DIR}/output
-export VISIT=840^841^842^843^844^845^846^847^848
-processEimage.py ${WORK_DIR} --id visit=${VISIT} --output ${OUT_DIR}
-makeDiscreteSkyMap.py ${OUT_DIR} --id visit=${VISIT}
-makeCoaddTempExp.py ${OUT_DIR} --selectId visit=${VISIT} --id filter=r patch=0,0 tract=0 --config bgSubtracted=True
-
+processEimage.py ${IN_DIR} --id visit=${VISIT} --output ${OUT_DIR} --doraise --clobber-config 
+makeDiscreteSkyMap.py ${OUT_DIR} --id visit=${VISIT} --doraise --clobber-config
+makeCoaddTempExp.py ${OUT_DIR} --selectId visit=${VISIT} --id filter=${FILTER} patch=0,0 tract=0 --config bgSubtracted=True --doraise --clobber-config
