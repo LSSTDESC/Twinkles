@@ -3,8 +3,7 @@ Based upon examples by Scott Daniel (scottvalscott@gmail.com) found here:
 https://stash.lsstcorp.org/projects/SIM/repos/sims_catutils/browse/python/lsst/sims/
         catUtils/exampleCatalogDefinitions/phoSimCatalogExamples.py
 """
-
-from lsst.sims.catalogs.measures.instance import CompoundInstanceCatalog
+import os
 from lsst.sims.catalogs.generation.db import CatalogDBObject
 from lsst.sims.catUtils.baseCatalogModels import OpSim3_61DBObject
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
@@ -13,15 +12,18 @@ from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
 #from sprinkler import sprinklerCompound
 
 class InstcatGenerator(object):
-    _starObjNames = ['msstars', 'bhbstars', 'wdstars', 'rrlystars',
-                     'cepheidstars']
     def __init__(self, opsim_db, fieldRA, fieldDec, boundLength=0.3):
-        gen = ObservationMetaDataGenerator(database=opsim_db,
-                                           driver='sqlite')
+        starObjNames = ['msstars', 'bhbstars', 'wdstars', 'rrlystars',
+                        'cepheidstars']
+        self._phosimCatDefs = dict([(objid, PhoSimCatalogPoint) for objid 
+                                    in starObjNames])
+        self._phosimCatDefs.update(dict(galaxyBulge=PhoSimCatalogSersic2D,
+                                        galaxyDisk=PhoSimCatalogSersic2D,
+                                        galaxyAgn=PhoSimCatalogZPoint))
+        gen = ObservationMetaDataGenerator(database=opsim_db, driver='sqlite')
         self.obs_md_results = gen.getObservationMetaData(fieldRA=fieldRA, 
                                                          fieldDec=fieldDec,
                                                          boundLength=boundLength)
-
     def find_visits(self, bandpass, nmax=None):
         visits = []
         for obs_metadata in self.obs_md_results:
@@ -30,33 +32,24 @@ class InstcatGenerator(object):
             if obs_metadata.bandpass == bandpass:
                 visits.append(obs_metadata)
         return visits
-
-    def __call__(self, outfile, obs_metadata):
-        catalogs = []
-
-        # Add Instance Catalogs for phoSim stars.
-        for starName in self._starObjNames:
-            starDBObj = CatalogDBObject.from_objid(starName)
-            catalogs.append(PhoSimCatalogPoint(starDBObj, 
-                                               obs_metadata=obs_metadata))
-
-        # Add phosim Galaxy Instance Catalogs to compound Instance Catalog.
-        galsBulge = CatalogDBObject.from_objid('galaxyBulge')
-        catalogs.append(PhoSimCatalogSersic2D(galsBulge,
-                                              obs_metadata=obs_metadata))
-        galsDisk = CatalogDBObject.from_objid('galaxyDisk')
-        catalogs.append(PhoSimCatalogSersic2D(galsDisk,
-                                              obs_metadata=obs_metadata))
-        galsAGN = CatalogDBObject.from_objid('galaxyAgn')
-        catalogs.append(PhoSimCatalogZPoint(galsAGN,
-                                            obs_metadata=obs_metadata))
-
-        # Write the catalogs to the output file one at a time.
+    def _processDbObject(self, objid, outfile, obs_md, write_header=False):
+        while True:
+            try:
+                db_obj = CatalogDBObject.from_objid(objid)
+                inst_cat = self._phosimCatDefs[objid](db_obj,
+                                                      obs_metadata=obs_md)
+                break
+            except RuntimeError:
+                continue
+        inst_cat.write_catalog(outfile, write_mode='a',
+                               write_header=write_header, chunk_size=20000)
+    def write_catalog(self, outfile, obs_metadata, clobber=True):
+        if clobber and os.path.isfile(outfile):
+            os.remove(outfile)
         write_header = True
-        for catalog in catalogs:
-            catalog.write_catalog(outfile, write_mode='a',
-                                  write_header=write_header,
-                                  chunk_size=20000)
+        for objid in self._phosimCatDefs:
+            self._processDbObject(objid, outfile, obs_metadata,
+                                  write_header=write_header)
             write_header = False
 
 if __name__ == '__main__':
@@ -64,12 +57,7 @@ if __name__ == '__main__':
     import pickle
     import time
 
-    # This following is a deep drilling field ID for enigma_1189, but
-    # fieldID is not one of the selection options in
-    # getObservationMetaData(...), so we need to continue using
-    # fieldRA, fieldDec
     fieldID = 1427
-    
     fieldRA = (53, 54)
     fieldDec = (-29, -27)
 
@@ -87,12 +75,12 @@ if __name__ == '__main__':
         generator = pickle.load(open(pickle_file))
         print "execution time:", time.time() - t0
 
-    nmax = 1
+    nmax = 20
     for bandpass in 'ugrizy':
         print "band pass:", bandpass
         visits = generator.find_visits(bandpass, nmax=nmax)
-        for visit in visits:
+        for i, visit in enumerate(visits):
             obshistid = visit.phoSimMetaData['Opsim_obshistid'][0]
             outfile = 'phosim_input_%s_%07i.txt' % (bandpass, obshistid)
-            print outfile
-            generator(outfile, visit)
+            print i, outfile
+            generator.write_catalog(outfile, visit)
