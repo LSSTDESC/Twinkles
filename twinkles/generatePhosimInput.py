@@ -1,57 +1,93 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Feb  6 14:29:08 2015
-
-@author: Bryce Kalmbach (jbkalmbach@gmail.com)
-Based upon examples by Scott Daniel (scottvalscott@gmail.com) found here:
-https://stash.lsstcorp.org/projects/SIM/repos/sims_catutils/browse/python/lsst/sims/
-        catUtils/exampleCatalogDefinitions/phoSimCatalogExamples.py
+Generate phoSim input catalog that has sprinkled lens systems inside.
 """
 
 from __future__ import with_statement
-from lsst.sims.catalogs.measures.instance import InstanceCatalog
-from lsst.sims.catalogs.generation.db import ObservationMetaData, CatalogDBObject
+import os
+import numpy
+from lsst.sims.catalogs.measures.instance import InstanceCatalog, CompoundInstanceCatalog
+from lsst.sims.utils import ObservationMetaData
+from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
+from lsst.sims.catalogs.generation.db import CatalogDBObject
 from lsst.sims.catUtils.baseCatalogModels import OpSim3_61DBObject
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
         PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogZPoint
-from sprinkler import sprinklerAGN
+from sprinkler import sprinklerCompound
 
-from lsst.sims.catUtils.baseCatalogModels import *
+def generatePhosimInput():
 
-starObjNames = ['msstars', 'bhbstars', 'wdstars', 'rrlystars', 'cepheidstars']
+    opsimDB = os.path.join('.','enigma_1189_sqlite.db')
 
-obsMD = OpSim3_61DBObject()
-obs_metadata = obsMD.getObservationMetaData(88625744, 0.05, makeCircBounds = True)
+    #you need to provide ObservationMetaDataGenerator with the connection
+    #string to an OpSim output database.  This is the connection string
+    #to a test database that comes when you install CatSim.
+    generator = ObservationMetaDataGenerator(database=opsimDB, driver='sqlite')
+    obsMetaDataResults = generator.getObservationMetaData(fieldRA=(53, 54), fieldDec=(-29, -27), boundLength=0.3)
 
-doHeader= True
-for starName in starObjNames:
-    stars = CatalogDBObject.from_objid(starName)
-    star_phoSim=PhoSimCatalogPoint(stars,obs_metadata=obs_metadata) #the class for phoSim input files
-                                                                #containing point sources
-    if (doHeader):
-        with open("phoSim_example.txt","w") as fh:
-            star_phoSim.write_header(fh)
-        doHeader = False
+    rVisits = []
+    for md in obsMetaDataResults:
+        if md.bandpass == 'r':
+            rVisits.append(md)
 
-    #below, write_header=False prevents the code from overwriting the header just written
-    #write_mode = 'a' allows the code to append the new objects to the output file, rather
-    #than overwriting the file for each different class of object.
-    star_phoSim.write_catalog("phoSim_example.txt",write_mode='a',write_header=False,chunk_size=20000)
+    starObjNames = ['msstars', 'bhbstars', 'wdstars', 'rrlystars', 'cepheidstars']
 
-gals = CatalogDBObject.from_objid('galaxyBulge')
+    for obs_metadata in rVisits[:10]:
+        filename = "phosim_input_%s.txt"%(obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
+        obs_metadata.phoSimMetaData['SIM_NSNAP'] = (1, numpy.dtype(int))
+        obs_metadata.phoSimMetaData['SIM_VISTIME'] = (30, numpy.dtype(float))
+        print 'Starting Visit: ', obs_metadata.phoSimMetaData['Opsim_obshistid'][0]
 
-#now append a bunch of objects with 2D sersic profiles to our output file
-galaxy_phoSim = PhoSimCatalogSersic2D(gals, obs_metadata=obs_metadata)
-galaxy_phoSim.write_catalog("phoSim_example.txt",write_mode='a',write_header=False,chunk_size=20000)
+        compoundICList = []
 
-gals = CatalogDBObject.from_objid('galaxyDisk')
-galaxy_phoSim = PhoSimCatalogSersic2D(gals, obs_metadata=obs_metadata)
-galaxy_phoSim.write_catalog("phoSim_example.txt",write_mode='a',write_header=False,chunk_size=20000)
+        #Add Instance Catalogs for phoSim stars
+        for starName in starObjNames:
+            while True:
+                try:
+                    starDBObj = CatalogDBObject.from_objid(starName)
+                    compoundICList.append(PhoSimCatalogPoint(starDBObj, obs_metadata=obs_metadata))
+                    break
+                except RuntimeError:
+                    continue
+            print starName
 
-gals = CatalogDBObject.from_objid('sprinklerAGN')
-#gals = CatalogDBObject.from_objid('galaxyAgn')
+        #Add phosim Galaxy Instance Catalogs to compound Instance Catalog
+        while True:
+            try:
+                galsBulge = CatalogDBObject.from_objid('galaxyBulge')
+                compoundICList.append(PhoSimCatalogSersic2D(galsBulge, obs_metadata=obs_metadata))
+                break
+            except RuntimeError:
+                continue
+        print 'bulge'
 
-#PhoSimCatalogZPoint is the phoSim input class for extragalactic point sources (there will be no parallax
-#or proper motion)
-galaxy_phoSim = PhoSimCatalogZPoint(gals, obs_metadata=obs_metadata)
-galaxy_phoSim.write_catalog("phoSim_example.txt",write_mode='a',write_header=False,chunk_size=20000)
+        while True:
+            try:
+                galsDisk = CatalogDBObject.from_objid('galaxyDisk')
+                compoundICList.append(PhoSimCatalogSersic2D(galsDisk, obs_metadata=obs_metadata))
+                break
+            except RuntimeError:
+                continue
+        print 'disk'
+
+        while True:
+            try:
+                galsAGN = CatalogDBObject.from_objid('galaxyAgn')
+                compoundICList.append(PhoSimCatalogZPoint(galsAGN, obs_metadata=obs_metadata))
+                break
+            except RuntimeError:
+                continue
+        print 'agn'
+
+        while True:
+            try:
+                totalCat = CompoundInstanceCatalog(compoundICList, obs_metadata=obs_metadata, compoundDBclass=sprinklerCompound)
+                break
+            except RuntimeError:
+                continue
+
+        totalCat.write_catalog(filename)
+        print "Finished Writing Visit: ", obs_metadata.phoSimMetaData['Opsim_obshistid'][0]
+
+if __name__ == "__main__":
+    generatePhosimInput()
