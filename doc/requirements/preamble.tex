@@ -1,12 +1,135 @@
 % ====================================================================
 \chapter*{Preamble}
-\def\chpname{preamble}
-\label{chp:\chpname}
+\label{chp:preamble}
 \addcontentsline{toc}{chapter}{Preamble}
 % ====================================================================
 
-This document describes the Twinkles tiny simulated sky survey project.
-\TwinklesOne is the first of two datasets currently planned, and will
-be generated and analysed during the DC1 era.
+This document describes the Twinkles tiny simulated sky survey
+project. In this preamble we  provide a high level sketch of the
+project, including the motivation and philosophy behind it, and a
+overview of the survey design.
+
+% --------------------------------------------------------------------
+
+\section{Philosophy}
+\label{sec:preamble:philosophy}
+
+Both the type Ia supernovae (SN) and time delay strong lenses (SL)
+cosmological probes rely on accurate measurements of object
+variability given multi-filter light curve data, for large numbers of
+rare objects (relative to galaxies). Our ability to do cosmography
+using these objects depends on our ability to make these measurements
+{\it accurately} given the LSST data. Both the SN and SL working
+groups need to develop software to find these objects, extract high
+fidelity light curves for them, and infer model parameters from those
+light curves. Understanding the systematic errors introduced at each
+step in this analysis requires us to work on {\it realistic mock
+data,} where we can quantify both the residual bias and the additional
+random uncertainty resulting from our measurement software.
+
+The Twinkles approach is to define a tiny patch of sky, and simulate
+an over-abundance of supernovae and strong lenses in it, while making
+everything else (observing strategy, astrophysical foregrounds, image
+generation, and LSST DM stack processing) as realistic as possible.
+The idea is to produce a single dataset that allows tests of both SL
+and SN light curve measurement accuracy, using the current version of
+the  DM analysis software -- and then develop the DESC analysis
+software  against this test dataset.
+
+Both the DM and DESC software will evolve over
+the period leading up to first light, suggesting a staged approach to
+generating and analyzing the mock data. The Twinkles survey is planned
+to span the first two DESC data challenge eras, with the DC2 dataset (\TwinklesTwo) being
+more complex (both to generate and to analyze) than the \TwinklesOne
+dataset.
+
+As well as building the analysis software itself, the DESC needs to
+develop infrastructure to carry out the simulation and analysis
+computations: the LSST DM simulation and processing software must be
+tracked, and run at the scale required by the data challenges.
+Twinkles is a pathfinder for this DESC infrastructure, driving its
+development over the first two data challenge eras.
+
+% --------------------------------------------------------------------
+
+\section{Design}
+\label{sec:preamble:design}
+
+\autoref{tab:preamble:design} summarizes the high level differences
+between the two stages of the Twinkles survey.
+The design of each stage is likely to change with time, in response to
+developments in the capabilities of both the LSST DM simulation and
+image processing software.
+
+
+
+\begin{table*}[!h]
+\begin{center}
+\caption{Twinkles 1 and 2: High Level Design Comparison.}
+\label{tab:preamble:design}
+\small
+\begin{tabularx}{0.9\linewidth}{*{3}{>{\centering\arraybackslash}X}}
+  \hline
+  \hline          & \TwinklesOne & \TwinklesTwo \\
+  \hline
+  Survey area
+                  & \multicolumn{2}{c}{\centering $\sim 100$~arcmin$^2$ within a Deep Drilling Field}
+                      \\
+  Observing Strategies
+                  & \multicolumn{2}{c}{\centering WFD, DDF}
+                       \\ \hline
+  Supernovae
+                  & Type Ia
+                     & TBD
+                       \\
+  Strong Lenses
+                  & Quasars; Hosts
+                     & Quasars, SNe; Hosts.
+                       \\
+  Filter set
+                  & $r (+? ugizy)^a$
+                     & $ugrizy$
+                    \\
+  Dithers$^b$
+               & Small: $\sim 10$~arcsec
+                  & Large: as for LSS
+                    \\
+  Sensors used
+               & Central only
+                  & As dithered to
+                    \\
+  Realism
+               & Intermediate
+                  & High
+                    \\
+  Campaign Length
+               & $3$~seasons
+                  & $10$~seasons
+                    \\
+  \hline
+  \multicolumn{3}{p{0.8\linewidth}}{\scriptsize Notes: a) A stretch
+  goal for \TwinklesOne is for it to be multi-filter: the baseline
+  vision of the DESC Science Roadmap is for it to be single filter.
+  b) Field rotation will be included in both \TwinklesOne and
+  \TwinklesTwo.}
+\end{tabularx}
+\normalsize
+\medskip\\
+\end{center}
+\end{table*}
+
+% --------------------------------------------------------------------
+
+\section{This Document}
+\label{sec:preamble:meta}
+
+This purpose of this document is to provide a repository for the
+current working specifications of the Twinkles datasets, and  the
+consequent demands they place on the software needed to generate and
+analyze them. It is divided into two chapters, one for \TwinklesOne
+and one for \TwinklesTwo.  Apart from some introductory sections
+written to supply scientific context, the sections of each chapter
+are written as very terse lists of requirements, in a form that can be
+easily included in the LSST DESC DC1 Requirements document.
 
 % ====================================================================

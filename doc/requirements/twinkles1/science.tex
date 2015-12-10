@@ -1,29 +1,41 @@
 % ====================================================================
 \section{Science Analysis}
-\def\secname{\chpname:science}
-\label{\secname}
+\label{sec:twinkles1:science}
 % ====================================================================
 
 \contact{Phil Marshall}{@drphilmarshall},
 \contact{Michael Wood-Vasey}{@wmwv},
 
 Below we describe the supernova and strong lensing science analysis
-that we want to do with the \TwinklesOne data. In each case we first
+that we want to do with the \TwinklesOne data, and that can be done
+in the 2016--2017 time frame using available simulation and analysis
+technology and computing infrastructure. In each case we first
 introducing the measurement issues we face, and then define the
 investigations of them that we want to do. These then dictate the
 requirements we have on the challenge dataset design.
 
+A note on terminology: we refer to the process of light curve
+extraction as ``Monitoring.'' Supernova light curve extraction will be
+performed by a  tool referred to as \SNMonitor, and strong lens light
+curve extraction  by a related piece of software called \SLMonitor.
+For strong lenses, the key parameter to be inferred  from a set of
+light curves is the time delay, and so we refer to the software tool
+that  performs that inference as \SLTimer. Supernova light curve
+parameters  are typically inferred with tools known as
+``light curve fitters,'' to be deployed by the code \SNDistance.
+
+
 % --------------------------------------------------------------------
 
 \subsection{Supernovae}
-\label{\secname:supernovae}
+\label{sec:twinkles1:science:supernovae}
 
 Introduction to supernova analysis in \TwinklesOne.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 \subsubsection{Light Curve Extraction Issues}
-\label{\secname:supernovae:monitor}
+\label{sec:twinkles1:science:supernovae:monitor}
 
 Photometric calibration.
 
@@ -35,7 +47,7 @@ Host galaxy light contamination.
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 \subsubsection{Distance Measurement Issues}
-\label{\secname:supernovae:distance}
+\label{sec:twinkles1:science:supernovae:distance}
 
 Host galaxy photometry and structure.
 
@@ -44,13 +56,13 @@ Photometric error accuracy.
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 \subsubsection{Proposed Analyses}
-\label{\secname:supernovae:analyses}
+\label{sec:twinkles1:science:supernovae:analyses}
 
 
 % --------------------------------------------------------------------
 
 \subsection{Strong Lensing}
-\label{\secname:stronglensing}
+\label{sec:twinkles1:science:stronglensing}
 
 From the first Time Delay Challenge we know that around 400 lensed
 quasars (defined here as the ``Gold Sample'') should be measurable
@@ -71,7 +83,7 @@ lensed quasar light curves as observed and measured with the LSST system.
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 \subsubsection{Light Curve Extraction Issues}
-\label{\secname:stronglensing:monitor}
+\label{sec:twinkles1:science:stronglensing:monitor}
 
 Point image separation (deblending).
 
@@ -83,7 +95,7 @@ Lens and host galaxy light contamination.
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 \subsubsection{Time Delay Measurement Issues}
-\label{\secname:stronglensing:timedelay}
+\label{sec:twinkles1:science:stronglensing:timedelay}
 
 Correlated photometric error accuracy and mitigation.
 
@@ -91,7 +103,7 @@ Correlated photometric error accuracy and mitigation.
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 \subsubsection{Proposed Analyses}
-\label{\secname:stronglensing:analyses}
+\label{sec:twinkles1:science:stronglensing:analyses}
 
 We propose to answer the following questions:
 \begin{itemize}

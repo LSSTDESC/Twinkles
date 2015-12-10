@@ -6,11 +6,19 @@
 \include{doc_macros}   % commands and abbreviations from SRM
 
 %%%%% MACROS FOR REQUIREMENTS DOCS
-\newcommand{\docheader}{{Twinkles:\\ \medskip Design and Specifications}}
+\newcommand{\docheader}{{Twinkles:\\ \vspace{\baselineskip} Design and Specifications}}
 \newcommand{\Twinkles}{{\bf\texttt{Twinkles}}\xspace}
 \newcommand{\TwinklesOne}{\hyperref[chp:twinkles1]{{\bf\texttt{Twinkles\,1}}}\xspace}
+\newcommand{\TwinklesTwo}{\hyperref[chp:twinkles2]{{\bf\texttt{Twinkles\,2}}}\xspace}
 \newcommand{\CoaddSource}{\texttt{CoaddSource}}
 \newcommand{\ForcedSource}{\texttt{ForcedSource}}
+
+\counterwithin{section}{chapter}
+
+% OVERRIDES
+\counterwithin{table}{chapter}
+\counterwithin{figure}{chapter}
+
 
 % ====================================================================
 
@@ -55,6 +63,12 @@
 %%%%%%%% TWINKLES 1
 
 \include{twinkles1/main}
+
+% ====================================================================
+
+%%%%%%%% TWINKLES 2
+
+% \include{twinkles2/main}
 
 % ====================================================================
 
