@@ -5,26 +5,61 @@ https://stash.lsstcorp.org/projects/SIM/repos/sims_catutils/browse/python/lsst/s
 """
 import os
 from collections import OrderedDict
+import pickle
+import lsst.sims.catUtils.baseCatalogModels # This is required by CatalogDBObject even though not used explicitly.
 from lsst.sims.catalogs.generation.db import CatalogDBObject
-from lsst.sims.catUtils.baseCatalogModels import OpSim3_61DBObject
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
         PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogZPoint
 from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
 #from sprinkler import sprinklerCompound
 
+class InstcatFactory(object):
+    def __init__(self, objid, phosimCatalogObject):
+        while True:  
+        # This loop is a workaround for UW catsim db connection intermittency.
+            try:
+                self.db_obj = CatalogDBObject.from_objid(objid)
+                break
+            except RuntimeError:
+                continue
+        self.cat_obj = phosimCatalogObject
+    def __call__(self, obs_metadata):
+        return self.cat_obj(self.db_obj, obs_metadata=obs_metadata)
+
 class InstcatGenerator(object):
-    def __init__(self, opsim_db, fieldRA, fieldDec, boundLength=0.3):
+    def __init__(self, opsim_db, fieldRA, fieldDec, boundLength=0.3,
+                 pickle_file=None):
+        self._set_instcatFactories()
+        self._set_obs_md_results(opsim_db, fieldRA, fieldDec, boundLength,
+                                 pickle_file)
+
+    def _set_instcatFactories(self):
+        self._instcatFactories = {}
         starObjNames = ['msstars', 'bhbstars', 'wdstars', 'rrlystars',
                         'cepheidstars']
-        self._phosimCatDefs = dict([(objid, PhoSimCatalogPoint) for objid 
-                                    in starObjNames])
-        self._phosimCatDefs.update(dict(galaxyBulge=PhoSimCatalogSersic2D,
-                                        galaxyDisk=PhoSimCatalogSersic2D,
-                                        galaxyAgn=PhoSimCatalogZPoint))
-        gen = ObservationMetaDataGenerator(database=opsim_db, driver='sqlite')
-        self.obs_md_results = gen.getObservationMetaData(fieldRA=fieldRA, 
-                                                         fieldDec=fieldDec,
-                                                         boundLength=boundLength)
+        for objid in starObjNames:
+            self.update_factories(objid, PhoSimCatalogPoint)
+        self.update_factories('galaxyBulge', PhoSimCatalogSersic2D)
+        self.update_factories('galaxyDisk', PhoSimCatalogSersic2D)
+        self.update_factories('galaxyAgn', PhoSimCatalogZPoint)
+
+    def update_factories(self, objid, catobj):
+        self._instcatFactories[objid] = InstcatFactory(objid, catobj)
+
+    def _set_obs_md_results(self, opsim_db, fieldRA, fieldDec, boundLength,
+                            pickle_file):
+        if pickle_file is not None and os.path.isfile(pickle_file):
+            self.obs_md_results = pickle.load(open(pickle_file))
+        else:
+            # Generate the observation metadata from the db file.
+            gen = ObservationMetaDataGenerator(database=opsim_db,
+                                               driver='sqlite')
+            self.obs_md_results = gen.getObservationMetaData(fieldRA=fieldRA, 
+                                                             fieldDec=fieldDec,
+                                                             boundLength=boundLength)
+            if pickle_file is not None:
+                pickle.dump(self.obs_md_results, open(pickle_file, 'w'))
+
     def find_visits(self, bandpass, nmax=None):
         # Use an OrderedDict to gather the visits since a visit will
         # have multiple entries in the Summary table if it is part of
@@ -37,29 +72,23 @@ class InstcatGenerator(object):
                 obshistid = obs_metadata.phoSimMetaData['Opsim_obshistid'][0]
                 visits[obshistid] = obs_metadata
         return visits
+
     def _processDbObject(self, objid, outfile, obs_md, write_header=False):
-        while True:
-            try:
-                db_obj = CatalogDBObject.from_objid(objid)
-                inst_cat = self._phosimCatDefs[objid](db_obj,
-                                                      obs_metadata=obs_md)
-                break
-            except RuntimeError:
-                continue
+        inst_cat = self._instcatFactories[objid](obs_md)
         inst_cat.write_catalog(outfile, write_mode='a',
                                write_header=write_header, chunk_size=20000)
+
     def write_catalog(self, outfile, obs_metadata, clobber=True):
         if clobber and os.path.isfile(outfile):
             os.remove(outfile)
         write_header = True
-        for objid in self._phosimCatDefs:
+        for objid in self._instcatFactories:
             self._processDbObject(objid, outfile, obs_metadata,
                                   write_header=write_header)
             write_header = False
 
 if __name__ == '__main__':
     import os
-    import pickle
     import time
 
     fieldID = 1427
@@ -67,18 +96,12 @@ if __name__ == '__main__':
     fieldDec = (-29, -27)
 
     opsim_db = '/nfs/slac/g/ki/ki18/jchiang/DESC/Twinkles/work/enigma_1189_sqlite.db'
-    pickle_file = 'instcat_generator_enigma_1189_%(fieldID)i.pickle' % locals()
+    pickle_file = 'obs_metadata_enigma_1189_%(fieldID)i.pickle' % locals()
 
     t0 = time.time()
-    if not os.path.isfile(pickle_file):
-        print "Extracting visits from %s:" % os.path.basename(opsim_db)
-        generator = InstcatGenerator(opsim_db, fieldRA, fieldDec)
-        pickle.dump(generator, open(pickle_file, 'w'))
-        print "execution time:", time.time() - t0
-    else:
-        print "Loading pickle file with visits:", pickle_file
-        generator = pickle.load(open(pickle_file))
-        print "execution time:", time.time() - t0
+    generator = InstcatGenerator(opsim_db, fieldRA, fieldDec,
+                                 pickle_file=pickle_file)
+    print "Set up time:", time.time() - t0
 
     nmax = 20
     for bandpass in 'ugrizy':
