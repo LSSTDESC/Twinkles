@@ -4,6 +4,7 @@ https://stash.lsstcorp.org/projects/SIM/repos/sims_catutils/browse/python/lsst/s
         catUtils/exampleCatalogDefinitions/phoSimCatalogExamples.py
 """
 import os
+from collections import OrderedDict
 from lsst.sims.catalogs.generation.db import CatalogDBObject
 from lsst.sims.catUtils.baseCatalogModels import OpSim3_61DBObject
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
@@ -25,12 +26,16 @@ class InstcatGenerator(object):
                                                          fieldDec=fieldDec,
                                                          boundLength=boundLength)
     def find_visits(self, bandpass, nmax=None):
-        visits = []
+        # Use an OrderedDict to gather the visits since a visit will
+        # have multiple entries in the Summary table if it is part of
+        # more than one proposal.
+        visits = OrderedDict()
         for obs_metadata in self.obs_md_results:
             if nmax is not None and len(visits) == nmax:
                 break
             if obs_metadata.bandpass == bandpass:
-                visits.append(obs_metadata)
+                obshistid = obs_metadata.phoSimMetaData['Opsim_obshistid'][0]
+                visits[obshistid] = obs_metadata
         return visits
     def _processDbObject(self, objid, outfile, obs_md, write_header=False):
         while True:
@@ -79,8 +84,11 @@ if __name__ == '__main__':
     for bandpass in 'ugrizy':
         print "band pass:", bandpass
         visits = generator.find_visits(bandpass, nmax=nmax)
-        for i, visit in enumerate(visits):
-            obshistid = visit.phoSimMetaData['Opsim_obshistid'][0]
+        i = 0
+        for obshistid, visit in visits.items():
+            i += 1
             outfile = 'phosim_input_%s_%07i.txt' % (bandpass, obshistid)
             print i, outfile
+            if os.path.isfile(outfile):
+                continue
             generator.write_catalog(outfile, visit)
