@@ -23,7 +23,7 @@ may have memory issues on rhel6 in the assembleCoadd.py step of the
 Assuming you have the Stack set up via 
 ``` 
 $ . ${LSST_HOME}/bin/setup.sh
-$ setup obs_lsstSims -t bNNNN
+$ setup obs_lsstSim -t bNNNN
 ```
 where `bNNNN` is the most recent tag found in `${LSST_HOME}/stack/ups_db/obs_lsstSim`, cd to the top level directory where you want Twinkles et al. to live:
 ```
