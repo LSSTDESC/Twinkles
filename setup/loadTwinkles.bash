@@ -15,5 +15,6 @@ setup -j -r ${twinkles_inst_dir}/obs_lsstSim
 export OM10_DIR=${twinkles_inst_dir}/OM10
 export TWINKLES_DIR=${twinkles_inst_dir}/Twinkles/twinkles
 export PYTHONPATH=${OM10_DIR}:${TWINKLES_DIR}:${PYTHONPATH}
+export PATH=${twinkles_inst_dir}/Twinkles/bin:${PATH}
 
 PS1="[Twinkles] "

@@ -80,5 +80,8 @@ doc_settings.tex
 apj.bst
 doc_macros.tex
 
+# Backup files
+*~
+
 # Don't look in the attic!
 attic
