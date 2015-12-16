@@ -34,29 +34,35 @@ Introduction to supernova analysis in \TwinklesOne.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-\subsubsection{Light Curve Extraction Issues}
-\label{sec:twinkles1:science:supernovae:monitor}
-
-Photometric calibration.
-
-Forced photometry accuracy.
-
-Host galaxy light contamination.
-
-
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-\subsubsection{Distance Measurement Issues}
-\label{sec:twinkles1:science:supernovae:distance}
-
-Host galaxy photometry and structure.
-
-Photometric error accuracy.
-
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 \subsubsection{Proposed Analyses}
 \label{sec:twinkles1:science:supernovae:analyses}
+
+We propose to answer the following questions:
+
+% Light curves
+\begin{itemize}
+\item Is the photometric calibration accurate?
+\end{itemize}
+
+For this we will need the \TwinklesOne survey to have the following
+properties:
+\begin{itemize}
+\item The field should contain at least 100 active SNeIa with the expectation of at least 5 observations at SNR$>5$ during the simulated time period, and 100 active SNeIa that we expect to fall below a SNR$>5$ threshold.  This should be a loosely continuous distribution of apparent brightness.
+\item SN should be placed on galaxies or galaxy locations with different surface brightness.
+\end{itemize}
+
+Object detection and light-curve extraction:
+\begin{itemize}
+\item Does the fraction of SN recovered match the Poisson prediction?
+\item Is forced photometry for variable sources in difference images correct in its precision?
+\item Is forced photometry for variable sources in difference images accurate in its calibration?
+\item Do the recovered lightcurves of supernova match the input simulation specification to the expected precision?
+\item Does the supernova detection efficiency on host-galaxy light contamination follow the Poisson noise?
+\end{itemize}
+
+
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
 % --------------------------------------------------------------------
