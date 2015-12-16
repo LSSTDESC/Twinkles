@@ -6,12 +6,13 @@ https://stash.lsstcorp.org/projects/SIM/repos/sims_catutils/browse/python/lsst/s
 import os
 from collections import OrderedDict
 import pickle
-import lsst.sims.catUtils.baseCatalogModels # This is required by CatalogDBObject even though not used explicitly.
 from lsst.sims.catalogs.generation.db import CatalogDBObject
+from lsst.sims.catalogs.measures.instance import CompoundInstanceCatalog
+from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
         PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogZPoint
 from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
-#from sprinkler import sprinklerCompound
+from sprinkler import sprinklerCompound
 
 class InstcatFactory(object):
     def __init__(self, objid, phosimCatalogObject):
@@ -28,10 +29,11 @@ class InstcatFactory(object):
 
 class InstcatGenerator(object):
     def __init__(self, opsim_db, fieldRA, fieldDec, boundLength=0.3,
-                 pickle_file=None):
+                 pickle_file=None, sprinkle=True):
         self._set_instcatFactories()
         self._set_obs_md_results(opsim_db, fieldRA, fieldDec, boundLength,
                                  pickle_file)
+        self.sprinkle = sprinkle
 
     def _set_instcatFactories(self):
         self._instcatFactories = {}
@@ -73,19 +75,25 @@ class InstcatGenerator(object):
                 visits[obshistid] = obs_metadata
         return visits
 
-    def _processDbObject(self, objid, outfile, obs_md, write_header=False):
-        inst_cat = self._instcatFactories[objid](obs_md)
-        inst_cat.write_catalog(outfile, write_mode='a',
-                               write_header=write_header, chunk_size=20000)
-
     def write_catalog(self, outfile, obs_metadata, clobber=True):
         if clobber and os.path.isfile(outfile):
             os.remove(outfile)
-        write_header = True
+        cat_list = []
         for objid in self._instcatFactories:
-            self._processDbObject(objid, outfile, obs_metadata,
-                                  write_header=write_header)
-            write_header = False
+            cat_list.append(self._instcatFactories[objid](obs_metadata))
+        if self.sprinkle:
+            compoundDBclass = sprinklerCompound
+        else:
+            compoundDBclass = GalaxyTileCompoundObj
+        while True:
+            try:
+                my_cat = CompoundInstanceCatalog(cat_list,
+                                                 obs_metadata=obs_metadata,
+                                                 compoundDBclass=compoundDBclass)
+                break
+            except RuntimeError:
+                continue
+        my_cat.write_catalog(outfile)
 
 if __name__ == '__main__':
     import os
@@ -114,4 +122,10 @@ if __name__ == '__main__':
             print i, outfile
             if os.path.isfile(outfile):
                 continue
-            generator.write_catalog(outfile, visit)
+            while True:
+                try:
+                    generator.write_catalog(outfile, visit)
+                    break
+                except KeyError, eobj:
+                    print eobj, "trying again"
+                    os.remove(outfile)
