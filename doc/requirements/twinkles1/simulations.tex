@@ -9,14 +9,7 @@
 
 \subsection{\OpSim}
 
-Realistic 10-year strategy. Single sky pointing.
-WFD for lenses. DDF for supernovae.
-
-Artificially higher cadence is needed for SL tests (to enable time
-delay).  Use of all filters' epochs in WFD proposal could do it.
-$i$-band sampling pattern in DDF proposal may be too distinctive to
-use in emulation of WFD.
-
+Enigma 1189.
 
 No new functionality.
 
@@ -24,17 +17,28 @@ No new functionality.
 
 \subsection{\CatSim}
 
-Type Ia supernovae with SNCosmo. Other types?
+Requirement.  CatSim Labeling.
+Added objects have labels that connect to input catalogs.  Reference catalog, instance catalog must have matching labels.
+Validation:  Joins must be complete.  Objects labeled 'X' have to appear in the instance catalog labeled 'X'.
 
-Supernovae in ``realistic'' hosts?
+Requirement.  CatSim+SupernovaRealizer
+Type Ia supernovae with SupernovaRealizer. 
+Validation:  Double-check CatSim instance catalogs against output from SupernovaRealizer.
 
+Requirement:  CatSim+Supernovae in ``realistic'' hosts 
+Validation:  Check that the SN appears in the same place (RA, Dec) as written in the instance catalogs.
+Validation:  Check the distribution of SN-host galaxy offsets.
+
+Requirement:  CatSim Lens Sprinkler
 Lensed quasars from TDC1 Gold Sample catalog (OM10 subset):
+Realistic lens (massive elliptical) galaxies, placed in front of quasars.
+Validation:  Double-check CatSim instance catalogs against output from OM10/Sprinkler
+
+Requirement:  CatSim Time Delay
 realistic AGN variability with requested parameters. Time delays.
 No microlensing needed. Redshifts supplied in catalog.
-
-Realistic lens (massive elliptical) galaxies, placed in front of quasars.
-
-Quasar host galaxies as Einstein Ring images.
+Validation:  Step up from instance catalog.  Is the offset implemented correctly.
+Validation:  Are instance catalog magnitudes not identical for set of images of the same quasar?
 
 
 % --------------------------------------------------------------------
