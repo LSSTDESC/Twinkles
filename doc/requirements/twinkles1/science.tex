@@ -39,25 +39,34 @@ Introduction to supernova analysis in \TwinklesOne.
 
 We propose to answer the following questions:
 
-% Light curves
 \begin{itemize}
-\item Is the photometric calibration accurate?
+\item Are current image differencing algorithms sufficient to recover supernovae on simulated images?
+\item Can we extract robust, accurate, and correctly precise light curves of supernovae?
 \end{itemize}
 
 For this we will need the \TwinklesOne survey to have the following
 properties:
 \begin{itemize}
 \item The field should contain at least 100 active SNeIa with the expectation of at least 5 observations at SNR$>5$ during the simulated time period, and 100 active SNeIa that we expect to fall below a SNR$>5$ threshold.  This should be a loosely continuous distribution of apparent brightness.
-\item SN should be placed on galaxies or galaxy locations with different surface brightness.
+\item Supernovae should be placed on galaxies or galaxy locations with different surface brightness.
+\item A cadence that provides samples at least on a few-day cadence.  E.g., a deep drilling field would satisfy this.
+\item Image difference processing should be run using whatever DM algorithms are currently available.
 \end{itemize}
 
+{\bf Move to future ``Validation of DM'' section.} \\
+This includes all of the goals in CX-CD1-Monitor:SW1. \\
 Object detection and light-curve extraction:
 \begin{itemize}
-\item Does the fraction of SN recovered match the Poisson prediction?
+\item Does brightness of recovered simulated source match input catalog brightness to within Poisson uncertainty?
+\item Does the recovery efficiency as a function of background brightness of sky and astrophysical sources make sense?
 \item Is forced photometry for variable sources in difference images correct in its precision?
+    \begin{itemize}
+    \item Does (measured flux / reported uncertainty) have mean of 0 and sigma of 1 for blank regions on (a) images; (b) subtracted images.
+    \item Does the (measured flux / reported uncertainty) for a static point source behave correctly?
+    \item Does the (measured flux / reported uncertainty) for a variable point source behave correctly?
+    \item Do the recovered lightcurves of supernova match the input simulation specification to the expected precision?
+    \end{itemize}
 \item Is forced photometry for variable sources in difference images accurate in its calibration?
-\item Do the recovered lightcurves of supernova match the input simulation specification to the expected precision?
-\item Does the supernova detection efficiency on host-galaxy light contamination follow the Poisson noise?
 \end{itemize}
 
 
