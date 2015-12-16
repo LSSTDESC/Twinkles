@@ -9,10 +9,18 @@ called `TwinklesRQ.tex`.
 
 ### Compiling
 
+Compile from the `doc/requirements` directory.
+
 The documents use the Science Roadmap macros and settings. To link the
-required files to this directory, do
+required files to this directory, do (in csh):
 ```
 setenv SRM_DIR <path_to_Science_Roadmap_repo>
 make links
 ```
+or in [ba]sh
+```
+export SRM_DIR=<path_to_Science_Roadmap_repo>
+make links
+```
+
 Then, compile with `make`.
