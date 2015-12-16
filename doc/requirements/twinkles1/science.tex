@@ -68,50 +68,42 @@ From the first Time Delay Challenge we know that around 400 lensed
 quasars (defined here as the ``Gold Sample'') should be measurable
 with cosmological accuracy with LSST, provided that a) 6 day cadence
 can be achieved and b) the light curves extracted from the LSST images
-are as clean as those in the challenge.
+are as clean as those in the challenge, which used a particular {\it noise
+model} for the image fluxes.
 
-6-day cadence requires 5 filters to be used: TDC2 will test
-assumption a) above, that  a 5--6 filter light curve can be modeled as
-accurately as a single filter light curve. The fidelity of the light
-curves depends on our ability to extract them, and this requires image
-simulations of very high realism to be analyzed with the tools of
-sufficient sharpness.
+Reaching 6-day cadence  in the WFD survey (where most lenses will
+reside) will require all 6 filters to be used: the second time delay
+challenge, TDC2, will test assumption a) above, that  a 5--6 filter
+light curve can be modeled as accurately as a single filter light
+curve. The fidelity of the multi-filter light curves will depend on
+our ability to extract them, and this requires image simulations of
+very high realism to be analyzed with the tools of sufficient
+sharpness. In \TwinklesOne we will test assumption b), and assess the
+fidelity of lensed quasar multi-filter light curves {\it as observed and
+measured with the LSST system.} Is the TDC1/TDC2 noise model correct?
 
-In \TwinklesOne we will test assumption b), and assess the fidelity of
-lensed quasar light curves as observed and measured with the LSST system.
+The are a number of possible sources of light curve error, that we can
+investigate using the \TwinklesOne dataset, including basic photometric
+accuracy (including calibration), point image separation (deblending), and
+lens galaxy light contamination. (The AGN host light will also be a contaminant,
+but at a lower level.)
 
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+One way to evaluate the quality of a set of light curves is to assess the accuracy of
+model parameters inferred, or summary statistics derived, from them
+Correlated photometric error accuracy and mitigation. For strong lenses,
+the natural model parameter is the time delay between light curves.
 
-\subsubsection{Light Curve Extraction Issues}
-\label{sec:twinkles1:science:stronglensing:monitor}
-
-Point image separation (deblending).
-
-Photometric accuracy (forced photometry).
-
-Lens and host galaxy light contamination.
-
-
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-\subsubsection{Time Delay Measurement Issues}
-\label{sec:twinkles1:science:stronglensing:timedelay}
-
-Correlated photometric error accuracy and mitigation.
-
-
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-\subsubsection{Proposed Analyses}
-\label{sec:twinkles1:science:stronglensing:analyses}
-
-We propose to answer the following questions:
+We propose to answer the following questions using the \TwinklesOne dataset:
 \begin{itemize}
 \item Was the quality of the TDC1 Gold Sample photometry realistic?
-\item How can we better model LSST lensed quasar photometry in future time delay challenges?
+\item Was the noise model assumed in TDC1 realistic?
+\item Is the current LSST DM implementation of light curve extraction
+      sufficient for lensed quasar time delay measurement?
+\item How can we better model LSST lensed quasar photometry in
+      future time delay challenges?
 \end{itemize}
 
-For this we will need the \TwinklesOne survey to have the following
+For this investigation we will need the \TwinklesOne survey to have the following
 properties:
 \begin{itemize}
 \item The field should contain a significant random fraction (at least
