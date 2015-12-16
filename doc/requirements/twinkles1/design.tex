@@ -10,12 +10,36 @@
 
 \subsection{Targets}
 
-Area. Pointing.
+Requirement. SN. 
+Over 100 supernovae with expected $>5$ observations at SNR$>5$ during simulated period.
+Another 100 or greater supernovae that are fainter and trace down into the SNR$<1$ regime.
+Supernova to be distributed on hosts following surface brightness of hosts. Use native \CatSim
+galaxies as hosts -- this dictates the redshifts of the SNe. Maximum redshift should be 1.2, so that input catalog is dominated by SNe we expect to see. Use SNRealizer to draw SNe.
+Validation: Plot instance catalog magnitude and redshift distributions.
+Validation: Inspect postage stamp image sets. 
 
-Refer to \autoref{sec:twinkles1:science:supernovae:analyses}.
-and \autoref{sec:twinkles1:science:stronglensing:analyses}.
+Requirement. SL.
+At least 200 strongly lensed quasars from TDC1. Quasars to lie at correct source redshift (ie on suitable, or replaced, \CatSim host galaxies), and with massive elliptical 
+lens galaxies at correct redshifts placed in front of them. Quasar light curves to follow TDC2 multi-filter model, with time delay correctly included. Use each source galaxy position at most once. 
+Validation: Inspect postage stamp image composites, compare with input truth.
+Validation: Inspect sky positions plotted on full field images. 
 
-Contents: stars, galaxies. Supernovae, Lenses.
+Requirement: Area. 
+Observable field should fit inside one chip, in presence of small dithers and field rotation. Circle of radius 6.6 arcmin, area 136 square arcmin. 
+Validation: Inspect co-add composite image and check sky coverage. Overlay \CatSim reference catalog. 
+
+Requirement. Stars and Galaxies.
+Standard \CatSim distribution of stars and galaxies for the the chosen field, to enable standard DM processing of the field (including calibration and PSF modeling) as well as various validation tests. 
+Validation: Plot \CatSim reference catalog sky positions, labeling stars, galaxies, SL, SN. 
+
+Requirement. Pointing. 
+Within a deep drilling field. Remove stars with $r < 16$ to ease image generation and processing.
+Validation: Check FITS file headers, display visit images in ds9.  
+
+Refer to \autoref{sec:twinkles1:science:supernovae}.
+and \autoref{sec:twinkles1:science:stronglensing}.
+
+
 
 % --------------------------------------------------------------------
 
