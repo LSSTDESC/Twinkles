@@ -24,6 +24,10 @@ $> awk '{if(NR < 21 || $5 > 13) print $0}' phosim_input_840.txt >phosim_input_84
 $> awk '{if(NR < 21 || $5 > 13) print $0}' phosim_input_848.txt >phosim_input_848_stripped.txt
 ```
 
+Note that when using PhoSim to simulate images using these catalogs, it's important to provide the `-s R22_S11` switch.  This will
+only simulate the central chip.  Since these catalogs are intended to cover the central chip at all rotations, it will also spill
+onto other chips in the central raft.  Since the boarder chips will not be fully covered, it's not useful to simulate them.
+
 ## Build the indexes for astrometric and photometric calibration
 Currently the refernce catalogs need to be formatted as astrometry.net index files.  I can convert the 
 reference catalog produced by `generatePhosimInput.py, but there are a couple of precursor steps.  First,
