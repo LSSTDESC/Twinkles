@@ -1,0 +1,23 @@
+# Turn on debugging file
+centroidfile 1
+
+# For Twinkles I I’m suggesting that we turn off saturation effects.
+# That will keep us from needing a minimal ISR, but we will miss out
+# on any subtleties having to do with interpolation artifacts.
+blooming 0
+saturation 0
+
+# Does this turn off treerings too?
+cleardefects
+
+
+# Also turn off clouds and airglow variation
+clearclouds
+airglowvariation 0
+
+# Set the nominal dark sky brightness
+zenith_v 21.8
+
+# Leave on CRs but turn off fringing.  ISR will take care of fringing, # but CRs are currently taken out in
+# image characterization.
+fringing 0
