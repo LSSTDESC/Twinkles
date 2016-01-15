@@ -1,15 +1,8 @@
 # Turn on debugging file
 centroidfile 1
 
-# For Twinkles I I’m suggesting that we turn off saturation effects.
-# That will keep us from needing a minimal ISR, but we will miss out
-# on any subtleties having to do with interpolation artifacts.
-blooming 0
-saturation 0
-
 # Does this turn off treerings too?
 cleardefects
-
 
 # Also turn off clouds and airglow variation
 clearclouds
