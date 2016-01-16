@@ -1,8 +1,8 @@
 # Twinkles
 
-[![Join the chat at https://gitter.im/DarkEnergyScienceCollaboration/Twinkles](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/DarkEnergyScienceCollaboration/Twinkles?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 10 years. 6 filters. 1 tiny patch of sky. Thousands of time-variable cosmological distance probes.
+
+![Co-add image from a few dozen *gri* images of the Twinkles 1 field ](https://github.com/DarkEnergyScienceCollaboration/Twinkles/raw/master/code/rgb_coadd.png)
 
 ### An LSST DESC Tiny Synoptic Survey Simulation
 
