@@ -133,6 +133,8 @@ $> makeDiscreteSkyMap.py output_data/ --id visit=840..879
 # The config option is to use background subtracted exposures as inputs.  You can also specify visits using the ^ operator meaning 
 # 'and'.
 $> makeCoaddTempExp.py output_data/ --selectId visit=840^841^842^843^844^845^846^847^848^849 --id filter=r patch=0,0 tract=0 --config bgSubtracted=True
+$> makeCoaddTempExp.py output_data/ --selectId visit=860..869 --id filter=g patch=0,0 tract=0 --config bgSubtracted=True
+$> makeCoaddTempExp.py output_data/ --selectId visit=870..879 --id filter=g patch=0,0 tract=0 --config bgSubtracted=True
 
 # This is the second step which actually coadds the warped images.  The doInterp config option is required if there
 # are any NaNs in the image (which there will be for this set since the images do not cover the whole patch).
