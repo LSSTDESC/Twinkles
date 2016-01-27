@@ -6,8 +6,7 @@ First generate the inputs to phosim and start them generating (read the phosim d
 
 The script to do this resides in this repository and will only generate input files for the first ~50 visits.  This is enough to have 10
 visits each of g, r, and i band.  The script will also generate a reference catalog for photometric and astrometric calibration.
-You'll also need the OpSim sqlite repository from [this 
-page](https://confluence.lsstcorp.org/display/SIM/OpSim+Datasets+for+Cadence+Workshop+LSST2015)
+You'll also need the OpSim sqlite repository for [enigma_1189](http://ops2.tuc.noao.edu/runs/enigma_1189/data/enigma_1189_sqlite.db.gz)
 ```
 $> setup sims_catUtils
 $> python generatePhosimInput.py
