@@ -6,6 +6,7 @@ Created on Feb 6, 2015
 import om10
 import numpy as np
 from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
+from lsst.sims.utils import radiansFromArcsec
 import random
 import os
 
@@ -15,6 +16,12 @@ class sprinklerCompound(GalaxyTileCompoundObj):
     objectTypeID = 1024
 
     def _final_pass(self, results):
+        #From the original GalaxyTileCompoundObj final pass method
+        for name in results.dtype.fields:
+            if 'raJ2000' in name or 'decJ2000' in name:
+                results[name] = np.radians(results[name])
+
+        #Use Sprinkler now
         sp = sprinkler(results)
         results = sp.sprinkle()
         return results
@@ -91,10 +98,9 @@ class sprinkler():
                     row['galaxyDisk_redshift'] = newlens['ZLENS']
                     row['galaxyAgn_redshift'] = newlens['ZLENS']
                     row['galaxyBulge_magNorm'] = newlens['APMAG_I'] #Need to convert this to correct band
-                    arcsec2rad = 4.84813681109536e-06 #To convert from arcsec to radians for catalog
                     newlens['REFF'] = 1.0 #Hard coded for now. See issue in OM10 github.
-                    row['galaxyBulge_majorAxis'] = newlens['REFF'] * arcsec2rad
-                    row['galaxyBulge_minorAxis'] = newlens['REFF'] * (1 - newlens['ELLIP']) * arcsec2rad
+                    row['galaxyBulge_majorAxis'] = radiansFromArcsec(newlens['REFF'])
+                    row['galaxyBulge_minorAxis'] = radiansFromArcsec(newlens['REFF'] * (1 - newlens['ELLIP']))
                     #Convert orientation angle to west of north from east of north by *-1.0 and convert to radians
                     row['galaxyBulge_positionAngle'] = newlens['PHIE']*(-1.0)*np.pi/180.0
                     #Replace original entry with new entry
