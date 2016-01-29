@@ -10,14 +10,18 @@ from lsst.sims.catalogs.measures.instance import InstanceCatalog, CompoundInstan
 from lsst.sims.utils import ObservationMetaData
 from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
 from lsst.sims.catalogs.generation.db import CatalogDBObject
-from lsst.sims.catUtils.baseCatalogModels import OpSim3_61DBObject
+from lsst.sims.catalogs.generation.db.dbConnection import DBConnection
+from lsst.sims.catUtils.baseCatalogModels import OpSim3_61DBObject, StarObj, MsStarObj, \
+        BhbStarObj, WdStarObj, RRLyStarObj, CepheidStarObj, GalaxyBulgeObj, GalaxyDiskObj, \
+        GalaxyAgnObj
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
-        PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogZPoint
+        PhoSimCatalogPoint, PhoSimCatalogSersic2D
 from sprinkler import sprinklerCompound
+from twinklesCatalogDefs import TwinklesCatalogZPoint
 
 def generatePhosimInput():
 
-    opsimDB = os.path.join('.','enigma_1189_sqlite.db')
+    opsimDB = os.path.join('/Users/Bryce/Desktop/','enigma_1189_sqlite.db')
 
     #you need to provide ObservationMetaDataGenerator with the connection
     #string to an OpSim output database.  This is the connection string
@@ -38,53 +42,13 @@ def generatePhosimInput():
         obs_metadata.phoSimMetaData['SIM_VISTIME'] = (30, numpy.dtype(float))
         print 'Starting Visit: ', obs_metadata.phoSimMetaData['Opsim_obshistid'][0]
 
-        compoundICList = []
+        compoundDBList = [MsStarObj, BhbStarObj, WdStarObj, RRLyStarObj, CepheidStarObj, GalaxyBulgeObj,
+                          GalaxyDiskObj, GalaxyAgnObj]
+        compoundICList = [PhoSimCatalogPoint, PhoSimCatalogPoint, PhoSimCatalogPoint, PhoSimCatalogPoint,
+                          PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogSersic2D, TwinklesCatalogZPoint]
 
-        #Add Instance Catalogs for phoSim stars
-        for starName in starObjNames:
-            while True:
-                try:
-                    starDBObj = CatalogDBObject.from_objid(starName)
-                    compoundICList.append(PhoSimCatalogPoint(starDBObj, obs_metadata=obs_metadata))
-                    break
-                except RuntimeError:
-                    continue
-            print starName
-
-        #Add phosim Galaxy Instance Catalogs to compound Instance Catalog
-        while True:
-            try:
-                galsBulge = CatalogDBObject.from_objid('galaxyBulge')
-                compoundICList.append(PhoSimCatalogSersic2D(galsBulge, obs_metadata=obs_metadata))
-                break
-            except RuntimeError:
-                continue
-        print 'bulge'
-
-        while True:
-            try:
-                galsDisk = CatalogDBObject.from_objid('galaxyDisk')
-                compoundICList.append(PhoSimCatalogSersic2D(galsDisk, obs_metadata=obs_metadata))
-                break
-            except RuntimeError:
-                continue
-        print 'disk'
-
-        while True:
-            try:
-                galsAGN = CatalogDBObject.from_objid('galaxyAgn')
-                compoundICList.append(PhoSimCatalogZPoint(galsAGN, obs_metadata=obs_metadata))
-                break
-            except RuntimeError:
-                continue
-        print 'agn'
-
-        while True:
-            try:
-                totalCat = CompoundInstanceCatalog(compoundICList, obs_metadata=obs_metadata, compoundDBclass=sprinklerCompound)
-                break
-            except RuntimeError:
-                continue
+        totalCat = CompoundInstanceCatalog(compoundICList, compoundDBList, obs_metadata=obs_metadata,
+                                                   compoundDBclass=sprinklerCompound)
 
         totalCat.write_catalog(filename)
         print "Finished Writing Visit: ", obs_metadata.phoSimMetaData['Opsim_obshistid'][0]
