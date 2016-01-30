@@ -47,8 +47,13 @@ def generatePhosimInput():
         compoundICList = [PhoSimCatalogPoint, PhoSimCatalogPoint, PhoSimCatalogPoint, PhoSimCatalogPoint,
                           PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogSersic2D, TwinklesCatalogZPoint]
 
-        totalCat = CompoundInstanceCatalog(compoundICList, compoundDBList, obs_metadata=obs_metadata,
+        while True:
+            try:
+                totalCat = CompoundInstanceCatalog(compoundICList, compoundDBList, obs_metadata=obs_metadata,
                                                    compoundDBclass=sprinklerCompound)
+                break
+            except RuntimeError:
+                continue
 
         totalCat.write_catalog(filename)
         print "Finished Writing Visit: ", obs_metadata.phoSimMetaData['Opsim_obshistid'][0]
