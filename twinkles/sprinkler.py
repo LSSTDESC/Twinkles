@@ -60,12 +60,13 @@ class sprinkler():
                 print "Gone through ", rowNum, " lines of catalog."
             if not np.isnan(row['galaxyAgn_magNorm']):
                 candidates = self.find_lens_candidates(row['galaxyAgn_redshift'])
+                np.random.seed(row['galtileid'] % (2^32 -1))
                 pick_value = np.random.uniform()
             # If there aren't any lensed sources at this redshift from OM10 move on the next object
                 if ((len(candidates) > 0) and (pick_value <= self.density_param)):
                     # Randomly choose one the lens systems
                     # (can decide with or without replacement)
-                    newlens = random.choice(candidates)
+                    newlens = np.random.choice(candidates)
 
                     # Append the lens galaxy
                     # For each image, append the lens images
