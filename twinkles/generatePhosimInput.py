@@ -51,11 +51,11 @@ def generatePhosimInput():
             try:
                 totalCat = CompoundInstanceCatalog(compoundICList, compoundDBList, obs_metadata=obs_metadata,
                                                    compoundDBclass=sprinklerCompound)
+                totalCat.write_catalog(filename)
                 break
             except RuntimeError:
                 continue
 
-        totalCat.write_catalog(filename)
         print "Finished Writing Visit: ", obs_metadata.phoSimMetaData['Opsim_obshistid'][0]
 
 if __name__ == "__main__":
