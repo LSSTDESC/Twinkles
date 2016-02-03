@@ -7,7 +7,6 @@ import om10
 import numpy as np
 from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
 from lsst.sims.utils import radiansFromArcsec
-#import random
 import json
 import os
 
