@@ -7,7 +7,8 @@ import om10
 import numpy as np
 from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
 from lsst.sims.utils import radiansFromArcsec
-import random
+#import random
+import json
 import os
 
 
@@ -21,15 +22,11 @@ class sprinklerCompound(GalaxyTileCompoundObj):
             if 'raJ2000' in name or 'decJ2000' in name:
                 results[name] = np.radians(results[name])
 
-        new_results = np.zeros(results.shape, dtype = results.dtype.descr + [('t0Delay', float)])
-        for name in results.dtype.names:
-            new_results[name] = results[name]
-
         #Use Sprinkler now
-        sp = sprinkler(new_results)
-        new_results = sp.sprinkle()
+        sp = sprinkler(results)
+        results = sp.sprinkle()
 
-        return new_results
+        return results
 
 class sprinkler():
     def __init__(self, catsim_cat, density_param = 1.):
@@ -85,7 +82,11 @@ class sprinkler():
                             lensrow[str(lensPart + '_decJ2000')] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0 / 180.0 * np.pi
                         ###Should this 'mag' be added to all parts? How should we update the ids for the lensed objects?
                         lensrow['galaxyAgn_magNorm'] += newlens['MAG'][i]
-                        lensrow['t0Delay'] = newlens['DELAY'][i]
+                        varString = json.loads(lensrow['galaxyAgn_varParamStr'])
+                        varString['pars']['t0Delay'] = newlens['DELAY'][i]
+                        varString['varMethodName'] = 'applyAgnTimeDelay'
+                        lensrow['galaxyAgn_varParamStr'] = json.dumps(varString)
+
                         updated_catalog = np.append(updated_catalog, lensrow)
 
                     #Now manipulate original entry to be the lens galaxy with desired properties

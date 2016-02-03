@@ -27,7 +27,7 @@ def generatePhosimInput():
     #string to an OpSim output database.  This is the connection string
     #to a test database that comes when you install CatSim.
     generator = ObservationMetaDataGenerator(database=opsimDB, driver='sqlite')
-    obsMetaDataResults = generator.getObservationMetaData(fieldRA=(53, 54), fieldDec=(-29, -27), boundLength=0.3)
+    obsMetaDataResults = generator.getObservationMetaData(fieldRA=(53, 54), fieldDec=(-29, -27), boundLength=0.01)
 
     rVisits = []
     for md in obsMetaDataResults:
