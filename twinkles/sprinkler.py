@@ -28,7 +28,7 @@ class sprinklerCompound(GalaxyTileCompoundObj):
         return results
 
 class sprinkler():
-    def __init__(self, catsim_cat, density_param = 1.):
+    def __init__(self, catsim_cat, om10_cat=str(os.environ['OM10_DIR']+"/data/qso_mock.fits"), density_param = 1.):
         """
         Input:
         catsim_cat:
@@ -45,7 +45,7 @@ class sprinkler():
 
         self.catalog = catsim_cat
         # ****** THIS ASSUMES THAT THE ENVIRONMENT VARIABLE OM10_DIR IS SET *******
-        lensdb = om10.DB(catalog=os.environ['OM10_DIR']+"/data/qso_mock.fits")
+        lensdb = om10.DB(catalog=om10_cat)
         self.lenscat = lensdb.lenses.copy()
         self.density_param = density_param
         #return
