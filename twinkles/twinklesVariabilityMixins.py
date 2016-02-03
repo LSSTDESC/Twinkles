@@ -12,7 +12,6 @@ class TimeDelayVariability(Variability):
         dMags = {}
         expmjd = numpy.asarray(expmjd_in,dtype=float)
         toff = numpy.float(params['t0_mjd']+params['t0Delay'])
-        print toff
         seed = int(params['seed'])
         sfint = {}
         sfint['u'] = params['agn_sfu']
