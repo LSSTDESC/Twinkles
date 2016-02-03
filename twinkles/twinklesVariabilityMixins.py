@@ -53,23 +53,23 @@ class VariabilityTwinkles(TimeDelayVariability):
     """
     This is a mixin which wraps the methods from the class Variability
     into getters for InstanceCatalogs (specifically, InstanceCatalogs
-    of stars).  Getters in this method should define columns named like
+    with AGNs).  Getters in this method should define columns named like
     delta_columnName
     where columnName is the name of the baseline (non-varying) magnitude
     column to which delta_columnName will be added.  The getters in the
     photometry mixins will know to find these columns and add them to
     columnName, provided that the columns here follow this naming convention.
-    Thus: merely including VariabilityStars in the inheritance tree of
+    Thus: merely including VariabilityTwinkles in the inheritance tree of
     an InstanceCatalog daughter class will activate variability for any column
     for which delta_columnName is defined.
     """
 
     @compound('delta_lsst_u', 'delta_lsst_g', 'delta_lsst_r',
              'delta_lsst_i', 'delta_lsst_z', 'delta_lsst_y')
-    def get_stellar_variability(self):
+    def get_agn_variability(self):
         """
-        Getter for the change in magnitudes due to stellar
-        variability.  The PhotometryStars mixin is clever enough
+        Getter for the change in magnitudes due to agn
+        variability.  The PhotometryTwinkles mixin is clever enough
         to automatically add this to the baseline magnitude.
         """
 
