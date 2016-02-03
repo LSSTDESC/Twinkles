@@ -80,7 +80,7 @@ class sprinkler():
                             lensrow[str(lensPart + '_raJ2000')] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0 / 180.0 * np.pi
                             lensrow[str(lensPart + '_decJ2000')] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0 / 180.0 * np.pi
                         ###Should this 'mag' be added to all parts? How should we update the ids for the lensed objects?
-                        lensrow['galaxyAgn_magNorm'] += newlens['MAG'][i]
+                        lensrow['galaxyAgn_magNorm'] -= newlens['MAG'][i]
                         varString = json.loads(lensrow['galaxyAgn_varParamStr'])
                         varString['pars']['t0Delay'] = newlens['DELAY'][i]
                         varString['varMethodName'] = 'applyAgnTimeDelay'
