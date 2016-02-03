@@ -21,7 +21,7 @@ from twinklesCatalogDefs import TwinklesCatalogZPoint
 
 def generatePhosimInput():
 
-    opsimDB = os.path.join('/Users/Bryce/Desktop/','enigma_1189_sqlite.db')
+    opsimDB = os.path.join('.','enigma_1189_sqlite.db')
 
     #you need to provide ObservationMetaDataGenerator with the connection
     #string to an OpSim output database.  This is the connection string
