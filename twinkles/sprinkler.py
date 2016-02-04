@@ -7,7 +7,7 @@ import om10
 import numpy as np
 from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
 from lsst.sims.utils import radiansFromArcsec
-import random
+import json
 import os
 
 
@@ -24,10 +24,11 @@ class sprinklerCompound(GalaxyTileCompoundObj):
         #Use Sprinkler now
         sp = sprinkler(results)
         results = sp.sprinkle()
+
         return results
 
 class sprinkler():
-    def __init__(self, catsim_cat, density_param = 0.1):
+    def __init__(self, catsim_cat, om10_cat=str(os.environ['OM10_DIR']+"/data/qso_mock.fits"), density_param = 1.):
         """
         Input:
         catsim_cat:
@@ -44,7 +45,7 @@ class sprinkler():
 
         self.catalog = catsim_cat
         # ****** THIS ASSUMES THAT THE ENVIRONMENT VARIABLE OM10_DIR IS SET *******
-        lensdb = om10.DB(catalog=os.environ['OM10_DIR']+"/data/qso_mock.fits")
+        lensdb = om10.DB(catalog=om10_cat)
         self.lenscat = lensdb.lenses.copy()
         self.density_param = density_param
         #return
@@ -79,7 +80,12 @@ class sprinkler():
                             lensrow[str(lensPart + '_raJ2000')] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0 / 180.0 * np.pi
                             lensrow[str(lensPart + '_decJ2000')] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0 / 180.0 * np.pi
                         ###Should this 'mag' be added to all parts? How should we update the ids for the lensed objects?
-                        lensrow['galaxyAgn_magNorm'] += newlens['MAG'][i]
+                        lensrow['galaxyAgn_magNorm'] -= newlens['MAG'][i]
+                        varString = json.loads(lensrow['galaxyAgn_varParamStr'])
+                        varString['pars']['t0Delay'] = newlens['DELAY'][i]
+                        varString['varMethodName'] = 'applyAgnTimeDelay'
+                        lensrow['galaxyAgn_varParamStr'] = json.dumps(varString)
+
                         updated_catalog = np.append(updated_catalog, lensrow)
 
                     #Now manipulate original entry to be the lens galaxy with desired properties

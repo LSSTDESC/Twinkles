@@ -6,15 +6,15 @@ from lsst.sims.utils import arcsecFromRadians
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import PhosimInputBase
 from lsst.sims.catUtils.mixins import AstrometryStars, AstrometryGalaxies, \
                                       EBVmixin, VariabilityStars
+from twinklesVariabilityMixins import VariabilityTwinkles
 
-class TwinklesCatalogZPoint(PhosimInputBase, AstrometryGalaxies, EBVmixin, VariabilityStars):
-#class TwinklesCatalogZPoint(PhosimInputBase, AstrometryGalaxies, EBVmixin):
+class TwinklesCatalogZPoint(PhosimInputBase, AstrometryGalaxies, EBVmixin, VariabilityTwinkles):
 
     catalog_type = 'twinkles_catalog_ZPOINT'
     column_outputs = ['prefix', 'uniqueId','raPhoSim','decPhoSim','phoSimMagNorm','sedFilepath',
                       'redshift','shear1','shear2','kappa','raOffset','decOffset',
                       'spatialmodel','galacticExtinctionModel','galacticAv','galacticRv',
-                      'internalExtinctionModel']#, 'delta_lsst_r']
+                      'internalExtinctionModel']
     default_columns = [('shear1', 0., float), ('shear2', 0., float), ('kappa', 0., float),
                        ('raOffset', 0., float), ('decOffset', 0., float), ('spatialmodel', 'ZPOINT', (str, 6)),
                        ('galacticExtinctionModel', 'CCM', (str,3)),
