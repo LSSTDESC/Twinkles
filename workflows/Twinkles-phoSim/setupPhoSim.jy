@@ -1,0 +1,31 @@
+## setupPhoSim.jy
+##
+##  Runs as a jython scriptlet from a Pipeline task
+##
+import os,sys
+from java.util import HashMap
+
+### Example: extract pipeline variable
+## parentPI = pipeline.getProcessInstance('setupVisit')
+## run = parentPI.getVariable("RUN")
+
+## Prepare to extract pipeline variables from the setupVisit step
+setupVisit = pipeline.getProcessInstance('setupVisit')
+
+workingDir = setupVisit.getVariable("TW_PHOSIMOUT")
+instanceCat = setupVisit.getVariable("TW_INSTANCE_CATALOG")
+
+print 'workingDir = ',workingDir
+print 'instanceCat = ',instanceCat
+
+## Package up data for subtask
+pipeVars = HashMap()
+pipeVars.put('TW_PHOSIMOUT',workingDir)
+pipeVars.put('TW_INSTANCE_CATALOG',instanceCat)
+
+
+## Create a single substream to run phoSim
+nSubStream = 0
+print 'Create single subStream of subTask singleVisit.'
+pipeline.createSubstream('singleVisit',nSubStream,pipeVars)
+

@@ -1,0 +1,14 @@
+## First nine instance catalogs from Simon Krughoff (11/20/2015)
+
+phosim_input/phosim_input_840_stripped.txt
+phosim_input/phosim_input_841_stripped.txt
+phosim_input/phosim_input_842_stripped.txt
+
+phosim_input/phosim_input_843_stripped.txt
+# random comment
+phosim_input/phosim_input_844_stripped.txt
+phosim_input/phosim_input_845_stripped.txt
+phosim_input/phosim_input_846_stripped.txt
+phosim_input/phosim_input_847_stripped.txt
+phosim_input/phosim_input_848_stripped.txt
+# end

@@ -1,0 +1,6 @@
+/nfs/farm/g/desc/u1/data/Twinkles/phosim/instance_catalogs/phosim_input_u_0177934.txt
+/nfs/farm/g/desc/u1/data/Twinkles/phosim/instance_catalogs/phosim_input_g_0000860.txt
+/nfs/farm/g/desc/u1/data/Twinkles/phosim/instance_catalogs/phosim_input_r_0000840.txt
+/nfs/farm/g/desc/u1/data/Twinkles/phosim/instance_catalogs/phosim_input_i_0000870.txt
+/nfs/farm/g/desc/u1/data/Twinkles/phosim/instance_catalogs/phosim_input_z_0000890.txt
+/nfs/farm/g/desc/u1/data/Twinkles/phosim/instance_catalogs/phosim_input_y_0000044.txt
