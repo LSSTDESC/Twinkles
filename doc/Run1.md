@@ -16,8 +16,7 @@ _____
 
 ## <a name="Observations"></a> Observations
 
-Let's choose a field from one of the [extragalactic deep drilling fields](http://www.lsst.org/News/enews/deep-drilling-201202.html) in the
-baseline OpSim observing strategy. Michael suggested the
+Let's choose a field from one of the [extragalactic deep drilling fields](http://www.lsst.org/News/enews/deep-drilling-201202.html) in the baseline OpSim observing strategy. Michael suggested the
 Extended Chandra Deep Field South:
 
 * (RA, Dec) = (03:32:30, 10:00:24)
@@ -52,16 +51,16 @@ help with some tests, and basic PSF modeling.
 
 #### <a name="Lensed Quasars"></a> Lensed Quasars
 
-These are simply taken from the OM10 catalog, as in [issue
-#21](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/21), by
-the `sprinkler` code. For each galaxy in a `CatSim` catalog, we search the OM10
+These are simply taken from the OM10 catalog, as in [issue #21](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/21), by the `sprinkler` code. For each galaxy in a `CatSim` catalog, we search the OM10
 catalog for all sources within +/-0.05 in redshift from the `CatSim` source. If
 there aren't any OM10 lensed sources at this redshift, we move on the next
 object. Otherwise, we randomly choose one of the lens systems. Then, we remove
 the `CatSim` object from the catalog and instead add lensed images, with
 appropriately magnified source brightness, and finally add a model lens galaxy
 to the catalog. Not all the galaxies are placed behind lenses in this way - we
-stop after reaching a certain number, perhaps 100. *BK to edit this text for accuracy*
+stop after reaching a certain number, perhaps 100. 
+
+*BK to edit this text for accuracy*
 
 
 #### <a name="Supernovae"></a> Supernovae
@@ -94,6 +93,7 @@ images plausible, regarding depth and image quality?
 
 * Forced photometry light curves. How good are these preliminary lightcurves?
 
+*MWV to check this plan and edit*
 
 
 [Back to the top.](#Run1)
