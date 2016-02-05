@@ -10,19 +10,26 @@ We are interested in making high accuracy cosmological measurements of type IA s
 
 ### Latest News
 
-* Follow **[this link](https://github.com/DarkEnergyScienceCollaboration/Twinkles/labels/In%20Progress)** to see what's currently in progress.
-* We are proposing Twinkles as a **[2015 DESC Taskforce](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Taskforce2015_Twinkles.md)**, in order to kick-start development ready for a first data release at DC1.
+* Follow **[this link](https://github.com/DarkEnergyScienceCollaboration/Twinkles/labels/In%20Progress)** to see the issues currently being worked on.
+* Our goal for the March 2016 collaboration meeting is to produce and begin analyzing a small prototype Twinkles 1 dataset: **[Run 1](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Run1.md)**
+* The requirements document (well, design and specifications) for Twinkles 1 is under construction, **[here](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/requirements/TwinklesRQ.pdf)**
+* We are now a **[2015 DESC Taskforce](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Taskforce2015_Twinkles.md)**, in order to kick-start development ready for a first data release at DC1.
 * **[Twinkles is on the sky!](http://nbviewer.ipython.org/github/DarkEnergyScienceCollaboration/Twinkles/blob/master/notebooks/First%20Light.ipynb)**  LSST DESC Hack Day, February 2015.
 * **[Initial design for the Twinkles pipeline](https://confluence.slac.stanford.edu/display/LSSTDESC/Twinkles+flow+chart)** LSST DESC Hack Day, February 2015.
-* **[Run 1 planning](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Run1.md)** Jan 28 telecon, post Hack Day consolidation.
+* **[Early planning](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/OldRun1.md)** Jan 28 telecon, post Hack Day consolidation.
 
 
 ### Read More
 
+**[Twinkles 1 Design and Specifications](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/requirements/TwinklesRQ.pdf)**
+
+
+Old Notes:
 * [Scientific and Technical Motivation](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Motivation.md)
 * [Survey Design](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Design.md)
 * [Data Generation and Analysis: Pipeline Design](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Organisation.md)
 * [Getting Set Up to Run Twinkles Simulations](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Setup.md)
+
 
 ### People
 
@@ -36,6 +43,8 @@ We are interested in making high accuracy cosmological measurements of type IA s
 * Tony Johnson (SLAC)
 * Saba Sehrish (Fermilab)
 * Seth Digel (SLAC)
+* Scott Daniel (UW)
+* Rahul Biswas (UW)
 
 
 ### Credits etc

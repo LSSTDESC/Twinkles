@@ -1,9 +1,8 @@
 # <a name="Run1"></a> Run 1
 
-The simplest possible Twinkles simulation, that contains the features we care about. 
-Initial design chosen for speed of implementation.
+Goal: Make a small but useful example dataset that we can generate and start
+validation analysis on before the March 2016 collaboration meeting at SLAC.
 
-**Table of Contents**:
 * [Observations](#Observations)
 * [Astronomical Objects](#AstronomicalObjects)
   * [Lensed Quasars](#LensedQuasars)
@@ -17,48 +16,84 @@ _____
 
 ## <a name="Observations"></a> Observations
 
-Let's choose a field from one of the [extragalactic deep drilling fields](http://www.lsst.org/News/enews/deep-drilling-201202.html) in `OpSim 3.61`. Here's the
+Let's choose a field from one of the [extragalactic deep drilling fields](http://www.lsst.org/News/enews/deep-drilling-201202.html) in the
+baseline OpSim observing strategy. Michael suggested the
 Extended Chandra Deep Field South:
 
 * (RA, Dec) = (03:32:30, 10:00:24)
 * (l,b) = (224.07, -54.47)
 
-A sensible unit of area could be a *single chip.* With dithers, field rotation etc the actual area surveyed to full depth would be a circle with diameter a bit less than a chip width. 
+A sensible unit of area is a *single chip.* With dithers, field rotation etc
+the actual area surveyed to full depth would be a circle with
+diameter a bit less than a chip width.
 
-Dithers should be small, just enough to cover chip gaps (~10 arcsec?). If we keep simulating a single sensor at the center of the field, we can avoid the problems associated with field distortion etc, while still including field rotation (we hope straightforwardly). 
+Dithers should be small, just enough to cover chip gaps (~10 arcsec?), or
+at this stage zero - the field rotation should cover the gaps.  
 
-Observing strategy to be extracted from `OpSim 3.61` as above. How many images? Build up in stages?
+We'll try all 6 filters, following the sampling pattern from OpSim, until we
+run out of CPU time. Hopefully this should give us a few months of monitoring
+data -- although at DDF cadence, there's a risk we'll get a lot of visits
+from the first few nights and not much of a time baseline...
+
+Image simulation is done with `PhoSim`, using a physics over-ride file that
+allows us to ignore effects that we know DM cannot yet cope with, while  giving
+us images sequences with plausible depth and image quality. We will use
+`PhoSim`'s "eimages" to emulate the early stages of the DM image processing
+(i.e., ISR).
+
+*Simon to add link to physics over-ride file*
 
 
 ## <a name="AstronomicalObjects"></a> Astronomical Objects
 
-We are sprinkling interesting features onto existing `CatSim` objects. Galaxies can either have supernovae or AGN added, and in half the cases, a massive lens galaxy placed in front of them. All inserted objects need to have plausible properties: this is taken care of by the `sprinkler` code. Stars will also be present, which should help with some tests, and basic PSF modeling.
+We are "sprinkling" interesting features onto (or replacing) existing `CatSim`
+objects.  Stars and galaxies  from `CatSim` will also be present, which should
+help with some tests, and basic PSF modeling.
 
 #### <a name="Lensed Quasars"></a> Lensed Quasars
 
-These are simply taken from the OM10 catalog, as in [issue #21](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/21), by the `sprinkler` code. For each galaxy in a `CatSim` catalog, we search the OM10 catalog for all sources within +/-0.05 in redshift from the `CatSim` source. If there aren't any OM10 lensed sources at this redshift, we move on the next object. Otherwise, we randomly choose one of the lens systems. Then, we remove the `CatSim` object from the catalog and instead add lensed images, with appropriately magnified source brightness, and finally add a model lens galaxy to the catalog. Not all the galaxies are placed behind lenses in this way - we stop after reaching a certain number, perhaps 100.
+These are simply taken from the OM10 catalog, as in [issue
+#21](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/21), by
+the `sprinkler` code. For each galaxy in a `CatSim` catalog, we search the OM10
+catalog for all sources within +/-0.05 in redshift from the `CatSim` source. If
+there aren't any OM10 lensed sources at this redshift, we move on the next
+object. Otherwise, we randomly choose one of the lens systems. Then, we remove
+the `CatSim` object from the catalog and instead add lensed images, with
+appropriately magnified source brightness, and finally add a model lens galaxy
+to the catalog. Not all the galaxies are placed behind lenses in this way - we
+stop after reaching a certain number, perhaps 100. *BK to edit this text for accuracy*
 
 
 #### <a name="Supernovae"></a> Supernovae
 
+*RB to write short paragraph on SN plan here.*
 
-## <a name="Pipeline"></a> Pipeline Processing
 
-* Simplest possible pipeline: simple script?
-* Simplest location for simulating data and running DM stack: SLAC? NERSC?
-* Simplest way to analyze outputs?
+## <a name="Pipeline"></a> DM Processing
+
+Once the images are generated, we will process them with a set of DM pipetasks
+following Simon's "cookbook." The final output is a `ForcedSource` catalog, which
+can be queried for object light curves.
 
 ## <a name="Products"></a> Products
 
+Here's what we expect to produce.
+
 #### <a name="Images"></a> Images
 
-We will only make `eimages`, and treat them as emulated calibrated images. This will allow us to go straight to testing the DM *measurement algorithms* (as opposed to the image reduction ones).
+We only make `eimages`, and treat them as emulated calibrated images. This
+will allow us to go straight to testing the DM *measurement algorithms* (as
+opposed to the image reduction ones).
 
 #### <a name="Measurements"></a> Measurements and Tests
 
-* Deblended objects. Can we see lensed quasar targets in the object catalog?
-* Difference image sources. Can we see lensed quasar targets in the diffsource catalog?
-* Forced photometry lightcurves. How good are the preliminary lightcurves?
+* Detected and de-blended objects (actually `CoaddSources` at this stage). Are the lensed quasar images correctly separated in the DM catalog?
+
+* Basic photometry. How reliable is the non-variable stellar photometry? Are the
+images plausible, regarding depth and image quality?
+
+* Forced photometry light curves. How good are these preliminary lightcurves?
+
 
 
 [Back to the top.](#Run1)
