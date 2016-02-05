@@ -12,16 +12,15 @@ We are interested in making high accuracy cosmological measurements of type IA s
 
 * Follow **[this link](https://github.com/DarkEnergyScienceCollaboration/Twinkles/labels/In%20Progress)** to see the issues currently being worked on.
 * Our goal for the March 2016 collaboration meeting is to produce and begin analyzing a small prototype Twinkles 1 dataset: **[Run 1](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Run1.md)**
-* The requirements document (well, design and specifications) for Twinkles 1 is under construction, **[here](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/requirements/TwinklesRQ.pdf)**
+* The requirements document (well, design and specifications) for Twinkles 1 is under construction, **[here](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/requirements/TwinklesRQ.tex)**
 * We are now a **[2015 DESC Taskforce](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Taskforce2015_Twinkles.md)**, in order to kick-start development ready for a first data release at DC1.
 * **[Twinkles is on the sky!](http://nbviewer.ipython.org/github/DarkEnergyScienceCollaboration/Twinkles/blob/master/notebooks/First%20Light.ipynb)**  LSST DESC Hack Day, February 2015.
 * **[Initial design for the Twinkles pipeline](https://confluence.slac.stanford.edu/display/LSSTDESC/Twinkles+flow+chart)** LSST DESC Hack Day, February 2015.
-* **[Early planning](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/OldRun1.md)** Jan 28 telecon, post Hack Day consolidation.
 
 
 ### Read More
 
-**[Twinkles 1 Design and Specifications](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/requirements/TwinklesRQ.pdf)**
+**[Twinkles 1 Design and Specifications](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/requirements/TwinklesRQ.tex)**
 
 
 Old Notes:
