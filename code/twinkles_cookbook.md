@@ -6,8 +6,7 @@ First generate the inputs to phosim and start them generating (read the phosim d
 
 The script to do this resides in this repository and will only generate input files for the first ~50 visits.  This is enough to have 10
 visits each of g, r, and i band.  The script will also generate a reference catalog for photometric and astrometric calibration.
-You'll also need the OpSim sqlite repository from [this 
-page](https://confluence.lsstcorp.org/display/SIM/OpSim+Datasets+for+Cadence+Workshop+LSST2015)
+You'll also need the OpSim sqlite repository for [enigma_1189](http://ops2.tuc.noao.edu/runs/enigma_1189/data/enigma_1189_sqlite.db.gz)
 ```
 $> setup sims_catUtils
 $> python generatePhosimInput.py
@@ -127,12 +126,14 @@ $> processEimage.py input_data/ --id visit=840..879 --output output_data
 
 # Make a skyMap to use as the basis for the astrometic system for the coadds.  This can't be done up front because
 # makeDiscreteSkyMap decides how to build the patches and tracts for the skyMap based on the data.
-$> makeDiscreteSkyMap.py output_data/ --id visit=840-879
+$> makeDiscreteSkyMap.py output_data/ --id visit=840..879
 
 # Coadds are done in two steps.  Step one is to warp the data to a common astrometric system.  The following does that.
 # The config option is to use background subtracted exposures as inputs.  You can also specify visits using the ^ operator meaning 
 # 'and'.
 $> makeCoaddTempExp.py output_data/ --selectId visit=840^841^842^843^844^845^846^847^848^849 --id filter=r patch=0,0 tract=0 --config bgSubtracted=True
+$> makeCoaddTempExp.py output_data/ --selectId visit=860..869 --id filter=g patch=0,0 tract=0 --config bgSubtracted=True
+$> makeCoaddTempExp.py output_data/ --selectId visit=870..879 --id filter=g patch=0,0 tract=0 --config bgSubtracted=True
 
 # This is the second step which actually coadds the warped images.  The doInterp config option is required if there
 # are any NaNs in the image (which there will be for this set since the images do not cover the whole patch).

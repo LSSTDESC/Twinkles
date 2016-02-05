@@ -6,7 +6,8 @@ Created on Feb 6, 2015
 import om10
 import numpy as np
 from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
-import random
+from lsst.sims.utils import radiansFromArcsec
+import json
 import os
 
 
@@ -15,12 +16,19 @@ class sprinklerCompound(GalaxyTileCompoundObj):
     objectTypeID = 1024
 
     def _final_pass(self, results):
+        #From the original GalaxyTileCompoundObj final pass method
+        for name in results.dtype.fields:
+            if 'raJ2000' in name or 'decJ2000' in name:
+                results[name] = np.radians(results[name])
+
+        #Use Sprinkler now
         sp = sprinkler(results)
         results = sp.sprinkle()
+
         return results
 
 class sprinkler():
-    def __init__(self, catsim_cat, density_param = 0.1):
+    def __init__(self, catsim_cat, om10_cat=str(os.environ['OM10_DIR']+"/data/qso_mock.fits"), density_param = 1.):
         """
         Input:
         catsim_cat:
@@ -37,7 +45,7 @@ class sprinkler():
 
         self.catalog = catsim_cat
         # ****** THIS ASSUMES THAT THE ENVIRONMENT VARIABLE OM10_DIR IS SET *******
-        lensdb = om10.DB(catalog=os.environ['OM10_DIR']+"/data/qso_mock.fits")
+        lensdb = om10.DB(catalog=om10_cat)
         self.lenscat = lensdb.lenses.copy()
         self.density_param = density_param
         #return
@@ -53,12 +61,13 @@ class sprinkler():
                 print "Gone through ", rowNum, " lines of catalog."
             if not np.isnan(row['galaxyAgn_magNorm']):
                 candidates = self.find_lens_candidates(row['galaxyAgn_redshift'])
+                np.random.seed(row['galtileid'] % (2^32 -1))
                 pick_value = np.random.uniform()
             # If there aren't any lensed sources at this redshift from OM10 move on the next object
                 if ((len(candidates) > 0) and (pick_value <= self.density_param)):
                     # Randomly choose one the lens systems
                     # (can decide with or without replacement)
-                    newlens = random.choice(candidates)
+                    newlens = np.random.choice(candidates)
 
                     # Append the lens galaxy
                     # For each image, append the lens images
@@ -71,7 +80,12 @@ class sprinkler():
                             lensrow[str(lensPart + '_raJ2000')] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0 / 180.0 * np.pi
                             lensrow[str(lensPart + '_decJ2000')] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0 / 180.0 * np.pi
                         ###Should this 'mag' be added to all parts? How should we update the ids for the lensed objects?
-                        lensrow['galaxyAgn_magNorm'] += newlens['MAG'][i]
+                        lensrow['galaxyAgn_magNorm'] -= newlens['MAG'][i]
+                        varString = json.loads(lensrow['galaxyAgn_varParamStr'])
+                        varString['pars']['t0Delay'] = newlens['DELAY'][i]
+                        varString['varMethodName'] = 'applyAgnTimeDelay'
+                        lensrow['galaxyAgn_varParamStr'] = json.dumps(varString)
+
                         updated_catalog = np.append(updated_catalog, lensrow)
 
                     #Now manipulate original entry to be the lens galaxy with desired properties
@@ -91,10 +105,9 @@ class sprinkler():
                     row['galaxyDisk_redshift'] = newlens['ZLENS']
                     row['galaxyAgn_redshift'] = newlens['ZLENS']
                     row['galaxyBulge_magNorm'] = newlens['APMAG_I'] #Need to convert this to correct band
-                    arcsec2rad = 4.84813681109536e-06 #To convert from arcsec to radians for catalog
                     newlens['REFF'] = 1.0 #Hard coded for now. See issue in OM10 github.
-                    row['galaxyBulge_majorAxis'] = newlens['REFF'] * arcsec2rad
-                    row['galaxyBulge_minorAxis'] = newlens['REFF'] * (1 - newlens['ELLIP']) * arcsec2rad
+                    row['galaxyBulge_majorAxis'] = radiansFromArcsec(newlens['REFF'])
+                    row['galaxyBulge_minorAxis'] = radiansFromArcsec(newlens['REFF'] * (1 - newlens['ELLIP']))
                     #Convert orientation angle to west of north from east of north by *-1.0 and convert to radians
                     row['galaxyBulge_positionAngle'] = newlens['PHIE']*(-1.0)*np.pi/180.0
                     #Replace original entry with new entry
