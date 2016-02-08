@@ -95,5 +95,11 @@ images plausible, regarding depth and image quality?
 
 *MWV to check this plan and edit*
 
+## Production workflow and dataflow
+
+In order to keep track of the 1000's of batch jobs needed for Twinkles run 1 we are using the SLAC developed workflow engine, with separate workflow being developed for running the simulation (phosim) and data management based analysis (cookbook). To track the input and output datasets we are using the SLAC data catalog, initially for the output of phosim (which is also the input to the cookbook) and both the output from the cookbook task.
+
+By using the workflow engine and data catalog we are able to track all the batch jobs, easily rerun jobs which fail, or which need to be rerun due to changes in the underlying code, and track the provenance of all datasets. Initially we are targetting the SLAC batch farm for the simulation and analysis jobs, but in parallel we are developing the capability to encapsulate the jobs as docker images, and to be able to submit jobs to SLAC or NERSC (or other Grid or supercomputer farms).  
+
 
 [Back to the top.](#Run1)
