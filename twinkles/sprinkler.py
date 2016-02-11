@@ -27,7 +27,7 @@ class sprinklerCompound(GalaxyTileCompoundObj):
                 results[name] = np.radians(results[name])
 
         #Use Sprinkler now
-        sp = sprinkler(results, density_param = 1.)
+        sp = sprinkler(results, density_param = 0.2)
         results = sp.sprinkle()
 
         return results
