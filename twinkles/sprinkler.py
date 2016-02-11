@@ -5,11 +5,16 @@ Created on Feb 6, 2015
 '''
 import om10
 import numpy as np
-from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
-from lsst.sims.utils import radiansFromArcsec
+import re
 import json
 import os
-
+from lsst.utils import getPackageDir
+from lsst.sims.utils import SpecMap
+from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
+from lsst.sims.photUtils.matchUtils import matchBase
+from lsst.sims.photUtils.BandpassDict import BandpassDict
+from lsst.sims.photUtils.Sed import Sed
+from lsst.sims.utils import radiansFromArcsec
 
 class sprinklerCompound(GalaxyTileCompoundObj):
     objid = 'sprinklerCompound'
@@ -22,7 +27,7 @@ class sprinklerCompound(GalaxyTileCompoundObj):
                 results[name] = np.radians(results[name])
 
         #Use Sprinkler now
-        sp = sprinkler(results)
+        sp = sprinkler(results, density_param = 1.)
         results = sp.sprinkle()
 
         return results
@@ -48,6 +53,16 @@ class sprinkler():
         lensdb = om10.DB(catalog=om10_cat)
         self.lenscat = lensdb.lenses.copy()
         self.density_param = density_param
+        self.bandpassDict = BandpassDict.loadTotalBandpassesFromFiles(bandpassNames=['i'])
+
+        specFileStart = 'Burst'
+        for key, val in sorted(SpecMap.subdir_map.iteritems()):
+            if re.match(key, specFileStart):
+                galSpecDir = str(val)
+        galDir = str(getPackageDir('sims_sed_library') + '/' + galSpecDir + '/')
+        self.LRG_name = 'Burst.25E09.1Z.spec'
+        self.LRG = Sed()
+        self.LRG.readSED_flambda(str(galDir + self.LRG_name))
         #return
 
     def sprinkle(self):
@@ -77,14 +92,27 @@ class sprinkler():
                         # raPhSim and decPhoSim are in radians
                         #Shift all parts of the lensed object, not just its agn part
                         for lensPart in ['galaxyBulge', 'galaxyDisk', 'galaxyAgn']:
-                            lensrow[str(lensPart + '_raJ2000')] += (newlens['XIMG'][i] - newlens['XSRC']) / 3600.0 / 180.0 * np.pi
-                            lensrow[str(lensPart + '_decJ2000')] += (newlens['YIMG'][i] - newlens['YSRC']) / 3600.0 / 180.0 * np.pi
-                        ###Should this 'mag' be added to all parts? How should we update the ids for the lensed objects?
-                        lensrow['galaxyAgn_magNorm'] -= newlens['MAG'][i]
+                            lensrow[str(lensPart + '_raJ2000')] += np.radians(newlens['XIMG'][i]/(np.cos(np.radians(lensrow[str(lensPart + '_decJ2000')]))*3600.))
+                            lensrow[str(lensPart + '_decJ2000')] += np.radians(newlens['YIMG'][i]/3600.)
+                        mag_adjust = 2.5*np.log10(np.abs(newlens['MAG'][i]))
+                        lensrow['galaxyAgn_magNorm'] -= mag_adjust
                         varString = json.loads(lensrow['galaxyAgn_varParamStr'])
                         varString['pars']['t0Delay'] = newlens['DELAY'][i]
                         varString['varMethodName'] = 'applyAgnTimeDelay'
                         lensrow['galaxyAgn_varParamStr'] = json.dumps(varString)
+                        lensrow['galaxyDisk_majorAxis'] = 0.0
+                        lensrow['galaxyDisk_minorAxis'] = 0.0
+                        lensrow['galaxyDisk_positionAngle'] = 0.0
+                        lensrow['galaxyDisk_internalAv'] = 0.0
+                        lensrow['galaxyDisk_magNorm'] = np.nan
+                        lensrow['galaxyDisk_sedFilename'] = None
+                        lensrow['galaxyBulge_majorAxis'] = 0.0
+                        lensrow['galaxyBulge_minorAxis'] = 0.0
+                        lensrow['galaxyBulge_positionAngle'] = 0.0
+                        lensrow['galaxyBulge_internalAv'] = 0.0
+                        lensrow['galaxyBulge_magNorm'] = np.nan
+                        lensrow['galaxyBulge_sedFilename'] = None
+                        lensrow['galtileid'] = np.left_shift(lensrow['galtileid'], 3) + i
 
                         updated_catalog = np.append(updated_catalog, lensrow)
 
@@ -100,11 +128,11 @@ class sprinkler():
                     row['galaxyAgn_magNorm'] = np.nan
                     row['galaxyAgn_sedFilename'] = None
                     #Now insert desired Bulge properties
-                    row['galaxyBulge_sedFilename'] = 'Burst.25E09.02Z.spec'
+                    row['galaxyBulge_sedFilename'] = self.LRG_name
                     row['galaxyBulge_redshift'] = newlens['ZLENS']
                     row['galaxyDisk_redshift'] = newlens['ZLENS']
                     row['galaxyAgn_redshift'] = newlens['ZLENS']
-                    row['galaxyBulge_magNorm'] = newlens['APMAG_I'] #Need to convert this to correct band
+                    row['galaxyBulge_magNorm'] = matchBase().calcMagNorm([newlens['APMAG_I']], self.LRG, self.bandpassDict) #Changed from i band to imsimband
                     newlens['REFF'] = 1.0 #Hard coded for now. See issue in OM10 github.
                     row['galaxyBulge_majorAxis'] = radiansFromArcsec(newlens['REFF'])
                     row['galaxyBulge_minorAxis'] = radiansFromArcsec(newlens['REFF'] * (1 - newlens['ELLIP']))
