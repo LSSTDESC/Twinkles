@@ -65,10 +65,11 @@ stop after reaching a certain number, perhaps 100.
 
 #### <a name="Supernovae"></a> Supernovae
 
-The plan for supernova is 
-1. Unlensed SALT2 model Type Ia supernovae in the redshift range of 0-0.8 with SALT2 parameters drawn from usual distributions. There is a scatter of 0.15 about the Bessell B rest frame peak magnitude, in the ampltude of the light curve. 
-2. The number of SN is large, with the plan being to try to get about 100 SNR > 5 SN in a visit. These SN are in a small ra, dec range of size 0.4* sqrt(2) around the center of the Twinkles patch.
-3. The association of SN with hosts in terms of correlations with host properties is not included, and the association is done randomly. However, we have added a displacement from the center of the galaxy, with a distance related to the semi-major axis of the galactic disk.
+The plan for supernova is
+ 
+- Unlensed SALT2 model Type Ia supernovae in the redshift range of 0-0.8 with SALT2 parameters drawn from usual distributions. There is a scatter of 0.15 about the Bessell B rest frame peak magnitude, in the ampltude of the light curve. 
+-  The number of SN is large, with the plan being to try to get about 100 SNR > 5 SN in a visit. These SN are in a small ra, dec range of size 0.4* sqrt(2) around the center of the Twinkles patch.
+-  The association of SN with hosts in terms of correlations with host properties is not included, and the association is done randomly. However, we have added a displacement from the center of the galaxy, with a distance related to the semi-major axis of the galactic disk.
 
 
 
