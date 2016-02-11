@@ -54,9 +54,9 @@ help with some tests, and basic PSF modeling.
 These are simply taken from the OM10 catalog, as in [issue #21](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/21), by the `sprinkler` code. For each AGN-hosting galaxy in a `CatSim` catalog, we search the OM10
 catalog for all sources within +/-0.05 in redshift from the `CatSim` source. If
 there aren't any OM10 lensed sources at this redshift, we move on the next
-object. Otherwise, there is a probability (currently set at 0.2 to give us a few hundred sprinkled galaxies)  
-that we randomly choose one of the lens systems. Then, we remove
-the `CatSim` object from the catalog and instead add lensed images, with
+object. Otherwise, there is a probability (currently set at 0.2 to give us a 
+few hundred sprinkled galaxies) that we randomly choose one of the lens systems. 
+Then, we remove the `CatSim` object from the catalog and instead add lensed images, with
 appropriately magnified source brightness, and finally add a model lens galaxy
 to the catalog.
 
