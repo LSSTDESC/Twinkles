@@ -112,6 +112,9 @@ class sprinkler():
                         lensrow['galaxyBulge_internalAv'] = 0.0
                         lensrow['galaxyBulge_magNorm'] = np.nan
                         lensrow['galaxyBulge_sedFilename'] = None
+                        lensrow['galaxyBulge_redshift'] = newlens['ZSRC']
+                        lensrow['galaxyDisk_redshift'] = newlens['ZSRC']
+                        lensrow['galaxyAgn_redshift'] = newlens['ZSRC']
                         lensrow['galtileid'] = np.left_shift(lensrow['galtileid'], 3) + i
 
                         updated_catalog = np.append(updated_catalog, lensrow)
