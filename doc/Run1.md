@@ -51,17 +51,14 @@ help with some tests, and basic PSF modeling.
 
 #### <a name="Lensed Quasars"></a> Lensed Quasars
 
-These are simply taken from the OM10 catalog, as in [issue #21](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/21), by the `sprinkler` code. For each galaxy in a `CatSim` catalog, we search the OM10
+These are simply taken from the OM10 catalog, as in [issue #21](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/21), by the `sprinkler` code. For each AGN-hosting galaxy in a `CatSim` catalog, we search the OM10
 catalog for all sources within +/-0.05 in redshift from the `CatSim` source. If
 there aren't any OM10 lensed sources at this redshift, we move on the next
-object. Otherwise, we randomly choose one of the lens systems. Then, we remove
+object. Otherwise, there is a probability (currently set at 0.2 to give us a few hundred sprinkled galaxies)  
+that we randomly choose one of the lens systems. Then, we remove
 the `CatSim` object from the catalog and instead add lensed images, with
 appropriately magnified source brightness, and finally add a model lens galaxy
-to the catalog. Not all the galaxies are placed behind lenses in this way - we
-stop after reaching a certain number, perhaps 100. 
-
-*BK to edit this text for accuracy*
-
+to the catalog.
 
 #### <a name="Supernovae"></a> Supernovae
 
