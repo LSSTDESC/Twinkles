@@ -18,30 +18,36 @@ def readPhoSimInstanceCatalog(fname,
 
     Returns
     -------
-    (meta, df) where meta is a dictionary of the metadata in the file and
-    df is a `pandas.dataFrame`
+    A `pandas.DataFrame` with the phosim Instance Catalog with metadata
+    accessed as a dictionary through the meta attribute of the return.
     """
 
+    # read the header into a metadata list, and get number of lines to skip
+    # for catalog
     metalines = []
     with open(fname) as f:
-        line = f.readline()
         linenum = 0
-        while not line.startswith('object'):
-                metalines.append(line)
-                linenum +=1
-                line = f.readline()
+        for line in f:
+            if line.startswith('object'):
+                continue
+            metalines.append(line)
+            linenum +=1
 
-    print linenum
+    # process the headers into a metadata list
     meta = metadataFromLines(metalines)
+
+    # read the catalog into a dataframe
     df = pd.read_csv(fname, skiprows=linenum, names=names, sep='\s+')
-    return meta, df
+    df.meta = meta
+    return df
 
 def metadataFromLines(lines):
-
+    """
+    process the metadata lines into a dictionary
+    """
     info = [line.split() for line in lines]
     meta = {key: np.float(value) for key, value in info}
 
-    print meta
     return meta
 
 
