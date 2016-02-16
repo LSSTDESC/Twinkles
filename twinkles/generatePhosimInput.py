@@ -27,16 +27,14 @@ def generatePhosimInput():
     #string to an OpSim output database.  This is the connection string
     #to a test database that comes when you install CatSim.
     generator = ObservationMetaDataGenerator(database=opsimDB, driver='sqlite')
-    obsMetaDataResults = generator.getObservationMetaData(fieldRA=(53, 54), fieldDec=(-29, -27), boundLength=0.3)
-
-    rVisits = []
-    for md in obsMetaDataResults:
-        if md.bandpass == 'r':
-            rVisits.append(md)
+    obsHistIDList = numpy.genfromtxt('FirstSet_obsHistIDs.csv', delimiter=',', usecols=0)
+    obsMetaDataResults = []
+    for obsHistID in obsHistIDList[:10]:
+        obsMetaDataResults.append(generator.getObservationMetaData(obsHistID = obsHistID, fieldRA=(53, 54), fieldDec=(-29, -27), boundLength=0.3)[0])
 
     starObjNames = ['msstars', 'bhbstars', 'wdstars', 'rrlystars', 'cepheidstars']
 
-    for obs_metadata in rVisits[:10]:
+    for obs_metadata in obsMetaDataResults:
         filename = "phosim_input_%s.txt"%(obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
         obs_metadata.phoSimMetaData['SIM_NSNAP'] = (1, numpy.dtype(int))
         obs_metadata.phoSimMetaData['SIM_VISTIME'] = (30, numpy.dtype(float))
