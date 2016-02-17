@@ -13,6 +13,7 @@ To use:
 from __future__ import with_statement
 import sys
 import os
+import time
 import numpy
 from lsst.sims.catalogs.measures.instance import InstanceCatalog, CompoundInstanceCatalog
 from lsst.sims.utils import ObservationMetaData
@@ -51,7 +52,7 @@ def generatePhosimInput(mode='a'):
             exit()
     else:
         with open('run.log', 'w') as f:
-            f.write('obsHistID,status\n')
+            f.write('obsHistID,status,time\n')
 
 
     #you need to provide ObservationMetaDataGenerator with the connection
@@ -61,7 +62,7 @@ def generatePhosimInput(mode='a'):
     obsHistIDList = numpy.genfromtxt('FirstSet_obsHistIDs.csv', delimiter=',', usecols=0)
     obsMetaDataResults = []
     # Change the slicing in this line for the range of visits
-    for obsHistID in obsHistIDList[:5]:
+    for obsHistID in obsHistIDList[50:100]:
         obsMetaDataResults.append(generator.getObservationMetaData(obsHistID=obsHistID,
                                   fieldRA=(53, 54), fieldDec=(-29, -27),
                                   boundLength=0.3)[0])
@@ -109,7 +110,7 @@ def generatePhosimInput(mode='a'):
                                        write_mode='a')
 
                 with open(logfilename, 'a') as f:
-                    f.write('{0:d},DONE,\n'.format(obs_metadata.phoSimMetaData['Opsim_obshistid'][0]))
+                    f.write('{0:d},DONE,{1:3.6f}\n'.format(obs_metadata.phoSimMetaData['Opsim_obshistid'][0], time.time()))
                 break
             except RuntimeError:
                 continue
