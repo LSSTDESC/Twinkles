@@ -33,7 +33,7 @@ class sprinklerCompound(GalaxyTileCompoundObj):
         return results
 
 class sprinkler():
-    def __init__(self, catsim_cat, om10_cat=str(os.environ['OM10_DIR']+"/data/qso_mock.fits"), density_param = 1.):
+    def __init__(self, catsim_cat, om10_cat='twinkles_tdcLenses.fits', density_param = 1.):
         """
         Input:
         catsim_cat:

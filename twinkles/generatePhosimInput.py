@@ -2,10 +2,10 @@
 """
 Script to generate phoSim input catalog that has sprinkled lens systems inside.
 It is also setup to run visits from a selected set in kraken_1042.
-To use: 
+To use:
     - need Om10 setup
     - sims stack setup, currently sims_catUtils must be a branch https://github.com/lsst/sims_catUtils/tree/newTwinklesCatalog and at commit  e203093  or after
-    - Have the kraken_1042 sqlite db symlinked to this directory. 
+    - Have the kraken_1042 sqlite db symlinked to this directory.
 
     You can modify the slicing to choose which visits to simulate
 """
@@ -30,7 +30,6 @@ from sprinkler import sprinklerCompound
 from twinklesCatalogDefs import TwinklesCatalogZPoint
 
 def generatePhosimInput(mode='a'):
-
 
     if mode == 'a':
         filewrite = 'append'
