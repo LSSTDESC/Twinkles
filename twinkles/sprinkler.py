@@ -72,7 +72,7 @@ class sprinkler():
         updated_catalog = self.catalog.copy()
         print "Running sprinkler. Catalog Length: ", len(self.catalog)
         for rowNum, row in enumerate(self.catalog):
-            if rowNum % 1000 == 0:
+            if rowNum % 20000 == 0:
                 print "Gone through ", rowNum, " lines of catalog."
             if not np.isnan(row['galaxyAgn_magNorm']):
                 candidates = self.find_lens_candidates(row['galaxyAgn_redshift'])
