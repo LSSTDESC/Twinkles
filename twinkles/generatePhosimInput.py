@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Generate phoSim input catalog that has sprinkled lens systems inside.
+Script to generate phoSim input catalog that has sprinkled lens systems inside.
+It is also setup to run visits from a selected set in kraken_1042.
+To use: 
+    - need Om10 setup
+    - sims stack setup, currently sims_catUtils must be a branch https://github.com/lsst/sims_catUtils/tree/newTwinklesCatalog and at commit  e203093  or after
+    - Have the kraken_1042 sqlite db symlinked to this directory. 
+
+    You can modify the slicing to choose which visits to simulate
 """
 
 from __future__ import with_statement
@@ -53,10 +60,11 @@ def generatePhosimInput(mode='a'):
     generator = ObservationMetaDataGenerator(database=opsimDB, driver='sqlite')
     obsHistIDList = numpy.genfromtxt('FirstSet_obsHistIDs.csv', delimiter=',', usecols=0)
     obsMetaDataResults = []
+    # Change the slicing in this line for the range of visits
     for obsHistID in obsHistIDList[:5]:
         obsMetaDataResults.append(generator.getObservationMetaData(obsHistID=obsHistID,
                                   fieldRA=(53, 54), fieldDec=(-29, -27),
-                                  boundLength=0.03)[0])
+                                  boundLength=0.3)[0])
 
     starObjNames = ['msstars', 'bhbstars', 'wdstars', 'rrlystars', 'cepheidstars']
 
@@ -92,7 +100,7 @@ def generatePhosimInput(mode='a'):
                 galCat = CompoundInstanceCatalog(compoundGalICList,
                                                    compoundGalDBList,
                                                    obs_metadata=obs_metadata,
-                                                   constraint='g_ab > 11.',
+                                                   # constraint='g_ab > 11.',
                                                    compoundDBclass=sprinklerCompound)
                 galCat.write_catalog(filename, write_mode='a',
                                      write_header=False)
