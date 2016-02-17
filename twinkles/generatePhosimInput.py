@@ -13,9 +13,10 @@ from lsst.sims.catalogs.generation.db import CatalogDBObject
 from lsst.sims.catalogs.generation.db.dbConnection import DBConnection
 from lsst.sims.catUtils.baseCatalogModels import OpSim3_61DBObject, StarObj, MsStarObj, \
         BhbStarObj, WdStarObj, RRLyStarObj, CepheidStarObj, GalaxyBulgeObj, GalaxyDiskObj, \
-        GalaxyAgnObj
+        GalaxyAgnObj, SNObj
+from lsst.sims.catUtils.mixins import FrozenSNCat
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
-        PhoSimCatalogPoint, PhoSimCatalogSersic2D
+        PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogSN
 from sprinkler import sprinklerCompound
 from twinklesCatalogDefs import TwinklesCatalogZPoint
 
@@ -29,27 +30,51 @@ def generatePhosimInput():
     generator = ObservationMetaDataGenerator(database=opsimDB, driver='sqlite')
     obsHistIDList = numpy.genfromtxt('FirstSet_obsHistIDs.csv', delimiter=',', usecols=0)
     obsMetaDataResults = []
-    for obsHistID in obsHistIDList[:10]:
-        obsMetaDataResults.append(generator.getObservationMetaData(obsHistID = obsHistID, fieldRA=(53, 54), fieldDec=(-29, -27), boundLength=0.3)[0])
+    for obsHistID in obsHistIDList[:5]:
+        obsMetaDataResults.append(generator.getObservationMetaData(obsHistID=obsHistID,
+                                  fieldRA=(53, 54), fieldDec=(-29, -27),
+                                  boundLength=0.03)[0])
 
     starObjNames = ['msstars', 'bhbstars', 'wdstars', 'rrlystars', 'cepheidstars']
 
+    snmodel = SNObj()
     for obs_metadata in obsMetaDataResults:
         filename = "phosim_input_%s.txt"%(obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
         obs_metadata.phoSimMetaData['SIM_NSNAP'] = (1, numpy.dtype(int))
         obs_metadata.phoSimMetaData['SIM_VISTIME'] = (30, numpy.dtype(float))
         print 'Starting Visit: ', obs_metadata.phoSimMetaData['Opsim_obshistid'][0]
 
-        compoundDBList = [MsStarObj, BhbStarObj, WdStarObj, RRLyStarObj, CepheidStarObj, GalaxyBulgeObj,
-                          GalaxyDiskObj, GalaxyAgnObj]
-        compoundICList = [PhoSimCatalogPoint, PhoSimCatalogPoint, PhoSimCatalogPoint, PhoSimCatalogPoint,
-                          PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogSersic2D, TwinklesCatalogZPoint]
+        compoundStarDBList = [MsStarObj, BhbStarObj, WdStarObj, RRLyStarObj, CepheidStarObj]
+        compoundGalDBList = [GalaxyBulgeObj, GalaxyDiskObj, GalaxyAgnObj]
+        compoundStarICList = [PhoSimCatalogPoint, PhoSimCatalogPoint,
+                              PhoSimCatalogPoint, PhoSimCatalogPoint,
+                              PhoSimCatalogPoint]
+        compoundGalICList =  [PhoSimCatalogSersic2D, PhoSimCatalogSersic2D,
+                              TwinklesCatalogZPoint]
 
+        snphosim = PhoSimCatalogSN(db_obj=snmodel,
+                                   obs_metadata=obs_metadata,
+                                   column_outputs=['EBV'])
+        snphosim.writeSedFile = True
+        snphosim.suppressDimSN = True
+        snphosim.prefix = 'spectra_files/'
         while True:
             try:
-                totalCat = CompoundInstanceCatalog(compoundICList, compoundDBList, obs_metadata=obs_metadata,
+                starCat = CompoundInstanceCatalog(compoundStarICList,
+                                                   compoundStarDBList,
+                                                   obs_metadata=obs_metadata,
+                                                   constraint='rmag > 16.',
                                                    compoundDBclass=sprinklerCompound)
-                totalCat.write_catalog(filename)
+                starCat.write_catalog(filename)
+                galCat = CompoundInstanceCatalog(compoundGalICList,
+                                                   compoundGalDBList,
+                                                   obs_metadata=obs_metadata,
+                                                   compoundDBclass=sprinklerCompound)
+                galCat.write_catalog(filename, write_mode='a',
+                                     write_header=False)
+
+                snphosim.write_catalog(filename, write_header=False,
+                                       write_mode='a')
                 break
             except RuntimeError:
                 continue
