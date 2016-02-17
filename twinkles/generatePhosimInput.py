@@ -45,7 +45,7 @@ def generatePhosimInput(mode='a'):
             pass
         elif filewrite == 'clobber':
             with open('run.log', 'w') as f:
-                f.write('obsHistID,status\n')
+                f.write('obsHistID,status,timestamp\n')
         else:
             print('file exists and mode uncertain')
             exit()
@@ -109,7 +109,7 @@ def generatePhosimInput(mode='a'):
                                        write_mode='a')
 
                 with open(logfilename, 'a') as f:
-                    f.write('{0:d},DONE\n'.format(obs_metadata.phoSimMetaData['Opsim_obshistid'][0]))
+                    f.write('{0:d},DONE,\n'.format(obs_metadata.phoSimMetaData['Opsim_obshistid'][0]))
                 break
             except RuntimeError:
                 continue
