@@ -4,6 +4,7 @@ Generate phoSim input catalog that has sprinkled lens systems inside.
 """
 
 from __future__ import with_statement
+import sys
 import os
 import numpy
 from lsst.sims.catalogs.measures.instance import InstanceCatalog, CompoundInstanceCatalog
@@ -20,9 +21,31 @@ from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
 from sprinkler import sprinklerCompound
 from twinklesCatalogDefs import TwinklesCatalogZPoint
 
-def generatePhosimInput():
+def generatePhosimInput(mode='a'):
+
+
+    if mode == 'a':
+        filewrite = 'append'
+    elif mode == 'c':
+        filewrite = 'clobber'
 
     opsimDB = os.path.join('.','kraken_1042_sqlite.db')
+
+
+    logfilename = 'run.log'
+    if os.path.isfile(logfilename):
+        if filewrite =='append':
+            pass
+        elif filewrite == 'clobber':
+            with open('run.log', 'w') as f:
+                f.write('obsHistID,status\n')
+        else:
+            print('file exists and mode uncertain')
+            exit()
+    else:
+        with open('run.log', 'w') as f:
+            f.write('obsHistID,status\n')
+
 
     #you need to provide ObservationMetaDataGenerator with the connection
     #string to an OpSim output database.  This is the connection string
@@ -63,18 +86,22 @@ def generatePhosimInput():
                 starCat = CompoundInstanceCatalog(compoundStarICList,
                                                    compoundStarDBList,
                                                    obs_metadata=obs_metadata,
-                                                   constraint='rmag > 16.',
+                                                   constraint='gmag > 11.',
                                                    compoundDBclass=sprinklerCompound)
                 starCat.write_catalog(filename)
                 galCat = CompoundInstanceCatalog(compoundGalICList,
                                                    compoundGalDBList,
                                                    obs_metadata=obs_metadata,
+                                                   constraint='g_ab > 11.',
                                                    compoundDBclass=sprinklerCompound)
                 galCat.write_catalog(filename, write_mode='a',
                                      write_header=False)
 
                 snphosim.write_catalog(filename, write_header=False,
                                        write_mode='a')
+
+                with open(logfilename, 'a') as f:
+                    f.write('{0:d},DONE\n'.format(obs_metadata.phoSimMetaData['Opsim_obshistid'][0]))
                 break
             except RuntimeError:
                 continue
@@ -82,4 +109,10 @@ def generatePhosimInput():
         print "Finished Writing Visit: ", obs_metadata.phoSimMetaData['Opsim_obshistid'][0]
 
 if __name__ == "__main__":
-    generatePhosimInput()
+    import sys
+
+    if len(sys.argv) > 1:
+        mode = str(sys.argv[1])
+    else:
+        mode = 'a'
+    generatePhosimInput(mode)
