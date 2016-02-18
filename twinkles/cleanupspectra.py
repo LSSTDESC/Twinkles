@@ -72,13 +72,17 @@ def cleanup(fname):
 if __name__=='__main__':
     import pandas as pd
     import sys
+    import gzip
 
     # logfilename = sys.argv[1]
     logfilename = 'run.log'
+    logfilename = 'run_400.log'
     #runs = pd.read_csv(logfilename)
+    print logfilename
     filenames = listFiles(logfilename, prefix='InstanceCatalogs/phosim_input_')
     #for obsHistID in runs.obsHistID.values[:5]:
-    for fname in filenames[5:10]:
+    for fname in filenames:
+
 
         #fname = 'phosim_input_220.txt'
         #fname = 'InstanceCatalogs/phosim_input_' + str(obsHistID) +'.txt'
