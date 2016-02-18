@@ -76,6 +76,9 @@ class sprinkler():
                 print "Gone through ", rowNum, " lines of catalog."
             if not np.isnan(row['galaxyAgn_magNorm']):
                 candidates = self.find_lens_candidates(row['galaxyAgn_redshift'])
+                varString = json.loads(row['galaxyAgn_varParamStr'])
+                varString['pars']['t0_mjd'] = 59500.0
+                row['galaxyAgn_varParamStr'] = json.dumps(varString)
                 np.random.seed(row['galtileid'] % (2^32 -1))
                 pick_value = np.random.uniform()
             # If there aren't any lensed sources at this redshift from OM10 move on the next object
