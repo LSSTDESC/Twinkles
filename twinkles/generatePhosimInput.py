@@ -96,17 +96,17 @@ def generatePhosimInput(mode='a'):
                                                    obs_metadata=obs_metadata,
                                                    constraint='gmag > 11.',
                                                    compoundDBclass=sprinklerCompound)
-                starCat.write_catalog(filename)
+                starCat.write_catalog(filename, chunk_size=10000)
                 galCat = CompoundInstanceCatalog(compoundGalICList,
                                                    compoundGalDBList,
                                                    obs_metadata=obs_metadata,
                                                    # constraint='g_ab > 11.',
                                                    compoundDBclass=sprinklerCompound)
                 galCat.write_catalog(filename, write_mode='a',
-                                     write_header=False)
+                                     write_header=False, chunk_size=10000)
 
                 snphosim.write_catalog(filename, write_header=False,
-                                       write_mode='a')
+                                       write_mode='a', chunk_size=10000)
 
                 with open(logfilename, 'a') as f:
                     f.write('{0:d},DONE,{1:3.6f}\n'.format(obs_metadata.phoSimMetaData['Opsim_obshistid'][0], time.time()))
