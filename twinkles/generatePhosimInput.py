@@ -62,7 +62,7 @@ def generatePhosimInput(mode='a', runobsHistID=None):
     obsHistIDList = numpy.genfromtxt('FirstSet_obsHistIDs.csv', delimiter=',', usecols=0)
     obsMetaDataResults = []
     # Change the slicing in this line for the range of visits
-    for obsHistID in obsHistIDList[1000:1005]:
+    for obsHistID in obsHistIDList[1200:-1]:
         if runobsHistID is not None:
             obsHistID = runobsHistID
         obsMetaDataResults.append(generator.getObservationMetaData(obsHistID=obsHistID,
@@ -73,7 +73,7 @@ def generatePhosimInput(mode='a', runobsHistID=None):
 
     snmodel = SNObj()
     for obs_metadata in obsMetaDataResults:
-        filename = "phosim_input_%s.txt"%(obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
+        filename = "InstanceCatalogs/phosim_input_%s.txt"%(obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
         obs_metadata.phoSimMetaData['SIM_NSNAP'] = (1, numpy.dtype(int))
         obs_metadata.phoSimMetaData['SIM_VISTIME'] = (30, numpy.dtype(float))
         print 'Starting Visit: ', obs_metadata.phoSimMetaData['Opsim_obshistid'][0]
@@ -95,19 +95,21 @@ def generatePhosimInput(mode='a', runobsHistID=None):
         while True:
             try:
                 starCat = CompoundInstanceCatalog(compoundStarICList,
-                                                   compoundStarDBList,
-                                                   obs_metadata=obs_metadata,
-                                                   constraint='gmag > 11.',
-                                                   compoundDBclass=sprinklerCompound)
+                                                  compoundStarDBList,
+                                                  obs_metadata=obs_metadata,
+                                                  constraint='gmag > 11.',
+                                                  compoundDBclass=sprinklerCompound)
                 starCat.write_catalog(filename)
-###                galCat = CompoundInstanceCatalog(compoundGalICList,
-###                                                   compoundGalDBList,
-###                                                   obs_metadata=obs_metadata,
-###                                                   # constraint='g_ab > 11.',
-###                                                   compoundDBclass=sprinklerCompound)
-###                galCat.write_catalog(filename, write_mode='a',
-###                                     write_header=False)
-###
+                galCat = CompoundInstanceCatalog(compoundGalICList,
+                                                 compoundGalDBList,
+                                                 obs_metadata=obs_metadata,
+                                                 # constraint='g_ab > 11.',
+                                                 compoundDBclass=sprinklerCompound)
+                galCat.write_catalog(filename, write_mode='a',
+                                     write_header=False)
+
+                # snphosim.write_catalog(filename, write_header=True,
+                #                      write_mode='w')
                 snphosim.write_catalog(filename, write_header=False,
                                        write_mode='a')
 
