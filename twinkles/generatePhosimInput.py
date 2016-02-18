@@ -29,7 +29,7 @@ from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
 from sprinkler import sprinklerCompound
 from twinklesCatalogDefs import TwinklesCatalogZPoint
 
-def generatePhosimInput(mode='a'):
+def generatePhosimInput(mode='a', runobsHistID=None):
 
     if mode == 'a':
         filewrite = 'append'
@@ -61,7 +61,9 @@ def generatePhosimInput(mode='a'):
     obsHistIDList = numpy.genfromtxt('FirstSet_obsHistIDs.csv', delimiter=',', usecols=0)
     obsMetaDataResults = []
     # Change the slicing in this line for the range of visits
-    for obsHistID in obsHistIDList[50:100]:
+    for obsHistID in obsHistIDList[1000:1005]:
+        if runobsHistID is not None:
+            obsHistID = runobsHistID
         obsMetaDataResults.append(generator.getObservationMetaData(obsHistID=obsHistID,
                                   fieldRA=(53, 54), fieldDec=(-29, -27),
                                   boundLength=0.3)[0])
@@ -70,7 +72,7 @@ def generatePhosimInput(mode='a'):
 
     snmodel = SNObj()
     for obs_metadata in obsMetaDataResults:
-        filename = "phosim_input_%s.txt"%(obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
+        filename = "InstanceCatalogs/phosim_input_%s.txt"%(obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
         obs_metadata.phoSimMetaData['SIM_NSNAP'] = (1, numpy.dtype(int))
         obs_metadata.phoSimMetaData['SIM_VISTIME'] = (30, numpy.dtype(float))
         print 'Starting Visit: ', obs_metadata.phoSimMetaData['Opsim_obshistid'][0]
@@ -108,6 +110,9 @@ def generatePhosimInput(mode='a'):
                 snphosim.write_catalog(filename, write_header=False,
                                        write_mode='a', chunk_size=10000)
 
+                if runobsHistID is not None:
+                    print('Done doing requested obsHistID')
+                    sys.exit()
                 with open(logfilename, 'a') as f:
                     f.write('{0:d},DONE,{1:3.6f}\n'.format(obs_metadata.phoSimMetaData['Opsim_obshistid'][0], time.time()))
                 break
@@ -123,4 +128,4 @@ if __name__ == "__main__":
         mode = str(sys.argv[1])
     else:
         mode = 'a'
-    generatePhosimInput(mode)
+    generatePhosimInput(mode, runobsHistID=220)
