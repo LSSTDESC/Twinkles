@@ -77,7 +77,7 @@ class sprinkler():
             if not np.isnan(row['galaxyAgn_magNorm']):
                 candidates = self.find_lens_candidates(row['galaxyAgn_redshift'])
                 varString = json.loads(row['galaxyAgn_varParamStr'])
-                varString['pars']['t0_mjd'] = 59500.0
+                varString['pars']['t0_mjd'] = 59300.0
                 row['galaxyAgn_varParamStr'] = json.dumps(varString)
                 np.random.seed(row['galtileid'] % (2^32 -1))
                 pick_value = np.random.uniform()
