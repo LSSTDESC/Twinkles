@@ -115,7 +115,12 @@ class sprinkler():
                         lensrow['galaxyBulge_redshift'] = newlens['ZSRC']
                         lensrow['galaxyDisk_redshift'] = newlens['ZSRC']
                         lensrow['galaxyAgn_redshift'] = newlens['ZSRC']
-                        lensrow['galtileid'] = np.left_shift(lensrow['galtileid'], 3) + i
+                        #To get back twinklesID in lens catalog from phosim catalog id number
+                        #just use np.right_shift(phosimID-28, 10). Take the floor of the last
+                        #3 numbers to get twinklesID in the twinkles lens catalog and the remainder is
+                        #the image number minus 1.
+                        lensrow['galtileid'] = (lensrow['galtileid']*1000 +
+                                                newlens['twinklesID']*4 + i)
 
                         updated_catalog = np.append(updated_catalog, lensrow)
 
