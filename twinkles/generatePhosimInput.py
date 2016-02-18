@@ -29,7 +29,7 @@ from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
 from sprinkler import sprinklerCompound
 from twinklesCatalogDefs import TwinklesCatalogZPoint
 
-def generatePhosimInput(mode='a'):
+def generatePhosimInput(mode='a', runobsHistID=None):
 
 
     if mode == 'a':
@@ -62,7 +62,9 @@ def generatePhosimInput(mode='a'):
     obsHistIDList = numpy.genfromtxt('FirstSet_obsHistIDs.csv', delimiter=',', usecols=0)
     obsMetaDataResults = []
     # Change the slicing in this line for the range of visits
-    for obsHistID in obsHistIDList[50:100]:
+    for obsHistID in obsHistIDList[1000:1005]:
+        if runobsHistID is not None:
+            obsHistID = runobsHistID
         obsMetaDataResults.append(generator.getObservationMetaData(obsHistID=obsHistID,
                                   fieldRA=(53, 54), fieldDec=(-29, -27),
                                   boundLength=0.3)[0])
@@ -98,17 +100,20 @@ def generatePhosimInput(mode='a'):
                                                    constraint='gmag > 11.',
                                                    compoundDBclass=sprinklerCompound)
                 starCat.write_catalog(filename)
-                galCat = CompoundInstanceCatalog(compoundGalICList,
-                                                   compoundGalDBList,
-                                                   obs_metadata=obs_metadata,
-                                                   # constraint='g_ab > 11.',
-                                                   compoundDBclass=sprinklerCompound)
-                galCat.write_catalog(filename, write_mode='a',
-                                     write_header=False)
-
+###                galCat = CompoundInstanceCatalog(compoundGalICList,
+###                                                   compoundGalDBList,
+###                                                   obs_metadata=obs_metadata,
+###                                                   # constraint='g_ab > 11.',
+###                                                   compoundDBclass=sprinklerCompound)
+###                galCat.write_catalog(filename, write_mode='a',
+###                                     write_header=False)
+###
                 snphosim.write_catalog(filename, write_header=False,
                                        write_mode='a')
 
+                if runobsHistID is not None:
+                    print('Done doing requested obsHistID')
+                    sys.exit()
                 with open(logfilename, 'a') as f:
                     f.write('{0:d},DONE,{1:3.6f}\n'.format(obs_metadata.phoSimMetaData['Opsim_obshistid'][0], time.time()))
                 break
@@ -124,4 +129,4 @@ if __name__ == "__main__":
         mode = str(sys.argv[1])
     else:
         mode = 'a'
-    generatePhosimInput(mode)
+    generatePhosimInput(mode, runobsHistID=220)
