@@ -29,7 +29,7 @@ from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
 from sprinkler import sprinklerCompound
 from twinklesCatalogDefs import TwinklesCatalogZPoint
 
-def generatePhosimInput(mode='a', runobsHistID=None):
+def generatePhosimInput(mode='a', runobsHistID=None, logfile=None):
 
     if mode == 'a':
         filewrite = 'append'
@@ -39,7 +39,10 @@ def generatePhosimInput(mode='a', runobsHistID=None):
     opsimDB = os.path.join('.','kraken_1042_sqlite.db')
 
 
-    logfilename = 'run.log'
+    if logfile is None:
+        logfilename = 'run.log'
+    else:
+        logfilename = logfile
     if os.path.isfile(logfilename):
         if filewrite =='append':
             pass
@@ -61,7 +64,7 @@ def generatePhosimInput(mode='a', runobsHistID=None):
     obsHistIDList = numpy.genfromtxt('FirstSet_obsHistIDs.csv', delimiter=',', usecols=0)
     obsMetaDataResults = []
     # Change the slicing in this line for the range of visits
-    for obsHistID in obsHistIDList[1200:-1]:
+    for obsHistID in obsHistIDList[200:300]:
         if runobsHistID is not None:
             obsHistID = runobsHistID
         obsMetaDataResults.append(generator.getObservationMetaData(obsHistID=obsHistID,
@@ -128,4 +131,4 @@ if __name__ == "__main__":
         mode = str(sys.argv[1])
     else:
         mode = 'a'
-    generatePhosimInput(mode, runobsHistID=220)
+    generatePhosimInput(mode, runobsHistID=None, logfile='run_400.log')
