@@ -115,7 +115,8 @@ class sprinkler():
                         lensrow['galaxyBulge_redshift'] = newlens['ZSRC']
                         lensrow['galaxyDisk_redshift'] = newlens['ZSRC']
                         lensrow['galaxyAgn_redshift'] = newlens['ZSRC']
-                        lensrow['galtileid'] = np.left_shift(lensrow['galtileid'], 3) + i
+                        lensrow['galtileid'] = (lensrow['galtileid']*1000 +
+                                                newlens['twinklesID']*4 + i)
 
                         updated_catalog = np.append(updated_catalog, lensrow)
 
