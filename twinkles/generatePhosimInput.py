@@ -61,7 +61,7 @@ def generatePhosimInput(mode='a', runobsHistID=None):
     obsHistIDList = numpy.genfromtxt('FirstSet_obsHistIDs.csv', delimiter=',', usecols=0)
     obsMetaDataResults = []
     # Change the slicing in this line for the range of visits
-    for obsHistID in obsHistIDList[1000:1005]:
+    for obsHistID in obsHistIDList[1200:-1]:
         if runobsHistID is not None:
             obsHistID = runobsHistID
         obsMetaDataResults.append(generator.getObservationMetaData(obsHistID=obsHistID,
