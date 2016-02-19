@@ -76,7 +76,7 @@ if __name__=='__main__':
 
     # logfilename = sys.argv[1]
     logfilename = 'run.log'
-    logfilename = 'run_400.log'
+    #logfilename = 'run_400.log'
     #runs = pd.read_csv(logfilename)
     print logfilename
     filenames = listFiles(logfilename, prefix='InstanceCatalogs/phosim_input_')
@@ -87,6 +87,12 @@ if __name__=='__main__':
         #fname = 'phosim_input_220.txt'
         #fname = 'InstanceCatalogs/phosim_input_' + str(obsHistID) +'.txt'
         starttime = time.time()
+        print(fname)
+        tgzfile = fname.split('.')[0] + '.tar.gz'
+        if os.path.exists(tgzfile):
+            continue
+        with open(fname, 'rb') as fin, gzip.open(fname + '.gz', 'wb') as fout:
+            shutil.copyfileobj(fin, fout)
         x = snspectralist(fname)
         listtime = time.time()
         print len(x)
