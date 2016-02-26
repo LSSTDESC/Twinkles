@@ -1,6 +1,7 @@
-# Twinkles Data Snippets
+# Twinkles Data
 
-This folder contains small example data files, for use in the examples.
+This folder contains small data files, for use in the examples or
+otherwise.
 
 ### [`SelectedKrakenVisits.csv`](SelectedKrakenVisits.csv)
 
