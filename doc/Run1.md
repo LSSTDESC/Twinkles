@@ -62,7 +62,7 @@ to the catalog.
 
 #### <a name="Supernovae"></a> Supernovae
 
-The plan for supernova is
+The plan for supernovae is as follows:
  
 - Unlensed SALT2 model Type Ia supernovae in the redshift range of 0-0.8 with SALT2 parameters drawn from usual distributions. There is a scatter of 0.15 about the Bessell B rest frame peak magnitude, in the ampltude of the light curve. 
 -  The number of SN is large, with the plan being to try to get about 100 SNR > 5 SN in a visit. These SN are in a small ra, dec range of size 0.4* sqrt(2) around the center of the Twinkles patch.
@@ -86,16 +86,20 @@ We only make `eimages`, and treat them as emulated calibrated images. This
 will allow us to go straight to testing the DM *measurement algorithms* (as
 opposed to the image reduction ones).
 
-#### <a name="Measurements"></a> Measurements and Tests
+#### <a name="Measurements"></a> DM Level 2 Measurements, and their Validation
 
-* Detected and de-blended objects (actually `CoaddSources` at this stage). Are the lensed quasar images correctly separated in the DM catalog?
+* Detected and de-blended objects (actually `CoaddSources` at this stage). 
+* * Q: Are the lensed quasar images correctly separated in the DM catalog?
+* * A: Visual inspection of postage stamp images, with `CoaddSources` overlaid somehow. 
 
-* Basic photometry. How reliable is the non-variable stellar photometry? Are the
-images plausible, regarding depth and image quality?
+* Basic forced photometry (of `CoaddSources`) 
+* * Q: How reliable is the non-variable stellar photometry? Are the images plausible, regarding depth and image quality?
+* * A: Photometric precision plot, with "theory curve" overlaid, measurement of "floor" and limiting magnitude. 
 
-* Forced photometry light curves. How good are these preliminary lightcurves?
+* Forced photometry light curves, of both SNe and lensed quasar images:
+* * Q: How good are these preliminary DM Level 2 lightcurves?
+* * A: Define goodness as inverse-variance weighted mean square difference between observed and "ground truth" light curves, normalized by light curve length. This reduced chisquared-like statistic should be around 1 for a "good light curve: measure the number of sigma each light curve is away from its truth. Requires true light curves from PhoSim centroid files.
 
-*MWV to check this plan and edit*
 
 ## Production workflow and dataflow
 
