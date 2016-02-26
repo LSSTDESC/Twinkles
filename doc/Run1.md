@@ -89,16 +89,16 @@ opposed to the image reduction ones).
 ####<a name="Measurements"></a>DM Level 2 Measurements, and their Validation
 
 * Detected and de-blended objects (actually `CoaddSources` at this stage): 
-* * Q: Are the lensed quasar images correctly separated in the DM catalog?
-* * A: Visual inspection of postage stamp images, with `CoaddSources` overlaid somehow. 
+  * Q: Are the lensed quasar images correctly separated in the DM catalog?
+  * A: Visual inspection of postage stamp images, with `CoaddSources` overlaid somehow. 
 
 * Basic forced photometry (of `CoaddSources`):
-* * Q: How reliable is the non-variable stellar photometry? Are the images plausible, regarding depth and image quality?
-* * A: Photometric precision plot, with "theory curve" overlaid, measurement of "floor" and limiting magnitude. 
+  * Q: How reliable is the non-variable stellar photometry? Are the images plausible, regarding depth and image quality?
+  * A: Photometric precision plot, with "theory curve" overlaid, measurement of "floor" and limiting magnitude. 
 
 * Forced photometry light curves, of both SNe and lensed quasar images:
-* * Q: How good are these preliminary DM Level 2 lightcurves?
-* * A: Define goodness as inverse-variance weighted mean square difference between observed and "ground truth" light curves, normalized by light curve length. This reduced chisquared-like statistic should be around 1 for a "good light curve: measure the number of sigma each light curve is away from its truth. Requires true light curves from PhoSim centroid files.
+  * Q: How good are these preliminary DM Level 2 lightcurves?
+  * A: Define goodness as inverse-variance weighted mean square difference between observed and "ground truth" light curves, normalized by light curve length. This reduced chisquared-like statistic should be around 1 for a "good light curve: measure the number of sigma each light curve is away from its truth. Requires true light curves from PhoSim centroid files.
 
 
 ## Production workflow and dataflow
