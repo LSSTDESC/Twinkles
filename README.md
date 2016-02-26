@@ -12,16 +12,17 @@ We are interested in making high accuracy cosmological measurements of type IA s
 
 * Follow **[this link](https://github.com/DarkEnergyScienceCollaboration/Twinkles/labels/In%20Progress)** to see the issues currently being worked on.
 * Our goal for the March 2016 collaboration meeting is to produce and begin analyzing a small prototype Twinkles 1 dataset: **[Run 1](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Run1.md)**
-* The requirements document (well, design and specifications) for Twinkles 1 is under construction, **[here](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/requirements/)**
+* The requirements document (well, design and specifications) for Twinkles 1 is under construction, **[here](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Requirements/)**
 * We are now a **[2015 DESC Taskforce](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Taskforce2015_Twinkles.md)**, in order to kick-start development ready for a first data release at DC1.
-* **[Twinkles is on the sky!](http://nbviewer.ipython.org/github/DarkEnergyScienceCollaboration/Twinkles/blob/master/notebooks/First%20Light.ipynb)**  LSST DESC Hack Day, February 2015.
+* **[Twinkles is on the sky!](http://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/examples/notebooks/First%20Light.ipynb)**  LSST DESC Hack Day, February 2015.
 * **[Initial design for the Twinkles pipeline](https://confluence.slac.stanford.edu/display/LSSTDESC/Twinkles+flow+chart)** LSST DESC Hack Day, February 2015.
 
 
 ### Read More
 
-**[Twinkles 1 Design and Specifications](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/requirements/)**
+* **[Twinkles 1: Design and Specifications](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Requirements/)**
 
+* **[Twinkles 1: Run 1 Plan](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Run1.md)**
 
 Old Notes:
 * [Scientific and Technical Motivation](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Motivation.md)
@@ -32,22 +33,35 @@ Old Notes:
 
 ### People
 
-* Richard Dubois (SLAC)
-* Tom Glanzman (SLAC)
-* Simon Krughoff (UW)
-* Phil Marshall (SLAC)
-* Michael Wood-Vasey (Pitt)
-* Curtis McCully (LCOGT)
-* Bryce Kalmbach (UW)
-* Tony Johnson (SLAC)
-* Saba Sehrish (Fermilab)
+Check out our [contributions here](https://github.com/DarkEnergyScienceCollaboration/Twinkles/graphs/contributors)!
+
+* Rahul Biswas (UW,
+[@rbiswas4](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=assignee%3Arbiswas4))
+* Jim Chiang (SLAC,
+[@jchiang87](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=assignee%3Ajchiang87))
+* Scott Daniel (UW,
+[@danielsf](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=assignee%3Adanielsf))
 * Seth Digel (SLAC)
-* Scott Daniel (UW)
-* Rahul Biswas (UW)
+* Richard Dubois (SLAC,
+[@richardxdubois](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=assignee%3Arichardxdubois))
+* Tom Glanzman (SLAC,
+[@TomGlanzman](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=assignee%3ATomGlanzman))
+* Tony Johnson (SLAC,
+[@tony-johnson](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=assignee%3Atony-johnson))
+* Bryce Kalmbach (UW,
+[@jbkalmbach](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=assignee%3Ajbkalmbach))
+* Simon Krughoff (UW,
+[@SimonKrughoff](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=assignee%3ASimonKrughoff))
+* Phil Marshall (SLAC,
+[@drphilmarshall](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=assignee%3Adrphilmarshall))
+* Curtis McCully (LCOGT)
+* Saba Sehrish (Fermilab)
+* Michael Wood-Vasey (Pitt,
+[@wmwv](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=assignee%3Awmwv)
 
 
 ### Credits etc
 
-This is work in progress. If you would like to cite the Twinkles project in your research, please use '(LSST DESC, in prep.)' for now, and provide the [URL of this repository](https://github.com/DarkEnergyScienceCollaboration/Twinkles). We aim to release our data products along with a companion paper some time in 2015. If you are interested in this project, feel free to post greetings, comments or queries to the [issues](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues).  
+This is work in progress. If you would like to cite the Twinkles project in your research, please use '(LSST DESC, in prep.)' for now, and provide the [URL of this repository](https://github.com/DarkEnergyScienceCollaboration/Twinkles). We aim to release our data products along with a companion paper during the DESC DC1 era, 2016. If you are interested in this project, feel free to post greetings, comments or queries to the [issues](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues).  
 
-All content is Copyright 2015 by the above authors, and distributed under the MIT License, which means you can do whatever you like with it but agree not to blame us - but we'd prefer it if you kept in touch while you did so!
+All content is Copyright 2015, 2016 the above authors, and distributed under the MIT License, which means you can do whatever you like with it but agree not to blame us - but we'd prefer it if you kept in touch while you did so!
