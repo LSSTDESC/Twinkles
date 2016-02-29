@@ -85,3 +85,6 @@ doc_macros.tex
 
 # Don't look in the attic!
 attic
+
+# Ignore my workspace!
+workspace
