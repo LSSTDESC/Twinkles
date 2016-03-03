@@ -28,13 +28,13 @@ class PostageStampTestCase(unittest.TestCase):
         bbox = self.stamp_maker.makeBBox(self.ra, self.dec, self.size)
         self.assertEqual((bbox.getWidth(), bbox.getHeight()), (30, 30))
 
-    def test_create(self):
+    def test_stamp_size(self):
         "Test that the postage stamp has the expected size."
         my_exposure = self.stamp_maker.create(self.ra, self.dec, self.size)
         my_imarr = my_exposure.getMaskedImage().getImage().getArray()
         self.assertEqual(my_imarr.shape, (30, 30))
 
-    def test_create_2(self):
+    def test_stamp_central_pixel_value(self):
         """
         Test that the center pixel of both the postage stamp and original
         image have the same value.
@@ -47,7 +47,7 @@ class PostageStampTestCase(unittest.TestCase):
         self.assertEqual(my_imarr[my_imarr.shape[0]/2][my_imarr.shape[1]/2],
                          ref_imarr[ref_imarr.shape[0]/2][ref_imarr.shape[1]/2])
 
-    def test_create_3(self):
+    def test_stamp_centers_match(self):
         """
         Test that coordinates of the centers of the postage stamp and
         the original image are the same.
@@ -79,9 +79,10 @@ class PostageStampTestCase(unittest.TestCase):
 
     def test_create_sequence_function(self):
         """
-        For a given (ra, dec, size), test the create_stamps function
-        that returns a sequence of stamps for that sky region, extracted
-        from a sequence of input Exposure FITS files.
+        For a given (ra, dec, size), test the create_postage_stamps
+        function which returns a sequence of stamps for that sky
+        region, extracted from a sequence of input Exposure FITS
+        files.
         """
         fits_files = [self.expfile]*3
         my_stamps = create_postage_stamps(self.ra, self.dec, self.size,
