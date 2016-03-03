@@ -1,4 +1,4 @@
-# <a name="Run1"></a> Run 1
+#<a name="Run1"></a>Run 1
 
 Goal: Make a small but useful example dataset that we can generate and start
 validation analysis on before the March 2016 collaboration meeting at SLAC.
@@ -10,11 +10,11 @@ validation analysis on before the March 2016 collaboration meeting at SLAC.
 * [Pipeline Processing](#Pipeline)
 * [Products](#Products)
   * [Images](#Images)
-  * [Measurements and Tests](#Measurements)
+  * [DM Level 2 Measurements](#Measurements)
 
 _____
 
-## <a name="Observations"></a> Observations
+##<a name="Observations"></a>Observations
 
 Let's choose a field from one of the [extragalactic deep drilling fields](http://www.lsst.org/News/enews/deep-drilling-201202.html) in the baseline OpSim observing strategy. Michael suggested the
 Extended Chandra Deep Field South:
@@ -43,13 +43,13 @@ us images sequences with plausible depth and image quality. We will use
 *Simon to add link to physics over-ride file*
 
 
-## <a name="AstronomicalObjects"></a> Astronomical Objects
+##<a name="AstronomicalObjects"></a>Astronomical Objects
 
 We are "sprinkling" interesting features onto (or replacing) existing `CatSim`
 objects.  Stars and galaxies  from `CatSim` will also be present, which should
 help with some tests, and basic PSF modeling.
 
-#### <a name="Lensed Quasars"></a> Lensed Quasars
+####<a name="Lensed Quasars"></a>Lensed Quasars
 
 These are simply taken from the OM10 catalog, as in [issue #21](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/21), by the `sprinkler` code. For each AGN-hosting galaxy in a `CatSim` catalog, we search the OM10
 catalog for all sources within +/-0.05 in redshift from the `CatSim` source. If
@@ -60,9 +60,9 @@ Then, we remove the `CatSim` object from the catalog and instead add lensed imag
 appropriately magnified source brightness, and finally add a model lens galaxy
 to the catalog.
 
-#### <a name="Supernovae"></a> Supernovae
+####<a name="Supernovae"></a>Supernovae
 
-The plan for supernova is
+The plan for supernovae is as follows:
  
 - Unlensed SALT2 model Type Ia supernovae in the redshift range of 0-0.8 with SALT2 parameters drawn from usual distributions. There is a scatter of 0.15 about the Bessell B rest frame peak magnitude, in the ampltude of the light curve. 
 -  The number of SN is large, with the plan being to try to get about 100 SNR > 5 SN in a visit. These SN are in a small ra, dec range of size 0.4* sqrt(2) around the center of the Twinkles patch.
@@ -70,32 +70,36 @@ The plan for supernova is
 
 
 
-## <a name="Pipeline"></a> DM Processing
+##<a name="Pipeline"></a>DM Processing
 
 Once the images are generated, we will process them with a set of DM pipetasks
 following Simon's "cookbook." The final output is a `ForcedSource` catalog, which
 can be queried for object light curves.
 
-## <a name="Products"></a> Products
+##<a name="Products"></a>Products
 
 Here's what we expect to produce.
 
-#### <a name="Images"></a> Images
+####<a name="Images"></a>Images
 
 We only make `eimages`, and treat them as emulated calibrated images. This
 will allow us to go straight to testing the DM *measurement algorithms* (as
 opposed to the image reduction ones).
 
-#### <a name="Measurements"></a> Measurements and Tests
+####<a name="Measurements"></a>DM Level 2 Measurements, and their Validation
 
-* Detected and de-blended objects (actually `CoaddSources` at this stage). Are the lensed quasar images correctly separated in the DM catalog?
+* Detected and de-blended objects (actually `CoaddSources` at this stage): 
+  * Q: Are the lensed quasar images correctly separated in the DM catalog?
+  * A: Visual inspection of postage stamp images, with `CoaddSources` overlaid somehow. 
 
-* Basic photometry. How reliable is the non-variable stellar photometry? Are the
-images plausible, regarding depth and image quality?
+* Basic forced photometry (of `CoaddSources`):
+  * Q: How reliable is the non-variable stellar photometry? Are the images plausible, regarding depth and image quality?
+  * A: Photometric precision plot, with "theory curve" overlaid, measurement of "floor" and limiting magnitude. 
 
-* Forced photometry light curves. How good are these preliminary lightcurves?
+* Forced photometry light curves, of both SNe and lensed quasar images:
+  * Q: How good are these preliminary DM Level 2 lightcurves?
+  * A: Define goodness as inverse-variance weighted mean square difference between observed and "ground truth" light curves, normalized by light curve length. This reduced chisquared-like statistic should be around 1 for a "good light curve: measure the number of sigma each light curve is away from its truth. Requires true light curves from PhoSim centroid files.
 
-*MWV to check this plan and edit*
 
 ## Production workflow and dataflow
 

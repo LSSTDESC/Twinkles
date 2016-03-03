@@ -105,7 +105,7 @@ if __name__=='__main__':
         tarringtime = tartime -starttime
         print totaltime, zippingtime, tarringtime
         cleanup(fname)
-        shutil.move(fname, 'deletingFiles/'+fname)
+        #shutil.move(fname, 'deletingFiles/'+fname)
         #print(x)
         #for fname in listFiles('times.log'):
         print fname , tarfile, x
