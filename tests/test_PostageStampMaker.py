@@ -3,7 +3,8 @@ Test code for PostageStampMaker module.
 """
 import os
 import unittest
-from PostageStampMaker import PostageStampMaker
+import lsst.afw.image as afwImage
+from PostageStampMaker import PostageStampMaker, create_postage_stamps
 
 
 class PostageStampTestCase(unittest.TestCase):
@@ -14,11 +15,12 @@ class PostageStampTestCase(unittest.TestCase):
         test FITS file, coordinates of the image center, and a postage
         stamp size of 10 arcsec.
         """
-        expfile = os.path.join(os.environ['TWINKLES_DIR'], '..',
-                               'tests', 'small_CoaddTempExp.fits.gz')
-        self.stamp_maker = PostageStampMaker(expfile)
-        self.ra = 53.010895
-        self.dec = -27.437648
+        self.expfile = os.path.join(os.environ['TWINKLES_DIR'], '..',
+                                    'tests', 'small_CoaddTempExp.fits.gz')
+        self.stamp_maker = PostageStampMaker(self.expfile)
+        center_coord = self.stamp_maker.center_coord(self.stamp_maker.exposure)
+        self.ra = center_coord.getLongitude().asDegrees()
+        self.dec = center_coord.getLatitude().asDegrees()
         self.size = 10
 
     def test_bbox_generation(self):
@@ -38,8 +40,55 @@ class PostageStampTestCase(unittest.TestCase):
         image have the same value.
         """
         my_exposure = self.stamp_maker.create(self.ra, self.dec, self.size)
+        my_exposure.writeFits('my_exposure.fits')
         my_imarr = my_exposure.getMaskedImage().getImage().getArray()
         ref_exposure = self.stamp_maker.exposure
         ref_imarr = ref_exposure.getMaskedImage().getImage().getArray()
         self.assertEqual(my_imarr[my_imarr.shape[0]/2][my_imarr.shape[1]/2],
                          ref_imarr[ref_imarr.shape[0]/2][ref_imarr.shape[1]/2])
+
+    def test_create_3(self):
+        """
+        Test that coordinates of the centers of the postage stamp and
+        the original image are the same.
+        """
+        my_exposure = self.stamp_maker.create(self.ra, self.dec, self.size)
+        my_exposure.writeFits('my_exposure.fits')
+        self.assertEqual(self.stamp_maker.center_coord(my_exposure),
+                         self.stamp_maker.center_coord(self.stamp_maker.exposure))
+
+    def test_create_array_of_stamps(self):
+        """
+        Test that creates a sequence of stamps from the Exposure object
+        given a sequence of (ra, dec, size) tuples and tests that the
+        centers of the stamps are at the expected locations.
+        """
+        pix_scale = self.stamp_maker.exposure.getWcs().pixelScale().asDegrees()
+        npix = 10
+        stamp_specs = [(self.ra, self.dec - npix*pix_scale, self.size),
+                       (self.ra, self.dec, self.size),
+                       (self.ra, self.dec + npix*pix_scale, self.size)]
+        my_stamps = self.stamp_maker.create_stamps(stamp_specs)
+        self.assertEqual(len(my_stamps), len(stamp_specs))
+        for i, stamp in enumerate(my_stamps):
+            coord = self.stamp_maker.center_coord(stamp)
+            self.assertAlmostEqual(coord.getLongitude().asDegrees(),
+                                   stamp_specs[i][0])
+            self.assertAlmostEqual(coord.getLatitude().asDegrees(),
+                                   stamp_specs[i][1])
+
+    def test_create_sequence_function(self):
+        """
+        For a given (ra, dec, size), test the create_stamps function
+        that returns a sequence of stamps for that sky region, extracted
+        from a sequence of input Exposure FITS files.
+        """
+        fits_files = [self.expfile]*3
+        my_stamps = create_postage_stamps(self.ra, self.dec, self.size,
+                                          fits_files)
+        self.assertEqual(len(my_stamps), len(fits_files))
+        for stamp in my_stamps:
+            self.assertTrue(isinstance(stamp, afwImage.ExposureF))
+
+if __name__ == '__main__':
+    unittest.main()
