@@ -67,3 +67,7 @@ ImportError: dlopen(/Users/pjm/miniconda2/opt/lsst/daf_persistence/python/lsst/d
   Referenced from: /Users/pjm/miniconda2/opt/lsst/boost/lib/libboost_filesystem.dylib
   Reason: image not found
 ```
+You have this library, it's just that python doesn't know where to find it, for some reason. The solution is to add another line to your `.bashrc`, after the setup commands:
+```
+export DYLD_LIBRARY_PATH = ${LSST_DIR}/opt/lsst/boost/lib:${DYLD_LIBRARY_PATH}
+```
