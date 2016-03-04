@@ -40,7 +40,6 @@ class PostageStampTestCase(unittest.TestCase):
         image have the same value.
         """
         my_exposure = self.stamp_maker.create(self.ra, self.dec, self.size)
-        my_exposure.writeFits('my_exposure.fits')
         my_imarr = my_exposure.getMaskedImage().getImage().getArray()
         ref_exposure = self.stamp_maker.exposure
         ref_imarr = ref_exposure.getMaskedImage().getImage().getArray()
@@ -53,7 +52,6 @@ class PostageStampTestCase(unittest.TestCase):
         the original image are the same.
         """
         my_exposure = self.stamp_maker.create(self.ra, self.dec, self.size)
-        my_exposure.writeFits('my_exposure.fits')
         self.assertEqual(self.stamp_maker.center_coord(my_exposure),
                          self.stamp_maker.center_coord(self.stamp_maker.exposure))
 
