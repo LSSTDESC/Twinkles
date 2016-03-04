@@ -56,3 +56,14 @@ pip install nose
 pip install scipy
 pip install matplotlib
 ```
+
+## 5. Possible Pitfalls
+
+Here are the problems we've hit when developing the above notes.
+
+1. When running the `examples/notebooks/PostageStampMaker_demo.ipynb` you might see something like the following:
+```
+ImportError: dlopen(/Users/pjm/miniconda2/opt/lsst/daf_persistence/python/lsst/daf/persistence/_persistenceLib.so, 10): Library not loaded: @rpath/libboost_system.dylib
+  Referenced from: /Users/pjm/miniconda2/opt/lsst/boost/lib/libboost_filesystem.dylib
+  Reason: image not found
+```
