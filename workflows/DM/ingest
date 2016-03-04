@@ -1,1 +1,8 @@
-ingestImages.py ${INPUT_DATA_DIR} ${INPUT_DATA_DIR}/lsst_*.fits.gz --mode link --output ${IN_DIR} --doraise
+# Make sure the output directory exists
+mkdir -p ${IN_DIR}
+# If the output directory does not contain a mapper file, create one
+cp -n ${SCRIPT_LOCATION}/_mapper ${IN_DIR}/
+# Erase the _parent directory if it already exists
+# rm -f ${IN_DIR}/_parent
+# Ready to go!
+ingestImages.py ${IN_DIR} ${INPUT_DATA_DIR}/lsst_*.fits.gz --mode link --output ${IN_DIR} --doraise --clobber-config

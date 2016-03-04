@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline xmlns="http://glast-ground.slac.stanford.edu/pipeline" 
+          xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" 
+          xs:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline 
+          http://srs.slac.stanford.edu/Pipeline-II/schemas/2.1/pipeline.xsd">
+    <task name="TwinklesDM-filter" type="LSST" version="1.0">
+        <notation>A simple task for processing a single filter</notation>
+        <variables>
+            <var name="MAXCPU">100000</var>
+            <var name="BATCH_OPTIONS">-R rhel60</var>
+            <!-- Default location from which to setup DM -->
+            <var name="DM_DIR">/nfs/farm/g/desc/u1/Twinkles</var>
+            <var name="DM_SETUP">setup.bash</var>
+            <!-- Phosim input images to process (override me)-->
+            <var name="INPUT_DATA_DIR">/nfs/farm/g/desc/u1/Pipeline-tasks/Twinkles-phoSim/phosim_output/000015/output</var>
+            <!-- Base directory where work directory will be created (if needed) -->
+            <var name="OUTPUT_DATA_DIR">/nfs/farm/g/lsst/u1/users/tonyj</var>
+            <!-- Location where ingest images will be placed (constant for all visits) -->
+            <var name="IN_DIR">/nfs/farm/g/lsst/u1/users/tonyj/twinkles/run1/ingest/</var>
+            <!-- Location where ingest images will be placed (constant for all visits) -->
+            <var name="OUT_DIR">/nfs/farm/g/lsst/u1/users/tonyj/twinkles/run1/output/</var>
+            <!-- astrometry_net files -->
+            <var name="AND_DIR">/nfs/farm/g/lsst/u1/users/tonyj/and_files</var>
+            <var name="SCRIPT_LOCATION">/nfs/farm/g/lsst/u1/users/tonyj</var>
+            <var name="SCRIPT_NAME">TwinklesWorkflow.py</var>
+            <var name="BATCH_NAME">TwinklesBatch.sh</var>
+            <!-- The visits to process (override me) -->
+            <var name="VISITS">495753</var>
+            <!-- The filter for the visit (override me) -->
+            <var name="FILTER">r</var>
+        </variables>
+        <process name="assembleCoadd">
+            <notation>Assemble coadd</notation>
+            <job maxCPU="${MAXCPU}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
+        </process>
+    </task>
+</pipeline> 
