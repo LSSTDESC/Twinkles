@@ -71,3 +71,16 @@ You have this library, it's just that python doesn't know where to find it, for 
 ```
 export DYLD_LIBRARY_PATH = ${LSST_DIR}/opt/lsst/boost/lib:${DYLD_LIBRARY_PATH}
 ```
+
+2. Getting the Sims vs Stack balance is tricky. For example,
+again running the `examples/notebooks/PostageStampMaker_demo.ipynb`, this:
+```
+/Users/pjm/work/stronglensing/LSST/DESC/Twinkles/python/desc/twinkles/generatePhosimInput.py in <module>()
+     20 from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
+     21 from lsst.sims.catalogs.generation.db import CatalogDBObject
+---> 22 from lsst.sims.catalogs.generation.db.dbConnection import DBConnection
+     23 from lsst.sims.catUtils.baseCatalogModels import OpSim3_61DBObject, StarObj, MsStarObj, \
+     24         BhbStarObj, WdStarObj, RRLyStarObj, CepheidStarObj, GalaxyBulgeObj, GalaxyDiskObj, \
+
+ImportError: cannot import name DBConnection
+```
