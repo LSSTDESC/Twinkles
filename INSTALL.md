@@ -40,20 +40,53 @@ conda install lsst-sims=master.20150928224422
 This will upgrade some packages and downgrade others. Note the very specific
 version number, and the date these notes were last modified - this could be a source of trouble, so we'd best all watch out.
 
-
 ## 4. Get set up to use the LSST code
 
 See the project's notes [here](https://confluence.lsstcorp.org/display/LSWUG/Using+the+LSST+Stack).
-LSST packages have to be added to your PATH, etc before you can use them. This is handled by `eups`. We need to do:
+LSST packages have to be added to your PATH, etc before you can use them. This is handled by `eups`. 
+
+First do :
 ```
+which eups-setups.sh
+```
+if this is found, skip the following step and jump to sourcing this in the next step
+```
+    # It might be a good idea to not use this environment variable
+    # because this might clash with other things that will be automatically set 
     export LSST_DIR = ${HOME}/miniconda2
+    # Does set and export work on the same system (I thought set was in cshrc, export in bash)
     set path = (${LSST_DIR}/bin $path)
-    source ${LSST_DIR}/bin/eups-setups.sh
-    setup obs_lsstSim
-    setup lsst_sims
-    setup sims_catUtils -t rbiswas -t b1887
 ```
+Now the file `eups-setups.sh` is in your path.
+```
+    source eups-setups.sh
+    eups list -v |grep sims_catUtils
+```
+This should have something like:
+
+`sims_catUtils         sims_2.2.1+1 /home/rbiswas/src/conda-lsst/miniconda/var/opt/eups /home/rbiswas/src/conda-lsst/miniconda/opt/lsst/sims_catUtils    current conda b1887`
+
+
+Check that you have the string `b1887` at the end
+
+Now in a convenient location, clone a copy of the lsst.sims.catUtils package:
+```
+git clone https://github.com/lsst/sims_catUtils.git
+cd sims_catUtils
+git checkout https://github.com/lsst/sims_catUtils/tree/newTwinklesCatalog
+eups declare sims_catUtils -t $USER -r .
+# ignore warning about relative paths
+```
+Now set up the lsst sims code and obs_lsstSim
+```
+    setup obs_lsstSim
+    setup lsst_sims -t b1887
+    setup sims_catUtils -t $USER -t b1887
+```
+
+
 This needs to be done every time you start a new shell - so these lines could be worth adding to your `.bashrc` file or equivalent. Note that c-shell users can use `eups_setup.csh` and use `setenv` in their `.login` file. Note the additional setup step, needed to get Rahul's latest supernova code.
+
 
 
 ## 5. Install python packages
