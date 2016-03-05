@@ -65,6 +65,7 @@ pip install pandas
 pip install nose
 pip install scipy
 pip install matplotlib
+pip install wcsaxes
 ```
 
 ## 5. Possible Pitfalls
@@ -119,3 +120,10 @@ You'd think this one should have been fixed with the `setup sims_catUtils -t rbi
 pjm@PPA-PC92478 > eups list | grep catUtils
 sims_catUtils         sims_2.2.1+1 	current conda b1887 setup
 ```
+The workaround to this was to litter the `twinkles/__init__.py` with `try/except` clauses - watch out for error messages such as the following:
+```
+Error importing generatePhosimInput cannot import name SNObj
+```
+These are not fatal - until they are. If you hit one of them and it causes
+problems, please contact
+[Rahul Biswas](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/new?body=@rbiswas4) and/or [Scott Daniel](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/new?body=@danielsf), as keepers of the `lsst-sims` code that we use.
