@@ -1,10 +1,20 @@
 #!/usr/bin/env python
 
+import functools
+import numpy as np
+import matplotlib.pylab as plt
+from scipy.optimize import curve_fit
 import lsst.daf.persistence as dp
 import lsst.afw.image as afw_image
-import numpy
-import matplotlib.pylab as plt
-from calc_snr import make_invsnr_arr
+from desc.twinkles import make_invsnr_arr, fit_invsnr, get_visits
+
+_filter_color = dict(u='blue',
+                     g='green',
+                     r='red',
+                     i='cyan',
+                     z='magenta',
+                     y='black')
+_filter_symbol = dict([(band, 'o') for band in 'ugrizy'])
 
 def make_dataId(options):
     dataId = {}
@@ -19,7 +29,26 @@ def make_dataId(options):
         dataId[key] = value
     return dataId
 
-def plot_point_mags(output_data, visits, outfile, dataId):
+class MagStats(object):
+    def __init__(self, filter_, med_mags, med_err, minMag=17, mid_cut=20,
+                 maxMag=26):
+        self.filter = filter_
+        self.med_mags = np.array(med_mags)
+        self.med_err = np.array(med_err)
+        index = np.where((minMag < self.med_mags) & (self.med_mags < mid_cut))
+        self.sys_floor = np.median(self.med_err[index])
+        index = np.where((mid_cut < self.med_mags) & (self.med_mags < maxMag))
+        self.popt = (0.01, 24.5)
+        fit_func = functools.partial(fit_invsnr, bandpass_name=filter_)
+        self.popt, self.pcov = curve_fit(fit_func, self.med_mags[index],
+                                         self.med_err[index], p0=self.popt)
+    def plot_fit(self, linewidth=3, alpha=0.75):
+        mags, invsnrs = make_invsnr_arr(floor=self.sys_floor, m5=self.popt[1])
+        color = _filter_color[self.filter]
+        plt.plot(mags, invsnrs, color=color, linewidth=linewidth, alpha=alpha)
+
+def plot_point_mags(output_data, visit_list, dataId, minMag=17, mid_cut=20, 
+                    maxMag=26):
     # get a butler
     butler = dp.Butler(output_data)
 
@@ -27,9 +56,6 @@ def plot_point_mags(output_data, visits, outfile, dataId):
     # so we won't try to generalize it.
     refcatId = {'tract':0, 'patch':'0,0'}
     ref = butler.get('deepCoadd_ref', dataId=refcatId)
-
-    # visits to use for lightcurves
-    visit_list = [int(x) for x in visits.split('^')]
 
     # get the sources and calib objects for each single epoch visit
     forced_srcs = {}
@@ -62,28 +88,49 @@ def plot_point_mags(output_data, visits, outfile, dataId):
             lightcurve_fluxes[idx].append(afw_image.fluxFromABMag(calib.getMagnitude(flux)))
 
     # compute aggregate quantities for each object and plot
+    band = dataId['filter']
+    med_mags = []
+    med_err = []
     for lightcurve in lightcurve_fluxes.values():
         if len(lightcurve) == len(visit_list):
-            plt.scatter(afw_image.abMagFromFlux(numpy.median(lightcurve)), 
-                        numpy.std(lightcurve)/numpy.median(lightcurve), 
-                        alpha=0.5)
-    mags, invsnrs = make_invsnr_arr()
-    plt.plot(mags, invsnrs, color='red', linewidth=2, alpha=0.75)
+            median_flux = np.median(lightcurve)
+            med_mags.append(afw_image.abMagFromFlux(median_flux))
+            med_err.append(np.std(lightcurve)/median_flux)
+
+    print "number of objects:", len(med_mags)
+    mag_stats = MagStats(band, med_mags, med_err)
+    scatter = plt.scatter(med_mags, med_err,
+                          alpha=0.3, color=_filter_color[band],
+                          marker=_filter_symbol[band],
+                          label='filter=%s, Floor=%.1f%%, m_5=%0.2f'
+                          % (band, mag_stats.sys_floor*100, mag_stats.popt[1]))
     plt.xlabel("Calibrated magnitude of median flux")
     plt.ylabel("stdev(flux)/median(flux)")
     plt.xlim(15.5, 25)
     plt.ylim(0., 0.5)
-    plt.savefig(outfile)
+    return scatter, mag_stats
 
 if __name__ == '__main__':
-    import argparse
+#    import argparse
+#
+#    parser = argparse.ArgumentParser(
+    data_repo = '/nfs/farm/g/lsst/u1/users/tonyj/work/00/output'
+    visits = get_visits(data_repo)
+    print visits
+    dataId = make_dataId('raft=2,2 sensor=1,1 tract=0'.split())
+    plots = []
+    mag_stats = {}
+    for filter_ in visits:
+        if len(visits[filter_]) < 2:
+            print "skipping %s band: too few visits"
+            continue
+        print "plotting filter", filter_
+        outfile = 'mag_stdevs_%s.png' % filter_
+        dataId['filter'] = filter_
+        plot, stats = plot_point_mags(data_repo, visits[filter_], dataId=dataId)
+        mag_stats[filter_] = stats
+    for filter_ in mag_stats:
+        mag_stats[filter_].plot_fit()
 
-    parser = argparse.ArgumentParser(description="For a set of visits, make a plot of fractional stdev vs median flux for the forced sources in the Twinkles cookbook example.")
-    parser.add_argument('output_data', help='Output directory for the cookbook pipeline')
-    parser.add_argument('outfile', help='Filename of the output png file with the plot')
-    parser.add_argument('--visits', type=str, help='list of visits to process')
-    parser.add_argument('--id', nargs='+', type=str, help='dataId of datasets to process', default="raft=2,2 sensor=1,1 filter=r tract=0".split())
-    args = parser.parse_args()
-
-    plot_point_mags(args.output_data, args.visits, args.outfile,
-                    dataId=make_dataId(args.id))
+    plt.legend(handles=plots, scatterpoints=1, loc=2)
+    plt.savefig(outfile)

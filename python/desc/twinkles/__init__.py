@@ -9,3 +9,4 @@ from twinklesCatalogDefs import TwinklesCatalogZPoint
 from twinklesVariabilityMixins import TimeDelayVariability, VariabilityTwinkles
 from PostageStampMaker import PostageStampMaker, create_postage_stamps
 from Display import render_fits_image
+from get_visits import get_visits
