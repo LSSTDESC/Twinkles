@@ -6,6 +6,7 @@ import matplotlib.pylab as plt
 from scipy.optimize import curve_fit
 import lsst.daf.persistence as dp
 import lsst.afw.image as afw_image
+from lsst.afw.fits.fitsLib import FitsError
 from desc.twinkles import make_invsnr_arr, fit_invsnr, get_visits
 
 _filter_color = dict(u='blue',
@@ -62,10 +63,15 @@ def plot_point_mags(output_data, visit_list, dataId, minMag=17, mid_cut=20,
     calibs = {}
     for visit in visit_list:
         dataId['visit'] = visit
-        forced_srcs[visit] = butler.get('forced_src', dataId=dataId)
-        calexp = butler.get('calexp', dataId=dataId)
-        calibs[visit] = calexp.getCalib()
-        del calexp
+        try:
+            my_forced_srcs = butler.get('forced_src', dataId=dataId)
+            calexp = butler.get('calexp', dataId=dataId)
+            my_calibs = calexp.getCalib()
+            del calexp
+            forced_srcs[visit] = my_forced_srcs
+            calibs[visit] = my_calibs
+        except FitsError, eobj:
+            print eobj
 
     # initialize dictionaries to hold lightcurve arrays.  Get
     # extendedness from the coadd catalog.
@@ -115,22 +121,25 @@ if __name__ == '__main__':
 #
 #    parser = argparse.ArgumentParser(
     data_repo = '/nfs/farm/g/lsst/u1/users/tonyj/work/00/output'
+#    data_repo = 'output'
     visits = get_visits(data_repo)
-    print visits
+    print '# visits per filter:'
+    for filter_ in visits:
+        print "  ", filter_, len(visits[filter_])
     dataId = make_dataId('raft=2,2 sensor=1,1 tract=0'.split())
     plots = []
     mag_stats = {}
     for filter_ in visits:
         if len(visits[filter_]) < 2:
-            print "skipping %s band: too few visits"
+            print "skipping %s band: too few visits" % filter_
             continue
         print "plotting filter", filter_
-        outfile = 'mag_stdevs_%s.png' % filter_
         dataId['filter'] = filter_
         plot, stats = plot_point_mags(data_repo, visits[filter_], dataId=dataId)
         mag_stats[filter_] = stats
     for filter_ in mag_stats:
         mag_stats[filter_].plot_fit()
 
+    outfile = 'mag_stdevs.png'
     plt.legend(handles=plots, scatterpoints=1, loc=2)
     plt.savefig(outfile)
