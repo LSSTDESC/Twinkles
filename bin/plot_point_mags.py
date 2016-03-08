@@ -41,8 +41,8 @@ class MagStats(object):
         index = np.where((mid_cut < self.med_mags) & (self.med_mags < maxMag))
         self.popt = (0.01, 24.5)
         fit_func = functools.partial(fit_invsnr, bandpass_name=filter_)
-        self.popt, self.pcov = curve_fit(fit_func, self.med_mags[index],
-                                         self.med_err[index], p0=self.popt)
+#        self.popt, self.pcov = curve_fit(fit_func, self.med_mags[index],
+#                                         self.med_err[index], p0=self.popt)
     def plot_fit(self, linewidth=3, alpha=0.75):
         mags, invsnrs = make_invsnr_arr(floor=self.sys_floor, m5=self.popt[1])
         color = _filter_color[self.filter]
@@ -117,12 +117,18 @@ def plot_point_mags(output_data, visit_list, dataId, minMag=17, mid_cut=20,
     return scatter, mag_stats
 
 if __name__ == '__main__':
-#    import argparse
-#
-#    parser = argparse.ArgumentParser(
-    data_repo = '/nfs/farm/g/lsst/u1/users/tonyj/work/00/output'
-#    data_repo = 'output'
-    visits = get_visits(data_repo)
+    import argparse
+    description = \
+"""
+For an output repository of Level 2 data, make a plot of stdev vs
+median flux of forced sources.
+"""
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('data_repo', help='Output repository for Level 2 analysis')
+    parser.add_argument('outfile', help='Filename of the output png file')
+    args = parser.parse_args()
+
+    visits = get_visits(args.data_repo)
     print '# visits per filter:'
     for filter_ in visits:
         print "  ", filter_, len(visits[filter_])
@@ -135,11 +141,12 @@ if __name__ == '__main__':
             continue
         print "plotting filter", filter_
         dataId['filter'] = filter_
-        plot, stats = plot_point_mags(data_repo, visits[filter_], dataId=dataId)
+        plot, stats = plot_point_mags(args.data_repo, visits[filter_],
+                                      dataId=dataId)
         mag_stats[filter_] = stats
-    for filter_ in mag_stats:
-        mag_stats[filter_].plot_fit()
+        plots.append(plot)
+#    for filter_ in mag_stats:
+#        mag_stats[filter_].plot_fit()
 
-    outfile = 'mag_stdevs.png'
     plt.legend(handles=plots, scatterpoints=1, loc=2)
-    plt.savefig(outfile)
+    plt.savefig(args.outfile)
