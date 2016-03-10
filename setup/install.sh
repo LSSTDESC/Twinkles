@@ -56,7 +56,7 @@ else
 	# Stack install
 	#
 	conda config --add channels "$CHANNEL"
-	conda install -q --yes "$PACKAGES"		# -q is needed, otherwise TravisCI kills the job due too much output in the log (4MB)
+	conda install -q --yes $PACKAGES		# -q is needed, otherwise TravisCI kills the job due too much output in the log (4MB)
 
 	# Minimize our on-disk footprint
 	conda clean -iltp --yes
