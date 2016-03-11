@@ -32,7 +32,7 @@ def make_dataId(options):
 
 class MagStats(object):
     def __init__(self, filter_, med_mags, med_err, minMag=17, mid_cut=20,
-                 maxMag=26):
+                 maxMag=26, fit_curves=False):
         self.filter = filter_
         self.med_mags = np.array(med_mags)
         self.med_err = np.array(med_err)
@@ -40,16 +40,18 @@ class MagStats(object):
         self.sys_floor = np.median(self.med_err[index])
         index = np.where((mid_cut < self.med_mags) & (self.med_mags < maxMag))
         self.popt = (0.01, 24.5)
+        self.pcov = None
         fit_func = functools.partial(fit_invsnr, bandpass_name=filter_)
-#        self.popt, self.pcov = curve_fit(fit_func, self.med_mags[index],
-#                                         self.med_err[index], p0=self.popt)
+        if fit_curves:
+            self.popt, self.pcov = curve_fit(fit_func, self.med_mags[index],
+                                             self.med_err[index], p0=self.popt)
     def plot_fit(self, linewidth=3, alpha=0.75):
         mags, invsnrs = make_invsnr_arr(floor=self.sys_floor, m5=self.popt[1])
         color = _filter_color[self.filter]
         plt.plot(mags, invsnrs, color=color, linewidth=linewidth, alpha=alpha)
 
-def plot_point_mags(output_data, visit_list, dataId, minMag=17, mid_cut=20, 
-                    maxMag=26):
+def plot_point_mags(output_data, visit_list, dataId, minMag=17, mid_cut=20,
+                    maxMag=26, fit_curves=True):
     # get a butler
     butler = dp.Butler(output_data)
 
@@ -104,12 +106,16 @@ def plot_point_mags(output_data, visit_list, dataId, minMag=17, mid_cut=20,
             med_err.append(np.std(lightcurve)/median_flux)
 
     print "number of objects:", len(med_mags)
-    mag_stats = MagStats(band, med_mags, med_err)
+    mag_stats = MagStats(band, med_mags, med_err, fit_curves=fit_curves)
+    if mag_stats.pcov is not None:
+        label ='filter=%s, Floor=%.1f%%, m_5=%0.2f' \
+            % (band, mag_stats.sys_floor*100, mag_stats.popt[1])
+    else:
+        label ='filter=%s, Floor=%.1f%%' \
+            % (band, mag_stats.sys_floor*100)
     scatter = plt.scatter(med_mags, med_err,
                           alpha=0.3, color=_filter_color[band],
-                          marker=_filter_symbol[band],
-                          label='filter=%s, Floor=%.1f%%, m_5=%0.2f'
-                          % (band, mag_stats.sys_floor*100, mag_stats.popt[1]))
+                          marker=_filter_symbol[band], label=label)
     plt.xlabel("Calibrated magnitude of median flux")
     plt.ylabel("stdev(flux)/median(flux)")
     plt.xlim(15.5, 25)
@@ -126,6 +132,8 @@ median flux of forced sources.
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('data_repo', help='Output repository for Level 2 analysis')
     parser.add_argument('outfile', help='Filename of the output png file')
+    parser.add_argument('--skip_fit', help='Skip the fitting of the snr curve',
+                        action='store_true', default=False)
     args = parser.parse_args()
 
     visits = get_visits(args.data_repo)
@@ -133,6 +141,7 @@ median flux of forced sources.
     for filter_ in visits:
         print "  ", filter_, len(visits[filter_])
     dataId = make_dataId('raft=2,2 sensor=1,1 tract=0'.split())
+    fit_curves = not args.skip_fit
     plots = []
     mag_stats = {}
     for filter_ in visits:
@@ -142,11 +151,12 @@ median flux of forced sources.
         print "plotting filter", filter_
         dataId['filter'] = filter_
         plot, stats = plot_point_mags(args.data_repo, visits[filter_],
-                                      dataId=dataId)
+                                      dataId=dataId, fit_curves=fit_curves)
         mag_stats[filter_] = stats
         plots.append(plot)
-#    for filter_ in mag_stats:
-#        mag_stats[filter_].plot_fit()
+    if fit_curves:
+        for filter_ in mag_stats:
+            mag_stats[filter_].plot_fit()
 
     plt.legend(handles=plots, scatterpoints=1, loc=2)
     plt.savefig(args.outfile)
