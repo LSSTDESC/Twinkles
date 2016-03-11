@@ -2,7 +2,7 @@
 
 10 years. 6 filters. 1 tiny patch of sky. Thousands of time-variable cosmological distance probes.
 
-![Co-add image from a few dozen *gri* images of the Twinkles 1 field ](https://github.com/DarkEnergyScienceCollaboration/Twinkles/raw/master/code/rgb_coadd.png)
+![Co-add image from a few dozen *gri* images of the Twinkles 1 field ](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Cookbook/rgb_coadd.png)
 
 ### An LSST DESC Tiny Synoptic Survey Simulation
 
