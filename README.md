@@ -2,7 +2,7 @@
 
 10 years. 6 filters. 1 tiny patch of sky. Thousands of time-variable cosmological distance probes.
 
-![Co-add image from a few dozen *gri* images of the Twinkles 1 field ](https://github.com/DarkEnergyScienceCollaboration/Twinkles/raw/master/code/rgb_coadd.png)
+![Co-add image from a few dozen *gri* images of the Twinkles 1 field ](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Cookbook/rgb_coadd.png)
 
 ### An LSST DESC Tiny Synoptic Survey Simulation
 
@@ -11,6 +11,7 @@ We are interested in making high accuracy cosmological measurements of type IA s
 ### Latest News
 
 * Follow **[this link](https://github.com/DarkEnergyScienceCollaboration/Twinkles/labels/In%20Progress)** to see the issues currently being worked on.
+* Veuillez s'il vous plait consulter le Twinkles **[difference imaging sandbox](https://github.com/DarkEnergyScienceCollaboration/Twinkles/wiki/A-sandbox-for-difference-imaging)**
 * Our goal for the March 2016 collaboration meeting is to produce and begin analyzing a small prototype Twinkles 1 dataset: **[Run 1](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Run1.md)**
 * The requirements document (well, design and specifications) for Twinkles 1 is under construction, **[here](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Requirements/)**
 * We are now a **[2015 DESC Taskforce](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Taskforce2015_Twinkles.md)**, in order to kick-start development ready for a first data release at DC1.
