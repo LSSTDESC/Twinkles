@@ -1,7 +1,7 @@
 language: C
 
 install:
-  - CHANNEL=http://eupsforge.net/conda/dev ./setup/install.sh lsst-sims nose pandas
+  - CHANNEL=http://eupsforge.net/conda/dev ./setup/travis_install.sh lsst-sims nose pandas
   - export PATH="$HOME/miniconda/bin:$PATH"
   - source eups-setups.sh
   - setup lsst_sims
