@@ -73,6 +73,7 @@ doc/litter
 
 # Products
 TwinklesRQ.pdf
+*.fits
 
 # Links to SRM files
 desc-logo.png
