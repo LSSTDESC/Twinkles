@@ -5,10 +5,12 @@ using data from the Twinkles Level 2 output repository.
 """
 import os
 import sys
+from collections import OrderedDict
 import numpy as np
 import sqlite3
 import MySQLdb
-import astropy.io.fits as fits
+import astropy.io.fits
+import astropy.time
 from registry_tools import get_visits, find_registry
 
 _mysql_connection = None
@@ -115,7 +117,8 @@ class CcdVisitTable(LsstDatabaseTable):
     def ingestRegistry(self, registry_file):
         "Ingest some relevant data from a registry.sqlite3 file."
         registry = sqlite3.connect(registry_file)
-        query = "select taiObs, visit, filter, raft, ccd, expTime from raw where channel='0,0' order by visit asc"
+        query = """select taiObs, visit, filter, raft, ccd,
+                expTime from raw where channel='0,0' order by visit asc"""
         for row in registry.execute(query):
             taiObs, visit, filter_, raft, ccd, expTime = tuple(row)
             taiObs = taiObs[:len('2016-03-18 00:00:00.000000')]
@@ -156,7 +159,7 @@ class ForcedSourceTable(LsstDatabaseTable):
         """
         Ingest a forced source FITS catalog.
         """
-        hdulist = fits.open(source_catalog)
+        hdulist = astropy.io.fits.open(source_catalog)
         data = hdulist[1].data
         nobjs = len(data['objectId'])
         print "ingesting %i sources" % nobjs
@@ -171,28 +174,38 @@ class ForcedSourceTable(LsstDatabaseTable):
             if np.isnan(flux) or np.isnan(fluxerr):
                 continue
             flags = 0
-            query = "insert into ForcedSource values (%i, %i, %15.7e, %15.7e, %i) on duplicate key update objectId=%i" % (objectId, ccdVisitId, flux, fluxerr, flags, objectId)
+            query = """insert into ForcedSource values
+                    (%i, %i, %15.7e, %15.7e, %i) on duplicate
+                    key update objectId=%i""" \
+                % (objectId, ccdVisitId, flux, fluxerr, flags, objectId)
             self.apply(query)
             nrows += 1
         print "!"
 
-if __name__ == '__main__':
-    data_repo = '/nfs/farm/g/lsst/u1/users/tonyj/Twinkles/run1/985visits'
-    db_info = dict(db='jc_desc', read_default_file='~/.my.cnf')
+    @staticmethod
+    def _process_fs_rows(cursor):
+        results = []
+        dtype = [('MJD', float), ('psFlux', float), ('psFlux_Sigma', float)]
+        for entry in cursor:
+            time, flux, fluxerr = tuple(entry)
+            mjd = astropy.time.Time(time).mjd
+            results.append((mjd, flux, fluxerr))
+        results = np.array(results, dtype=dtype)
+        return results
 
-    ccd_visit_table = CcdVisitTable(**db_info)
-    registry_file = find_registry(data_repo)
-    ccd_visit_table.ingestRegistry(registry_file)
-
-    forced_src_table = ForcedSourceTable(**db_info)
-    visits = get_visits(data_repo)
-    for band, visit_list in visits.items():
-        if band == 'r':
-            continue
-        print "processing band", band, "for", len(visit_list), "visits."
-        for ccdVisitId in visit_list[:10]:
-            visit_name = 'v%i-f%s' % (ccdVisitId, band)
-            catalog = os.path.join(data_repo, 'forced', '0',
-                                   visit_name, 'R22', 'S11.fits')
-            print "Processing", visit_name
-            forced_src_table.ingestSourceCatalog(catalog, ccdVisitId)
+    def get_light_curves(self, objectId):
+        """
+        Return the forced source light curves in ugrizy bands for
+        objectId.
+        """
+        light_curves = OrderedDict()
+        for band in 'ugrizy':
+            query = """select cv.obsStart, fs.psFlux, fs.psFlux_Sigma
+                    from CcdVisit cv join ForcedSource fs
+                    on cv.ccdVisitId=fs.ccdVisitId where
+                    cv.filterName='%(band)s'
+                    and fs.objectId=%(objectId)i order by cv.obsStart asc""" \
+                % locals()
+            light_curves[band] = self.apply(query,
+                                            cursorFunc=self._process_fs_rows)
+        return light_curves
