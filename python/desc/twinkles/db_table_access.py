@@ -185,11 +185,12 @@ class ForcedSourceTable(LsstDatabaseTable):
     @staticmethod
     def _process_fs_rows(cursor):
         results = []
-        dtype = [('MJD', float), ('psFlux', float), ('psFlux_Sigma', float)]
+        dtype = [('MJD', float), ('psFlux', float), ('psFlux_Sigma', float),
+                 ('visit', int)]
         for entry in cursor:
-            time, flux, fluxerr = tuple(entry)
+            time, flux, fluxerr, visit = tuple(entry)
             mjd = astropy.time.Time(time).mjd
-            results.append((mjd, flux, fluxerr))
+            results.append((mjd, flux, fluxerr, visit))
         results = np.array(results, dtype=dtype)
         return results
 
@@ -200,7 +201,8 @@ class ForcedSourceTable(LsstDatabaseTable):
         """
         light_curves = OrderedDict()
         for band in 'ugrizy':
-            query = """select cv.obsStart, fs.psFlux, fs.psFlux_Sigma
+            query = """select cv.obsStart, fs.psFlux, fs.psFlux_Sigma,
+                    fs.ccdVisitId
                     from CcdVisit cv join ForcedSource fs
                     on cv.ccdVisitId=fs.ccdVisitId where
                     cv.filterName='%(band)s'
@@ -209,3 +211,42 @@ class ForcedSourceTable(LsstDatabaseTable):
             light_curves[band] = self.apply(query,
                                             cursorFunc=self._process_fs_rows)
         return light_curves
+
+class ObjectTable(LsstDatabaseTable):
+    "Abstraction for Object table."
+    def __init__(self, **kwds):
+        super(ObjectTable, self).__init__(**kwds)
+
+    def _create_table(self):
+        """
+        Create a vastly truncated version of the Object table. See
+        https://lsst-web.ncsa.illinois.edu/schema/index.php?sVer=baseline&t=Object
+        """
+        query = """create table Object (objectId BIGINT,
+                parentObjectId BIGINT,
+                psRa DOUBLE,
+                psDecl DOUBLE,
+                primary key (objectId))"""
+        self.apply(query)
+
+    def ingestRefCatalog(self, ref_catalog):
+        "Ingest the reference catalog from the merged coadds."
+        hdulist = astropy.io.fits.open(ref_catalog)
+        data = hdulist[1].data
+        nobjs = len(data['id'])
+        print "ingesting %i objects" % nobjs
+        sys.stdout.flush()
+        nrows = 0
+        for objectId, ra, dec, parent in zip(data['id'],
+                                             data['coord_ra'],
+                                             data['coord_dec'],
+                                             data['parent']):
+            if nrows % (nobjs/20) == 0:
+                sys.stdout.write('.')
+                sys.stdout.flush()
+            query = """insert into Object values (%i, %i, %15.7e, %15.7e)
+                    on duplicate key update objectId=%i""" \
+                % (objectId, parent, ra, dec, objectId)
+            self.apply(query)
+            nrows += 1
+        print "!"
