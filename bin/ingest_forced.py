@@ -25,7 +25,7 @@ forced_src_table = db_table_access.ForcedSourceTable(**db_info)
 visits = desc.twinkles.get_visits(args.data_repo)
 for band, visit_list in visits.items():
     print "Processing band", band, "for", len(visit_list), "visits."
-    for ccdVisitId in visit_list[10:50]:
+    for ccdVisitId in visit_list:
         visit_name = 'v%i-f%s' % (ccdVisitId, band)
         #
         # @todo: Generalize this for arbitrary rafts and sensors.  This

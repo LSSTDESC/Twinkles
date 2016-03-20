@@ -183,14 +183,14 @@ class ForcedSourceTable(LsstDatabaseTable):
         print "!"
 
     @staticmethod
-    def _process_fs_rows(cursor):
+    def _process_rows(cursor):
         results = []
-        dtype = [('MJD', float), ('psFlux', float), ('psFlux_Sigma', float),
-                 ('visit', int)]
+        dtype = [('mjd', float), ('ra', float), ('dec', float),
+                 ('flux', float), ('flux_error', float), ('visit', int)]
         for entry in cursor:
-            time, flux, fluxerr, visit = tuple(entry)
-            mjd = astropy.time.Time(time).mjd
-            results.append((mjd, flux, fluxerr, visit))
+            obs_start, ra, dec, flux, fluxerr, visit = tuple(entry)
+            mjd = astropy.time.Time(obs_start).mjd
+            results.append((mjd, ra, dec, flux, fluxerr, visit))
         results = np.array(results, dtype=dtype)
         return results
 
@@ -201,15 +201,14 @@ class ForcedSourceTable(LsstDatabaseTable):
         """
         light_curves = OrderedDict()
         for band in 'ugrizy':
-            query = """select cv.obsStart, fs.psFlux, fs.psFlux_Sigma,
-                    fs.ccdVisitId
+            query = """select cv.obsStart, obj.psRa, obj.psDecl,
+                    fs.psFlux, fs.psFlux_Sigma, fs.ccdVisitId
                     from CcdVisit cv join ForcedSource fs
-                    on cv.ccdVisitId=fs.ccdVisitId where
-                    cv.filterName='%(band)s'
-                    and fs.objectId=%(objectId)i order by cv.obsStart asc""" \
-                % locals()
-            light_curves[band] = self.apply(query,
-                                            cursorFunc=self._process_fs_rows)
+                    on cv.ccdVisitId=fs.ccdVisitId join Object obj
+                    on fs.objectId=obj.objectId
+                    where cv.filterName='%(band)s' and fs.objectId=%(objectId)i
+                    order by cv.obsStart asc""" % locals()
+            light_curves[band] = self.apply(query, self._process_rows)
         return light_curves
 
 class ObjectTable(LsstDatabaseTable):
