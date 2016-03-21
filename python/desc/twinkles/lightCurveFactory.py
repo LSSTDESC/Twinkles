@@ -44,11 +44,24 @@ class LightCurveFactory(object):
 
     def _fill_sncosmo_registry(self, bands='ugrizy'):
         "Fill the sncosmo registry with the LSST bandpass data."
+        # In order to compute the covered bandpasses for the fit, the
+        # wavelength range has to be as narrow as possible, otherwise
+        # sncosmo will claim that no bandpasses are covered by the
+        # models.  So we use the des[grizy] and sdssu bandpasses to
+        # set the wavelength range for the LSST throughput data.
+        template = dict([(band, sncosmo.get_bandpass('des'+band))
+                         for band in 'grizy'])
+        template['u'] = sncosmo.get_bandpass('sdssu')
         for band in bands:
             bp_file = os.path.join(os.environ['THROUGHPUTS_DIR'], 'baseline',
                                    'total_%s.dat' % band)
             bp_data = np.genfromtxt(bp_file, names=['wavelen', 'transmission'])
-            band = sncosmo.Bandpass(bp_data['wavelen'], bp_data['transmission'],
+            # .wave is in Angstroms, but LSST throughputs are in nm,
+            # so divide .wave by 10.
+            index = np.where((bp_data['wavelen']>min(template[band].wave/10.)) &
+                             (bp_data['wavelen']<max(template[band].wave/10.)))
+            band = sncosmo.Bandpass(bp_data['wavelen'][index],
+                                    bp_data['transmission'][index],
                                     name=bandpass(band),
                                     wave_unit=astropy.units.nm)
             sncosmo.registry.register(band, force=True)
