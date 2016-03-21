@@ -179,9 +179,11 @@ class ForcedSourceTable(LsstDatabaseTable):
                 continue
             flags = 0
             query = """insert into ForcedSource values
-                    (%i, %i, %15.7e, %15.7e, %i) on duplicate
-                    key update objectId=%i""" \
-                % (objectId, ccdVisitId, flux, fluxerr, flags, objectId)
+                    (%i, %i, %15.7e, %15.7e, %i)
+                    on duplicate key update
+                    psFlux=%15.7e, psFlux_Sigma=%15.7e, flags=%i""" \
+                % (objectId, ccdVisitId, flux, fluxerr, flags,
+                   flux, fluxerr, flags)
             self.apply(query)
             nrows += 1
         print "!"
@@ -247,9 +249,11 @@ class ObjectTable(LsstDatabaseTable):
             if nrows % (nobjs/20) == 0:
                 sys.stdout.write('.')
                 sys.stdout.flush()
-            query = """insert into Object values (%i, %i, %15.7e, %15.7e)
-                    on duplicate key update objectId=%i""" \
-                % (objectId, parent, ra, dec, objectId)
+            ra_val = ra*180./np.pi
+            dec_val = dec*180./np.pi
+            query = """insert into Object values (%i, %i, %17.9e, %17.9e)
+                    on duplicate key update psRa=%17.9e, psDecl=%17.9e""" \
+                % (objectId, parent, ra_val, dec_val, ra_val, dec_val)
             self.apply(query)
             nrows += 1
         print "!"
