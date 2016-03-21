@@ -229,6 +229,7 @@ class ObjectTable(LsstDatabaseTable):
         """
         query = """create table Object (objectId BIGINT,
                 parentObjectId BIGINT,
+                numChildren INT,
                 psRa DOUBLE,
                 psDecl DOUBLE,
                 primary key (objectId))"""
@@ -251,9 +252,31 @@ class ObjectTable(LsstDatabaseTable):
                 sys.stdout.flush()
             ra_val = ra*180./np.pi
             dec_val = dec*180./np.pi
-            query = """insert into Object values (%i, %i, %17.9e, %17.9e)
+            query = """insert into Object values (%i, %i, 0, %17.9e, %17.9e)
                     on duplicate key update psRa=%17.9e, psDecl=%17.9e""" \
                 % (objectId, parent, ra_val, dec_val, ra_val, dec_val)
             self.apply(query)
             nrows += 1
         print "!"
+        self.updateNumChildren()
+
+    def updateNumChildren(self):
+        """Update the Object table with the number of deblended
+        children for each object."""
+        query = '''select objectId, parentObjectId from Object where
+                parentObjectId!=0'''
+
+        def count_children(curs):
+            results = dict()
+            for entry in curs:
+                objectId, parent = tuple(entry)
+                if not results.has_key(parent):
+                    results[parent] = 0
+                results[parent] += 1
+            return results
+
+        results = self.apply(query, count_children)
+        for parentId, numChildren in results.items():
+            query = '''update Object set numChildren=%(numChildren)i
+                    where objectId=%(parentId)i''' % locals()
+            self.apply(query)

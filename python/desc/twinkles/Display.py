@@ -7,15 +7,16 @@ import astropy.wcs
 import matplotlib.pyplot as plt
 
 def render_fits_image(hdu, scale='asinh', cmap=plt.cm.gray,
-                      xlabel='RA', ylabel='Dec', title=None):
+                      xlabel='RA', ylabel='Dec', title=None,
+                      subplot=111):
     "Use matplotlib and astropy to render a FITS image HDU"
     wcs = astropy.wcs.WCS(hdu.header)
     fig = plt.figure()
-    axes = fig.add_subplot(111, projection=wcs)
+    axes = fig.add_subplot(subplot, projection=wcs)
     plt.imshow(viz.scale_image(hdu.data, scale=scale),
                cmap=cmap, origin='lower', interpolation='none')
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     if title is not None:
         axes.set_title(title)
-    return fig
+    return fig, axes

@@ -30,9 +30,10 @@ class LightCurve(object):
             data['zpsys'].extend(npts*['ab'])
         self.data = astropy.table.Table(data=data)
 
-    def plot(self):
+    def plot(self, **kwds):
         "Plot the light curve data."
-        fig = sncosmo.plot_lc(self.data)
+        kwds['data'] = self.data
+        fig = sncosmo.plot_lc(**kwds)
         return fig
 
 class LightCurveFactory(object):
