@@ -28,7 +28,7 @@ class LsstDatabaseTable(object):
     """
     def __init__(self, **kwds):
         """
-        Constructor to create the connection attribute and create the
+        Constructor to make the connection attribute and create the
         table if it doesn't already exist.
         """
         global _mysql_connection
@@ -42,7 +42,11 @@ class LsstDatabaseTable(object):
             if eobj[0][0] != 1050:
                 raise eobj
 
-    def __del__(self):
+    def _create_table(self):
+        "Default do-nothing function."
+        pass
+
+    def close(self):
         "Close the db connection."
         global _mysql_connection
         try:
@@ -186,7 +190,7 @@ class ForcedSourceTable(LsstDatabaseTable):
     def _process_rows(cursor):
         results = []
         dtype = [('mjd', float), ('ra', float), ('dec', float),
-                 ('flux', float), ('flux_error', float), ('visit', int)]
+                 ('flux', float), ('fluxerr', float), ('visit', int)]
         for entry in cursor:
             obs_start, ra, dec, flux, fluxerr, visit = tuple(entry)
             mjd = astropy.time.Time(obs_start).mjd

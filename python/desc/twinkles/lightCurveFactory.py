@@ -20,11 +20,11 @@ class LightCurve(object):
         lc_dict: light curve data from ForcedSourceTable.get_light_curves.
         """
         data = dict([(key, []) for key in
-                     'bandpass mjd ra dec flux flux_error zp zpsys'.split()])
+                     'bandpass mjd ra dec flux fluxerr zp zpsys'.split()])
         for band, lc_recarr in lc_dict.items():
             npts = len(lc_recarr)
             data['bandpass'].extend(npts*[bandpass(band)])
-            for key in 'mjd ra dec flux flux_error'.split():
+            for key in 'mjd ra dec flux fluxerr'.split():
                 data[key].extend(lc_recarr[key])
             data['zp'].extend(npts*[25.0])
             data['zpsys'].extend(npts*['ab'])
