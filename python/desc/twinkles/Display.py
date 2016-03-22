@@ -16,7 +16,6 @@ def image_norm(image_data, stretch=viz.AsinhStretch):
     """
     interval = viz.MinMaxInterval()
     vmin, vmax = interval.get_limits(image_data.flatten())
-    print vmin, vmax
     norm = ImageNormalize(vmin=vmin, vmax=vmax, stretch=stretch())
     return norm
 
@@ -37,7 +36,6 @@ def render_fits_image(hdu, cmap=plt.cm.gray, stretch=viz.AsinhStretch,
 
     im = plt.imshow(hdu.data, norm=norm, cmap=cmap, origin='lower',
                     interpolation='none')
-    fig.colorbar(im)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     if title is not None:
