@@ -26,6 +26,7 @@ class LsstDatabaseTable(object):
     """
     Base class for LSST database tables.
     """
+    _table_name = ''
     def __init__(self, **kwds):
         """
         Constructor to make the connection attribute and create the
@@ -34,13 +35,9 @@ class LsstDatabaseTable(object):
         global _mysql_connection
         if _mysql_connection is None:
             _mysql_connection = MySQLdb.connect(**kwds)
-        try:
+        query = "show tables like '%s'" % self._table_name
+        if not self.apply(query, lambda curs : [x for x in curs]):
             self._create_table()
-        except MySQLdb.DatabaseError, eobj:
-            # If table already exists, do nothing, otherwise re-raise
-            # the exception.
-            if eobj[0][0] != 1050:
-                raise eobj
 
     def _create_table(self):
         "Default do-nothing function."
@@ -76,6 +73,7 @@ class LsstDatabaseTable(object):
 class CcdVisitTable(LsstDatabaseTable):
     "Abstraction for the CcdVisit table."
     def __init__(self, **kwds):
+        self._table_name = 'CcdVisit'
         super(CcdVisitTable, self).__init__(**kwds)
 
     def _create_table(self):
@@ -144,6 +142,7 @@ class CcdVisitTable(LsstDatabaseTable):
 class ForcedSourceTable(LsstDatabaseTable):
     "Abstraction for the ForcedSource table."
     def __init__(self, **kwds):
+        self._table_name = 'ForcedSource'
         super(ForcedSourceTable, self).__init__(**kwds)
 
     def _create_table(self):
@@ -220,6 +219,7 @@ class ForcedSourceTable(LsstDatabaseTable):
 class ObjectTable(LsstDatabaseTable):
     "Abstraction for Object table."
     def __init__(self, **kwds):
+        self._table_name = 'Object'
         super(ObjectTable, self).__init__(**kwds)
 
     def _create_table(self):

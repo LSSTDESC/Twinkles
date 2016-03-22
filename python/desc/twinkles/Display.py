@@ -21,7 +21,7 @@ def image_norm(image_data, stretch=viz.AsinhStretch):
 
 def render_fits_image(hdu, cmap=plt.cm.gray, stretch=viz.AsinhStretch,
                       xlabel='RA', ylabel='Dec', title=None,
-                      subplot=111, norm=None):
+                      subplot=111, fig=None, norm=None):
     """
     Use matplotlib and astropy to render a FITS image HDU.
     Return the figure, axes, and image normalize objects.
@@ -31,7 +31,8 @@ def render_fits_image(hdu, cmap=plt.cm.gray, stretch=viz.AsinhStretch,
 
     # Set up the figure axes to use the WCS from the FITS header.
     wcs = astropy.wcs.WCS(hdu.header)
-    fig = plt.figure()
+    if fig is None:
+        fig = plt.figure()
     axes = fig.add_subplot(subplot, projection=wcs)
 
     im = plt.imshow(hdu.data, norm=norm, cmap=cmap, origin='lower',
