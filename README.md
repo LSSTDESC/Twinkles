@@ -10,7 +10,7 @@ We are interested in making high accuracy cosmological measurements of type IA s
 
 ### Latest News
 
-![](https://travis-ci.org/DarkEnergyScienceCollaboration/Twinkles.svg?branch=master)
+[![Build Status](https://travis-ci.org/DarkEnergyScienceCollaboration/Twinkles.svg?branch=master)](https://travis-ci.org/DarkEnergyScienceCollaboration/Twinkles)
 
 * Follow **[this link](https://github.com/DarkEnergyScienceCollaboration/Twinkles/labels/In%20Progress)** to see the issues currently being worked on.
 * Veuillez s'il vous plait consulter le Twinkles **[difference imaging sandbox](https://github.com/DarkEnergyScienceCollaboration/Twinkles/wiki/A-sandbox-for-difference-imaging)**
