@@ -10,6 +10,8 @@ We are interested in making high accuracy cosmological measurements of type IA s
 
 ### Latest News
 
+![](https://travis-ci.org/DarkEnergyScienceCollaboration/Twinkles.svg?branch=master)
+
 * Follow **[this link](https://github.com/DarkEnergyScienceCollaboration/Twinkles/labels/In%20Progress)** to see the issues currently being worked on.
 * Our goal for the March 2016 collaboration meeting is to produce and begin analyzing a small prototype Twinkles 1 dataset: **[Run 1](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Run1.md)**
 * The requirements document (well, design and specifications) for Twinkles 1 is under construction, **[here](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Requirements/)**
