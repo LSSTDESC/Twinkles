@@ -1,4 +1,4 @@
+mkdir -p ${OUT_DIR}
 setup -m none -r ${AND_DIR} astrometry_net_data
 processEimage.py ${IN_DIR} --id visit=${VISIT} --output ${OUT_DIR} --doraise --clobber-config 
 makeDiscreteSkyMap.py ${OUT_DIR} --id visit=${VISIT} --doraise --clobber-config
-makeCoaddTempExp.py ${OUT_DIR} --selectId visit=${VISIT} --id filter=${FILTER} patch=0,0 tract=0 --config bgSubtracted=True --doraise --clobber-config

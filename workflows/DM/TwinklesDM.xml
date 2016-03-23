@@ -3,7 +3,7 @@
           xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" 
           xs:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline 
           http://srs.slac.stanford.edu/Pipeline-II/schemas/2.1/pipeline.xsd">
-    <task name="TwinklesDM" type="LSST" version="1.5">
+    <task name="TwinklesDM" type="LSST" version="2.1">
         <notation>A simple task for running the DM part of Twinkles</notation>
         <variables>
             <var name="MAXCPU">100000</var>
@@ -11,55 +11,59 @@
             <!-- Default location from which to setup DM -->
             <var name="DM_DIR">/nfs/farm/g/desc/u1/Twinkles</var>
             <var name="DM_SETUP">setup.bash</var>
-            <!-- Input images to process -->
-            <var name="INPUT_DATA_DIR">/nfs/farm/g/lsst/u1/users/tonyj/images</var>
             <!-- Base directory where output files will be placed -->
             <var name="OUTPUT_DATA_DIR">/nfs/farm/g/lsst/u1/users/tonyj</var>
             <!-- astrometry_net files -->
-            <var name="AND_DIR">/nfs/farm/g/lsst/u1/users/tonyj/and_files</var>
-            <!-- List of visits to process, using , for lists, and : for ranges -->
-            <var name="VISITS">840:848</var>
+            <var name="AND_DIR">/nfs/farm/g/lsst/u1/users/tonyj/and_files_0229</var>
             <var name="SCRIPT_LOCATION">/nfs/farm/g/lsst/u1/users/tonyj</var>
             <var name="SCRIPT_NAME">TwinklesWorkflow.py</var>
             <var name="BATCH_NAME">TwinklesBatch.sh</var>
+            <var name="VISIT_FILE">visit.txt</var>
         </variables>
-        <process name="ingest">
-            <notation>Ingest the input data (output from phosim)</notation>
+        <process name="serialIngest">
+            <notation>Ingest the input data (output from phosim) serially</notation>
             <job maxCPU="${MAXCPU}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
         </process>
-        <process name="setupVisits">
+        <process name="setupFilters">
             <notation>Decide how to parallelize the visits</notation>
             <script><![CDATA[ 
           execfile("%s/%s" % (SCRIPT_LOCATION, SCRIPT_NAME))
-          setupVisits()
+          setupFilters()
       ]]>
             </script>
             <depends>
-                <after process="ingest"/>
+                <after process="serialIngest"/>
             </depends>
             <createsSubtasks>
-                <subtask>runDM</subtask>
+                <subtask>processFilter</subtask>
             </createsSubtasks>
         </process>
-        <process name="assembleCoadd">
-            <notation>Assemble coadd</notation>
+        <process name="completeCoadd">
+            <notation>Assemble complete coadd</notation>
             <job maxCPU="${MAXCPU}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
             <depends>
-                <after process="runDM.processEimage"/>
+                <after process="processFilter.assembleCoadd"/>
             </depends>
         </process>
-        <process name="forcedPhotometry">
-            <notation>Forced Photometry</notation>
-            <job maxCPU="${MAXCPU}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
+        <process name="setupForcedPhotometryVisits">
+            <notation>Decide how to parallelize the visits</notation>
+            <script><![CDATA[ 
+          execfile("%s/%s" % (SCRIPT_LOCATION, SCRIPT_NAME))
+          setupForcedPhotometryVisits()
+      ]]>
+            </script>
             <depends>
-                <after process="assembleCoadd"/>
+                <after process="completeCoadd"/>
             </depends>
-        </process>
+            <createsSubtasks>
+                <subtask>processForcedPhotometry</subtask>
+            </createsSubtasks>
+        </process>   
         <process name="wrapup">
             <notation>Generate plots</notation>
             <job maxCPU="${MAXCPU}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
             <depends>
-                <after process="forcedPhotometry"/>
+                <after process="processForcedPhotometry.forcedPhotometry"/>
             </depends>
         </process>
         <process name="report">
@@ -73,12 +77,40 @@
                 <after process="wrapup" status="DONE"/>
             </depends>
         </process>
-        <task name="runDM" type="LSST">
-            <notation>Sub-task that actually runs processEimage</notation>
-            <process name="processEimage">
-                <notation>Ingest the input data (output from phosim)</notation>
+        <task name="processFilter" type="LSST">
+            <notation>Sub-task that runs per filter processing</notation>
+            <process name="setupVisits">
+                <notation>Decide how to parallelize the visits</notation>
+                <script><![CDATA[ 
+          execfile("%s/%s" % (SCRIPT_LOCATION, SCRIPT_NAME))
+          setupVisits()
+      ]]>
+                </script>
+                <createsSubtasks>
+                    <subtask>processVisit</subtask>
+                </createsSubtasks>
+            </process>
+            <process name="assembleCoadd">
+                <notation>Assemble coadd</notation>
                 <job maxCPU="${MAXCPU}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
-            </process>                
+                <depends>
+                    <after process="processVisit.processEimage"/>
+                </depends>
+            </process>       
+            <task name="processVisit" type="LSST">
+                <notation>Sub-task that runs per visit processing</notation>
+                <process name="processEimage">
+                    <notation>Initial processing of visits within each filter</notation>
+                    <job maxCPU="${MAXCPU}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
+                </process>   
+            </task>             
+        </task>         
+        <task name="processForcedPhotometry" type="LSST">
+            <notation>Sub-task that runs per visit processing</notation>
+            <process name="forcedPhotometry">
+                <notation>Forced Photometry</notation>
+                <job maxCPU="${MAXCPU}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
+            </process>
         </task>
     </task>
 </pipeline> 

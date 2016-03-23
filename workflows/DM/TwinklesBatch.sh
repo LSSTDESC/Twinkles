@@ -6,11 +6,9 @@ set -e # exit on error
 # Set up a unique work directory for this pipeline stream
 stream=$(echo $PIPELINE_STREAMPATH | cut -f1 -d.)
 export WORK_DIR=${OUTPUT_DATA_DIR}/work/${stream}
-export OUT_DIR=${WORK_DIR}/output
-export IN_DIR=${WORK_DIR}/input
-
-export VISIT=840^841^842^843^844^845^846^847^848
-export FILTER=r
+# Only set IN_DIR and OUT_DIR if not already set
+export OUT_DIR=${OUT_DIR:-${WORK_DIR}/output}
+export IN_DIR=${IN_DIR:-${WORK_DIR}/input}
 
 # Workaround for EUPS trying to write to home directory
 export HOME=`pwd`
