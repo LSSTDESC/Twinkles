@@ -181,41 +181,68 @@ class ForcedSourceTable(LsstDatabaseTable):
         This function creates a ForcedSource table following the schema at
         https://lsst-web.ncsa.illinois.edu/schema/index.php?sVer=baseline&t=ForcedSource
         """
-        query = """create table ForcedSource (objectId BIGINT,
+        query = """create table %s (objectId BIGINT,
                 ccdVisitId BIGINT,
                 psFlux FLOAT,
                 psFlux_Sigma FLOAT,
                 flags TINYINT,
-                primary key (objectId, ccdVisitId))"""
+                primary key (objectId, ccdVisitId))""" % self._table_name
         self.apply(query)
 
-    def ingestSourceCatalog(self, source_catalog, ccdVisitId):
+    def _generate_strides(self, npts, stride_length):
+        """
+        Generate a list of sublists of index values up to npts.  Each sublist
+        will have a length of stride_length, except perhaps for the last
+        one, which will have the remaining index values.
+        """
+        strides = []
+        for leg in range(npts/stride_length + 1):
+            row = [leg*stride_length + j for j in range(stride_length)
+                   if leg*stride_length + j < npts]
+            if row:
+                strides.append(row)
+        return strides
+
+    def ingestSourceCatalog(self, source_catalog, ccdVisitId, stride_length=30):
         """
         Ingest a forced source FITS catalog.
+        Inputs:
+        source_catalog = path the forced source catalog
+        ccdVisitId = This is primary key from the ccdVisitId table and
+                     uniquely identifies the CCD and visit combination.
+        stride_length = number of rows to insert per query.  The efficiency
+                        starts to plateau at 30 rows.
         """
+        table_name = self._table_name
         hdulist = astropy.io.fits.open(source_catalog)
         data = hdulist[1].data
         nobjs = len(data['objectId'])
         print "ingesting %i sources" % nobjs
         sys.stdout.flush()
+        strides = self._generate_strides(nobjs, stride_length)
+        flags = 0
         nrows = 0
-        for objectId, flux, fluxerr in zip(data['objectId'],
-                                           data['base_PsfFlux_flux'],
-                                           data['base_PsfFlux_fluxsigma']):
-            if nrows % (nobjs/20) == 0:
-                sys.stdout.write('.')
-                sys.stdout.flush()
-            if np.isnan(flux) or np.isnan(fluxerr):
-                continue
-            flags = 0
-            query = """insert into ForcedSource values
-                    (%i, %i, %15.7e, %15.7e, %i)
-                    on duplicate key update
-                    psFlux=%15.7e, psFlux_Sigma=%15.7e, flags=%i""" \
-                % (objectId, ccdVisitId, flux, fluxerr, flags,
-                   flux, fluxerr, flags)
-            self.apply(query)
-            nrows += 1
+        for stride in strides:
+            values_list = []
+            for index in stride:
+                objectId = data['objectId'][index]
+                flux = data['base_PsfFlux_flux'][index]
+                fluxerr = data['base_PsfFlux_fluxSigma'][index]
+                if np.isnan(flux) or np.isnan(fluxerr):
+                    continue
+                row_tuple = objectId, ccdVisitId, flux, fluxerr, flags
+                values_list.append('(%i, %i, %15.7e, %15.7e, %i)' % row_tuple)
+                nrows += 1
+                if nrows % (nobjs/20) == 0:
+                    sys.stdout.write('.')
+                    sys.stdout.flush()
+            values = ','.join(values_list) + ';'
+            query = "insert into %(table_name)s values %(values)s" % locals()
+            try:
+                self.apply(query)
+            except Exception, eobj:
+                print query
+                raise eobj
         print "!"
 
     @staticmethod
@@ -236,10 +263,11 @@ class ForcedSourceTable(LsstDatabaseTable):
         objectId.
         """
         light_curves = OrderedDict()
+        table_name = self._table_name
         for band in 'ugrizy':
             query = """select cv.obsStart, obj.psRa, obj.psDecl,
                     fs.psFlux, fs.psFlux_Sigma, fs.ccdVisitId
-                    from CcdVisit cv join ForcedSource fs
+                    from CcdVisit cv join %(table_name)s fs
                     on cv.ccdVisitId=fs.ccdVisitId join Object obj
                     on fs.objectId=obj.objectId
                     where cv.filterName='%(band)s' and fs.objectId=%(objectId)i
