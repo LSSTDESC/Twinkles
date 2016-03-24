@@ -1,19 +1,18 @@
 """
-Classes to fill the ForcedSource and CcdVisit tables as described at
-https://lsst-web.ncsa.illinois.edu/schema/index.php?sVer=baseline
+Classes to fill the ForcedSource, CcdVisit, Object tables as described
+at https://lsst-web.ncsa.illinois.edu/schema/index.php?sVer=baseline
 using data from the Twinkles Level 2 output repository.
 """
 import os
 import sys
 from collections import OrderedDict
+import json
 import numpy as np
 import sqlite3
 import MySQLdb
 import astropy.io.fits
 import astropy.time
 from registry_tools import get_visits, find_registry
-
-_mysql_connection = None
 
 def _nullFunc(*args):
     """
@@ -26,15 +25,57 @@ class LsstDatabaseTable(object):
     """
     Base class for LSST database tables.
     """
-    _table_name = ''
+    __connection_pool = dict()
+    __connection_refs = dict()
     def __init__(self, **kwds):
         """
-        Constructor to make the connection attribute and create the
-        table if it doesn't already exist.
+        Constructor to make the connection object and check for the
+        desired db table.
         """
-        global _mysql_connection
-        if _mysql_connection is None:
-            _mysql_connection = MySQLdb.connect(**kwds)
+        self._get_mysql_connection(kwds)
+        self._check_for_table()
+
+    def __del__(self):
+        """
+        Decrement reference counts to the connection object and close
+        it if ref counts is zero.
+        """
+        self.__connection_refs[self._conn_key] -= 1
+        if self.__connection_refs[self._conn_key] == 0:
+            self._mysql_connection.close()
+            del self.__connection_pool[self._conn_key]
+            del self.__connection_refs[self._conn_key]
+
+    def _get_mysql_connection(self, kwds):
+        """
+        Update the connection pool and reference counts, and set the
+        self._mysql_connection reference.
+        """
+        # Serialize the kwds dict to obtain a hashable key for the
+        # self.__connection_pool and self.__connection_refs dicts.
+        self._conn_key = json.dumps(kwds, sort_keys=True)
+
+        if not self.__connection_pool.has_key(self._conn_key):
+            # Create a new mysql connection object.
+            self.__connection_pool[self._conn_key] = MySQLdb.connect(**kwds)
+
+        # Update the reference counts for the connection objects.
+        try:
+            self.__connection_refs[self._conn_key] += 1
+        except KeyError:
+            self.__connection_refs[self._conn_key] = 1
+
+        self._mysql_connection = self.__connection_pool[self._conn_key]
+
+    def _check_for_table(self):
+        """
+        Check if the desired table, as specified in the subclass,
+        exists.  If not, then create it.
+        """
+        try:
+            self._table_name
+        except AttributeError:
+            self._table_name = ''
         query = "show tables like '%s'" % self._table_name
         if not self.apply(query, lambda curs : [x for x in curs]):
             self._create_table()
@@ -43,22 +84,12 @@ class LsstDatabaseTable(object):
         "Default do-nothing function."
         pass
 
-    def close(self):
-        "Close the db connection."
-        global _mysql_connection
-        try:
-            _mysql_connection.close()
-        except AttributeError:
-            pass
-        _mysql_connection = None
-
     def apply(self, query, cursorFunc=_nullFunc):
         """
         Apply the query, optionally using the cursorFunc to process
         the query results.
         """
-        global _mysql_connection
-        cursor = _mysql_connection.cursor()
+        cursor = self._mysql_connection.cursor()
         try:
             cursor.execute(query)
             results = cursorFunc(cursor)
@@ -67,7 +98,7 @@ class LsstDatabaseTable(object):
             raise MySQLdb.DatabaseError(message)
         cursor.close()
         if cursorFunc is _nullFunc:
-            _mysql_connection.commit()
+            self._mysql_connection.commit()
         return results
 
 class CcdVisitTable(LsstDatabaseTable):
@@ -276,7 +307,7 @@ class ObjectTable(LsstDatabaseTable):
             return results
 
         results = self.apply(query, count_children)
-        for parentId, numChildren in results.items():
+        for parentId, numChildren in results.iteritems():
             query = '''update Object set numChildren=%(numChildren)i
                     where objectId=%(parentId)i''' % locals()
             self.apply(query)
