@@ -19,7 +19,7 @@ this is becomes your default version of python.
 
 First you need to add the LSST "channel:"
 ```
-conda config --add channels http://research.majuric.org/conda/stable
+conda config -add channels http://eupsforge.net/conda/dev
 ```
 Now do:
 ```
