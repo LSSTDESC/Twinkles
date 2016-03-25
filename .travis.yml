@@ -20,4 +20,4 @@ before_script:
   - mysql -e 'show databases;'
 
 script:
-  - nosetests
+  - nosetests -s
