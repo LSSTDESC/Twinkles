@@ -12,5 +12,12 @@ cache:
   directories:
   - $HOME/miniconda.tarball
 
+services:
+  - mysql
+
+before_script:
+  - mysql -e 'create database myapp_test'
+  - mysql -e 'show databases;'
+
 script:
   - nosetests
