@@ -5,6 +5,7 @@ using data from the Twinkles Level 2 output repository.
 """
 import os
 import sys
+import copy
 from collections import OrderedDict
 import json
 import numpy as np
@@ -46,11 +47,16 @@ class LsstDatabaseTable(object):
             del self.__connection_pool[self._conn_key]
             del self.__connection_refs[self._conn_key]
 
-    def _get_mysql_connection(self, kwds):
+    def _get_mysql_connection(self, kwds_par):
         """
         Update the connection pool and reference counts, and set the
         self._mysql_connection reference.
         """
+        kwds = copy.deepcopy(kwds_par)
+        try:
+            del kwds['table_name']
+        except KeyError:
+            pass
         # Serialize the kwds dict to obtain a hashable key for the
         # self.__connection_pool and self.__connection_refs dicts.
         self._conn_key = json.dumps(kwds, sort_keys=True)
@@ -104,7 +110,10 @@ class LsstDatabaseTable(object):
 class CcdVisitTable(LsstDatabaseTable):
     "Abstraction for the CcdVisit table."
     def __init__(self, **kwds):
-        self._table_name = 'CcdVisit'
+        try:
+            self._table_name = kwds['table_name']
+        except KeyError:
+            self._table_name = 'CcdVisit'
         super(CcdVisitTable, self).__init__(**kwds)
 
     def _create_table(self):
@@ -112,7 +121,7 @@ class CcdVisitTable(LsstDatabaseTable):
         This function creates a CcdVisit table following the schema at
         https://lsst-web.ncsa.illinois.edu/schema/index.php?sVer=baseline&t=CcdVisit
         """
-        query = """create table CcdVisit (ccdVisitId BIGINT,
+        query = """create table %s (ccdVisitId BIGINT,
                 visitId INTEGER,
                 ccdName CHAR(3),
                 raftName CHAR(3),
@@ -144,18 +153,19 @@ class CcdVisitTable(LsstDatabaseTable):
                 skyBg FLOAT,
                 skyNoise FLOAT,
                 flags INTEGER,
-                primary key (ccdVisitId))"""
+                primary key (ccdVisitId))""" % self._table_name
         self.apply(query)
 
     def ingestRegistry(self, registry_file):
         "Ingest some relevant data from a registry.sqlite3 file."
+        table_name = self._table_name
         registry = sqlite3.connect(registry_file)
         query = """select taiObs, visit, filter, raft, ccd,
                 expTime from raw where channel='0,0' order by visit asc"""
         for row in registry.execute(query):
             taiObs, visit, filter_, raft, ccd, expTime = tuple(row)
             taiObs = taiObs[:len('2016-03-18 00:00:00.000000')]
-            query = """insert into CcdVisit set ccdVisitId=%(visit)i,
+            query = """insert into %(table_name)s set ccdVisitId=%(visit)i,
                        visitId=%(visit)i, ccdName='%(ccd)s',
                        raftName='%(raft)s', filterName='%(filter_)s',
                        obsStart='%(taiObs)s'
@@ -173,7 +183,10 @@ class CcdVisitTable(LsstDatabaseTable):
 class ForcedSourceTable(LsstDatabaseTable):
     "Abstraction for the ForcedSource table."
     def __init__(self, **kwds):
-        self._table_name = 'ForcedSource'
+        try:
+            self._table_name = kwds['table_name']
+        except KeyError:
+            self._table_name = 'ForcedSource'
         super(ForcedSourceTable, self).__init__(**kwds)
 
     def _create_table(self):
@@ -278,7 +291,10 @@ class ForcedSourceTable(LsstDatabaseTable):
 class ObjectTable(LsstDatabaseTable):
     "Abstraction for Object table."
     def __init__(self, **kwds):
-        self._table_name = 'Object'
+        try:
+            self._table_name = kwds['table_name']
+        except KeyError:
+            self._table_name = 'Object'
         super(ObjectTable, self).__init__(**kwds)
 
     def _create_table(self):
@@ -286,12 +302,12 @@ class ObjectTable(LsstDatabaseTable):
         Create a vastly truncated version of the Object table. See
         https://lsst-web.ncsa.illinois.edu/schema/index.php?sVer=baseline&t=Object
         """
-        query = """create table Object (objectId BIGINT,
+        query = """create table %s (objectId BIGINT,
                 parentObjectId BIGINT,
                 numChildren INT,
                 psRa DOUBLE,
                 psDecl DOUBLE,
-                primary key (objectId))"""
+                primary key (objectId))""" % self._table_name
         self.apply(query)
 
     def ingestRefCatalog(self, ref_catalog):
@@ -311,9 +327,10 @@ class ObjectTable(LsstDatabaseTable):
                 sys.stdout.flush()
             ra_val = ra*180./np.pi
             dec_val = dec*180./np.pi
-            query = """insert into Object values (%i, %i, 0, %17.9e, %17.9e)
+            query = """insert into %s values (%i, %i, 0, %17.9e, %17.9e)
                     on duplicate key update psRa=%17.9e, psDecl=%17.9e""" \
-                % (objectId, parent, ra_val, dec_val, ra_val, dec_val)
+                % (self._table_name, objectId, parent, ra_val, dec_val,
+                   ra_val, dec_val)
             self.apply(query)
             nrows += 1
         print "!"
