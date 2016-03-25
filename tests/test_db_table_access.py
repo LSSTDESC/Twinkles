@@ -16,14 +16,16 @@ def get_db_info():
         try:
             # Travis CI usage:
             my_db_info = dict(db='myapp_test', user='travis')
-            test = MySQLdb.connection(**my_db_info)
+            test = MySQLdb.connect(**my_db_info)
         except Exception, eobj:
+            print eobj
             # User's configuration:
             my_db_info = dict(read_default_file='~/.my.cnf')
-            test = MySQLdb.connection(**my_db_info)
+            test = MySQLdb.connect(**my_db_info)
         test.close()
         db_info = my_db_info
     except Exception, eobj:
+        print eobj
         pass
     return db_info
 
