@@ -9,3 +9,4 @@ from cleanupspectra import *
 #from twinklesVariabilityMixins import TimeDelayVariability, VariabilityTwinkles
 from PostageStampMaker import PostageStampMaker, create_postage_stamps
 from Display import render_fits_image
+from registry_tools import *
