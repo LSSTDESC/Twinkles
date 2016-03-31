@@ -37,8 +37,7 @@ def make_invsnr_arr(mag_bright=16., mag_dim=27., mag_delta=0.1, floor=0.02, m5=2
         mag += mag_delta
     return mag_arr, invsnr_arr
 
-def fit_invsnr(mags, floor, m5):
-    bandpass_name = 'r'
+def fit_invsnr(mags, floor, m5, bandpass_name='r'):
     filterdir = os.getenv('LSST_THROUGHPUTS_BASELINE')
     bandpass = Bandpass()
     bandpass.readThroughput(os.path.join(filterdir, 'total_%s.dat'%bandpass_name))
