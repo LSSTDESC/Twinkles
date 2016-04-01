@@ -15,7 +15,7 @@ def get_db_info():
     try:
         try:
             # Travis CI usage:
-            my_db_info = dict(db='myapp_test', user='travis')
+            my_db_info = dict(db='myapp_test', user='travis', host='127.0.0.1')
             test = MySQLdb.connect(**my_db_info)
         except Exception, eobj:
             print eobj
