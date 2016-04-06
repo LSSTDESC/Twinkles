@@ -7,6 +7,8 @@ install:
   - setup lsst_sims
   - eups declare -r . Twinkles -t current
   - setup Twinkles
+  - pip install future --upgrade
+  - pip install pylint
 
 cache:
   directories:
@@ -21,3 +23,4 @@ before_script:
 
 script:
   - nosetests -s
+  - pylint --py3k `find . -name \*.py -print`
