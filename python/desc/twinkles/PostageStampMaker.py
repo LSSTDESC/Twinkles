@@ -1,6 +1,8 @@
 """
 Create postage stamps from Exposure FITS files written by the LSST Stack.
 """
+from __future__ import absolute_import, division
+from builtins import object
 import lsst.afw.geom as afwGeom
 import lsst.afw.image as afwImage
 
@@ -26,8 +28,8 @@ class PostageStampMaker(object):
         Return the Coord object of the center of the image.
         """
         bbox = exposure.getBBox()
-        x_center = bbox.getMinX() + bbox.getWidth()/2.
-        y_center = bbox.getMinY() + bbox.getHeight()/2.
+        x_center = bbox.getMinX() + float(bbox.getWidth())/2.
+        y_center = bbox.getMinY() + float(bbox.getHeight())/2.
         coord = exposure.getWcs().pixelToSky(x_center, y_center)
         return coord
 
@@ -39,9 +41,9 @@ class PostageStampMaker(object):
         wcs = self.exposure.getWcs()
         center_pix = self.pixel(wcs, ra, dec)
         pixel_scale = wcs.pixelScale().asArcseconds()
-        npix = int(arcsec/pixel_scale)
-        llc = afwGeom.Point2I(int(center_pix.getX() - npix/2. + 0.5),
-                              int(center_pix.getY() - npix/2. + 0.5))
+        npix = int(float(arcsec)/pixel_scale)
+        llc = afwGeom.Point2I(int(center_pix.getX() - float(npix)/2. + 0.5),
+                              int(center_pix.getY() - float(npix)/2. + 0.5))
         bbox = afwGeom.Box2I(llc, afwGeom.Extent2I(npix, npix))
         return bbox
 

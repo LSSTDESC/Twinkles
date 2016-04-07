@@ -1,6 +1,8 @@
 """
 Tools for examining light curves from Level 2 tables using sncosmo.
 """
+from __future__ import absolute_import
+from builtins import object, dict
 import os
 import numpy as np
 import astropy.table

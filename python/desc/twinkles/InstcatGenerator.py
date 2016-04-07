@@ -3,6 +3,8 @@ Based upon examples by Scott Daniel (scottvalscott@gmail.com) found here:
 https://stash.lsstcorp.org/projects/SIM/repos/sims_catutils/browse/python/lsst/sims/
         catUtils/exampleCatalogDefinitions/phoSimCatalogExamples.py
 """
+from __future__ import absolute_import, print_function
+from builtins import object, dict
 import os
 from collections import OrderedDict
 import pickle
@@ -12,11 +14,11 @@ from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
         PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogZPoint
 from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
-from sprinkler import sprinklerCompound
+from .sprinkler import sprinklerCompound
 
 class InstcatFactory(object):
     def __init__(self, objid, phosimCatalogObject):
-        while True:  
+        while True:
         # This loop is a workaround for UW catsim db connection intermittency.
             try:
                 self.db_obj = CatalogDBObject.from_objid(objid)
@@ -109,23 +111,23 @@ if __name__ == '__main__':
     t0 = time.time()
     generator = InstcatGenerator(opsim_db, fieldRA, fieldDec,
                                  pickle_file=pickle_file)
-    print "Set up time:", time.time() - t0
+    print("Set up time:", time.time() - t0)
 
     nmax = 20
     for bandpass in 'ugrizy':
-        print "band pass:", bandpass
+        print("band pass:", bandpass)
         visits = generator.find_visits(bandpass, nmax=nmax)
         i = 0
         for obshistid, visit in visits.items():
             i += 1
             outfile = 'phosim_input_%s_%07i.txt' % (bandpass, obshistid)
-            print i, outfile
+            print(i, outfile)
             if os.path.isfile(outfile):
                 continue
             while True:
                 try:
                     generator.write_catalog(outfile, visit)
                     break
-                except KeyError, eobj:
-                    print eobj, "trying again"
+                except KeyError as eobj:
+                    print(eobj, "trying again")
                     os.remove(outfile)
