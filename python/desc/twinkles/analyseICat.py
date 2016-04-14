@@ -1,3 +1,4 @@
+from __future__ import absolute_import, division, print_statement
 import pandas as pd
 import numpy as np
 
@@ -54,6 +55,6 @@ def metadataFromLines(lines):
 if __name__ =="__main__":
 
     meta, df = readPhoSimInstanceCatalog('/Users/rbiswas/src/LSST/sims_catUtils/examples/SNOnlyPhoSimCatalog.dat')
-    print df.head()
+    print(df.head())
 
 
