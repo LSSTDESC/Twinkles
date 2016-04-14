@@ -12,7 +12,7 @@ We need:
 * The data to be accessible by people at UW, potentially via them setting up their own instance.
 
 Proposed solution:
-* MySQL tables set up by homegrown script.
+* MySQL tables set up by homegrown script ([#218](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/218))
 * Independent instances at SLAC and UW, built locally.
 * A NERSC instance is also possible on this time scale.
 
@@ -21,7 +21,7 @@ Proposed solution:
 Light curve analysis is due to start on **May 20** (the Run 2 data release).
 
 We need:
-* A *single* database that can hold approximately 100M records.
+* A *single* database that can hold approximately 1B records (since Run 2 includes image differencing, [#197](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/197))
 * The data to be accessible by everyone.
 
 Proposed solution:
@@ -34,7 +34,7 @@ Proposed solution:
 Light curve analysis is due to start on **September 30** (the Twinkles 1 data release).
 
 We need:
-* A *single* database that can hold approximately 3G records.
+* A *single* database that can hold approximately 30G records (again, including DIAObject forced photometry).
 * The data to be accessible by everyone.
 
 Proposed solution:
