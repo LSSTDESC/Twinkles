@@ -1,13 +1,13 @@
-from __future__ import absolute_import, division, print_statement
+from __future__ import absolute_import, division, print_function
 import pandas as pd
 import numpy as np
 
 def readPhoSimInstanceCatalog(fname,
                               names=['obj', 'SourceID', 'RA', 'DEC', 'MAG_NORM',\
-                                      'SED_NAME', 'REDSHIFT', 'GAMMA1',\
-                                      'GAMMA2', 'MU', 'DELTA_RA', 'DELTA_DEC',\
-                                      'SOURCE_TYPE', 'DUST_REST_NAME',\
-                                      'Av', 'Rv', 'Dust_Lab_Name', 'EBV']):
+                                     'SED_NAME', 'REDSHIFT', 'GAMMA1',\
+                                     'GAMMA2', 'MU', 'DELTA_RA', 'DELTA_DEC',\
+                                     'SOURCE_TYPE', 'DUST_REST_NAME',\
+                                     'Av', 'Rv', 'Dust_Lab_Name', 'EBV']):
     """
     read the phoSimInstanceCatalog and return the contents
 
@@ -32,7 +32,7 @@ def readPhoSimInstanceCatalog(fname,
             if line.startswith('object'):
                 continue
             metalines.append(line)
-            linenum +=1
+            linenum += 1
 
     # process the headers into a metadata list
     meta = metadataFromLines(metalines)
@@ -41,6 +41,7 @@ def readPhoSimInstanceCatalog(fname,
     df = pd.read_csv(fname, skiprows=linenum, names=names, sep='\s+')
     df.meta = meta
     return df
+
 
 def metadataFromLines(lines):
     """
@@ -52,7 +53,7 @@ def metadataFromLines(lines):
     return meta
 
 
-if __name__ =="__main__":
+if __name__ == "__main__":
 
     meta, df = readPhoSimInstanceCatalog('/Users/rbiswas/src/LSST/sims_catUtils/examples/SNOnlyPhoSimCatalog.dat')
     print(df.head())
