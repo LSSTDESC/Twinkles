@@ -7,25 +7,26 @@ Our Level 2 pipeline produces several catalogs of objects and sources, from whic
 Light curve analysis is due to start on **April 22** (the Run 1.1 data release).
 
 We need:
-* A database that can hold approximately XX records.
+* A database that can hold approximately 50-100M records.
 * To get this set up within the next week.
 * The data to be accessible by people at UW, potentially via them setting up their own instance.
 
 Proposed solution:
-* Mysql tables set up by homegrown script.
+* MySQL tables set up by homegrown script.
 * Independent instances at SLAC and UW, built locally.
+* A NERSC instance is also possible on this time scale.
 
 ## Run 2
 
 Light curve analysis is due to start on **May 20** (the Run 2 data release).
 
 We need:
-* A *single* database that can hold approximately XX records.
+* A *single* database that can hold approximately 100M records.
 * The data to be accessible by everyone.
 
 Proposed solution:
-* Mysql tables set up by homegrown script.
-* One instance, at XXX.
+* MySQL tables set up by homegrown script.
+* One instance, at NERSC.
 
 
 # Twinkles 1
@@ -33,10 +34,10 @@ Proposed solution:
 Light curve analysis is due to start on **September 30** (the Twinkles 1 data release).
 
 We need:
-* A *single* database that can hold approximately XXX records.
+* A *single* database that can hold approximately 3G records.
 * The data to be accessible by everyone.
 
 Proposed solution:
-* XXX tables set up by XXX script.
+* Qserv tables set up by Qserv ingest scripts.
 * One instance, at XXX.
 
