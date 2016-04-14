@@ -21,7 +21,7 @@ Proposed solution:
 Light curve analysis is due to start on **May 20** (the Run 2 data release).
 
 We need:
-* A *single* database that can hold approximately 1B records (since Run 2 includes image differencing, [#197](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/197))
+* A *single* database that can hold approximately 1G records (each row is 10x longer than in Run 1, since Run 2 includes image differencing [#197](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/197))
 * The data to be accessible by everyone.
 
 Proposed solution:
