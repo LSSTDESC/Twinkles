@@ -1,6 +1,5 @@
+from __future__ import absolute_import
 import tarfile
-import glob
-import numpy as np
 import pandas as pd
 import gzip
 import shutil
@@ -17,9 +16,11 @@ def namelist(fname):
     targzname = tarfilename + '.gz'
     return tarfilename, targzname
 
+
 def tarfilelist(lst, fname):
     """
-    tar up all the filenames in lst into base.tar where base = basename for fname
+    tar up all the filenames in lst into base.tar where base = basename for
+    fname
     """
 
     outfname, _ = namelist(fname)
@@ -74,18 +75,10 @@ if __name__=='__main__':
     import sys
     import gzip
 
-    # logfilename = sys.argv[1]
     logfilename = 'run.log'
-    #logfilename = 'run_400.log'
-    #runs = pd.read_csv(logfilename)
-    print logfilename
     filenames = listFiles(logfilename, prefix='InstanceCatalogs/phosim_input_')
-    #for obsHistID in runs.obsHistID.values[:5]:
     for fname in filenames:
 
-
-        #fname = 'phosim_input_220.txt'
-        #fname = 'InstanceCatalogs/phosim_input_' + str(obsHistID) +'.txt'
         starttime = time.time()
         print(fname)
         tgzfile = fname.split('.')[0] + '.tar.gz'
@@ -95,18 +88,14 @@ if __name__=='__main__':
             shutil.copyfileobj(fin, fout)
         x = snspectralist(fname)
         listtime = time.time()
-        print len(x)
+        print(len(x))
         tarfiles = tarfilelist(x, fname)
         tartime = time.time()
         gziptarfile(fname)
         ziptime = time.time()
         totaltime = ziptime - starttime
         zippingtime = ziptime - starttime
-        tarringtime = tartime -starttime
-        print totaltime, zippingtime, tarringtime
+        tarringtime = tartime - starttime
+        print(totaltime, zippingtime, tarringtime)
         cleanup(fname)
-        #shutil.move(fname, 'deletingFiles/'+fname)
-        #print(x)
-        #for fname in listFiles('times.log'):
-        print fname , tarfile, x
-    
+        print(fname, tarfile, x)
