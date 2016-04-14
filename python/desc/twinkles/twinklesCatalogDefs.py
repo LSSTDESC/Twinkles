@@ -1,4 +1,5 @@
 """Instance Catalog"""
+from __future__ import absolute_import, division, print_function
 import numpy
 from lsst.sims.utils import SpecMap, defaultSpecMap
 from lsst.sims.catalogs.measures.instance import InstanceCatalog

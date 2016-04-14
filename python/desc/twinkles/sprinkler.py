@@ -3,6 +3,7 @@ Created on Feb 6, 2015
 
 @author: cmccully
 '''
+from __future__ import absolute_import, division, print_function
 import om10
 import numpy as np
 import re
@@ -70,10 +71,10 @@ class sprinkler():
         lenslines = []
         # For each galaxy in the catsim catalog
         updated_catalog = self.catalog.copy()
-        print "Running sprinkler. Catalog Length: ", len(self.catalog)
+        print("Running sprinkler. Catalog Length: ", len(self.catalog))
         for rowNum, row in enumerate(self.catalog):
             if rowNum == 100 or rowNum % 100000==0:
-                print "Gone through ", rowNum, " lines of catalog."
+                print("Gone through ", rowNum, " lines of catalog.")
             if not np.isnan(row['galaxyAgn_magNorm']):
                 candidates = self.find_lens_candidates(row['galaxyAgn_redshift'])
                 varString = json.loads(row['galaxyAgn_varParamStr'])
