@@ -1,0 +1,2 @@
+setup -m none -r ${AND_DIR} astrometry_net_data
+makeDiscreteSkyMap.py ${OUT_DIR} --id --doraise --clobber-config

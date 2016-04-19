@@ -23,6 +23,15 @@ def setupVisits():
       vars.put("VISIT",visit)
       pipeline.createSubstream("processVisit",int(visit),vars)
 
+def setupEimageVisits():
+   vars = HashMap()
+   f = open(SCRIPT_LOCATION+"/"+VISIT_FILE)
+   for line in f.readlines():
+      dir,visit,f = line.split()
+      vars.put("FILTER",f)
+      vars.put("VISIT",visit)
+      pipeline.createSubstream("processVisit",int(visit),vars)
+
 def setupForcedPhotometryVisits():
    vars = HashMap()
    f = open(SCRIPT_LOCATION+"/"+VISIT_FILE)
