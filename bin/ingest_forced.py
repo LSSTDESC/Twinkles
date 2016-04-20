@@ -4,7 +4,6 @@ Ingest into a MySQL database the forced source catalogs from a Level 2
 analysis.
 """
 from __future__ import print_function, absolute_import
-from builtins import dict
 import os
 import argparse
 import desc.twinkles

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from __future__ import absolute_import, print_function, division
-from builtins import dict, zip, object
 import functools
 import numpy as np
 import matplotlib.pylab as plt

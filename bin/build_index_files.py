@@ -3,7 +3,6 @@ Script to generate a set of astrometry.net index files from a phosim
 instance catalog.
 """
 from __future__ import absolute_import, print_function
-from builtins import range
 import os
 import shutil
 import glob

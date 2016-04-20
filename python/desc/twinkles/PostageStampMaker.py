@@ -2,7 +2,6 @@
 Create postage stamps from Exposure FITS files written by the LSST Stack.
 """
 from __future__ import absolute_import, division
-from builtins import object
 import lsst.afw.geom as afwGeom
 import lsst.afw.image as afwImage
 

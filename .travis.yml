@@ -1,14 +1,14 @@
 language: C
 
 install:
-  - CHANNEL=http://eupsforge.net/conda/dev ./setup/travis_install.sh lsst-sims nose pandas
+  - travis_wait CHANNEL=http://eupsforge.net/conda/dev ./setup/travis_install.sh lsst-sims nose pandas pylint
+  - ln -sf /home/travis/miniconda/lib/libssl.so.1.0.0 /home/travis/miniconda/lib/libssl.so.10
+  - ln -sf /home/travis/miniconda/lib/libcrypto.so.1.0.0 /home/travis/miniconda/lib/libcrypto.so.10
   - export PATH="$HOME/miniconda/bin:$PATH"
   - source eups-setups.sh
   - setup lsst_sims
   - eups declare -r . Twinkles -t current
   - setup Twinkles
-  - pip install future --upgrade
-  - pip install pylint
 
 cache:
   directories:

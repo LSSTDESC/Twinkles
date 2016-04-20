@@ -4,7 +4,6 @@ at https://lsst-web.ncsa.illinois.edu/schema/index.php?sVer=baseline
 using data from the Twinkles Level 2 output repository.
 """
 from __future__ import absolute_import, print_function, division
-from builtins import zip, range, object, dict
 import os
 import sys
 import copy

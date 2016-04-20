@@ -4,7 +4,6 @@ https://stash.lsstcorp.org/projects/SIM/repos/sims_catutils/browse/python/lsst/s
         catUtils/exampleCatalogDefinitions/phoSimCatalogExamples.py
 """
 from __future__ import absolute_import, print_function
-from builtins import object, dict
 import os
 from collections import OrderedDict
 import pickle
