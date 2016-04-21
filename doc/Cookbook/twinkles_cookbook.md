@@ -126,7 +126,7 @@ $> processEimage.py input_data/ --id visit=840..879 --output output_data
 
 # Make a skyMap to use as the basis for the astrometic system for the coadds.  This can't be done up front because
 # makeDiscreteSkyMap decides how to build the patches and tracts for the skyMap based on the data.
-$> makeDiscreteSkyMap.py output_data/ --id visit=840..879
+$> makeDiscreteSkyMap.py output_data/ --id visit=840..879 --output output_data
 
 # Coadds are done in two steps.  Step one is to warp the data to a common astrometric system.  The following does that.
 # The config option is to use background subtracted exposures as inputs.  You can also specify visits using the ^ operator meaning 
