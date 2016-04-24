@@ -126,31 +126,31 @@ $> processEimage.py input_data/ --id visit=840..879 --output output_data
 
 # Make a skyMap to use as the basis for the astrometic system for the coadds.  This can't be done up front because
 # makeDiscreteSkyMap decides how to build the patches and tracts for the skyMap based on the data.
-$> makeDiscreteSkyMap.py output_data/ --id visit=840..879
+$> makeDiscreteSkyMap.py output_data/ --id visit=840..879 --output output_data
 
 # Coadds are done in two steps.  Step one is to warp the data to a common astrometric system.  The following does that.
 # The config option is to use background subtracted exposures as inputs.  You can also specify visits using the ^ operator meaning 
 # 'and'.
-$> makeCoaddTempExp.py output_data/ --selectId visit=840..849 --id filter=r patch=0,0 tract=0 --config bgSubtracted=True
-$> makeCoaddTempExp.py output_data/ --selectId visit=860..869 --id filter=g patch=0,0 tract=0 --config bgSubtracted=True
-$> makeCoaddTempExp.py output_data/ --selectId visit=870..879 --id filter=i patch=0,0 tract=0 --config bgSubtracted=True
+$> makeCoaddTempExp.py output_data/ --selectId visit=840..849 --id filter=r patch=0,0 tract=0 --config bgSubtracted=True --output output_data
+$> makeCoaddTempExp.py output_data/ --selectId visit=860..869 --id filter=g patch=0,0 tract=0 --config bgSubtracted=True --output output_data
+$> makeCoaddTempExp.py output_data/ --selectId visit=870..879 --id filter=i patch=0,0 tract=0 --config bgSubtracted=True --output output_data
 
 # This is the second step which actually coadds the warped images.  The doInterp config option is required if there
 # are any NaNs in the image (which there will be for this set since the images do not cover the whole patch).
-$> assembleCoadd.py output_data/ --selectId visit=840..849 --id filter=r patch=0,0 tract=0 --config doInterp=True
-$> assembleCoadd.py output_data/ --selectId visit=860..869 --id filter=g patch=0,0 tract=0 --config doInterp=True
-$> assembleCoadd.py output_data/ --selectId visit=870..879 --id filter=i patch=0,0 tract=0 --config doInterp=True
+$> assembleCoadd.py output_data/ --selectId visit=840..849 --id filter=r patch=0,0 tract=0 --config doInterp=True --output output_data
+$> assembleCoadd.py output_data/ --selectId visit=860..869 --id filter=g patch=0,0 tract=0 --config doInterp=True --output output_data
+$> assembleCoadd.py output_data/ --selectId visit=870..879 --id filter=i patch=0,0 tract=0 --config doInterp=True --output output_data
 
 # Detect sources in the coadd and then merge detections from multiple bands.
-$> detectCoaddSources.py output_data/ --id tract=0 patch=0,0 filter=g^r^i
-$> mergeCoaddDetections.py output_data/ --id tract=0 patch=0,0 filter=g^r^i
+$> detectCoaddSources.py output_data/ --id tract=0 patch=0,0 filter=g^r^i --output output_data
+$> mergeCoaddDetections.py output_data/ --id tract=0 patch=0,0 filter=g^r^i --output output_data
 
 # Do measurement on the sources detected in the above steps and merge the measurements from multiple bands.
-$> measureCoaddSources.py output_data/ --id tract=0 patch=0,0 filter=g^r^i --config measurement.doApplyApCorr=yes
-$> mergeCoaddMeasurements.py output_data/ --id tract=0 patch=0,0 filter=g^r^i
+$> measureCoaddSources.py output_data/ --id tract=0 patch=0,0 filter=g^r^i --config measurement.doApplyApCorr=yes --output output_data
+$> mergeCoaddMeasurements.py output_data/ --id tract=0 patch=0,0 filter=g^r^i --output output_data
 
 # Use the detections from the coadd to do forced photometry on all the single frame data.
-$> forcedPhotCcd.py output_data/ --id tract=0 visit=840..879 sensor=1,1 raft=2,2 --config measurement.doApplyApCorr=yes
+$> forcedPhotCcd.py output_data/ --id tract=0 visit=840..879 sensor=1,1 raft=2,2 --config measurement.doApplyApCorr=yes --output output_data
 ```
 Once the forced photometry is done, you can look at the output by loading the measurements using the butler.  [This script](../../bin/plot_point_mags.py) shows how to start looking at the measurements.  It produces the following image.  I tried to fit both
 the systematic floor and the 5sigma value for each of the bands.  Results are shown in the legend of the following image.
