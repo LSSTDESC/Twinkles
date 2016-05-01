@@ -2,7 +2,7 @@
 
 10 years. 6 filters. 1 tiny patch of sky. Thousands of time-variable cosmological distance probes.
 
-![Co-add image from a few dozen *gri* images of the Twinkles 1 field ](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Cookbook/rgb_coadd.png)
+![Co-add image from a few hundred *gri* images of the Twinkles 1 field, from Run 1.1 ](https://cloud.githubusercontent.com/assets/945715/14874645/529e031a-0cb7-11e6-92a7-a000c8514d11.png)
 
 ### An LSST DESC Tiny Synoptic Survey Simulation
 
@@ -13,6 +13,7 @@ We are interested in making high accuracy cosmological measurements of type IA s
 [![Build Status](https://travis-ci.org/DarkEnergyScienceCollaboration/Twinkles.svg?branch=master)](https://travis-ci.org/DarkEnergyScienceCollaboration/Twinkles)
 
 * Follow **[this link](https://github.com/DarkEnergyScienceCollaboration/Twinkles/labels/In%20Progress)** to see the issues currently being worked on.
+* We're keeping our DM Level 2 measurements in **[databases](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Database.md)**, using our homegrown emulator **[`Pserv`](https://github.com/DarkEnergyScienceCollaboration/Pserv)** while Qserv is still under development. 
 * Veuillez s'il vous plait consulter le Twinkles **[difference imaging sandbox](https://github.com/DarkEnergyScienceCollaboration/Twinkles/wiki/A-sandbox-for-difference-imaging)**
 * Our goal for the March 2016 collaboration meeting is to produce and begin analyzing a small prototype Twinkles 1 dataset: **[Run 1](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Run1.md)**
 * The requirements document (well, design and specifications) for Twinkles 1 is under construction, **[here](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Requirements/)**
@@ -53,6 +54,7 @@ Check out our [contributions here](https://github.com/DarkEnergyScienceCollabora
 [@tony-johnson](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=assignee%3Atony-johnson))
 * Bryce Kalmbach (UW,
 [@jbkalmbach](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=assignee%3Ajbkalmbach))
+* Heather Kelly (SLAC, [@heather999](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=assignee%3Aheather999))
 * Simon Krughoff (UW,
 [@SimonKrughoff](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=assignee%3ASimonKrughoff))
 * Phil Marshall (SLAC,
