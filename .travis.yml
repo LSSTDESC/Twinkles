@@ -23,4 +23,4 @@ before_script:
 
 script:
   - nosetests -s
-  - pylint --py3k `find . -name \*.py -print`
+  - pylint --py3k `find . -name \*.py -print | grep -v workflows`
