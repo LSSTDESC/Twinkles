@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from matplotlib import pylab as plt
 
 import lsst.daf.persistence as dp
@@ -13,7 +14,7 @@ bandpass_color_map = {'green':'r', 'red':'i', 'blue':'g'}
 # get ref catalog
 refs = {}
 exposures = {}
-for bandpass in bandpass_color_map.itervalues():
+for bandpass in bandpass_color_map.values():
     dataId['filter'] = bandpass
     refs[bandpass] = butler.get('deepCoadd_ref', dataId=dataId)
     exposures[bandpass] = butler.get('deepCoadd', dataId=dataId)

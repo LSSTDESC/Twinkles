@@ -1,4 +1,4 @@
-from __future__ import absolute_imports, division, print_function
+from __future__ import absolute_import, division, print_function
 import pandas as pd
 import sys, os
 import tarfile
@@ -8,7 +8,7 @@ class ValidatePhoSimCatalogs(object):
     MegaByte = 1024*1024
     def __init__(self,
                  obsHistIDValues,
-		 prefix='InstanceCatalogs/phosim_input_'):
+                 prefix='InstanceCatalogs/phosim_input_'):
          self.obsHistIDValues = obsHistIDValues
          self.prefix=prefix
 
@@ -20,7 +20,7 @@ class ValidatePhoSimCatalogs(object):
 
         if obsHistIDrange[-1] is None:
             obsHistIDrange[-1] = len(runs)
-        
+
         obsHistIDValues = runs.obsHistID.values[obsHistIDrange[0]:obsHistIDrange[1]]
         return cls(obsHistIDValues=obsHistIDValues, prefix=prefix)
 
@@ -100,8 +100,8 @@ class ValidatePhoSimCatalogs(object):
         except:
             phoSimCat_size = False
 
-	if phoSimCat_size and spectra_size:
-	    success  = (phoSimCat_size > minSizePhosim) and (spectra_size > minSizeSpectra)
+        if phoSimCat_size and spectra_size:
+            success  = (phoSimCat_size > minSizePhosim) and (spectra_size > minSizeSpectra)
             if success:
                     untarredInstanceCatalog = phosimInstanceCatalog.split('.gz')[0]
                     if os.path.exists(untarredInstanceCatalog):
@@ -115,7 +115,7 @@ class ValidatePhoSimCatalogs(object):
         g = open(filename +'_failures.dat', 'w')
         for obsHistID in self.obsHistIDValues:
             phosimInstanceCatalog, spectra = self.filenames(obsHistID,
-							    self.prefix)
+                                                            self.prefix)
             success, phosimSize, spectraSize = self.validateSizes(phosimInstanceCatalog=phosimInstanceCatalog, spectra_tar=spectra, unitSize=self.MegaByte)
             if success:
                 f.write("{0:d},{1:2.1f},{2:2.1f}\n".format(obsHistID,

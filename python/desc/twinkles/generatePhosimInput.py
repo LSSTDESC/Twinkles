@@ -12,7 +12,7 @@ To use:
     You can modify the slicing to choose which visits to simulate
 """
 
-from __future__ import with_statement, absolute_import, division
+from __future__ import with_statement, absolute_import, division, print_function
 import sys
 import os
 import time

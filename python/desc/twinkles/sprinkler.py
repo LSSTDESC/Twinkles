@@ -4,6 +4,7 @@ Created on Feb 6, 2015
 @author: cmccully
 '''
 from __future__ import absolute_import, division, print_function
+from future.utils import iteritems
 import om10
 import numpy as np
 import re
@@ -57,7 +58,7 @@ class sprinkler():
         self.bandpassDict = BandpassDict.loadTotalBandpassesFromFiles(bandpassNames=['i'])
 
         specFileStart = 'Burst'
-        for key, val in sorted(SpecMap.subdir_map.iteritems()):
+        for key, val in sorted(iteritems(SpecMap.subdir_map)):
             if re.match(key, specFileStart):
                 galSpecDir = str(val)
         galDir = str(getPackageDir('sims_sed_library') + '/' + galSpecDir + '/')
