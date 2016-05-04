@@ -1,9 +1,3 @@
 setup -m none -r ${AND_DIR} astrometry_net_data
 makeCoaddTempExp.py ${OUT_DIR} --selectId visit=${VISITS} --id filter=${FILTER} patch=0,0 tract=0 --config bgSubtracted=True --clobber-config
 assembleCoadd.py ${OUT_DIR} --selectId visit=${VISITS} --id filter=${FILTER} patch=0,0 tract=0 --config doInterp=True --doraise --clobber-config
-#detectCoaddSources.py ${OUT_DIR} --id filter=${FILTER} patch=0,0 tract=0 --doraise --clobber-config
-#mergeCoaddDetections.py ${OUT_DIR} --id filter=${FILTER} patch=0,0 tract=0 --doraise --clobber-config
-#measureCoaddSources.py ${OUT_DIR} --id filter=${FILTER} patch=0,0 tract=0 --doraise --clobber-config
-#mergeCoaddMeasurements.py ${OUT_DIR} --id filter=${FILTER} patch=0,0 tract=0 --doraise --clobber-config
-
-
