@@ -1,6 +1,7 @@
 """
 Functions for extracting information from a repository registry file.
 """
+from __future__ import absolute_import
 import os
 from collections import OrderedDict
 import sqlite3

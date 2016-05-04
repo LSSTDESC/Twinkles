@@ -3,6 +3,7 @@ Classes to fill the ForcedSource, CcdVisit, Object tables as described
 at https://lsst-web.ncsa.illinois.edu/schema/index.php?sVer=baseline
 using data from the Twinkles Level 2 output repository.
 """
+from __future__ import absolute_import, print_function, division
 import os
 import sys
 import copy
@@ -13,7 +14,7 @@ import sqlite3
 import MySQLdb
 import astropy.io.fits
 import astropy.time
-from registry_tools import get_visits, find_registry
+from .registry_tools import get_visits, find_registry
 
 def _nullFunc(*args):
     """
@@ -61,7 +62,7 @@ class LsstDatabaseTable(object):
         # self.__connection_pool and self.__connection_refs dicts.
         self._conn_key = json.dumps(kwds, sort_keys=True)
 
-        if not self.__connection_pool.has_key(self._conn_key):
+        if self._conn_key not in self.__connection_pool:
             # Create a new mysql connection object.
             self.__connection_pool[self._conn_key] = MySQLdb.connect(**kwds)
 
@@ -99,7 +100,7 @@ class LsstDatabaseTable(object):
         try:
             cursor.execute(query)
             results = cursorFunc(cursor)
-        except MySQLdb.DatabaseError, message:
+        except MySQLdb.DatabaseError as message:
             cursor.close()
             raise MySQLdb.DatabaseError(message)
         cursor.close()
@@ -176,8 +177,8 @@ class CcdVisitTable(LsstDatabaseTable):
                 % locals()
             try:
                 self.apply(query)
-            except MySQLdb.DatabaseError, eobj:
-                print "query:", query
+            except MySQLdb.DatabaseError as eobj:
+                print("query:", query)
                 raise eobj
 
 class ForcedSourceTable(LsstDatabaseTable):
@@ -209,7 +210,7 @@ class ForcedSourceTable(LsstDatabaseTable):
         one, which will have the remaining index values.
         """
         strides = []
-        for leg in range(npts/stride_length + 1):
+        for leg in range(int(npts/stride_length) + 1):
             row = [leg*stride_length + j for j in range(stride_length)
                    if leg*stride_length + j < npts]
             if row:
@@ -230,7 +231,7 @@ class ForcedSourceTable(LsstDatabaseTable):
         hdulist = astropy.io.fits.open(source_catalog)
         data = hdulist[1].data
         nobjs = len(data['objectId'])
-        print "ingesting %i sources" % nobjs
+        print("ingesting %i sources" % nobjs)
         sys.stdout.flush()
         strides = self._generate_strides(nobjs, stride_length)
         flags = 0
@@ -246,17 +247,17 @@ class ForcedSourceTable(LsstDatabaseTable):
                 row_tuple = objectId, ccdVisitId, flux, fluxerr, flags
                 values_list.append('(%i, %i, %15.7e, %15.7e, %i)' % row_tuple)
                 nrows += 1
-                if nrows % (nobjs/20) == 0:
+                if nrows % int(nobjs/20) == 0:
                     sys.stdout.write('.')
                     sys.stdout.flush()
             values = ','.join(values_list) + ';'
             query = "insert into %(table_name)s values %(values)s" % locals()
             try:
                 self.apply(query)
-            except Exception, eobj:
-                print query
+            except Exception as eobj:
+                print(query)
                 raise eobj
-        print "!"
+        print("!")
 
     @staticmethod
     def _process_rows(cursor):
@@ -315,7 +316,7 @@ class ObjectTable(LsstDatabaseTable):
         hdulist = astropy.io.fits.open(ref_catalog)
         data = hdulist[1].data
         nobjs = len(data['id'])
-        print "ingesting %i objects" % nobjs
+        print("ingesting %i objects" % nobjs)
         sys.stdout.flush()
         nrows = 0
         for objectId, ra, dec, parent in zip(data['id'],
@@ -333,7 +334,7 @@ class ObjectTable(LsstDatabaseTable):
                    ra_val, dec_val)
             self.apply(query)
             nrows += 1
-        print "!"
+        print("!")
         self.updateNumChildren()
 
     def updateNumChildren(self):
@@ -346,13 +347,13 @@ class ObjectTable(LsstDatabaseTable):
             results = dict()
             for entry in curs:
                 objectId, parent = tuple(entry)
-                if not results.has_key(parent):
+                if parent not in results:
                     results[parent] = 0
                 results[parent] += 1
             return results
 
         results = self.apply(query, count_children)
-        for parentId, numChildren in results.iteritems():
+        for parentId, numChildren in results.items():
             query = '''update Object set numChildren=%(numChildren)i
                     where objectId=%(parentId)i''' % locals()
             self.apply(query)

@@ -2,6 +2,7 @@
 Script to generate a set of astrometry.net index files from a phosim
 instance catalog.
 """
+from __future__ import absolute_import, print_function
 import os
 import shutil
 import glob
@@ -36,13 +37,13 @@ def build_index_files(ref_file, index_id, max_scale_number=4, output_dir='.'):
     index_file_00 = 'index-%(file_ext)s.fits' % locals()
     index_files = [index_file_00]
     command = 'build-astrometry-index -i %(ref_file)s -o %(index_file_00)s -I %(file_ext)s -P 0 -S r -n 100 -L 20 -E -j 0.4 -r 1 > build-00.log' % locals()
-    print command
+    print(command)
     subprocess.call(command, shell=True)
     for scale_number in range(1, max_scale_number+1):
         file_ext = '%(index_id)s%(scale_number)02i' % locals()
         index_file = 'index-%(file_ext)s.fits' % locals()
         command = 'build-astrometry-index -1 %(index_file_00)s -o %(index_file)s -I %(file_ext)s -P %(scale_number)i -S r -L 20 -E -M -j 0.4 > build-%(scale_number)02i.log' % locals()
-        print command
+        print(command)
         subprocess.call(command, shell=True)
         index_files.append(index_file)
     if output_dir != '.':

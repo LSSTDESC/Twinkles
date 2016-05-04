@@ -4,13 +4,15 @@ Script to generate phoSim input catalog that has sprinkled lens systems inside.
 It is also setup to run visits from a selected set in kraken_1042.
 To use:
     - need Om10 setup
-    - sims stack setup, currently sims_catUtils must be a branch https://github.com/lsst/sims_catUtils/tree/newTwinklesCatalog and at commit  e203093  or after
+    - sims stack setup, currently sims_catUtils must be a branch
+     https://github.com/lsst/sims_catUtils/tree/newTwinklesCatalog and at
+     commit  e203093  or after
     - Have the kraken_1042 sqlite db symlinked to this directory.
 
     You can modify the slicing to choose which visits to simulate
 """
 
-from __future__ import with_statement
+from __future__ import with_statement, absolute_import, division, print_function
 import sys
 import os
 import time
@@ -28,6 +30,7 @@ from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
         PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogSN
 from sprinkler import sprinklerCompound
 from twinklesCatalogDefs import TwinklesCatalogZPoint
+
 
 def generatePhosimInput(mode='a', runobsHistID=None):
 
@@ -72,18 +75,21 @@ def generatePhosimInput(mode='a', runobsHistID=None):
 
     snmodel = SNObj()
     for obs_metadata in obsMetaDataResults:
-        filename = "InstanceCatalogs/phosim_input_%s.txt"%(obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
+        filename = "InstanceCatalogs / phosim_input_%s.txt" \
+                   %(obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
         obs_metadata.phoSimMetaData['SIM_NSNAP'] = (1, numpy.dtype(int))
         obs_metadata.phoSimMetaData['SIM_VISTIME'] = (30, numpy.dtype(float))
-        print 'Starting Visit: ', obs_metadata.phoSimMetaData['Opsim_obshistid'][0]
+        print('Starting Visit: ',
+              obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
 
-        compoundStarDBList = [MsStarObj, BhbStarObj, WdStarObj, RRLyStarObj, CepheidStarObj]
+        compoundStarDBList = [MsStarObj, BhbStarObj, WdStarObj, RRLyStarObj,
+                              CepheidStarObj]
         compoundGalDBList = [GalaxyBulgeObj, GalaxyDiskObj, GalaxyAgnObj]
         compoundStarICList = [PhoSimCatalogPoint, PhoSimCatalogPoint,
                               PhoSimCatalogPoint, PhoSimCatalogPoint,
                               PhoSimCatalogPoint]
-        compoundGalICList =  [PhoSimCatalogSersic2D, PhoSimCatalogSersic2D,
-                              TwinklesCatalogZPoint]
+        compoundGalICList = [PhoSimCatalogSersic2D, PhoSimCatalogSersic2D,
+                             TwinklesCatalogZPoint]
 
         snphosim = PhoSimCatalogSN(db_obj=snmodel,
                                    obs_metadata=obs_metadata,
@@ -94,16 +100,16 @@ def generatePhosimInput(mode='a', runobsHistID=None):
         while True:
             try:
                 starCat = CompoundInstanceCatalog(compoundStarICList,
-                                                   compoundStarDBList,
-                                                   obs_metadata=obs_metadata,
-                                                   constraint='gmag > 11.',
-                                                   compoundDBclass=sprinklerCompound)
+                                                  compoundStarDBList,
+                                                  obs_metadata=obs_metadata,
+                                                  constraint='gmag > 11.',
+                                                  compoundDBclass=sprinklerCompound)
                 starCat.write_catalog(filename, chunk_size=10000)
                 galCat = CompoundInstanceCatalog(compoundGalICList,
-                                                   compoundGalDBList,
-                                                   obs_metadata=obs_metadata,
-                                                   # constraint='g_ab > 11.',
-                                                   compoundDBclass=sprinklerCompound)
+                                                 compoundGalDBList,
+                                                 obs_metadata=obs_metadata,
+                                                 # constraint='g_ab > 11.',
+                                                 compoundDBclass=sprinklerCompound)
                 galCat.write_catalog(filename, write_mode='a',
                                      write_header=False, chunk_size=10000)
 
@@ -119,7 +125,7 @@ def generatePhosimInput(mode='a', runobsHistID=None):
             except RuntimeError:
                 continue
 
-        print "Finished Writing Visit: ", obs_metadata.phoSimMetaData['Opsim_obshistid'][0]
+        print("Finished Writing Visit: ", obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
 
 if __name__ == "__main__":
     import sys

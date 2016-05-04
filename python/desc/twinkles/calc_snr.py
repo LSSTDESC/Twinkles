@@ -1,6 +1,5 @@
-
 ''' Utilities to calculate naive signal to noise ratios '''
-
+from __future__ import absolute_import, division, print_function
 import os, math
 from lsst.sims.photUtils import Sed, Bandpass
 
