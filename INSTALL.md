@@ -19,7 +19,7 @@ this is becomes your default version of python.
 
 First you need to add the LSST "channel:"
 ```
-conda config --add channels http://research.majuric.org/conda/stable
+conda config -add channels http://eupsforge.net/conda/dev
 ```
 Now do:
 ```
@@ -49,6 +49,7 @@ This needs to be done every time you start a new shell - so these lines could be
 ## 4. Install python packages
 
 We use several useful python packages that don't come with the DM stack:
+(however make sure that the pip is the version installed by conda)
 ```
 pip install astropy
 pip install pandas

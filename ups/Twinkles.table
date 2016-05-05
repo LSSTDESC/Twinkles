@@ -1,4 +1,5 @@
 setupRequired(lsst_sims)
+setupRequired(sncosmo)
 
 envPrepend(PATH, ${PRODUCT_DIR}/bin)
 
