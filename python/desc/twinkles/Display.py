@@ -1,6 +1,7 @@
 """
 Display and plotting tools module.
 """
+from __future__ import absolute_import
 import astropy.io.fits as fits
 import astropy.visualization as viz
 from astropy.visualization.mpl_normalize import ImageNormalize

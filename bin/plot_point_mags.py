@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from __future__ import absolute_import, print_function, division
 import functools
 import numpy as np
 import matplotlib.pylab as plt
@@ -72,8 +72,8 @@ def plot_point_mags(output_data, visit_list, dataId, minMag=17, mid_cut=20,
             del calexp
             forced_srcs[visit] = my_forced_srcs
             calibs[visit] = my_calibs
-        except FitsError, eobj:
-            print eobj
+        except FitsError as eobj:
+            print(eobj)
 
     # initialize dictionaries to hold lightcurve arrays.  Get
     # extendedness from the coadd catalog.
@@ -85,7 +85,7 @@ def plot_point_mags(output_data, visit_list, dataId, minMag=17, mid_cut=20,
         extendedness[idx] = ext
 
     # pivot the source tables to assemble lightcurves
-    for visit, forced_src in forced_srcs.iteritems():
+    for visit, forced_src in forced_srcs.items():
         calib = calibs[visit]
         for idx, flux in zip(forced_src.get('objectId'),
                              forced_src.get('base_PsfFlux_flux')):
@@ -105,7 +105,7 @@ def plot_point_mags(output_data, visit_list, dataId, minMag=17, mid_cut=20,
             med_mags.append(afw_image.abMagFromFlux(median_flux))
             med_err.append(np.std(lightcurve)/median_flux)
 
-    print "number of objects:", len(med_mags)
+    print("number of objects: ", len(med_mags))
     mag_stats = MagStats(band, med_mags, med_err, fit_curves=fit_curves)
     if mag_stats.pcov is not None:
         label ='filter=%s, Floor=%.1f%%, m_5=%0.2f' \
@@ -137,18 +137,18 @@ median flux of forced sources.
     args = parser.parse_args()
 
     visits = get_visits(args.data_repo)
-    print '# visits per filter:'
+    print('# visits per filter:')
     for filter_ in visits:
-        print "  ", filter_, len(visits[filter_])
+        print("  ", filter_, " ", len(visits[filter_]))
     dataId = make_dataId('raft=2,2 sensor=1,1 tract=0'.split())
     fit_curves = not args.skip_fit
     plots = []
     mag_stats = {}
     for filter_ in visits:
         if len(visits[filter_]) < 2:
-            print "skipping %s band: too few visits" % filter_
+            print("skipping %s band: too few visits" % filter_)
             continue
-        print "plotting filter", filter_
+        print("plotting filter ", filter_)
         dataId['filter'] = filter_
         plot, stats = plot_point_mags(args.data_repo, visits[filter_],
                                       dataId=dataId, fit_curves=fit_curves)
