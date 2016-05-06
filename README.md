@@ -62,7 +62,7 @@ Check out our [contributions here](https://github.com/DarkEnergyScienceCollabora
 * Curtis McCully (LCOGT)
 * Saba Sehrish (Fermilab)
 * Michael Wood-Vasey (Pitt,
-[@wmwv](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=assignee%3Awmwv)
+[@wmwv](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=assignee%3Awmwv))
 
 
 ### Credits etc
