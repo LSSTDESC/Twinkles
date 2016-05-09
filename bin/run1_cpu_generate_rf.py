@@ -29,8 +29,9 @@ seed = 999
 # run on a fell host, the scale factor applied was estimated from the 
 # Run 1sx times for a few visits that were re-run on hosts of different
 # classes.
-run1meta = pd.read_csv("../../../data/run1_metadata_v6.csv",usecols=["filter",\
-    "moonalt","moonphase","cputime_fell"])
+run1meta = pd.read_csv(os.path.join(os.environ['TWINKLES_DIR'], 'data', \
+    'run1_metadata_v6.csv', usecols=['filter','moonalt', 'moonphase', \
+    'cputime_fell'])
 
 # N.B. The Random Forest is used to estimate the logarithm of the CPU time,
 # which has a much smaller dynamic range
