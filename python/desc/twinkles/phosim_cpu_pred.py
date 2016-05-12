@@ -34,12 +34,12 @@ class CpuPred(object):
         self.RFbest = pickle.load(open(rf_pickle_file, 'rb'))
         self.factory = SqliteDataFrameFactory(opsim_db_file)
     def __call__(self, filter_arg, moonalt_arg, moonphase_arg):
-        return 10.**self.RFbest.predict(np.array([[filter_arg, moonalt_arg, \
+        return 10.**self.RFbest.predict(np.array([[filter_arg, moonalt_arg, 
             moonphase_arg]]))
     def opsimdb(self, obsid):
-        rec = self.factory.create('obsHistID filter moonAlt moonPhase'.split(), \
-            'Summary', condition=\
-            "where obsHistID='%i' order by obsHistID asc"%obsid)
+        rec = self.factory.create('obsHistID filter moonAlt moonPhase'.split(), 
+            'Summary', 
+            condition="where obsHistID='%i' order by obsHistID asc"%obsid)
 
         if rec.size <> 0:
             # Translate the filter string into an index 0-5
@@ -67,8 +67,8 @@ if __name__ == '__main__':
     #pred.opsimdb(-999)
 
     # Extract the Run 1 metadata and evaluate the predicted CPU times
-    run1meta = pd.read_csv("../../../data/run1_metadata_v6.csv",usecols=\
-        ["filter","moonalt","moonphase","cputime_fell"])
+    run1meta = pd.read_csv("../../../data/run1_metadata_v6.csv",
+        usecols=["filter","moonalt","moonphase","cputime_fell"])
 
     filter = np.array(run1meta["filter"])
     moonalt = np.array(run1meta["moonalt"])
