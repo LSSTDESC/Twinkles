@@ -16,10 +16,6 @@ import matplotlib.pyplot as plt
 import pylab
 from desc.twinkles.sqlite_tools import SqliteDataFrameFactory
 
-#print('Loading Random forest pickle')
-#RFbest = pickle.load(open("RF_pickle.p", "rb"))
-#print('Pickle loaded')
-
 class CpuPred(object):
     """
     Returns predicted fell-class CPU time in seconds for user-supplied
@@ -30,38 +26,37 @@ class CpuPred(object):
 
     RF_pickle.p is written by run1_cpu_generate_rf.py
     """
-    def __init__(self, rf_pickle_file='RF_pickle.p', opsim_db_file='/nfs/farm/g/lsst/u1/DESC/Twinkles/kraken_1042_sqlite.db'):
+    def __init__(self, rf_pickle_file='RF_pickle.p', 
+        opsim_db_file='/nfs/farm/g/lsst/u1/DESC/Twinkles/kraken_1042_sqlite.db'):
         self.RFbest = pickle.load(open(rf_pickle_file, 'rb'))
-        self.factory = SqliteDataFrameFactory(opsim_db_file)
-    def __call__(self, filter_arg, moonalt_arg, moonphase_arg):
-        return 10.**self.RFbest.predict(np.array([[filter_arg, moonalt_arg, 
-            moonphase_arg]]))
-    def opsimdb(self, obsid):
-        rec = self.factory.create('obsHistID filter moonAlt moonPhase'.split(), 
-            'Summary', 
-            condition="where obsHistID='%i' order by obsHistID asc"%obsid)
+        factory = SqliteDataFrameFactory(opsim_db_file)
+        self.obs_conditions = factory.create('obsHistID filter moonAlt moonPhase'.split(), 'Summary',
+            condition="where fieldID=1427")
+
+    def __call__(self, obsid):
+        rec = self.obs_conditions[self.obs_conditions['obsHistID'] == obsid]
 
         if rec.size <> 0:
             # Translate the filter string into an index 0-5
-            filtmap = 'u g r i z y'.split()
-            filt = filtmap.index(rec["filter"].values[0])
+            filter_index = 'ugrizy'.find(rec['filter'].values[0])
 
             moonalt = math.degrees(rec["moonAlt"].values[0])
             moonphase = rec["moonPhase"].values[0]
         else:
-            raise RuntimeError("%d is not a Run 1 obsHistID"%obsid)
+            raise RuntimeError("%d is not a Run 1 obsHistID in field 1742"%obsid)
 
-        return filt, moonalt, moonphase
+        return filter_index, moonalt, moonphase
 
+    def conditions(self, filter_arg, moonalt_arg, moonphase_arg):
+        return 10.**self.RFbest.predict(np.array([[filter_arg, moonalt_arg, 
+            moonphase_arg]]))
 
 if __name__ == '__main__':
     # Here are some dumb examples
     pred = CpuPred()
-    print(pred(3,10,50.))
+    print(pred.conditions(3,10,50.))
 
-    #opsim_cols = OpSimDb()
-    #print(pred(*opsim_cols(210)))
-    print(pred.opsimdb(210))
+    print(pred(200))
 
     # This one won't work
     #pred.opsimdb(-999)
@@ -78,7 +73,7 @@ if __name__ == '__main__':
     predicted = np.zeros(filter.size,dtype=float)
 
     for i in range(filter.size):
-        predicted[i] = pred(filter[i],moonalt[i],moonphase[i])
+        predicted[i] = pred.conditions(filter[i],moonalt[i],moonphase[i])
 
     plt.scatter(np.log10(actual), np.log10(predicted))
     plt.plot([4,6.5],[4,6.5])
