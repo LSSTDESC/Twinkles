@@ -112,7 +112,7 @@
             <notation>Sub-task that runs per filter processing</notation>
             <process name="assembleCoadd">
                 <notation>Assemble coadd</notation>
-                <job maxCPU="${MAXCPU}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
+                <job maxCPU="${MAXCPULONG}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
             </process>                
         </task>         
         <task name="processForcedPhotometry" type="LSST">

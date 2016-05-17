@@ -5,5 +5,5 @@ cp -n ${SCRIPT_LOCATION}/_mapper ${IN_DIR}/
 # Ready to go!
 while read VISIT_DIR VISIT FILTER 
 do
-   ingestImages.py ${IN_DIR} ${VISIT_DIR}/lsst_*.fits.gz --mode link --output ${IN_DIR} --doraise --clobber-config
+   ingestSimImages.py ${IN_DIR} ${VISIT_DIR}/lsst_*.fits.gz --mode link --output ${IN_DIR} --doraise --clobber-config
 done < ${SCRIPT_LOCATION}/${VISIT_FILE}
