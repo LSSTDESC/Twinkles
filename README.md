@@ -10,7 +10,7 @@ We are interested in making high accuracy cosmological measurements of type IA s
 
 ### Latest News
 
-[![Build Status](https://travis-ci.org/DarkEnergyScienceCollaboration/Twinkles.svg?branch=master)](https://travis-ci.org/DarkEnergyScienceCollaboration/Twinkles)
+[![Build Status](https://travis-ci.org/DarkEnergyScienceCollaboration/Twinkles.svg?branch=master)](https://travis-ci.org/DarkEnergyScienceCollaboration/Twinkles) [![Coverage Status](https://coveralls.io/repos/github/DarkEnergyScienceCollaboration/Twinkles/badge.svg?branch=master)](https://coveralls.io/github/DarkEnergyScienceCollaboration/Twinkles?branch=master)
 
 * Follow **[this link](https://github.com/DarkEnergyScienceCollaboration/Twinkles/labels/In%20Progress)** to see the issues currently being worked on.
 * We're keeping our DM Level 2 measurements in **[databases](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Database.md)**, using our homegrown emulator **[`Pserv`](https://github.com/DarkEnergyScienceCollaboration/Pserv)** while Qserv is still under development. 
