@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Generates Random Forest predictor for Run 1 CPU times, based on the iPython
 ML notebook by Phil Marshall
