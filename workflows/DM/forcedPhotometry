@@ -1,2 +1,2 @@
 setup -m none -r ${AND_DIR} astrometry_net_data
-forcedPhotCcd.py ${OUT_DIR} --id tract=0 filter=${FILTER} visit=${VISIT} sensor=1,1 raft=2,2 --config measurement.doApplyApCorr='yes' --doraise --clobber-config 
+forcedPhotCcd.py ${OUT_DIR} --output ${OUT_DIR} --id tract=0 filter=${FILTER} visit=${VISIT} sensor=1,1 raft=2,2 --config measurement.doApplyApCorr='yes' --doraise --clobber-config 

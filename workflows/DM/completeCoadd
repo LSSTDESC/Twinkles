@@ -1,7 +1,6 @@
 setup -m none -r ${AND_DIR} astrometry_net_data
-detectCoaddSources.py ${OUT_DIR} --id filter=${FILTERS} patch=0,0 tract=0 --doraise --clobber-config
-mergeCoaddDetections.py ${OUT_DIR} --id filter=${FILTERS} patch=0,0 tract=0 --doraise --clobber-config
-measureCoaddSources.py ${OUT_DIR} --id filter=${FILTERS} patch=0,0 tract=0 --doraise --clobber-config
-mergeCoaddMeasurements.py ${OUT_DIR} --id filter=${FILTERS} patch=0,0 tract=0 --doraise --clobber-config
-measureCoaddSources.py ${OUT_DIR} --id tract=0 patch=0,0 filter=${FILTERS} --config measurement.doApplyApCorr=yes --doraise --clobber-config
-mergeCoaddMeasurements.py ${OUT_DIR} --id tract=0 patch=0,0 filter=${FILTERS} --doraise --clobber-config
+export FILTERS=u^g^r^i^z^y
+detectCoaddSources.py ${OUT_DIR} --output ${OUT_DIR} --id filter=${FILTERS} patch=0,0 tract=0 --doraise --clobber-config
+mergeCoaddDetections.py ${OUT_DIR} --output ${OUT_DIR} --id filter=${FILTERS} patch=0,0 tract=0 --doraise --clobber-config
+measureCoaddSources.py ${OUT_DIR} --output ${OUT_DIR} --id tract=0 patch=0,0 filter=${FILTERS} --config measurement.doApplyApCorr=yes --doraise --clobber-config
+mergeCoaddMeasurements.py ${OUT_DIR} --output ${OUT_DIR} --id tract=0 patch=0,0 filter=${FILTERS} --doraise --clobber-config

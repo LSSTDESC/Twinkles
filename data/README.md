@@ -11,6 +11,6 @@ otherwise.
 
 Metadata for 307,900 simulated supernovae.
 
-### [`twinkles_tdcLenses.fits`](twinkles_tdcLenses.fits)
+### [`twinkles_tdc_rung4.fits`](twinkles_tdc_rung4.fits)
 
-FITS binary table of 200 mock lensed quasars, drawn from the OM10 catalog by the TDC Evil Team when making the TDC1 dataset. Extension 2 contains the header listing the columns.
+FITS binary table of 872 mock lensed quasars, drawn from the OM10 catalog by the TDC Evil Team when making the TDC1 dataset. Extension 2 contains the header listing the columns.

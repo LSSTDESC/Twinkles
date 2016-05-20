@@ -1,6 +1,7 @@
 """
 Test code for PostageStampMaker module.
 """
+from __future__ import absolute_import, division
 import os
 import unittest
 import lsst.afw.image as afwImage
@@ -43,8 +44,8 @@ class PostageStampTestCase(unittest.TestCase):
         my_imarr = my_exposure.getMaskedImage().getImage().getArray()
         ref_exposure = self.stamp_maker.exposure
         ref_imarr = ref_exposure.getMaskedImage().getImage().getArray()
-        self.assertEqual(my_imarr[my_imarr.shape[0]/2][my_imarr.shape[1]/2],
-                         ref_imarr[ref_imarr.shape[0]/2][ref_imarr.shape[1]/2])
+        self.assertEqual(my_imarr[int(my_imarr.shape[0]/2)][int(my_imarr.shape[1]/2)],
+                         ref_imarr[int(ref_imarr.shape[0]/2)][int(ref_imarr.shape[1]/2)])
 
     def test_stamp_centers_match(self):
         """
