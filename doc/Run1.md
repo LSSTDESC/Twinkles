@@ -54,8 +54,8 @@ help with some tests, and basic PSF modeling.
 These are simply taken from the OM10 catalog, as in [issue #21](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/21), by the `sprinkler` code. For each AGN-hosting galaxy in a `CatSim` catalog, we search the OM10
 catalog for all sources within +/-0.05 in redshift from the `CatSim` source. If
 there aren't any OM10 lensed sources at this redshift, we move on the next
-object. Otherwise, there is a probability (currently set at 0.2 to give us a 
-few hundred sprinkled galaxies) that we randomly choose one of the lens systems. 
+object. Otherwise, there is a probability (currently set at 0.2 to give us a
+few hundred sprinkled galaxies) that we randomly choose one of the lens systems.
 Then, we remove the `CatSim` object from the catalog and instead add lensed images, with
 appropriately magnified source brightness, and finally add a model lens galaxy
 to the catalog.
@@ -63,8 +63,8 @@ to the catalog.
 ####<a name="Supernovae"></a>Supernovae
 
 The plan for supernovae is as follows:
- 
-- Unlensed SALT2 model Type Ia supernovae in the redshift range of 0-0.8 with SALT2 parameters drawn from usual distributions. There is a scatter of 0.15 about the Bessell B rest frame peak magnitude, in the ampltude of the light curve. 
+
+- Unlensed SALT2 model Type Ia supernovae in the redshift range of 0-0.8 with SALT2 parameters drawn from usual distributions. There is a scatter of 0.15 about the Bessell B rest frame peak magnitude, in the ampltude of the light curve.
 -  The number of SN is large, with the plan being to try to get about 100 SNR > 5 SN in a visit. These SN are in a small ra, dec range of size 0.4* sqrt(2) around the center of the Twinkles patch.
 -  The association of SN with hosts in terms of correlations with host properties is not included, and the association is done randomly. However, we have added a displacement from the center of the galaxy, with a distance related to the semi-major axis of the galactic disk.
 
@@ -73,7 +73,8 @@ The plan for supernovae is as follows:
 ##<a name="Pipeline"></a>DM Processing
 
 Once the images are generated, we will process them with a set of DM pipetasks
-following Simon's "cookbook." The final output is a `ForcedSource` catalog, which
+following the [DM Level 2 Recipe ](Cookbook/DM_Level2_Recipe.md) of the Twinkles Cookbook.
+The final output is a `ForcedSource` catalog, which
 can be queried for object light curves.
 
 ##<a name="Products"></a>Products
@@ -88,13 +89,13 @@ opposed to the image reduction ones).
 
 ####<a name="Measurements"></a>DM Level 2 Measurements, and their Validation
 
-* Detected and de-blended objects (actually `CoaddSources` at this stage): 
+* Detected and de-blended objects (actually `CoaddSources` at this stage):
   * Q: Are the lensed quasar images correctly separated in the DM catalog?
-  * A: Visual inspection of postage stamp images, with `CoaddSources` overlaid somehow. 
+  * A: Visual inspection of postage stamp images, with `CoaddSources` overlaid somehow.
 
 * Basic forced photometry (of `CoaddSources`):
   * Q: How reliable is the non-variable stellar photometry? Are the images plausible, regarding depth and image quality?
-  * A: Photometric precision plot, with "theory curve" overlaid, measurement of "floor" and limiting magnitude. 
+  * A: Photometric precision plot, with "theory curve" overlaid, measurement of "floor" and limiting magnitude.
 
 * Forced photometry light curves, of both SNe and lensed quasar images:
   * Q: How good are these preliminary DM Level 2 lightcurves?
@@ -103,9 +104,9 @@ opposed to the image reduction ones).
 
 ## Production workflow and dataflow
 
-In order to keep track of the 1000's of batch jobs needed for Twinkles run 1 we are using the SLAC developed workflow engine, with separate workflow being developed for running the simulation (phosim) and data management based analysis (cookbook). To track the input and output datasets we are using the SLAC data catalog, initially for the output of phosim (which is also the input to the cookbook) and both the output from the cookbook task.
+In order to keep track of the 1000's of batch jobs needed for Twinkles run 1 we are using the SLAC developed workflow engine, with separate workflows being developed for running the simulation (following the [Sims Recipe](Cookbook/Sims_Recipe.md) of the Twinkles Cookbook) and data management image processing analysis (following the [DM Level 2 Recipe](Cookbook/DM_Level2_Recipe.md) of the Twinkles Cookbook). To track the input and output datasets we are using the SLAC data catalog, initially for both the output of `phoSim` (which is also the input to the [DM Level 2 Recipe](Cookbook/DM_Level2_Recipe.md)) and the output from the Level 2 processing task.
 
-By using the workflow engine and data catalog we are able to track all the batch jobs, easily rerun jobs which fail, or which need to be rerun due to changes in the underlying code, and track the provenance of all datasets. Initially we are targetting the SLAC batch farm for the simulation and analysis jobs, but in parallel we are developing the capability to encapsulate the jobs as docker images, and to be able to submit jobs to SLAC or NERSC (or other Grid or supercomputer farms).  
+By using the workflow engine and data catalog we are able to track all the batch jobs, easily rerun jobs which fail, or which need to be rerun due to changes in the underlying code, and track the provenance of all datasets. Initially we are targeting the SLAC batch farm for the simulation and analysis jobs, but in parallel we are developing the capability to encapsulate the jobs as docker images, and to be able to submit jobs to SLAC or NERSC (or other Grid or supercomputer farms).  
 
 
 [Back to the top.](#Run1)
