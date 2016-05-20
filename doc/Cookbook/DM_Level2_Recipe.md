@@ -1,35 +1,19 @@
-## Simulated data cookbook
-This cookbook is intended to show an example of how to generate and process simulated data.  If you do not want to do the generation step, you can jump directly to the "Process the data using the DM stack" section to start running some data through.
+## Recipe: Emulating the DM Level 2 Pipeline
 
-### Generate the PhoSim inputs
-First generate the inputs to phosim and start them generating (read the phosim docs for the generation part)
+_Simon Krughoff_
 
-The script to do this resides in this repository and will only generate input files for the first ~50 visits.  This is enough to have 10
-visits each of g, r, and i band.  The script will also generate a reference catalog for photometric and astrometric calibration.
-You'll also need the OpSim sqlite repository for [enigma_1189](http://ops2.tuc.noao.edu/runs/enigma_1189/data/enigma_1189_sqlite.db.gz)
-```
-$> setup sims_catUtils
-$> python generatePhosimInput.py
-```
-This script will also generate a reference catalog at the same time.  The reference catalog will show up in `twinkles_ref.txt`.
-
-There are some really bright stars that take forever to simulate.  This could be done with a cut
-in the original phosim generation script.  I just haven't done it.
-```
-$> awk '{if(NR < 21 || $5 > 13) print $0}' phosim_input_840.txt >phosim_input_840_stripped.txt
-.
-.
-.
-$> awk '{if(NR < 21 || $5 > 13) print $0}' phosim_input_848.txt >phosim_input_848_stripped.txt
-```
-
-Note that when using PhoSim to simulate images using these catalogs, it's important to provide the `-s R22_S11` switch.  This will
-only simulate the central chip.  Since these catalogs are intended to cover the central chip at all rotations, it will also spill
-onto other chips in the central raft.  Since the boarder chips will not be fully covered, it's not useful to simulate them.
+This recipe is intended to show an example of how to process simulated image
+data, as if we were running the LSST DM Level 2 "annual release processing".
+The products will be catalogs of sources, objects etc.
 
 ## Build the indexes for astrometric and photometric calibration
-Currently the refernce catalogs need to be formatted as astrometry.net index files.  I can convert the 
-reference catalog produced by `generatePhosimInput.py, but there are a couple of precursor steps.  First,
+
+We use the `phoSim` reference catalogs to emulate the kind of high accuracy
+calibration that we expect to be possible with the LSST data. This is an
+approximation, but for many purposes a good one. 
+
+Currently the reference catalogs need to be formatted as astrometry.net index files.  I can convert the
+reference catalog produced by `generatePhosimInput.py`, but there are a couple of precursor steps.  First,
 there is a bug in how phosim creates the nominal WCS (PHOSIM-18).  The result is that the WCS claims to be
 ICRS but ignores precession.  Since the matching algorithms assume we know approximately where the telescope
 is pointing, they fail unless the catalogs are fixed.
@@ -82,9 +66,10 @@ root.indexFiles = ['index-010616000.fits',
 'index-010616003.fits',
 'index-010616004.fits']
 ```
+
 ### Set up the data to run DM processing
-First you'll need to build the stack using tickets/DM-4302 of obs_lsstSim.  In order to patch a branch version onto a pre-existing
-stack you can do something like the following.
+
+First you'll need to build the stack using tickets/DM-4302 of obs_lsstSim.  In order to patch a branch version onto a pre-existing stack you can do something like the following.
 
 1. Build a master stack.  I suggest using [lsstsw](https://confluence.lsstcorp.org/display/LDMDG/The+LSST+Software+Build+Tool).
 2. Set up the stack: e.g. `$> setup obs_lsstSim -t bNNNN`
@@ -110,8 +95,9 @@ $> ingestImages.py images images/lsst_*.fits.gz --mode link --output input_data
 ```
 Now you are setup to process the data
 
-### Process the data using the DM stack.
-Start here if you just want to excercise the DM stack.  If you didn't follow the steps above, first get the data and astrometry.net index files from
+### Process the data using the DM stack
+
+Start here if you just want to exercise the DM stack.  If you didn't follow the steps above, first get the data and astrometry.net index files from
 [here](https://lsst-web.ncsa.illinois.edu/~krughoff/data/gri_data.tar.gz).  Then untar the tarball in a working directory.
 
 After you have the data, you can start following the steps below to get forced photometry in three bands.
@@ -129,7 +115,7 @@ $> processEimage.py input_data/ --id visit=840..879 --output output_data
 $> makeDiscreteSkyMap.py output_data/ --id visit=840..879 --output output_data
 
 # Coadds are done in two steps.  Step one is to warp the data to a common astrometric system.  The following does that.
-# The config option is to use background subtracted exposures as inputs.  You can also specify visits using the ^ operator meaning 
+# The config option is to use background subtracted exposures as inputs.  You can also specify visits using the ^ operator meaning
 # 'and'.
 $> makeCoaddTempExp.py output_data/ --selectId visit=840..849 --id filter=r patch=0,0 tract=0 --config bgSubtracted=True --output output_data
 $> makeCoaddTempExp.py output_data/ --selectId visit=860..869 --id filter=g patch=0,0 tract=0 --config bgSubtracted=True --output output_data
@@ -152,8 +138,7 @@ $> mergeCoaddMeasurements.py output_data/ --id tract=0 patch=0,0 filter=g^r^i --
 # Use the detections from the coadd to do forced photometry on all the single frame data.
 $> forcedPhotCcd.py output_data/ --id tract=0 visit=840..879 sensor=1,1 raft=2,2 --config measurement.doApplyApCorr=yes --output output_data
 ```
-Once the forced photometry is done, you can look at the output by loading the measurements using the butler.  [This script](../../bin/plot_point_mags.py) shows how to start looking at the measurements.  It produces the following image.  I tried to fit both
-the systematic floor and the 5sigma value for each of the bands.  Results are shown in the legend of the following image.
+Once the forced photometry is done, you can look at the output by loading the measurements using the butler.  [This script](../../bin/plot_point_mags.py) shows how to start looking at the measurements.  It produces the following image.  I tried to fit both the systematic floor and the 5sigma value for each of the bands.  Results are shown in the legend of the following image.
 
 ![Repeat figure](gri_err.png)
 
