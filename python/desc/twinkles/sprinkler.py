@@ -124,8 +124,8 @@ class sprinkler():
                         #just use np.right_shift(phosimID-28, 10). Take the floor of the last
                         #3 numbers to get twinklesID in the twinkles lens catalog and the remainder is
                         #the image number minus 1.
-                        lensrow['galtileid'] = (lensrow['galtileid']*1000 +
-                                                newlens['twinklesID']*4 + i)
+                        lensrow['galtileid'] = (lensrow['galtileid']*10000 +
+                                                newlens['twinklesId']*4 + i)
 
                         updated_catalog = np.append(updated_catalog, lensrow)
 
