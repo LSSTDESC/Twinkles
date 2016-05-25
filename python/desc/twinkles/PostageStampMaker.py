@@ -2,9 +2,11 @@
 Create postage stamps from Exposure FITS files written by the LSST Stack.
 """
 from __future__ import absolute_import, division
+import astropy.io.fits as fits
 import lsst.afw.geom as afwGeom
 import lsst.afw.image as afwImage
 
+__all__ = ['PostageStampMaker', 'create_postage_stamps', 'convert_image_to_hdu']
 
 class PostageStampMaker(object):
     "Class to create postage stamps for Exposure FITS files."
@@ -32,7 +34,7 @@ class PostageStampMaker(object):
         coord = exposure.getWcs().pixelToSky(x_center, y_center)
         return coord
 
-    def makeBBox(self, ra, dec, arcsec):
+    def make_bbox(self, ra, dec, arcsec):
         """
         Compute the bounding box with sides of size arcsec, centered at
         ra, dec, both in degrees.
@@ -51,7 +53,7 @@ class PostageStampMaker(object):
         Factory method to return the cropped Exposure object with the
         desired geometry.
         """
-        bbox = self.makeBBox(ra, dec, arcsec)
+        bbox = self.make_bbox(ra, dec, arcsec)
         return self.exposure.Factory(self.exposure, bbox)
 
     def create_stamps(self, stamp_specs):
@@ -72,19 +74,20 @@ def create_postage_stamps(ra, dec, size, fits_files):
         stamps.append(my_stamp_maker.create(ra, dec, size))
     return stamps
 
-if __name__ == '__main__':
-    import os
-    import lsst.afw.display.ds9 as ds9
-
-    my_expfile = os.path.join(os.path.split(os.environ['TWINKLES_DIR'])[0],
-                              'tests', 'small_CoaddTempExp.fits.gz')
-
-    my_ra, my_dec, my_arcsec = 53.010895, -27.437648, 10
-    outfile = 'postage_stamp.fits'
-
-    stamp_maker = PostageStampMaker(my_expfile)
-    postage_stamp = stamp_maker.create(my_ra, my_dec, my_arcsec)
-
-    postage_stamp.writeFits(outfile)
-
-    ds9.mtv(postage_stamp.getMaskedImage().getImage())
+def convert_image_to_hdu(exposure):
+    """
+    Extract the image data, including the FITS WCS information, from
+    an afwImage.Exposure object and create an astropy.io.fits
+    ImageHDU.
+    """
+    hdu = fits.ImageHDU()
+    hdu.data = exposure.getMaskedImage().getImage().getArray()
+    md = exposure.getWcs().getFitsMetadata()
+    for keyword in md.names():
+        hdu.header[keyword] = md.get(keyword)
+    # Shift the WCS reference pixel to account for the fact that this
+    # is a subimage.
+    x0, y0 = exposure.getX0(), exposure.getY0()
+    hdu.header['CRPIX1'] -= x0
+    hdu.header['CRPIX2'] -= y0
+    return hdu
