@@ -3,34 +3,43 @@
           xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" 
           xs:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline 
           http://srs.slac.stanford.edu/Pipeline-II/schemas/2.1/pipeline.xsd">
-    <task name="TwinklesDM" type="LSST" version="3.0">
+    <task name="TwinklesDM" type="LSST" version="4.7">
         <notation>A simple task for running the DM part of Twinkles</notation>
         <variables>
-            <var name="MAXCPU">100000</var>
-            <var name="MAXCPULONG">1000000</var>
-            <var name="BATCH_OPTIONS">-R rhel60 -R bullet</var>
+            <var name="SITE">NERSC</var>
+            <var name="MAXCPU">${100000 / (SITE=="NERSC" ? 10 : 1)}</var>
+            <var name="MAXCPULONG">${100000 / (SITE=="NERSC" ? 10 : 1)}</var>
+            <var name="SLAC_BATCH_OPTIONS">-R rhel60 -R bullet</var>
+            <var name="NERSC_BATCH_OPTIONS">-p shared | -L SCRATCH</var>
+            <var name="BATCH_OPTIONS">${SITE=="NERSC" ? NERSC_BATCH_OPTIONS : SLAC_BATCH_OPTIONS}</var>
             <!-- Default location from which to setup DM -->
-            <var name="DM_DIR">/nfs/farm/g/desc/u1/Twinkles</var>
+            <var name="SLAC_DM_DIR">/nfs/farm/g/desc/u1/Twinkles</var>
+            <var name="NERSC_DM_DIR">/global/cscratch1/sd/tony_j/Twinkles/trial</var>
+            <var name="DM_DIR">${SITE=="NERSC" ? NERSC_DM_DIR : SLAC_DM_DIR}</var>
             <var name="DM_SETUP">setup.bash</var>
             <!-- Base directory where work files will be placed -->
-            <var name="OUTPUT_DATA_DIR">/nfs/farm/g/lsst/u1/users/tonyj</var>
+            <var name="SLAC_OUTPUT_DATA_DIR">/nfs/farm/g/lsst/u1/users/tonyj</var>
+            <var name="NERSC_OUTPUT_DATA_DIR">/global/cscratch1/sd/tony_j/Twinkles/output</var>
+            <var name="OUTPUT_DATA_DIR">${SITE=="NERSC" ? NERSC_OUTPUT_DATA_DIR : SLAC_OUTPUT_DATA_DIR}</var>
             <!-- Base directory where output files will be placed -->
-            <var name="OUT_DIR">/lustre/ki/pfs/fermi_scratch/Twinkles/</var>
+            <var name="SLAC_SCRIPT_LOCATION">/nfs/farm/g/lsst/u1/users/tonyj</var>
+            <var name="NERSC_SCRIPT_LOCATION">/global/cscratch1/sd/tony_j/Twinkles/trial</var>
+            <var name="SCRIPT_LOCATION">${SITE=="NERSC" ? NERSC_SCRIPT_LOCATION : SLAC_SCRIPT_LOCATION}</var>
             <!-- astrometry_net files -->
-            <var name="AND_DIR">/nfs/farm/g/lsst/u1/users/tonyj/and_files_0229</var>
-            <var name="SCRIPT_LOCATION">/nfs/farm/g/lsst/u1/users/tonyj</var>
+            <var name="AND_DIR">${SCRIPT_LOCATION}/and_files_0229</var>
             <var name="SCRIPT_NAME">TwinklesWorkflow.py</var>
             <var name="BATCH_NAME">TwinklesBatch.sh</var>
             <var name="VISIT_FILE">visit.txt</var>
+            <var name="JOBSITE">${SITE=="NERSC" ? "NERSCTONYJ" : "SLAC"}</var>
         </variables>
-        <process name="serialIngest">
+        <process name="serialIngest" site="${JOBSITE}">
             <notation>Ingest the input data (output from phosim) serially</notation>
             <job maxCPU="${MAXCPU}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
         </process>
         <process name="setupEimageVisits">
             <notation>Decide how to parallelize the eImage processing</notation>
             <script><![CDATA[ 
-          execfile("%s/%s" % (SCRIPT_LOCATION, SCRIPT_NAME))
+          execfile("%s/%s" % (SLAC_SCRIPT_LOCATION, SCRIPT_NAME))
           setupEimageVisits()
       ]]>
             </script>
@@ -41,7 +50,7 @@
                 <subtask>processVisit</subtask>
             </createsSubtasks>
         </process>
-        <process name="makeDiscreteSkyMap">
+        <process name="makeDiscreteSkyMap" site="${JOBSITE}">
             <notation>Ingest the input data (output from phosim) serially</notation>
             <job maxCPU="${MAXCPULONG}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
             <depends>
@@ -51,7 +60,7 @@
         <process name="setupFilters">
             <notation>Decide how to parallelize the filters</notation>
             <script><![CDATA[ 
-          execfile("%s/%s" % (SCRIPT_LOCATION, SCRIPT_NAME))
+          execfile("%s/%s" % (SLAC_SCRIPT_LOCATION, SCRIPT_NAME))
           setupFilters()
       ]]>
             </script>
@@ -62,7 +71,7 @@
                 <subtask>processFilter</subtask>
             </createsSubtasks>
         </process>
-        <process name="completeCoadd">
+        <process name="completeCoadd" site="${JOBSITE}">
             <notation>Assemble complete coadd</notation>
             <job maxCPU="${MAXCPULONG}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
             <depends>
@@ -83,7 +92,7 @@
                 <subtask>processForcedPhotometry</subtask>
             </createsSubtasks>
         </process>   
-        <process name="wrapup">
+        <process name="wrapup" site="${JOBSITE}">
             <notation>Generate plots</notation>
             <job maxCPU="${MAXCPU}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
             <depends>
@@ -93,7 +102,7 @@
         <process name="report">
             <notation>Report final status of job</notation>
             <script><![CDATA[ 
-          execfile("%s/%s" % (SCRIPT_LOCATION, SCRIPT_NAME))
+          execfile("%s/%s" % (SLAC_SCRIPT_LOCATION, SCRIPT_NAME))
           report()
       ]]>
             </script>
@@ -103,21 +112,21 @@
         </process>
         <task name="processVisit" type="LSST">
             <notation>Sub-task that runs per visit processing</notation>
-            <process name="processEimage">
+            <process name="processEimage" site="${JOBSITE}">
                 <notation>Initial processing of visits</notation>
                 <job maxCPU="${MAXCPU}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
             </process>   
         </task>    
         <task name="processFilter" type="LSST">
             <notation>Sub-task that runs per filter processing</notation>
-            <process name="assembleCoadd">
+            <process name="assembleCoadd" site="${JOBSITE}">
                 <notation>Assemble coadd</notation>
                 <job maxCPU="${MAXCPULONG}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
             </process>                
         </task>         
         <task name="processForcedPhotometry" type="LSST">
             <notation>Sub-task that runs per visit processing</notation>
-            <process name="forcedPhotometry">
+            <process name="forcedPhotometry" site="${JOBSITE}">
                 <notation>Forced Photometry</notation>
                 <job maxCPU="${MAXCPU}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
             </process>

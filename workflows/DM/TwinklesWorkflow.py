@@ -7,7 +7,7 @@ def setupFilters():
    for filter in filters:
      vars.put("FILTER",filter)
      visits = []
-     f = open(SCRIPT_LOCATION+"/"+VISIT_FILE)
+     f = open(SLAC_SCRIPT_LOCATION+"/"+VISIT_FILE)
      for line in f.readlines():
         dir,visit,f = line.split()
         if filter==f:
@@ -25,7 +25,7 @@ def setupVisits():
 
 def setupEimageVisits():
    vars = HashMap()
-   f = open(SCRIPT_LOCATION+"/"+VISIT_FILE)
+   f = open(SLAC_SCRIPT_LOCATION+"/"+VISIT_FILE)
    for line in f.readlines():
       dir,visit,f = line.split()
       vars.put("FILTER",f)
@@ -34,7 +34,7 @@ def setupEimageVisits():
 
 def setupForcedPhotometryVisits():
    vars = HashMap()
-   f = open(SCRIPT_LOCATION+"/"+VISIT_FILE)
+   f = open(SLAC_SCRIPT_LOCATION+"/"+VISIT_FILE)
    for line in f.readlines():
       dir,visit,f = line.split()
       vars.put("FILTER",f)
