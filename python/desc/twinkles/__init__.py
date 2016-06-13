@@ -8,6 +8,4 @@ from .cleanupspectra import *
 #from .sprinkler import sprinklerCompound, sprinkler
 #from .twinklesCatalogDefs import TwinklesCatalogZPoint
 #from .twinklesVariabilityMixins import TimeDelayVariability, VariabilityTwinkles
-from .PostageStampMaker import *
-from .Display import render_fits_image
 from .registry_tools import *
