@@ -22,10 +22,13 @@ Many other measurements.
 2. People and their WGs involved
   Strong Lensing; Supernovae; Survey Simulations
 3. Progress to date 
-  a. Pre-Run1
-  b. Run 1
-  c. Run 2
+  a. Pre-Run1  *Tony/Tom*
+  b. Run 1  *Tony/Tom/Rahul*
+    - Analysis of results *Jim*
+  c. Run 2  *Phil/Tony/Tom*
+  d. SN/SLMonitor   *Bryce*
 4. Plans through September (the end of the 12 month Taskforce period).
+  *Phil*
 
 5. Finances
   The first significant financial expenditure planned is for October 2016 to provide lodging in Half Moon Bay for a Twinkles retreat.
