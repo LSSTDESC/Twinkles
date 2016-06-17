@@ -18,17 +18,18 @@ https://github.com/DarkEnergyScienceCollaboration/Twinkles
     - It will support the development of:
      * "SuperFit" algorithms, built against the MultiFit API to handle time-variable point sources and mixed point source / extended source models for optimal light curve extraction. Initializing and constraining them from upstream catalog quantities (such as DIASource detections) will be important.
 
-Many other measurements.
+   Many other measurements.
+
 2. People and their WGs involved
-  Strong Lensing; Supernovae; Survey Simulations
-3. Progress to date 
-  a. Pre-Run1  *Tony/Tom*
-  b. Run 1  *Tony/Tom/Rahul*
-    - Analysis of results *Jim*
-  c. Run 2  *Phil/Tony/Tom*
-  d. SN/SLMonitor   *Bryce*
+   Strong Lensing; Supernovae; Survey Simulations
+3. Progress to date
+   * Pre-Run1  *Tony/Tom*
+   * Run 1  *Tony/Tom/Rahul*
+      - Analysis of results *Jim*
+   * Run 2  *Phil/Tony/Tom*
+   * SN/SLMonitor   *Bryce*
 4. Plans through September (the end of the 12 month Taskforce period).
-  *Phil*
+   *Phil*
 
 5. Finances
-  The first significant financial expenditure planned is for October 2016 to provide lodging in Half Moon Bay for a Twinkles retreat.
+   The first significant financial expenditure planned is for October 2016 to provide lodging in Half Moon Bay for a Twinkles retreat.
