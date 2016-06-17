@@ -17,16 +17,17 @@ https://github.com/DarkEnergyScienceCollaboration/Twinkles
      * MultiFit
     - It will support the development of:
      * "SuperFit" algorithms, built against the MultiFit API to handle time-variable point sources and mixed point source / extended source models for optimal light curve extraction. Initializing and constraining them from upstream catalog quantities (such as DIASource detections) will be important.
-
-   Many other measurements.
-
+      - Many other measurements.
 2. People and their WGs involved
-   Strong Lensing; Supernovae; Survey Simulations
+   * Strong Lensing
+   * Supernovae
+   * Survey Simulations
 3. Progress to date
    * Pre-Run1  *Tony/Tom*
    * Run 1  *Tony/Tom/Rahul*
+      - phoSim: install v3.4.2 at SLAC; develop workflow engine for running at SLAC; produce ~1200 simulated visits
       - Analysis of results *Jim*
-   * Run 2  *Phil/Tony/Tom*
+   * Run 2  *Phil/Tony*
    * SN/SLMonitor   *Bryce*
 4. Plans through September (the end of the 12 month Taskforce period).
    *Phil*
