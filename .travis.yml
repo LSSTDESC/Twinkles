@@ -15,7 +15,9 @@ cache:
   directories:
   - $HOME/miniconda.tarball
   timeout: 600
-
+before_cache:
+  - du -h $HOME/miniconda.tarball
+  - ls -l $HOME/miniconda.tarball
 services:
   - mysql
 
