@@ -41,7 +41,6 @@ Dominique Fouchez and Fabrice Feinstein.
       - During early Twinkles 1 R&D work (2016Q1) we determined that generating and processing multi-filter data was not actually very difficult, and so we changed the definition of Twinkles 1 to include multi-filter data. The only difference between Twinkles 1 and Twinkles 2 will therefore be in the realism of the data generated and the processing applied to it.
       - We adopted a staged strategy to building up our simulation and processing capabilities, envisioning at least one small test run prior to the full DG phase (2016 Q3 onwards). The first of these test runs was named "Run 1" and scoped to include ~1000 visits in all filters, covering all ten years at WDF-like cadence (although the actual time sampling was chosen to be a down-sample of the DDF observations, for simplicity).
 
-
    * Run 1  *Tony Johnson, Tom Glanzman, Rahul Biswas*
        - phoSim: install v3.4.2 at SLAC; develop workflow engine for running at SLAC; produce ~1200 simulated visits
        - Create a table holding SN with reasonable distribution of parameters except the rate which was made high enough to get ~100 of SNIa with SNR >5 per image for a patch of sky that should have included the Twinkles area
@@ -53,13 +52,31 @@ Dominique Fouchez and Fabrice Feinstein.
        - Analysis/processing of results *Jim*
          - MySQL database at NERSC filled with Level 2 results; a Qserv instance at SLAC is in progress
          - Comparison of Level 2 SNe light curves with CatSim inputs.
-   * Run 2  *Phil/Tony*
-   * SN/SLMonitor
-      - Developed code to extract lightcurve data from MYSQL database at NERSC and display lightcurves
-      - Currently developing code to display reference lightcurves as well
 
-## 4. Plans through September (the end of the 12 month Taskforce period).
-   *Phil*
+   * Run 1.1 *Tony Johnson*
+
+   * Run 2  *Tony Johnson*
+
+   * SN/SLMonitor Development *Bryce Kalmbach*
+      - Developed code to extract flux/error data from Pserv database at NERSC, and display light curves
+      - Currently developing code to display reference light curves as well
+
+## 4. Plans through September 2016
+
+The 12 month Taskforce period expires at the end of calendar Q3, 2016. While
+some  processing time will be lost to scheduled Cori-I downtime, we aim to have
+completed the PhoSim image simulation for the main Twinkles 1 data generation
+run by the end of September, and have  started to run DM Level 2 tasks at
+NERSC. Approximate timeline:
+
+   * July 2016: present Twinkles progress to date to the collaboration in an "Open House" session, designed to show both the data and code we have produced so far, and transmit the lessons we have learned.
+   * July 2016: finalize the specifications for Twinkles 1, based on the experience through the R&D phase of CY16 Q1-Q2.
+   * August 2016: implement the required CatSim, OpSim, Sprinkler, and PhoSim settings and produce 10,000 visit eimages with PhoSim, either at SLAC or at NERSC.
+   * September 2016: finish PhoSim runs, and document choices in the paper. Complete implementation of DM Level 2 pipeline (including image differencing) and begin processing, at NERSC.
+   * October 2016: complete DM Level 2 processing and document choices in the paper. Begin science analysis of SL and SN objects.
+   * November 2016: iterate on DM Level 2 processing if necessary. Complete science analysis.
+   * December 2016: finish paper.
+
 
 ## 5. Finances
 
