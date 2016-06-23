@@ -27,14 +27,18 @@ https://github.com/DarkEnergyScienceCollaboration/Twinkles
    * Run 1  *Tony/Tom/Rahul*
        - phoSim: install v3.4.2 at SLAC; develop workflow engine for running at SLAC; produce ~1200 simulated visits
        - Create a table holding SN with reasonable distribution of parameters except the rate which was made high enough to get ~100 of SNIa with SNR >5 per image for a patch of sky that should have included the Twinkles area 
-       - Lensed Quasars *Bryce*
+       - Lensed Quasars
+         - Simulated lensed quasar systems “sprinkled” into PhoSim instance catalogs at positions of distant AGN-hosting galaxies
+         - Variability and time delays are present in "sprinkled" systems
        - Make a selection of the DDF observations in Kraken to enable a coverage of 10 years with about 1000 observations. This was necessary as we wanted to limit the number of visits in run1 (scale of work), and the usual DDF cadence would exhaust this limit in a span of time too short to give us coverage of long lived transients
        - Put together code for creating phosim instance catalogs with the entire list of astophysical objects  including the SN described above, lensed quasars, stars galaxies, variable stars, solar system objects.
        - Analysis/processing of results *Jim*
          - MySQL database at NERSC filled with Level 2 results; a Qserv instance at SLAC is in progress
          - Comparison of Level 2 SNe light curves with CatSim inputs.
    * Run 2  *Phil/Tony*
-   * SN/SLMonitor   *Bryce*
+   * SN/SLMonitor
+      - Developed code to extract lightcurve data from MYSQL database at NERSC and display lightcurves
+      - Currently developing code to display reference lightcurves as well
 4. Plans through September (the end of the 12 month Taskforce period).
    *Phil*
 
