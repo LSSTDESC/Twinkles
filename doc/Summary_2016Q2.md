@@ -4,7 +4,7 @@ https://github.com/DarkEnergyScienceCollaboration/Twinkles
 
 ## 1. Background
 
-The original goals of the Twinkles project were to:
+The goals of the Twinkles project are to:
  * Implement, test and validate data analysis algorithms for:
    - Lensed quasar de-blending and light curve extraction
    - Extracting supernova light curves in the presence of extended host galaxy sources
@@ -20,6 +20,7 @@ The original goals of the Twinkles project were to:
      * "SuperFit" algorithms, built against the MultiFit API to handle time-variable point sources and mixed point source / extended source models for optimal light curve extraction. Initializing and constraining them from upstream catalog quantities (such as DIASource detections) will be important.
      * Many other measurements.
 
+
 ## 2. People
 
 Based on major contributions to date, the Twinkles Task Force has emerged as
@@ -34,8 +35,14 @@ Dominique Fouchez and Fabrice Feinstein.
 
 ## 3. Progress
 
-   * Pre-Run1  *Tony/Tom*
-   * Run 1  *Tony/Tom/Rahul*
+   * Twinkles 1 specifications  *Phil Marshall*
+
+      - In the Science Roadmap we defined two phases, Twinkles 1 (DC1) and Twinkles 2 (DC2), distinguished by a) scope and b) realism. Twinkles 1 was supposed to be single filter, and simple enough to get started. Twinkles 2 was supposed to be multi-filter, and as realistic as we could make it.
+      - During early Twinkles 1 R&D work (2016Q1) we determined that generating and processing multi-filter data was not actually very difficult, and so we changed the definition of Twinkles 1 to include multi-filter data. The only difference between Twinkles 1 and Twinkles 2 will therefore be in the realism of the data generated and the processing applied to it.
+      - We adopted a staged strategy to building up our simulation and processing capabilities, envisioning at least one small test run prior to the full DG phase (2016 Q3 onwards). The first of these test runs was named "Run 1" and scoped to include ~1000 visits in all filters, covering all ten years at WDF-like cadence (although the actual time sampling was chosen to be a down-sample of the DDF observations, for simplicity).
+
+
+   * Run 1  *Tony Johnson, Tom Glanzman, Rahul Biswas*
        - phoSim: install v3.4.2 at SLAC; develop workflow engine for running at SLAC; produce ~1200 simulated visits
        - Create a table holding SN with reasonable distribution of parameters except the rate which was made high enough to get ~100 of SNIa with SNR >5 per image for a patch of sky that should have included the Twinkles area
        - Lensed Quasars
