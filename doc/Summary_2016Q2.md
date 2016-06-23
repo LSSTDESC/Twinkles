@@ -28,9 +28,9 @@ consisting of the following working group members:
    * Strong Lensing: Phil Marshall
    * Supernovae: Michael Wood-Vasey, Rahul Biswas
    * Survey Simulations: Bryce Kalmbach, Scott Daniel, Simon Krughoff
-   * Computing Infrastructure: Jim Chiang, Richard Dubois, Tom Glanzman, Tony Johnson, Heather Kelly
+   * Computing Infrastructure: Jim Chiang, Seth Digel, Richard Dubois, Tom Glanzman, Tony Johnson, Heather Kelly, Brian Van Klaveren
 
-Minor contributions have also been made by Seth Digel, Curtis McCully,
+Minor contributions have also been made by Curtis McCully,
 Dominique Fouchez and Fabrice Feinstein.
 
 ## 3. Progress
