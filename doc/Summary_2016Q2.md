@@ -9,7 +9,7 @@ The goals of the Twinkles project are to:
    - Lensed quasar de-blending and light curve extraction
    - Extracting supernova light curves in the presence of extended host galaxy sources
    - Lensed quasar time delay measurement
- * Build expertise, connections, and mock datasets:
+ * Serve as a *pathfinder* for the DESC data challenges, enabling the collaboration to gain expertise, connections, and capabilities in generating, processing and analyzing mock datasets:
    - Develop DESC computing group expertise in operating CatSim, PhoSim, and the DM stack at scale, at either NERSC or SLAC or both.
    - Improve the connections between DESC and the LSST Simulations and DM groups.
    - Provide a testing ground for (at least) the following DM Level 2 algorithms:
@@ -42,24 +42,37 @@ Dominique Fouchez and Fabrice Feinstein.
       - We adopted a staged strategy to building up our simulation and processing capabilities, envisioning at least one small test run prior to the full DG phase (2016 Q3 onwards). The first of these test runs was named "Run 1" and scoped to include ~1000 visits in all filters, covering all ten years at WDF-like cadence (although the actual time sampling was chosen to be a down-sample of the DDF observations, for simplicity).
 
    * Run 1  *Tony Johnson, Tom Glanzman, Rahul Biswas*
-       - phoSim: install v3.4.2 at SLAC; develop workflow engine for running at SLAC; produce ~1200 simulated visits
-       - Create a table holding SN with reasonable distribution of parameters except the rate which was made high enough to get ~100 of SNIa with SNR >5 per image for a patch of sky that should have included the Twinkles area
-       - Lensed Quasars
-         - Simulated lensed quasar systems “sprinkled” into PhoSim instance catalogs at positions of distant AGN-hosting galaxies
-         - Variability and time delays are present in "sprinkled" systems
-       - Make a selection of the DDF observations in Kraken to enable a coverage of 10 years with about 1000 observations. This was necessary as we wanted to limit the number of visits in run1 (scale of work), and the usual DDF cadence would exhaust this limit in a span of time too short to give us coverage of long lived transients
-       - Put together code for creating phosim instance catalogs with the entire list of astophysical objects  including the SN described above, lensed quasars, stars galaxies, variable stars, solar system objects.
-       - Analysis/processing of results *Jim*
-         - MySQL database at NERSC filled with Level 2 results; a Qserv instance at SLAC is in progress
-         - Comparison of Level 2 SNe light curves with CatSim inputs.
+
+     PhoSim image simulation:
+       - For the inputs to these images, we:
+         - Created a table of SNe with a reasonable distribution of parameters, but with rate (abundance) high enough to yield ~100 SNIa with SNR >5 per image for the Twinkles sky patch.
+         - Simulated lensed quasar systems based on the OM10 catalog, and “sprinkled” them into the PhoSim instance catalogs at the correct positions around distant lens-type galaxies, and ensured implemented correct time variability and time delays between the multiple images
+       - We selected a subset of the DDF observations in the Kraken OpSim output database to enable a coverage of 10 years with about 1000 observations. This was necessary as we wanted to limit the number of visits in Run 1 (to keep this test manageable), while giving us sufficient time coverage of long lived variables (10 years).
+       - We assembled code for creating PhoSim instance catalogs with the complete list of astophysical objects,  including the SNe and lensed quasars described above, as well as stars galaxies, variable stars, and solar system objects.
+       - We installed PhoSim v3.4.2 at SLAC,  developed a workflow engine for running at SLAC, and used it to produce ~1200 simulated visit (emulated-calibrated "eimage") images.
+       - We identified an issue of queue expiration for high sky background images, that require greater run time than the batch system will allow.
+
+       DM Level 2 Processing of results *Tony Johnson, Simon Krughoff, Jim Chiang*
+       - We designed a simple DM Level 2 pipeline as a "Cookbook" document, and
+       implemented the steps as a set of python function calls made from the SLAC workflow engine.
+       The data products of this pipeline were co-added images, calibrated exposures, coadd sources, and
+       forced photometry flux measurements of each coadd source.
+       - This pipeline was run at SLAC, and the products copied to NERSC for access by the group. Several issues were identified with the batch processing, including high memory demand for the coaddition task.  
+       - A "PServ" MySQL database, with the advertized LSST DM schema, was filled with the Level 2 catalog outputs. Investigation into running a Qserv instance at SLAC is in progress.
+
+       Science Analysis: *Jim Chiang*
+       - Implementation of the standard DM stack validation pipeline was begun.
+       - We compared DM Level 2 ForcedSource SNe light curves with CatSim inputs, finding good agreement in filters *grizy* for isolated supernovae with faint hosts. We see signs of blending problems in other systems, and found a systematic error in the *u*-band flux calibration which is under investigation.
 
    * Run 1.1 *Tony Johnson*
 
    * Run 2  *Tony Johnson*
 
    * SN/SLMonitor Development *Bryce Kalmbach*
-      - Developed code to extract flux/error data from Pserv database at NERSC, and display light curves
-      - Currently developing code to display reference light curves as well
+      - We developed code to extract flux/error data from the Pserv database at NERSC, and display light curves.
+      - We are currently developing code to display reference light curves and postage stamp images as well.
+      - The resulting Monitor code repository follows a standard "cookiecutter" template, and uses the travis continuous integration web service coupled to nosetests and unittest as a showcase DESC software package.
+
 
 ## 4. Plans through September 2016
 
