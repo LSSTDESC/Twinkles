@@ -1,32 +1,43 @@
-# Summary as of 2016 June
+# Twinkles 1 Progress Report, June 2016
 
 https://github.com/DarkEnergyScienceCollaboration/Twinkles
 
-1. Original goals
- * Implement, test and validate algorithms 
-   - Lensed quasar deblending
-   - Supernova light curves over extended sources
-   - Multipy-imaged AGN lightcurves.
-   - Measure lensed quasar time delays
- * Build expertise, connections, and mock datasets
-   - Building DESC computing group expertise in operating CatSim, PhoSim, and the DM stack at scale, at either NERSC or SLAC or both.
-   - Improving the connections between DESC and the LSST Simulations and DM groups.
-   - Provide a testing ground for (at least) the following DM level 2 algorithms:
+## 1. Background
+
+The original goals of the Twinkles project were to:
+ * Implement, test and validate data analysis algorithms for:
+   - Lensed quasar de-blending and light curve extraction
+   - Extracting supernova light curves in the presence of extended host galaxy sources
+   - Lensed quasar time delay measurement
+ * Build expertise, connections, and mock datasets:
+   - Develop DESC computing group expertise in operating CatSim, PhoSim, and the DM stack at scale, at either NERSC or SLAC or both.
+   - Improve the connections between DESC and the LSST Simulations and DM groups.
+   - Provide a testing ground for (at least) the following DM Level 2 algorithms:
      * The Deblender
      * Image Differencing
      * MultiFit
-    - It will support the development of:
+   - Support the development of:
      * "SuperFit" algorithms, built against the MultiFit API to handle time-variable point sources and mixed point source / extended source models for optimal light curve extraction. Initializing and constraining them from upstream catalog quantities (such as DIASource detections) will be important.
-      - Many other measurements.
-2. People and their WGs involved
-   * Strong Lensing
-   * Supernovae
-   * Survey Simulations
-3. Progress to date
+     * Many other measurements.
+
+## 2. People
+
+Based on major contributions to date, the Twinkles Task Force has emerged as
+consisting of the following working group members:
+   * Strong Lensing: Phil Marshall
+   * Supernovae: Michael Wood-Vasey, Rahul Biswas
+   * Survey Simulations: Bryce Kalmbach, Scott Daniel, Simon Krughoff
+   * Computing Infrastructure: Jim Chiang, Richard Dubois, Tom Glanzman, Tony Johnson, Heather Kelly
+
+Minor contributions have also been made by Seth Digel, Curtis McCully,
+Dominique Fouchez and Fabrice Feinstein.
+
+## 3. Progress
+
    * Pre-Run1  *Tony/Tom*
    * Run 1  *Tony/Tom/Rahul*
        - phoSim: install v3.4.2 at SLAC; develop workflow engine for running at SLAC; produce ~1200 simulated visits
-       - Create a table holding SN with reasonable distribution of parameters except the rate which was made high enough to get ~100 of SNIa with SNR >5 per image for a patch of sky that should have included the Twinkles area 
+       - Create a table holding SN with reasonable distribution of parameters except the rate which was made high enough to get ~100 of SNIa with SNR >5 per image for a patch of sky that should have included the Twinkles area
        - Lensed Quasars
          - Simulated lensed quasar systems “sprinkled” into PhoSim instance catalogs at positions of distant AGN-hosting galaxies
          - Variability and time delays are present in "sprinkled" systems
@@ -39,8 +50,22 @@ https://github.com/DarkEnergyScienceCollaboration/Twinkles
    * SN/SLMonitor
       - Developed code to extract lightcurve data from MYSQL database at NERSC and display lightcurves
       - Currently developing code to display reference lightcurves as well
-4. Plans through September (the end of the 12 month Taskforce period).
+
+## 4. Plans through September (the end of the 12 month Taskforce period).
    *Phil*
 
-5. Finances
-   The first significant financial expenditure planned is for October 2016 to provide lodging in Half Moon Bay for a Twinkles retreat.
+## 5. Finances
+
+The first and only significant financial expenditure planned is for October
+2016, to provide lodging in Half Moon Bay for a Twinkles retreat. The proposal
+for this activity can be viewed
+[here](https://docs.google.com/document/d/1Yc0rTsgkGteFFJ-Z5crR77iBQJHH4zgmXmgWwS1Dkgo/edit?pli=1#).
+In short, we are proposing a 6-night off-site residential retreat, all Task
+Force members to work closely together on digesting, analyzing and documenting
+the Twinkles 1 data and code, with the goal of producing a paper for the
+Astronomical Journal Supplement (or similar). We have a quote for $3,687.23 for
+6 nights ($123 per person per night), and are working with SLAC administrative
+and legal staff to make this booking. Other expenses (travel, M&IE) will be
+covered from Task Force members own research funds; the location will be in the
+Bay Area to minimize travel costs, and only the UW and Pittsburgh team members
+will need accommodation.
