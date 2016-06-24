@@ -54,15 +54,22 @@ Dominique Fouchez and Fabrice Feinstein.
 
     DM Level 2 Processing of results *Tony Johnson, Simon Krughoff, Jim Chiang*
        - We designed a simple DM Level 2 pipeline as a "Cookbook" document, and
-       implemented the steps as a set of python function calls made from the SLAC workflow engine.
-       The data products of this pipeline were co-added images, calibrated exposures, coadd sources, and
+       implemented the steps as a set of Stack command-line tasks called from the SLAC workflow engine.
+       The data products of this pipeline are co-added images, calibrated exposures, coadd sources, and
        forced photometry flux measurements of each coadd source.
-       - This pipeline was run at SLAC, and the products copied to NERSC for access by the group. Several issues were identified with the batch processing, including high memory demand for the coaddition task.  
-       - A "PServ" MySQL database, with the advertized LSST DM schema, was filled with the Level 2 catalog outputs. Investigation into running a Qserv instance at SLAC is in progress.
-
-       Science Analysis: *Jim Chiang*
-       - Implementation of the standard DM stack validation pipeline was begun.
+       - This pipeline was run at SLAC, and the products copied to NERSC for access by the group. Several issues were identified with the batch processing, including high memory demand for the coaddition task.
+       - The Level 2 catalog outputs were ingested into a MySQL database at NERSC to enable the SN and SL analyses.
+       - Implementation of the standard DM stack validation pipeline has begun using the DM team's [validate_drp](https://github.com/lsst/validate_drp) package.
        - We compared DM Level 2 ForcedSource SNe light curves with CatSim inputs, finding good agreement in filters *grizy* for isolated supernovae with faint hosts. We see signs of blending problems in other systems, and found a systematic error in the *u*-band flux calibration which is under investigation.
+
+    Computing Infrastucture Pathfinding *Jim Chiang, Rahul Biswas, Phil Marshall, Brian van Klaveren*
+       - Since the bulk of DESC science analyses will be performed at the catalog level, we implemented a MySQL database that uses the published baseline schema for the Qserv tables. That MySQL database was implemented at NERSC using the [pserv](https://github.com/DarkEnergyScienceCollaboration/pserv) package, and it enables us to write code using the same queries that are antipated to be used for the production tables.
+       - In order to exercise Qserv itself, we are working with the Qserv developers at SLAC to implement a small Qserv database to serve up the larger Twinkles 2 dataset.
+       - We've converged on a standard repository structure that enables:
+         - package and dependency management using eups
+         - building and running code against the LSST Stack
+         - automated builds and testing using the Travis-CI continuous integration service
+         A [cookiecutter template package](https://github.com/DarkEnergyScienceCollaboration/desc_package_template) was developed to generate new repositories that have the necessary boilerplate configurations in place to use these services.
 
    * Run 1.1 *Tony Johnson*
    
@@ -75,9 +82,8 @@ Dominique Fouchez and Fabrice Feinstein.
        - A number of initial issuess with efficiently using NERSC have been identified and reported to the CI group. Work is currently underway to understand and solve these issues, with help from NERSC and DM experts. Uopdated results are expected to be available by the time of the Oxford collaboration meeting.
 
    * SN/SLMonitor Development *Bryce Kalmbach*
-      - We developed code to extract flux/error data from the Pserv database at NERSC, and display light curves.
+      - We developed code to extract flux/error data from the MySQL database at NERSC, and display light curves.
       - We are currently developing code to display reference light curves and postage stamp images as well.
-      - The resulting Monitor code repository follows a standard "cookiecutter" template, and uses the travis continuous integration web service coupled to nosetests and unittest as a showcase DESC software package.
 
 
 ## 4. Plans through September 2016
