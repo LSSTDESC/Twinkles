@@ -63,12 +63,12 @@ Dominique Fouchez and Fabrice Feinstein.
        - We compared DM Level 2 ForcedSource SNe light curves with CatSim inputs, finding good agreement in filters *grizy* for isolated supernovae with faint hosts. We see signs of blending problems in other systems, and found a systematic error in the *u*-band flux calibration which is under investigation.
 
     Computing Infrastucture Pathfinding *Jim Chiang, Rahul Biswas, Phil Marshall, Brian van Klaveren*
-       - Since the bulk of DESC science analyses will be performed at the catalog level, we implemented a MySQL database that uses the published baseline schema for the Qserv tables. That MySQL database was implemented at NERSC using the [pserv](https://github.com/DarkEnergyScienceCollaboration/pserv) package, and it enables us to write code using the same queries that are antipated to be used for the production tables.
+       - Since the bulk of DESC science analyses will be performed at the catalog level, we implemented a MySQL database that uses the published baseline schema for the Qserv tables. That MySQL database was implemented at NERSC using the [pserv](https://github.com/DarkEnergyScienceCollaboration/pserv) package, and it enables us to write code using the same queries that are anticipated to be used for the production tables.
        - In order to exercise Qserv itself, we are working with the Qserv developers at SLAC to implement a small Qserv database to serve up the larger Twinkles 2 dataset.
        - We've converged on a standard repository structure that enables:
-         - package and dependency management using eups
-         - building and running code against the LSST Stack
-         - automated builds and testing using the Travis-CI continuous integration service
+         - package and dependency management using eups,
+         - building and running code against the LSST Stack,
+         - automated builds and testing using the Travis-CI continuous integration service.
          A [cookiecutter template package](https://github.com/DarkEnergyScienceCollaboration/desc_package_template) was developed to generate new repositories that have the necessary boilerplate configurations in place to use these services.
 
    * Run 1.1 *Tony Johnson*
