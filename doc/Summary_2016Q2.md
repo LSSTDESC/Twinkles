@@ -52,7 +52,7 @@ Dominique Fouchez and Fabrice Feinstein.
        - We installed PhoSim v3.4.2 at SLAC,  developed a workflow engine for running at SLAC, and used it to produce ~1200 simulated visit (emulated-calibrated "eimage") images.
        - We identified an issue of queue expiration for high sky background images, that require greater run time than the batch system will allow.
 
-       DM Level 2 Processing of results *Tony Johnson, Simon Krughoff, Jim Chiang*
+    DM Level 2 Processing of results *Tony Johnson, Simon Krughoff, Jim Chiang*
        - We designed a simple DM Level 2 pipeline as a "Cookbook" document, and
        implemented the steps as a set of python function calls made from the SLAC workflow engine.
        The data products of this pipeline were co-added images, calibrated exposures, coadd sources, and
@@ -65,8 +65,14 @@ Dominique Fouchez and Fabrice Feinstein.
        - We compared DM Level 2 ForcedSource SNe light curves with CatSim inputs, finding good agreement in filters *grizy* for isolated supernovae with faint hosts. We see signs of blending problems in other systems, and found a systematic error in the *u*-band flux calibration which is under investigation.
 
    * Run 1.1 *Tony Johnson*
+   
+       - Analysis of the run 1 results identified some small bugs in the DM code, which were reported and fixed, and some areas where the parallelization of the workflow had been performed incorrectly. These errors were fixed and the DM workflow rerun resulting in a run 1.1 dataset, which was again copied to NERSC and imported into the PServ database for analysis.
 
    * Run 2  *Tony Johnson*
+   
+       - The main goal of run 2 is to rerun the Run 1.1 DM level 2 workflow at NERSC, with the aim of identifying and solving any issues which would make running the full DC1 simulation and analysis at NERSC in the fall.
+       - An "job control" daemon for the SLAC workflow agent was developed able to submit jobs to the NERSC slurm batch system.
+       - A number of initial issuess with efficiently using NERSC have been identified and reported to the CI group. Work is currently underway to understand and solve these issues, with help from NERSC and DM experts. Uopdated results are expected to be available by the time of the Oxford collaboration meeting.
 
    * SN/SLMonitor Development *Bryce Kalmbach*
       - We developed code to extract flux/error data from the Pserv database at NERSC, and display light curves.
