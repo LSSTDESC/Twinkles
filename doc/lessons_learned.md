@@ -13,3 +13,4 @@
 ## Run 2:
 
 * **At NERSC, it matters a lot for throughput where the software is installed.** (Tony)
+* **We need to stay on top of the DMstack (apps and sims) development** both in terms of determining the versions to install but also to sort out problems as they are encountered. This is best done either through [community.lsst.org](community.lsst.org) or via GitHub issues (Heather)
