@@ -147,11 +147,18 @@ $> mergeCoaddMeasurements.py output_data/ --id tract=0 patch=0,0 filter=g^r^i --
 $> forcedPhotCcd.py output_data/ --id tract=0 visit=840..879 sensor=1,1 raft=2,2 --config measurement.doApplyApCorr=yes --output output_data
 ```
 Once the forced photometry is done, you can look at the output by loading the measurements using the butler.  [This script](../../bin/plot_point_mags.py) shows how to start looking at the measurements.  It produces the following image.  I tried to fit both the systematic floor and the 5sigma value for each of the bands.  Results are shown in the legend of the following image.
-
+```
+# Assuming you declared the Twinkles repository as 
+# `eups declare twinkles -r . -t $USER`  from the to level Twinkles directory
+setup twinkles -t $USER -t sims
+${TWINKLES_DIR}/bin/plot_point_mags.py output_data outfile.png
+```
 ![Repeat figure](gri_err.png)
 
 You can also use the stack to make a color image from the three coadds.  See [colorim.py](../../bin/colorim.py) for the code to do this.  Note that you can also overplot the detections.
-
+```
+python ${TWINKLES_DIR}/bin/colorim.py
+```
 [![Coadd thumbnail](rgb_coadd_thumb.png)](rgb_coadd.png)
 
 ### Older stuff
