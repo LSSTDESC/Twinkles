@@ -14,3 +14,4 @@
 
 * **At NERSC, it matters a lot for throughput where the software is installed.** (Tony)
 * **We need to stay on top of the DMstack (apps and sims) development** both in terms of determining the versions to install but also to sort out problems as they are encountered. This is best done either through [community.lsst.org](http://community.lsst.org) or via GitHub issues (Heather)
+* **Conda installs of DMstack are great, but may not aways be available** In that case, brush up on your use of [lsstsw](https://developer.lsst.io/build-ci/lsstsw.html). (Heather)
