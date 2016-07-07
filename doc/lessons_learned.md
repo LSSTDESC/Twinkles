@@ -8,6 +8,7 @@
 * **Conda installation of the DM Stack can be carried out by Travis CI** allowing us to use this service. (Phil)
 * **Using both the LSST sims tools and the DM stack in the same project was surprisingly difficult.** Hopefully this will improve as a result of our trying to do it! (Phil)
 * **We are already close to the edge of what the DM Stack can do,** and as a result, discussing how to emulate the forced photometry of DIAObjects, for example. Are we about to become Stack developers? (Phil)
+* **The CPU time required to simulate a 30-s visit in Phosim ranges over two orders of magnitude,** depending mostly on the brightness of the sky, which depends mostly on whether the moon is up.  The overall time required is dominated by these visits, and in fact 103 of the 1227 Run 1 simulations reached the 120-hour batch farm limit at SLAC, and so did not finish.  This has implications for scheduling and running simulations at NERSC, where the CPU time limits per job are less, and suggests that checkpointing may be needed in the workflow. (Seth)
 
 
 ## Run 2:
