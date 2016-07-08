@@ -18,9 +18,10 @@ Get Anaconda Python
 Click `here <http://conda.pydata.org/miniconda.html>`_ and download python 
 2.7, if you don't have Anaconda python already.
 
-```
+.. code-block:: bash
+
 bash ~/Downloads/Miniconda-latest-MacOSX-x86_64.sh
-```
+
 This installs miniconda into `${HOME}/miniconda2` by default. You should i
 now pre-pend your `PATH` with `${HOME}/miniconda2/bin` so that this becomes
 your default version of python.
