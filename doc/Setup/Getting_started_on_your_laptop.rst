@@ -2,7 +2,12 @@
 Getting Started on your Laptop
 ################################
 
-Installation Notes
+.. contents::
+   :depth: 4
+
+Please check the "Important Installation Notes" to view current mitigations for known installation issues.
+
+Installation
 ================================
 The Twinkles package uses the LSST DM Stack's `afw` code, and also the LSST
 Sims tools (among other things). Here's how to get everything working.
@@ -21,11 +26,11 @@ now pre-pend your `PATH` with `${HOME}/miniconda2/bin` so that this becomes
 your default version of python.
 
 Install the LSST DM Stack and LSST Sims Tools
---------------------------
+---------------------------------------------
 These instructions come from the `LSST Science
 Pipelines <https://pipelines.lsst.io/install/conda.html>`_
 
-These commands will download and activate the LSST Science Pipelines in a 
+These commands will download and activate the current release versions of the LSST Science Pipelines in a 
 new Conda environment named "lsst":
 
 .. code-block:: bash
@@ -119,3 +124,12 @@ This is where the objects that will populate the catalog are stored.
 Supernova Sprinkling Setup
 ---------------------------
 
+
+Important Installation Notes
+---------------
+- 2016 July 8
+    The 12_0 released version of sims_utils is incompatible with the astropy 1.2.1.  Users need to downgrade astropy after completing their DMStack installation.
+
+.. code-block:: bash
+
+    conda install astropy=1.1.2
