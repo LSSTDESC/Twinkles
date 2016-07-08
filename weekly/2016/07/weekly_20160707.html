@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>Twinkles Weekly: July 7, 2016</title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="../../../stylesheets/stylesheet.ccs" type="text/css" media="screen"/>
+  <link rel="stylesheet" href="../../../stylesheets/github-dark.css" type="text/css" media="screen"/>
+  <link rel="stylesheet" href="../../../stylesheets/print.css" type="text/css" media="print"/>
+</head>
+<body>
+<header>
+<h1>Twinkles Weekly: July 7, 2016</h1>
+</header>
+<p>This week, we worked on preparing to present our results - both science and CI pathfinding - at the Oxford meeting, and before that, at LSST@SLAC. We also completed the Run 2 DM processing at NERSC, and saw our first SALT2 sncosmo fits of Twinkles supernovae!</p>
+<h2 id="twinkles-lsstslac-talk"><strong>Twinkles LSST@SLAC Talk</strong></h2>
+<p>The Twinkles Task Force (and in particular, Tony, Jim and Phil) are giving a 45 minute talk at SLAC on Friday July 8th to the combined LSST community at SLAC. We’re using this as a way of preparing for the “Lessons from Twinkles” CI2 session in Oxford.</p>
+<p>Our <a href="https://docs.google.com/presentation/d/1V3uQWBDu1ZXxkb2pwMFmNF8nUckYGUeZWb4XufzQSEc/edit"><em>Google slideset is under development here</em></a> - we went through it together in our meeting, and identified some things that still need doing:</p>
+<ul>
+<li><blockquote>
+<p>Describing the survey, including defining Run 1, 1.1, 2 etc, and explaining how we used PhoSim</p>
+</blockquote></li>
+<li><blockquote>
+<p>In general, include more lessons learned, from our growing <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/lessons_learned.md"><em>“Lessons Learned” page</em></a></p>
+</blockquote></li>
+</ul>
+<h2 id="run-1.1-light-curve-analysis"><strong>Run 1.1 Light Curve Analysis</strong></h2>
+<p>Jim has set up to run SNCosmo on the forced source light curves, and has results some nice results - here’s an example of a SALT2 fit to an isolated Twinkles supernova:</p>
+<p><img src="images/media/image03.png" width="594" height="706" /></p>
+<p>You can read more in <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/270"><em>issue 270</em></a>, where he and Rahul have been discussing this work. Jim finds that while many known supernovae are not well-fitted by SALT2, around 50% have reasonable fits (see below). While we don’t yet know what the impact on cosmology would be, this exercise shows what shoudl be possible in terms of analysis in the fall.</p>
+<p><img src="images/media/image01.png" width="624" height="414" /></p>
+<h2 id="run-2-nersc-test"><strong>Run 2 NERSC Test</strong></h2>
+<p>Cori is back up (for now, apart from now weekly downtime). Run 2 is complete, but getting to that point was a little frustrating and there are still some mysteries to understand. See comments and diagrams at end of discussion on <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/201"><em>issue 201</em></a> and in <a href="https://docs.google.com/presentation/d/1V3uQWBDu1ZXxkb2pwMFmNF8nUckYGUeZWb4XufzQSEc/edit"><em>workflow slides in Twinkles LSST@SLAC talk</em></a>. Input from Rollin at NERSC on exactly where to install the DM stack was crucial to improving the efficiency to acceptable levels.</p>
+<h2 id="documentation"><strong>Documentation</strong></h2>
+<p>Heather got started on the weekly updates: the HTML exported directly from GoogleDocs is not pretty, but using Pandoc to convert docx exported from GoogleDocs to HTML is much better. We agreed to try this, with Phil cleaning up the weekly meeting notes and Heather producing HTML for the Twinkles website.</p>
+<p>Heather is going to priortize the better installation docs (<a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/160"><em>issue #160</em></a>) -so that Phil can alpha-test. She will then move on to setting up Sphinx API docs for The Monitor (<a href="https://github.com/DarkEnergyScienceCollaboration/Monitor/issues/33"><em>issue Monitor/#33</em></a>) - the plan is to have travis deploy sphinx-generated html to the gh-pages branch, visible at <a href="http://darkenergysciencecollaboration.github.io/Monitor/"><em>http://darkenergysciencecollaboration.github.io/Monitor/</em></a></p>
+</body>
+</html>
