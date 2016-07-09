@@ -38,18 +38,23 @@ Pipelines <https://pipelines.lsst.io/install/conda.html>`_. The first thing that
    conda update conda
 
 The following commands will download and activate the current release versions of the LSST Science Pipelines in a 
-new Conda environment named "lsst":
+new Conda environment named "lsst". At various times they need to to type `y`, so unfortunately you cannot leave them too long. They 
+each take a few minutes, except for the `conda install`, which takes a bit longer.  
 
 .. code-block:: bash
 
    conda config --add channels http://conda.lsst.codes/stack  
    conda create --name lsst python=2
+   
+You are now ready to install the `lsst` software. If you are a C-shell user, the `source activate` command below
+will not work, as that script only supports `bash` and `zsh`. A workaround is to switch to a `bash` shell at this point, 
+and then stay in that bash shell to do the other two commands below.
+
    source ${HOME}/miniconda2/bin/activate lsst
    conda install lsst-distrib lsst-sims
    source eups-setups.sh
 
-
-You are now set up to use the DM Stack in the current shell.
+You should now be set up to use the DM Stack in the current `bash` shell.
 
 Set Up Environment to Use LSST Code
 -----------------------------------
