@@ -9,7 +9,7 @@ This page contains our notes on how to set your Mac laptop up to run the LSST DM
 
 Please check the "Important Installation Notes" to view current mitigations for known installation issues.
 
-Installation
+DM Stack and Sims Installation
 ================================
 The Twinkles package uses the LSST DM Stack's `afw` code, and also the LSST
 Sims tools (among other things). Here's how to get everything working.
@@ -82,10 +82,22 @@ Install Optional Python Modules Not Included with DMStack
     conda install nose
     conda install coverage
     conda install iminuit
+
+
+Important Installation Notes
+----------------------------
+- 2016 July 8
+    The `12_0` released version of `sims_utils` is incompatible with the `astropy` 1.2.1.  You'll need to downgrade `astropy` after completing your DM Stack installation:
+
+.. code-block:: bash
+
+    conda install astropy=1.1.2
+
     
-Install PhoSim
------------------------
-The PhoSim Confluence page is available `here <https://confluence.lsstcorp.org/display/PHOSIM>`_. The code is available 
+PhoSim Installation
+================================
+`PhoSim` is not distributed with the rest of the LSST sims tools, but is readily available as an independent package. 
+The PhoSim confluence page is available `here <https://confluence.lsstcorp.org/display/PHOSIM>`_. The code is obtained 
 from LSST via `git`, and needs the `cfitsio` and `fftw3` libraries: you'll be asked to point to their locations by the `PhoSim` 
 configure script, or if you can't, it will offer to install them for you from source.
      
@@ -146,11 +158,3 @@ Supernova Sprinkling Setup
 Coming soon!
 
 
-Important Installation Notes
----------------
-- 2016 July 8
-    The 12_0 released version of sims_utils is incompatible with the astropy 1.2.1.  Users need to downgrade astropy after completing their DMStack installation.
-
-.. code-block:: bash
-
-    conda install astropy=1.1.2
