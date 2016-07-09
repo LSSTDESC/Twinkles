@@ -39,7 +39,7 @@ Pipelines <https://pipelines.lsst.io/install/conda.html>`_. The first thing that
 
 The following commands will download and activate the current release versions of the LSST Science Pipelines in a 
 new Conda environment named "lsst". At various times they need to to type "`y`", so unfortunately you cannot leave them too long. They 
-each take a few minutes, except for the `conda install`, which takes a bit longer.  
+each take a few minutes, except for the `conda install`, which takes about an hour.  
 
 .. code-block:: bash
 
@@ -80,7 +80,7 @@ Install Optional Python Modules Not Included with DMStack
 .. code-block:: bash
 
     conda install nose
-    conda install coverge
+    conda install coverage
     conda install iminuit
     
 Install PhoSim
