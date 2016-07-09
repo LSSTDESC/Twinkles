@@ -24,7 +24,7 @@ Click `here <http://conda.pydata.org/miniconda.html>`_ and download python
 
     bash ~/Downloads/Miniconda-latest-MacOSX-x86_64.sh
 
-This installs miniconda into `${HOME}/miniconda2` by default. You should i
+This installs miniconda into `${HOME}/miniconda2` by default. You should 
 now pre-pend your `PATH` with `${HOME}/miniconda2/bin` so that this becomes
 your default version of python.
 
@@ -44,7 +44,7 @@ new Conda environment named "lsst":
 
    conda config --add channels http://conda.lsst.codes/stack  
    conda create --name lsst python=2
-   source activate lsst
+   source ${HOME}/miniconda2/bin/activate lsst
    conda install lsst-distrib lsst-sims
    source eups-setups.sh
 
@@ -61,7 +61,7 @@ C-shell users would use `eups_setup.csh` and `setenv` in their `.login` file.
 
    export LSST_DIR = ${HOME}/miniconda2
    set path = (${LSST_DIR}/bin $path)
-   source activate lsst
+   source ${LSST_DIR}/bin/activate lsst
    source eups-setups.sh
    setup obs_lsstSim
    setup lsst_sims
