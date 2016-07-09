@@ -37,7 +37,6 @@ These commands will download and activate the current release versions of the LS
 new Conda environment named "lsst":
 
 .. code-block:: bash
-      :linenos:
 
    conda config --add channels http://conda.lsst.codes/stack  
    conda create --name lsst python=2
