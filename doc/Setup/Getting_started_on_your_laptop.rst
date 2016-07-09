@@ -51,8 +51,11 @@ new Conda environment named "lsst":
 
 You are now set up to use the DM Stack in the current shell.
 
-Environment Set up to Use LSST Code
--------------------------------------
+Set Up Environment to Use LSST Code
+-----------------------------------
+Every time you start a new shell, you need to set up its environment to enable use of the LSST code. The following lines could be 
+worth adding to your `.bashrc` file or equivalent.
+C-shell users would use `eups_setup.csh` and `setenv` in their `.login` file.
 
 .. code-block:: bash
 
@@ -63,10 +66,6 @@ Environment Set up to Use LSST Code
    setup obs_lsstSim
    setup lsst_sims
 
-This needs to be done every time you start a new shell - so these lines 
-could be worth adding to your `.bashrc` file or equivalent. Note that 
-c-shell users can use `eups_setup.csh` and use `setenv` in their `.login` 
-file.
 
 Install Optional Python Modules Not Included with DMStack
 ----------------------------
@@ -129,6 +128,7 @@ This is where the objects that will populate the catalog are stored.
 
 Supernova Sprinkling Setup
 ---------------------------
+Coming soon!
 
 
 Important Installation Notes
