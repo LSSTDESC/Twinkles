@@ -1,6 +1,8 @@
-################################
-Getting Started on your Laptop
-################################
+##################################
+Getting Started on an Apple Laptop
+##################################
+
+This page contains our notes on how to set your Mac laptop up to run the LSST DM stack and sims tools. 
 
 .. contents::
    :depth: 4
