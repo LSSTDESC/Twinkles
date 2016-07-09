@@ -85,13 +85,21 @@ Install Optional Python Modules Not Included with DMStack
     
 Install PhoSim
 -----------------------
-The PhoSim Confluence page is available `here <https://confluence.lsstcorp.org/display/PHOSIM>`_.
+The PhoSim Confluence page is available `here <https://confluence.lsstcorp.org/display/PHOSIM>`_. The code is available 
+from LSST via `git`, and needs the `cfitsio` and `fftw3` libraries: you'll be asked to point to their locations by the `PhoSim` 
+configure script, or if you can't, it will offer to install them for you from source.
      
 .. code-block:: bash
 
     mkdir ~/repos
     cd ~/repos
     git clone https://stash.lsstcorp.org/scm/sim/sims_phosim.git
+
+This takes a few minutes, as the `sims_phosim` repo is large. Once it has been downloaded,
+ 
+.. code-block:: bash
+
+    cd sims_phosim
     setup cfitsio
     setup fftw
     ./configure
