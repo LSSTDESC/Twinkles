@@ -7,7 +7,6 @@ This page contains our notes on how to set your Mac laptop up to run the LSST DM
 .. contents::
    :depth: 4
 
-Please check the "Important Installation Notes" to view current mitigations for known installation issues.
 
 DM Stack and Sims Installation
 ================================
@@ -84,8 +83,8 @@ Install Optional Python Modules Not Included with DMStack
     conda install iminuit
 
 
-Important Installation Notes
-----------------------------
+Important DM Stack Installation Notes
+-------------------------------------
 - 2016 July 8
     The `12_0` released version of `sims_utils` is incompatible with the `astropy` 1.2.1.  You'll need to downgrade `astropy` after completing your DM Stack installation:
 
@@ -132,6 +131,11 @@ Test `PhoSim`
 This produces a file `PhoSim` can run.
 Images show up in the "output" directory.
 
+
+Twinkles-specific Installation Notes
+====================================
+The notes above should be helpful for anyone looking to use either the Stack or the Sims tools, or both. We now turn to the 
+additional code needed by the Twinkles project, to sprinkle in the twinkly objects.
 
 Gravitational Lens Sprinkling Setup
 ---------------------------------------
