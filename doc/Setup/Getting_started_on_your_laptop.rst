@@ -31,9 +31,13 @@ your default version of python.
 Install the LSST DM Stack and LSST Sims Tools
 ---------------------------------------------
 These instructions come from the `LSST Science
-Pipelines <https://pipelines.lsst.io/install/conda.html>`_
+Pipelines <https://pipelines.lsst.io/install/conda.html>`_. The first thing that they recommend is to make sure `conda` is up to date:
 
-These commands will download and activate the current release versions of the LSST Science Pipelines in a 
+.. code-block:: bash
+
+   conda update conda
+
+The following commands will download and activate the current release versions of the LSST Science Pipelines in a 
 new Conda environment named "lsst":
 
 .. code-block:: bash
