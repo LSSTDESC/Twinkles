@@ -8,8 +8,8 @@ This page contains our notes on how to set your Mac laptop up to run the LSST DM
    :depth: 4
 
 
-DM Stack and Sims Installation
-================================
+Installing the DM Stack and Sims Tools
+======================================
 The Twinkles package uses the LSST DM Stack's `afw` code, and also the LSST
 Sims tools (among other things). Here's how to get everything working.
 
@@ -104,8 +104,8 @@ Important DM Stack Installation Notes
     conda install astropy=1.1.2
 
     
-PhoSim Installation
-================================
+Installing PhoSim for Twinkles
+==============================
 `PhoSim` is not distributed with the rest of the LSST sims tools, but is readily available as an independent package. 
 The PhoSim confluence page is available `here <https://confluence.lsstcorp.org/display/PHOSIM>`_. The code is obtained 
 from LSST via `git`, and needs the `cfitsio` and `fftw3` libraries: you'll be asked to point to their locations by the `PhoSim` 
@@ -131,6 +131,10 @@ You'll have to point to the correct cfitsio and fftw3 libraries and headers for 
 
 Test `PhoSim`
 ---------------
+For Twinkles, we need to be able to query the `CatSim` database to make the "instance catalogs" that `PhoSim` needs - so our test 
+exercises this. The code below will only work if you have authorized access to the `CatSim` database at the University of 
+Washington - see the [instructions here](https://confluence.lsstcorp.org/display/SIM/Accessing+the+UW+CATSIM+Database) for how to 
+get that access.
 
 .. code-block:: bash
 
@@ -139,8 +143,8 @@ Test `PhoSim`
     python $SIMS_CATUTILS_DIR/examples/generatePhosimInput.py
     ./phosim ~/TwinklesData/phoSim_example.txt --sensor="R22_S11" -c examples/nobackground
 
-This produces a file `PhoSim` can run.
-Images show up in the "output" directory.
+`generatePhosimInput.py` produces a file `PhoSim` can run; 
+the output images made by `PhoSim` show up in the "output" directory.
 
 
 Twinkles-specific Installation Notes
