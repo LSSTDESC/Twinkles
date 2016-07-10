@@ -45,13 +45,16 @@ each take a few minutes, except for the `conda install`, which takes about an ho
    conda config --add channels http://conda.lsst.codes/stack  
    conda create --name lsst python=2
    
-You are now ready to install the `lsst` software. If you are a C-shell user, the `source activate` command below
-will not work, as that script only supports `bash` and `zsh`. A workaround is to switch to a `bash` shell at this point, 
-and then stay in that bash shell to do the other two commands below.
+You are now ready to install the `lsst` software. 
+
+If you are a C-shell user, the `source activate` command below
+will not work, as that script only supports `bash` and `zsh`. A workaround is to switch to a `bash` shell at this point (by typing 
+`bash`), and then stay in that `bash` shell to do the other two commands below. It's not really a workaround though - because you 
+will have to come back to `bash` and re-do this environment set-up every time you want to use the LSST software anyway.
 
 .. code-block:: bash
 
-   source ${HOME}/miniconda2/bin/activate lsst
+   source activate lsst
    conda install lsst-distrib lsst-sims
    source eups-setups.sh
 
@@ -60,8 +63,7 @@ You should now be set up to use the DM Stack in the current `bash` shell.
 Set Up Environment to Use LSST Code
 -----------------------------------
 Every time you start a new shell, you need to set up its environment to enable use of the LSST code. The following lines could be 
-worth adding to your `.bashrc` file or equivalent.
-C-shell users would use `eups_setup.csh` and `setenv` in their `.login` file.
+worth adding to your `~/.bash_profile` file or equivalent.
 
 .. code-block:: bash
 
@@ -71,6 +73,15 @@ C-shell users would use `eups_setup.csh` and `setenv` in their `.login` file.
    source eups-setups.sh
    setup obs_lsstSim
    setup lsst_sims
+
+C-shell users: there doesn't seem to be a way round using `bash` when working with LSST software. Once you have added the above lines 
+to a file called `~/.bash_profile`, you can make an alias that starts a login `bash` shell and executes this `~/.bash_profile`. In your 
+`~/.cshrc` file, add:
+
+.. code-block:: csh
+
+    alias LSST "bash -l"
+    echo "Type 'LSST' to set up the LSST environment"
 
 
 Install Optional Python Modules Not Included with DMStack
