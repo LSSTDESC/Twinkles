@@ -8,6 +8,7 @@ run1_cpu_generate_rf.py, using only the filter, moonalt, and moonphase
 features.  This script needs to be run only once.
 """
 
+from __future__ import print_function, absolute_import
 import os
 import pickle
 import math
@@ -52,7 +53,7 @@ class CpuPred(object):
         """
         rec = self.obs_conditions[self.obs_conditions['obsHistID'] == obsid]
 
-        if rec.size <> 0:
+        if rec.size != 0:
             # Translate the filter string into an index 0-5
             filter_index = 'ugrizy'.find(rec['filter'].values[0])
 

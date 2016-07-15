@@ -8,7 +8,7 @@ https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/examples/
 
 @author: sethdigel
 """
-from __future__ import print_function
+from __future__ import print_function, absolute_import
 import copy
 import numpy as np
 import os
