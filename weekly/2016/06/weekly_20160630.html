@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+</head>
+<body>
+  <div id="container">
+      <div class="inner">
+<header>
+<h1 id="twinkles-weekly-thursday-june-30-2016"><strong>Twinkles Weekly: Thursday June 30, 2016</strong></h1>
+<p>12 noon PDT, <a href="http://bluejeans.com/513427879"><em>http://bluejeans.com/513427879</em></a></p>
+<p>Present: Jim, Richard, Anders, Scott, Seth, Tom, Heather, Phil, Bryce, Tony</p>
+<p>Apologies: Rahul, Michael</p>
+<h2 id="check-in"><strong>Check-in</strong></h2>
+<p>How do you like the agenda, what are we missing?</p>
+<p>No progress on Twinkles retreat, awaiting SLAC legal/financial. Hoping we don’t lose the booking...</p>
+<h2 id="twinkles-reporting"><strong>Twinkles Reporting</strong></h2>
+<p>Our next report is due next Friday: the LSST@SLAC presentation (July 8)</p>
+<p>Strongly related, we also have the “Lessons from Twinkles” CI session in Oxford (July 21)</p>
+<p>Other talks in Oxford? Bryce in SL? Rahul in SN? Computing tutorial?</p>
+<p>Action: Phil to start Google slideset for Friday 8th, and iplemment structure suggested in discussion. Science intro, pathfinder infrastructure, science results, tutorial on how to get started playing with Twinkles data. Infrastructure called out for highlighting: workflow system and its throughput, distribution; software development framework (GitHub, travis, cookiecutter, code installations); tools: Pserve, Monitor.</p>
+<h2 id="run-1.1-light-curve-analysis"><strong>Run 1.1 Light Curve Analysis</strong></h2>
+<p>News from Bryce, Rahul and Jim - roadblocks? Goals for Oxford?</p>
+<p>Bryce is adapting lensed AGN Rahul’s code for regenerating truth light curves given an input model: goal is results next week.</p>
+<p>Jim is setting up to run SNCosmo on the forced source light curves: early results show low z SNe do have sensible estiamted SALT2 parameters.</p>
+<h2 id="run-2-nersc-test"><strong>Run 2 NERSC Test</strong></h2>
+<p>As of 12:07 cori is still down :-( but is due to come back up today.</p>
+<h3 id="nersc-installation"><strong>NERSC Installation</strong></h3>
+<p>Cori is due to come back online today at noon Pacific, in the meantime, we have set up Edison with two versions of DMstack: w.2016.20 and 12_0<br />
+12_0 is a conda installation, please note that running the demo reported 2 failed quantities (only at NERSC):<br />
+<a href="https://community.lsst.org/t/two-failed-quantities-running-demo-for-12-0-at-nersc/894/2"><em>https://community.lsst.org/t/two-failed-quantities-running-demo-for-12-0-at-nersc/894/2</em></a></p>
+<p>The powers that be seem to agree that this is insignificant.</p>
+<p>There is also a reported incompatibility with the 12_0 released sncosmo which has been fixed and will be added to the stack soon: <a href="https://github.com/sncosmo/sncosmo/issues/142"><em>https://github.com/sncosmo/sncosmo/issues/142</em></a></p>
+<h3 id="new-high-performance-areas"><strong>New High Performance Areas:</strong></h3>
+<p><strong><br />
+</strong>In response to our reported troubles with processing times, we have 2 new directories available to us for Python applications (such as DMstack):<br />
+/global/common/cori/contrib/lsst</p>
+<p>/global/common/edison/contrib/lsst</p>
+<p>These areas will have both 12_0 and w.2016.20 of DMstack installed soon.</p>
+<h2 id="documentation"><strong>Documentation</strong></h2>
+<p>Phil and Heather made progress:</p>
+<ul>
+<li>
+<p>Getting started, epic at <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/207"><em>#207</em></a></p>
+<ul>
+<li>
+<p>Improving the landing / README <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/208"><em>#208</em></a> - Phil is making a better intro to the issues system, using sorting and the epics.</p>
+</li>
+<li>
+<p>Better installation docs <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/160"><em>#160</em></a> - Heather is going to write notes for laptop and NERSC users, for Phil to alpha-test</p>
+</li>
+</ul></li>
+<li>
+<p>Sphinx API docs for The Monitor <a href="https://github.com/DarkEnergyScienceCollaboration/Monitor/issues/33"><em>Monitor/#33</em></a> - plan is to have travis deploy sphinx-generated html to the gh-pages branch, visible at <a href="http://darkenergysciencecollaboration.github.io/Monitor/"><em>http://darkenergysciencecollaboration.github.io/Monitor/</em></a></p>
+</li>
+<li>
+<p>Weekly summaries <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/253"><em>#253</em></a> - initial plan is to export html from Google doc notes, and store in a suitable folder structure, then deploy to gh-pages so that we have a hyperlinked page to point people at. This would all be a precursor to setting up some simple blog system.</p>
+</li>
+</ul>
+<h2 id="issue-248-image-differencing"><strong>Issue 248: Image Differencing</strong></h2>
+<p>Action: Simon to upgrade Cookbook with initial two calexp differencing</p>
+<p>Action: Rahul to implement and run</p>
+<p>Action: Jim to test as well, at NERSC?</p>
+<p>Action: Simon to call in Ian and David to join in issue discussions</p>
+<p>Any news?</p>
+<p>RB: Not yet. I have been running part of the old cookbook which is now out of date.</p>
+<h2 id="run-1.1-dm-validation-analysis"><strong>Run 1.1 DM Validation Analysis</strong></h2>
+<p>Action: MWV to investigate Run 1.1 drp_validation results</p>
+<p>No news.</p>
+
+<footer>
+          Twinkles is maintained by <a href="https://github.com/DarkEnergyScienceCollaboration">DarkEnergyScienceCollaboration</a><br>
+          This page was generated by <a href="https://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+</footer>
+
+</div>
+</div>
+</body>
+</html>
