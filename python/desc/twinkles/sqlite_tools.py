@@ -1,6 +1,7 @@
 """
 Tools for reading sqlite3 databases.
 """
+from __future__ import absolute_import
 import sqlite3
 import pandas as pd
 
