@@ -31,5 +31,5 @@ in the weekly/index.html file
 
 To Do
 ------
-* Use a template in pandoc to set up the sytle of our weeklies automatically
+* Use a template in pandoc to set up the style of our weeklies automatically
 
