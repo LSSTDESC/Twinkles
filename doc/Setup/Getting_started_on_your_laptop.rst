@@ -29,20 +29,20 @@ your default version of python.
 
 Install the LSST DM Stack and LSST Sims Tools
 ---------------------------------------------
-These instructions come from the `LSST Science
-Pipelines <https://pipelines.lsst.io/install/conda.html>`_. The first thing that they recommend is to make sure `conda` is up to date:
+These instructions come from the `LSST Simulation Framework
+ <https://confluence.lsstcorp.org/display/SIM/Catalogs+and+MAF>`_. The first thing that they recommend is to make sure `conda` is up to date:
 
 .. code-block:: bash
 
    conda update conda
 
-The following commands will download and activate the current release versions of the LSST Science Pipelines in a 
+The following commands will download and activate the current release versions of "lsst-apps" and "lsst-sims" in a 
 new Conda environment named "lsst". At various times they need to to type "`y`", so unfortunately you cannot leave them too long. They 
 each take a few minutes, except for the `conda install`, which takes about an hour.  
 
 .. code-block:: bash
 
-   conda config --add channels http://conda.lsst.codes/stack  
+   conda config --add channels http://conda.lsst.codes/sims  
    conda create --name lsst python=2
    
 You are now ready to install the `lsst` software. 
@@ -55,7 +55,7 @@ will have to come back to `bash` and re-do this environment set-up every time yo
 .. code-block:: bash
 
    source activate lsst
-   conda install lsst-distrib lsst-sims
+   conda install lsst-apps lsst-sims
    source eups-setups.sh
 
 You should now be set up to use the DM Stack in the current `bash` shell.
@@ -94,16 +94,6 @@ Install Optional Python Modules Not Included with DMStack
     conda install iminuit
 
 
-Important DM Stack Installation Notes
--------------------------------------
-- 2016 July 8
-    The `12_0` released version of `sims_utils` is incompatible with the `astropy` 1.2.1.  You'll need to downgrade `astropy` after completing your DM Stack installation:
-
-.. code-block:: bash
-
-    conda install astropy=1.1.2
-
-    
 Installing PhoSim for Twinkles
 ==============================
 `PhoSim` is not distributed with the rest of the LSST sims tools, but is readily available as an independent package. 
