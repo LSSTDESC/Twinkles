@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: August 4, 2016</h1>
+<p>We’re about to start writing up our R&amp;D work as a set of “LSST DESC Notes”, which should help both with a) defining the scope of Twinkles 1 and 2 prior to the fall’s Run 3 data generation, and b) experimenting with easily written and cited published units that make everyone’s contribution to a large project clear. Meanwhile, Tom Glanzman has been exercising phoSim v3.5.2, looking into phoSim checkpointing, and investigating running at NERSC.</p>
+<h2 id="lsst-desc-notes-on-run-1-2-rd-work"><strong>LSST DESC Notes on Run 1-2 R&amp;D Work</strong></h2>
+<p>In <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/284"><em>#284</em></a> Phil suggested we write 11(!) “LSST DESC Notes” on our Twinkles work so far. (The proposed Publication Policy refers to “research notes”, and Chris Walter needs something to cite in his DC1 PhoSim Deep requirements document.) We will discuss this bold plan for making sure everyone is correctly accredited for their hard work. <a href="https://github.com/drphilmarshall/Twinkles/tree/master/doc/LSST_DESC_Notes"><em>Here’s what it could look like in practice!</em></a></p>
+<p>Rahul wondered whether ipython notebook-format DESC Notes could be useful for outsiders to try to run the code themselves. At the moment it’s up to the Note author to make sure that all code/environment requirements are specified, in a `requirements.txt` or `environment.yml` file.</p>
+<p>We discussed a sensible deadline for the first Twinkles notes as the end of August - authors can start before the Tucson meeting, regoup and discuss there, and then finish off by the ened of the month. The thought is that these Notes should be useful in defining the Run 3 plan, for the final Twinkles 1 data generation run.</p>
+<p>In the issue thread, Chris Walter commented that the set of proposed Twinkles notes might be more conveniently aggregated into a single document: we’ll keep this in mind as we author multiple, smaller notes, which should allow more accurate accreditation of our efforts. We will also be in touch with Jonathan Sick from the LSST Project who will likely have some suggestions about how we could combine multiple notes into one easily printed and consumed document.</p>
+<h2 id="phosim-3.5.2-running-at-nersc-checkpointing-etc"><strong>PhoSim 3.5.2, Running at NERSC, Checkpointing etc</strong></h2>
+<p>Tom reported on his recent adventures!</p>
+<p>phoSim v3.5.2 vs v3.4.2 execution time test:</p>
+<ul>
+<li><blockquote>
+<p>Execution times in general seem too long, according to John Peterson. 8.5% of jobs in Run 1 failed for going past the SLAC batch farm 5-day CPU time limit.</p>
+</blockquote></li>
+<li><blockquote>
+<p>V3.5.2 does not seem to solve this problem: the distribution of CPU times is very similar <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/288"><em>(#288)</em></a>. Discussion with John about this is ongoing.</p>
+</blockquote></li>
+</ul>
+<p>Checkpointing:</p>
+<ul>
+<li><blockquote>
+<p>phoSim team uses Condor-based checkpointing system very effectively, but it depends on access to a Condor batch system, which NERSC does not have.</p>
+</blockquote></li>
+<li><blockquote>
+<p>An “internal” checkpointing system exists, and is being exercised by Tom. How does it work? phoSim attempts to divide job into sequential pieces, based on your desired number of checkpoints; when it reaches the first checkpoint its operation halts, so that the user can re-start with an edited command file. Attempting to run this resulted in a crash, followed by the successful creation of a <a href="https://bitbucket.org/phosim/phosim_release/issues/11/problem-with-phosim-crash-when-using"><em>bitbucket phoSim issue</em></a> which is being activley investigated.</p>
+</blockquote></li>
+</ul>
+<p>Running at NERSC (cori phase II):</p>
+<ul>
+<li><blockquote>
+<p>Memory: the total memory per core is relatively small, leaving us two options, a) use more cores to get more memory, which is inefficient, or b) learn how to use cori more intelligently. phoSim uses ~2.4Gb memory per chip eimage simulation, while each node has only 96Gb DRAM (DDR4) and 16GB high band-width MCDRAM, shared between 68 compute cores (each with 4 potential threads), leading to 1.4Gb DRAM per core (although the HBM can be used in “flat” mode where it’s simply added to the DRAM - giving an effective 1.6GB/core).</p>
+</blockquote></li>
+<li><blockquote>
+<p>Multi-threading: coming soon, in phoSim 3.6! Design is to divide the input catalog (sources) by the number of available threads (N). One set of N sources is then dispatched to the available threads. phoSim waits until all threads are finished then dispatches the next set of N sources, and so on. The memory will be shared between the threads so the memory footprint increases only minimally with each additional thread. This sounds promising.</p>
+</blockquote></li>
+<li><blockquote>
+<p>The claim is that checkpointing will not be needed when phoSim is running multi-threaded - and it may also not be possible, given the design.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Concerns about repeatability: would multi-threaded results be deterministic? We need to check with John. Non-deterministic results could make debugging difficult.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Workflow engine support for checkpointing: some book-keeping will be needed to make checkpointing work. This not currently supported by the WE, but a kludgy work-around is being investigated (“retry” mechanism) - Tom is working with Brian on this.</p>
+</blockquote></li>
+<li><blockquote>
+<p>The shared queue is still down, and being actively worked on by several NERSC engineers in collaboration with the Cray suppliers. This is currently preventing phoSim or DM operation on cori phase I. Edison remains available.</p>
+</blockquote></li>
+</ul>
+<h2 id="retreat-plans"><strong>Retreat Plans</strong></h2>
+<p>Phil reported on the difficulty of setting up an off-site retreat paid for with Task Force money - it’s much easier to define a workshop at SLAC or on Stanford campus, and have people stay nearby rather than in a remote location. While we could do that, there is also the possibility that we meet before and then at the CMU Hack Week instead. We’ll look at the November dates and see if there’s a good way of doing that.</p>
+<h2 id="lsst-project-and-community-meeting-tucson-august-15-19"><strong>LSST Project and Community Meeting, Tucson, August 15-19</strong></h2>
+<p>A few of us will be going to Tucson, and we hope to meet up and working together.</p>
+<p>Twinkles needs to be presentable in the Event Broker breakouts (Wednesday): if we work on emulating the Level 1 processing and analysis as part of Twinkles 2 next year, this could be a useful dataset for helping Event Broker development. We’ll find out more in Tucson, but we need the repo/website needs to be approachable with this in mind, so we can stand up and point people to it.</p>
+<p>Meanwhile, there will be a competing breakout on GalSim development, which should be interesting for us.</p>
+<h2 id="twinkles-weeklies"><strong>Twinkles Weeklies</strong></h2>
+<p>Heather has put together a system for producing Twinkles Weeklies from our meeting notes, and then link them from the Twinkles web site at <a href="https://darkenergysciencecollaboration.github.io/Twinkles/"><em>https://darkenergysciencecollaboration.github.io/Twinkles/</em></a></p>
+<p>Heather is hoping to automate the weekly summary production process a bit further. In the meantime, our workflow consists of having someone (Phil) indicate that the minutes for that week are “ready”. Then someone (Heather) follows the steps outlined <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Website/weeklies_howto.rst"><em>here</em></a>.</p>
+</div>
+</div>
+</body>
+</html>
