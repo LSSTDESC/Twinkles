@@ -35,13 +35,13 @@ Dominique Fouchez and Fabrice Feinstein.
 
 ## 3. Progress
 
-   * Twinkles 1 specifications  *Phil Marshall*
+   * Twinkles 1 specifications  *(Phil Marshall)*
 
       - In the Science Roadmap we defined two phases, Twinkles 1 (DC1) and Twinkles 2 (DC2), distinguished by a) scope and b) realism. Twinkles 1 was supposed to be single filter, and simple enough to get started. Twinkles 2 was supposed to be multi-filter, and as realistic as we could make it.
       - During early Twinkles 1 R&D work (2016Q1) we determined that generating and processing multi-filter data was not actually very difficult, and so we changed the definition of Twinkles 1 to include multi-filter data. The only difference between Twinkles 1 and Twinkles 2 will therefore be in the realism of the data generated and the processing applied to it.
       - We adopted a staged strategy to building up our simulation and processing capabilities, envisioning at least one small test run prior to the full DG phase (2016 Q3 onwards). The first of these test runs was named "Run 1" and scoped to include ~1000 visits in all filters, covering all ten years at WDF-like cadence (although the actual time sampling was chosen to be a down-sample of the DDF observations, for simplicity).
 
-   * Run 1  *Tony Johnson, Tom Glanzman, Rahul Biswas*
+   * Run 1  *(Tony Johnson, Tom Glanzman, Rahul Biswas)*
 
      PhoSim image simulation:
        - For the inputs to these images, we:
@@ -52,26 +52,38 @@ Dominique Fouchez and Fabrice Feinstein.
        - We installed PhoSim v3.4.2 at SLAC,  developed a workflow engine for running at SLAC, and used it to produce ~1200 simulated visit (emulated-calibrated "eimage") images.
        - We identified an issue of queue expiration for high sky background images, that require greater run time than the batch system will allow.
 
-       DM Level 2 Processing of results *Tony Johnson, Simon Krughoff, Jim Chiang*
+    DM Level 2 Processing of results *(Tony Johnson, Simon Krughoff, Jim Chiang)*
        - We designed a simple DM Level 2 pipeline as a "Cookbook" document, and
-       implemented the steps as a set of python function calls made from the SLAC workflow engine.
-       The data products of this pipeline were co-added images, calibrated exposures, coadd sources, and
+       implemented the steps as a set of Stack command-line tasks called from the SLAC workflow engine.
+       The data products of this pipeline are co-added images, calibrated exposures, coadd sources, and
        forced photometry flux measurements of each coadd source.
-       - This pipeline was run at SLAC, and the products copied to NERSC for access by the group. Several issues were identified with the batch processing, including high memory demand for the coaddition task.  
-       - A "PServ" MySQL database, with the advertized LSST DM schema, was filled with the Level 2 catalog outputs. Investigation into running a Qserv instance at SLAC is in progress.
-
-       Science Analysis: *Jim Chiang*
-       - Implementation of the standard DM stack validation pipeline was begun.
+       - This pipeline was run at SLAC, and the products copied to NERSC for access by the group. Several issues were identified with the batch processing, including high memory demand for the coaddition task.
+       - The Level 2 catalog outputs were ingested into a MySQL database at NERSC to enable the SN and SL analyses.
+       - Implementation of the standard DM stack validation pipeline has begun using the DM team's [validate_drp](https://github.com/lsst/validate_drp) package.
        - We compared DM Level 2 ForcedSource SNe light curves with CatSim inputs, finding good agreement in filters *grizy* for isolated supernovae with faint hosts. We see signs of blending problems in other systems, and found a systematic error in the *u*-band flux calibration which is under investigation.
 
-   * Run 1.1 *Tony Johnson*
+    Computing Infrastucture Pathfinding *(Jim Chiang, Rahul Biswas, Phil Marshall, Brian van Klaveren)*
+       - Since the bulk of DESC science analyses will be performed at the catalog level, we implemented a MySQL database that uses the published baseline schema for the Qserv tables. That MySQL database was implemented at NERSC using the [pserv](https://github.com/DarkEnergyScienceCollaboration/pserv) package, and it enables us to write code using the same queries that are anticipated to be used for the production tables.
+       - In order to exercise Qserv itself, we are working with the Qserv developers at SLAC to implement a small Qserv database to serve up the larger Twinkles 2 dataset.
+       - We've converged on a standard repository structure that enables:
+         - package and dependency management using eups,
+         - building and running code against the LSST Stack,
+         - automated builds and testing using the Travis-CI continuous integration service.
+         A [cookiecutter template package](https://github.com/DarkEnergyScienceCollaboration/desc_package_template) was developed to generate new repositories that have the necessary boilerplate configurations in place to use these services.
 
-   * Run 2  *Tony Johnson*
+   * Run 1.1 *(Tony Johnson)*
+   
+       - Analysis of the Run 1 results identified some small bugs in the DM code, which were reported and fixed, and some areas where the parallelization of the workflow had been performed incorrectly. These errors were fixed and the DM workflow rerun resulting in a Run 1.1 dataset, which was again copied to NERSC and imported into the PServ database for analysis.
 
-   * SN/SLMonitor Development *Bryce Kalmbach*
-      - We developed code to extract flux/error data from the Pserv database at NERSC, and display light curves.
+   * Run 2  *(Tony Johnson)*
+   
+       - The main goal of Run 2 is to re-run the Run 1.1 DM Level 2 workflow at NERSC, with the aim of identifying and solving any issues which would make running the full DC1 simulation and analysis at NERSC in the fall.
+       - A "job control" daemon for the SLAC workflow agent was developed able to submit jobs to the NERSC slurm batch system.
+       - A number of initial issuess with efficiently using NERSC have been identified and reported to the CI group. Work is currently underway to understand and solve these issues, with help from NERSC and DM experts. Uopdated results are expected to be available by the time of the Oxford collaboration meeting.
+
+   * SN/SLMonitor Development *(Bryce Kalmbach)*
+      - We developed code to extract flux/error data from the MySQL database at NERSC, and display light curves.
       - We are currently developing code to display reference light curves and postage stamp images as well.
-      - The resulting Monitor code repository follows a standard "cookiecutter" template, and uses the travis continuous integration web service coupled to nosetests and unittest as a showcase DESC software package.
 
 
 ## 4. Plans through September 2016
