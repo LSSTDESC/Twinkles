@@ -1,18 +1,29 @@
 # Twinkles
+### A Tiny Simulated LSST Survey
 
 10 years. 6 filters. 1 tiny patch of sky. Thousands of time-variable cosmological distance probes.
 
 ![Co-add image from a few hundred *gri* images of the Twinkles 1 field, from Run 1.1 ](https://cloud.githubusercontent.com/assets/945715/14874645/529e031a-0cb7-11e6-92a7-a000c8514d11.png)
 
-### A Tiny Simulated LSST Survey
-
-We are interested in making high accuracy cosmological measurements of type IA supernovae and strong gravitational lens time delays with the Large Synoptic Survey Telescope data. To do this, we need to build a number of software instruments, and these must be tested and validated against realistic simulated data. We are using the LSST photon simulator `PhoSim` to generate a ten year, 6-filter set of mock images of a small patch of moderate Galactic latitude sky, containing an unrealistic overdensity of supernovae and lensed quasars but with realistic observing conditions and cadence. See the documents below for more details of our evolving plans and progress to date.
+In the LSST Dark Energy Science Collaboration we are interested in
+making high accuracy cosmological measurements of type IA supernovae and
+strong gravitational lens time delays with the Large Synoptic Survey
+Telescope data. To do this, we need to build a number of software
+instruments, and these must be tested and validated against realistic
+simulated data. We are using the LSST photon simulator `PhoSim` to
+generate a ten year, 6-filter set of mock images of a small patch of
+moderate Galactic latitude sky, containing an unrealistic overdensity of
+supernovae and lensed quasars but with realistic observing conditions
+and cadence. See the documents below for more details of our evolving
+plans and progress to date.
 
 ### Latest News
 
 [![Build Status](https://travis-ci.org/DarkEnergyScienceCollaboration/Twinkles.svg?branch=master)](https://travis-ci.org/DarkEnergyScienceCollaboration/Twinkles) [![Coverage Status](https://coveralls.io/repos/github/DarkEnergyScienceCollaboration/Twinkles/badge.svg?branch=master)](https://coveralls.io/github/DarkEnergyScienceCollaboration/Twinkles?branch=master)
 
-* Check out **[our most recently updated GitHub issues](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)** to see what we're working on at the moment. You can filter our [issue list](https://github.com/DarkEnergyScienceCollaboration/Twinkles) in various ways to see what we're up tomore generally.
+* We have a [public website](https://darkenergysciencecollaboration.github.io/Twinkles/), whose main function is to host the **["Twinkles Weeklies"](https://darkenergysciencecollaboration.github.io/Twinkles/weekly/index.html)**. These are brief summaries from our weekly meetings, with links to the progress that is reported there.
+
+* Check out **[our most recently updated GitHub issues](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)** to see what we're working on at the moment. You can filter our [issue list](https://github.com/DarkEnergyScienceCollaboration/Twinkles) in various ways to see what we're up to more generally.
 
 * For a quick overview of how far we've got so far, you can peruse our **[Summer 2016 Twinkles 1 Progress Report](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Summary_2016Q2.md)**
 
