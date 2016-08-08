@@ -29,8 +29,7 @@ your default version of python.
 
 Install the LSST DM Stack and LSST Sims Tools
 ---------------------------------------------
-These instructions come from the `LSST Simulation Framework
- <https://confluence.lsstcorp.org/display/SIM/Catalogs+and+MAF>`_. The first thing that they recommend is to make sure `conda` is up to date:
+These instructions come from the `LSST Simulation Framework <https://confluence.lsstcorp.org/display/SIM/Catalogs+and+MAF>`_. The first thing that they recommend is to make sure `conda` is up to date:
 
 .. code-block:: bash
 
@@ -123,7 +122,7 @@ Test `PhoSim`
 ---------------
 For Twinkles, we need to be able to query the `CatSim` database to make the "instance catalogs" that `PhoSim` needs - so our test 
 exercises this. The code below will only work if you have authorized access to the `CatSim` database at the University of 
-Washington - see the [instructions here](https://confluence.lsstcorp.org/display/SIM/Accessing+the+UW+CATSIM+Database) for how to 
+Washington - see the `instructions here <https://confluence.lsstcorp.org/display/SIM/Accessing+the+UW+CATSIM+Database>`_ for how to 
 get that access.
 
 .. code-block:: bash
