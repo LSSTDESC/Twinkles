@@ -15,6 +15,7 @@ install:
   - setup twinkles
 
 cache:
+  pip: false
   directories:
   - $HOME/miniconda.tarball
   timeout: 360
