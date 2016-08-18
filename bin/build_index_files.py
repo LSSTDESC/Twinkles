@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Script to generate a set of astrometry.net index files from a phosim
 instance catalog.
