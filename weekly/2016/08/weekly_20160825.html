@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: August 25, 2016</h1>
+<p>The CI group members of Twinkles are now turning their attention to our sister project, DC1 PhoSim Deep, but they are continuing to learn about running the LSST sims and DM stack at scale: both checkpointing and multithreading in PhoSim are close to being realized, and the Twinkles DM Level 2 pipeline seems to be holding up on the larger sky areas involved. While the CI group figure out when the Twinkles 1 main data generation run (“Run 3”) could be executed, the SN and SL science teams will be thinking about the inputs to this final simulation, and the light curve tests they want to do with the outputs. A lot of progress on this analysis is planned for the CMU Hack Week in November, so we have work to do to get data before then!</p>
+<h2 id="dc1-phosim-deep"><strong>DC1 PhoSim Deep</strong></h2>
+<p>How does our sister DC1 project relate to Twinkles 1, and what are its implications so far?</p>
+<p>DM L2: Jim is working towards running the Twinkles DM Level 2 pipeline on a full focal plane. So far he has 5 visits for just a single raft, but since the pipeline works on sky “patches” this should be sufficient for testing the image combination. (A patch is somewhat larger than a sensor.) When one runs makeDiscreteSkyMap.py to determine the astrometric system for the coadds, that code makes ‘patches’ for actually doing the work. After generalizing the Twinkles version of the Level 2 analysis to iterate over patches and sensors (Twinkles only has one of each), the revised pipeline seems to work fine.</p>
+<p>Tom is generating full focal plane visit image sets with PhoSim. He has set up a couple of new workflows to handle this task:</p>
+<ul>
+<li><blockquote>
+<p>The first one simulates a single raft, and has successfully run for 5 instances that Jim provided.</p>
+</blockquote></li>
+<li><blockquote>
+<p>The second workflow does a full focal plane. This has uncovered two issues:</p>
+</blockquote>
+<ol style="list-style-type: lower-alpha">
+<li><blockquote>
+<p>Execution time - in Twinkles 1 Run 1 we found that 10% of the visits or so would not fully run within the constraints of the batch queues at SLAC and certainly not at the shorter batch queues at NERSC, so we started a two-pronged approach: check-pointing, and multi-threading. John Peterson is working on the latter at NERSC, and it looks promising! Tom has asked to be a beta-tester, but has received no response yet. Meanwhile there are two types of check-pointing built into PhoSim. One relies on Condor batch system, which we do not have available to us. The other other is internal, and Tom has been investigating it, revealing a problem in PhoSim that John’s team have now patched. There remains a problem with the construction of one data product which is not yet addressed: mechanically it seems to be working but not all the data products are good at this point. Tom is optimistic about getting the checkpointing to work, at least without multithreading (John thinks having both internal checkpointing and multithreading might be impossible).</p>
+</blockquote></li>
+<li><blockquote>
+<p>The other issue with running the focal plane is that the workflow system relies heavily on e-mail messages as its internal (usually very reliable) communication mechanism. The existing implementation turns out not scale well to 189 sensors, as some of the bookkeeping data got larger and an e-mail limitation threshold was exceeded (lines cannot be longer than 991 characters in some batch hosts’ e-mail systems). Tony and Brian are thinking about solution and Tom is working on a workaround.</p>
+</blockquote></li>
+</ol></li>
+</ul>
+<p>Despite these problems Tom has managed to run PhoSim on the full focal plane: 42 out of 189 single sensor jobs timed out (reinforcing the need for checkpointing or multi-threading).</p>
+<p>Seth thinks the distribution of bright stars across the FP could be the cause of the range of CPU times (the sky brightness should not vary too much across the field). We are not yet sure what ‘bright’ means in terms of influencing CPU time, but Tom will look into it.</p>
+<p>Phil pointed out that the magnitude of the brightest star in the image, and perhaps the number of stars brighter than some threshold might be good CPU time estimators (or features for the machine learning predictor).</p>
+<p>This progress is relevant to our own large-scale Twinkles runs: we have done Run 1, 1.1, and 2, and now need to get ready for Run 3, simulating all 12k Deep Drilling Field visits. This will stress the simulation and image processing system in another dimension, and give much better light curves, particularly for the faint SNe that Rahul and others care about. The DDF cadence at the moment is not optimal, but should at least enable faint SNe to be studied through the combination of the fluxes in the many visits in a given night. (The Monitor needs to be able to do this combination - now issued <a href="https://github.com/DarkEnergyScienceCollaboration/Monitor/issues/51"><em>here</em></a>). So, while the night-to-night cadence may not be good, the final sensitivity should be.</p>
+<h2 id="scheduling"><strong>Scheduling</strong></h2>
+<p>The following activities need putting on our calendars:</p>
+<ul>
+<li><blockquote>
+<p>Twinkles 1 Data Generation: Run 3</p>
+</blockquote></li>
+<li><blockquote>
+<p>DESC Hack Week Twinkles sprints</p>
+</blockquote></li>
+</ul>
+<p>We discussed the work needing to be done before the Run 3 a) PhoSim run and b) the DM Level 2 processing run (which might depend on our difference imaging capability).</p>
+<h3 id="science-considerations"><strong>Science Considerations:</strong></h3>
+<p>Do we need image differencing? We discussed the light curves that would be needed: Rahul pointed out that the Forced Photometry on CoaddSources is close to what people already do, and so leaving difference imaging to the Hack Week itself might be OK. In the meantime, what we need is Monitor capability to subtract off a static component (due to the galaxy, for example). We issued this <a href="https://github.com/DarkEnergyScienceCollaboration/Monitor/issues/50"><em>here</em></a>.</p>
+<p>We would also (potentially) like the ability to do Forced Photometry at the *true* positions. This latter option would be emulating the performance of a perfect deblender, and so could be an interesting yardstick. Michael has asked DM about this on community.lsst.org, and we will follow the discussion, by <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/298"><em>issuing Michael with reporting to us</em></a>. For now, see <a href="https://community.lsst.org/t/how-do-i-do-forced-photometry-on-a-set-of-ra-dec/1074/4"><em>Michael’s inquiry at CLO</em></a>.</p>
+<p>For the Phosim Run 3, we need to make it work on all visits rather than the 1k we selected (so need more instance catalogs) and we need to do some work to finish the catalog inputs - including dialing down the SNe abundance, to maybe 1 SNe per host per season. We need to get as many cosmological targets as we can for the light curve analysis (to get good statistics), maybe using all of the galaxies that are there… Discussion will continue during the writing of the <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/299"><em>Twinkles design Note</em></a>.</p>
+<p>Rahul’s basic goal for Twinkles 1 is to be able to say whether we can match catalog production estimates, since Twinkles is a real image analysis - then he can confidently work at the catalog level at larger scale. The SL goal is somewhat similar, although the blending problem is more severe for us, so its interesting to see how the difference imaging helps with this.</p>
+<h3 id="ci-group-considerations"><strong>CI Group Considerations:</strong></h3>
+<p>In terms of the CI group’s wider program, their ability to support Twinkles is winding down and so on the science side we have to be sensitive to that. We need to think about the support needed, and when, for the big runs. Has this been discussed offline?</p>
+<p>Jim says that the CI group has thought about it, but we need Tony in on an informed discussion. The NERSC Cori upgrade is also happening in September, so we will need to dovetail with that as well as the DC1 Phosim Deep effort that Chris Walter has a schedule for. There is probably a window to do the Twinkles Run 3 stuff before we get deep into PhoSim Deep production (assuming we have the instance catalogs in hand for the ~12k visits).</p>
+<p>We decided to <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/301"><em>ask the CI group in an issue</em></a> when their availability would be, so that the science team can prepare its inputs before then. The idea would be for the CI group will give a deadline to Twinkles science team to have instance catalogs ready, and advise on the schedule for the Run 3 PhoSim and DM runs.</p>
+<h3 id="hack-week-timetable"><strong>Hack Week Timetable</strong></h3>
+<p>We seem to have converged on a plan for hack week, with the infrastructure team attending the hack week all week, but the science team focusing on last two-three days and then staying on at Michael’s invitation for Monday and Tuesday. Phil will work with the group to figure out the Task Force travel funding, and we left it up to individuals when they would attend. Hooray Pittsburgh! :-)</p>
+<h2 id="reports-from-the-tucson-project-and-community-meeting"><strong>Reports from the Tucson Project and Community Meeting</strong></h2>
+<ul>
+<li><blockquote>
+<p>The ANTARES (NOAO) Event Broker team are interested in using Twinkles 2 as an Alert generator - especially if we add in some non-SNIa transients (which we’d want to do anyway to test our classification pipeline). Darko Jevremovic (Belgrade, <a href="https://www.lsst.org/scientists/simulations/alertsim"><em>SERVO</em></a>) is keen to help turn our DIASources (once they are made!) into Alerts using <a href="https://www.lsst.org/scientists/simulations/alertsim"><em>AlertSim</em></a>, even starting from Twinkles 1 (DIASources are hot property, apparently).</p>
+</blockquote></li>
+<li><blockquote>
+<p>Simon, Michael and Phil sat down to discuss the technical issues facing the DM processing pipeline: image differencing and object aggregation. Either could be solved by anyone looking to become a DM stack astronomy superuser, in Simon’s opinion. What we need to is figure out which of us would like to get into the DM stack to this depth: they are projects that would lead to the worker becoming an expert LSST DM stack astronomer.</p>
+</blockquote></li>
+</ul>
+<h2 id="lsst-desc-notes-on-run-1-2-rd-work"><strong>LSST DESC Notes on Run 1-2 R&amp;D Work</strong></h2>
+<p>In <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/284"><em>#284</em></a> Phil suggested we write 11(!) “LSST DESC Notes” on our Twinkles work so far. (The proposed Publication Policy refers to “research notes”, and Chris Walter needs something to cite in his DC1 PhoSim Deep requirements document.) We revisited this bold plan. <a href="https://github.com/drphilmarshall/Twinkles/tree/master/doc/LSST_DESC_Notes"><em>Here’s the folder of planned notes</em></a>: we decided that Jim and Bryce would indeed move their note subfolders to the Pserv and Monitor repos respectively. Bryce and Scott plan to write jupyter notebooks, while Phil is thinking about latex for the Design Note - partly because it will include citations to papers, but also because the Notes system ought to support latex. Rahul requested that we use that design Note to plan the science analysis, including defining the questions we want to answer using the Twinkles 1 data. Follow the discussion via <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/299"><em>the epic issue here</em></a>.</p>
+<h2 id="proposed-change-to-level-2-db-tables"><strong>Proposed change to Level 2 db tables</strong></h2>
+<p>In order to use the same pserv database instance for different projects (e.g., Twinkles Run1.1, Twinkles Run2, PhoSim Deep), Jim is proposing to add a “project” column to all of the Level 2 tables. Here is the <a href="https://github.com/DarkEnergyScienceCollaboration/pserv/pull/7"><em>pserv pull-request</em></a>. Once we have more than one project in the tables, this will require some changes to the Monitor code. No-one raised any objections, and the SNMonitor developers are ready to cope with the change (although the coping work needs to be issued).</p>
+<h2 id="understanding-the-flux-dropouts-in-the-run1.1-light-curves"><strong>Understanding the flux dropouts in the Run1.1 light curves</strong></h2>
+<p>We have a number of objects that have light curves that look like this:</p>
+<p><img src="images/media/image01.png" width="624" height="472" /></p>
+<p>The PhoSim centroid files don’t show any variability like this on the input side for these objects, so I dove into the forced source catalogs for the visit indicated by the red dot and for the visit just preceding it. Here is what I found:</p>
+<p>visit &nbsp &nbsp &nbsp &nbsp &nbsp PsfFlux (dn, calib) &nbsp &nbsp &nbsp &nbsp &nbsp Ap_3_0 (dn, calib) &nbsp &nbsp &nbsp &nbsp &nbsp Ap_4_5 (dn, calib)</p>
+<p>703312 &nbsp &nbsp 3651.2683 &nbsp 1.30e-05 &nbsp &nbsp 3048.4722 &nbsp 1.09e-05 &nbsp &nbsp 3392.5642 &nbsp 1.21e-05</p>
+<p>704236 &nbsp &nbsp 227.4048 &nbsp 7.63e-07 &nbsp &nbsp 2629.8508 &nbsp 8.83e-06 &nbsp &nbsp 3296.7612 &nbsp 1.11e-05</p>
+<p>These are the “base_PsfFlux_flux” (which we are using in the Level 2 tables), and the aperture fluxes for 3 and 4.5 pixels (“base_CircularAperture_n_m_flux” in the forced_src schema) in units of DN and calibrated fluxes. Should we be using a different flux in the Level 2 tables? Are these dropouts a problem that DM needs to address?</p>
+<p>Phil and Rahul suggested looking at the model PSF size, shape and centroid position (if that is available) as well as the filter and airmass, suspecting that this could be differential chromatic refraction (DCR) at play - the dropouts are mainly seen in the u-band, you see. Jim started an issue on this, you can follow it <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/297"><em>here</em></a>.</p>
+</div>
+</div>
+</body>
+</html>
