@@ -16,31 +16,61 @@ from __future__ import with_statement, absolute_import, division, print_function
 import sys
 import os
 import time
-import numpy
-from lsst.sims.catalogs.definitions import InstanceCatalog, CompoundInstanceCatalog
-from lsst.sims.utils import ObservationMetaData
+import numpy as np
+from lsst.sims.catalogs.definitions import CompoundInstanceCatalog
 from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
-# from lsst.sims.catalogs.generation.db import CatalogDBObject
-# from lsst.sims.catalogs.generation.db.dbConnection import DBConnection
-from lsst.sims.catUtils.baseCatalogModels import StarObj, MsStarObj, \
-        BhbStarObj, WdStarObj, RRLyStarObj, CepheidStarObj, GalaxyBulgeObj, GalaxyDiskObj, \
-        GalaxyAgnObj, SNDBObj
+from lsst.sims.catUtils.baseCatalogModels import (StarObj, CepheidStarObj,
+                                                  GalaxyBulgeObj, GalaxyDiskObj,
+                                                  GalaxyAgnObj, SNDBObj)
 # from lsst.sims.catUtils.mixins import FrozenSNCat
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
         PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogSN
 from sprinkler import sprinklerCompound
 from twinklesCatalogDefs import TwinklesCatalogZPoint
 
+PhoSimHeaderMap = {'rottelpos': ('rotTelPos', np.degrees),
+                   'obshistid': ('obsHistID', None),
+                   'moonra': ('moonRA', np.degrees),
+                   'moondec': ('moonDec', np.degrees),
+                   'moonphase': ('moonPhase', None),
+                   'moonalt': ('moonAlt', np.degrees),
+                   'dist2moon': ('dist2Moon', np.degrees),
+                   'sunalt': ('sunAlt', np.degrees),
+                   'seeing': ('rawSeeing', None),
+                   'vistime': 30.0,
+                   'nsnap': 1,
+                   'seed': ('obsHistID', None)}
 
-def generatePhosimInput(mode='a', runobsHistID=None):
+def generatePhosimInput(mode='a', obsHistIdList=None, opsimDB='kraken_1042_sqlite.db'):
+    """
+    Create PhoSim InstanceCatalogs of galaxies, stars, supernovae, and lensed
+    quasars.  These catalogs are based on OpSim pointings of a specified
+    ObsHistID.
+
+    Parameters
+    ----------
+    mode is a string indicating the mode in which to write the log information
+    about this catalog-generation run.  'a' means 'append'; 'c' means 'clobber'.
+
+    obsHistIdList is a list of obshistids for which to generate catalogs
+
+    opsimDB is the path to the OpSim database from which pointings will be
+    drawn.
+    """
+
+    if opsimDB is None:
+        raise RuntimeError("Must specify an opsimDB")
+
+    if not os.path.exists(opsimDB):
+        raise RuntimeError("The opsimDB you specified does not exist")
+
+    if obsHistIdList is None:
+        raise RuntimeError("Must specify and obsHistIdList")
 
     if mode == 'a':
         filewrite = 'append'
     elif mode == 'c':
         filewrite = 'clobber'
-
-    opsimDB = os.path.join('.','kraken_1042_sqlite.db')
-
 
     logfilename = 'run.log'
     if os.path.isfile(logfilename):
@@ -56,44 +86,37 @@ def generatePhosimInput(mode='a', runobsHistID=None):
         with open('run.log', 'w') as f:
             f.write('obsHistID, status, time\n')
 
-
     #you need to provide ObservationMetaDataGenerator with the connection
     #string to an OpSim output database.  This is the connection string
     #to a test database that comes when you install CatSim.
+    print('connecting to ',opsimDB)
     generator = ObservationMetaDataGenerator(database=opsimDB, driver='sqlite')
-    obsHistIDList = numpy.genfromtxt('FirstSet_obsHistIDs.csv', delimiter=',', usecols=0)
+
     obsMetaDataResults = []
-    # Change the slicing in this line for the range of visits
-    for obsHistID in obsHistIDList[0:5]:
-        if runobsHistID is not None:
-            obsHistID = runobsHistID
+
+    for obsHistID in obsHistIdList:
         obsMetaDataResults.append(generator.getObservationMetaData(obsHistID=obsHistID,
                                   fieldRA=(53, 54), fieldDec=(-29, -27),
                                   boundLength=0.3)[0])
 
-    starObjNames = ['msstars', 'bhbstars', 'wdstars', 'rrlystars', 'cepheidstars']
-
     snmodel = SNDBObj(table='twinkSN')
-    for obs_metadata in obsMetaDataResults:
-        filename = "InstanceCatalogs / phosim_input_%s.txt" \
-                   %(obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
-        obs_metadata.phoSimMetaData['SIM_NSNAP'] = (1, numpy.dtype(int))
-        obs_metadata.phoSimMetaData['SIM_VISTIME'] = (30, numpy.dtype(float))
-        print('Starting Visit: ',
-              obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
+    available_connections = [snmodel.connection] # store a list of open connections to fatboy
 
-        compoundStarDBList = [MsStarObj, BhbStarObj, WdStarObj, RRLyStarObj,
-                              CepheidStarObj]
+    for obs_metadata in obsMetaDataResults:
+        filename = os.path.join("InstanceCatalogs",
+                                "phosim_input_%s.txt" % (obs_metadata.OpsimMetaData['obsHistID']))
+        print('Starting Visit: ',
+              obs_metadata.OpsimMetaData['obsHistID'])
+
+        compoundStarDBList = [StarObj, CepheidStarObj]
         compoundGalDBList = [GalaxyBulgeObj, GalaxyDiskObj, GalaxyAgnObj]
-        compoundStarICList = [PhoSimCatalogPoint, PhoSimCatalogPoint,
-                              PhoSimCatalogPoint, PhoSimCatalogPoint,
-                              PhoSimCatalogPoint]
+
+        compoundStarICList = [PhoSimCatalogPoint, PhoSimCatalogPoint]
         compoundGalICList = [PhoSimCatalogSersic2D, PhoSimCatalogSersic2D,
                              TwinklesCatalogZPoint]
 
         snphosim = PhoSimCatalogSN(db_obj=snmodel,
-                                   obs_metadata=obs_metadata,
-                                   column_outputs=['EBV'])
+                                   obs_metadata=obs_metadata)
         snphosim.writeSedFile = True
         snphosim.suppressDimSN = True
         snphosim.prefix = 'spectra_files/'
@@ -104,28 +127,38 @@ def generatePhosimInput(mode='a', runobsHistID=None):
                                                   obs_metadata=obs_metadata,
                                                   constraint='gmag > 11.',
                                                   compoundDBclass=sprinklerCompound)
+
+                starCat._active_connections += available_connections # append already open fatboy connections
+
+                starCat.phoSimHeaderMap = PhoSimHeaderMap
+
+                print("writing starCat ")
                 starCat.write_catalog(filename, chunk_size=10000)
                 galCat = CompoundInstanceCatalog(compoundGalICList,
                                                  compoundGalDBList,
                                                  obs_metadata=obs_metadata,
                                                  # constraint='g_ab > 11.',
                                                  compoundDBclass=sprinklerCompound)
+
+                galCat._active_connections = starCat._active_connections # pass along already open fatboy connections
+
+                print("writing galCat")
                 galCat.write_catalog(filename, write_mode='a',
                                      write_header=False, chunk_size=10000)
 
+                print("writing sne")
                 snphosim.write_catalog(filename, write_header=False,
                                        write_mode='a', chunk_size=10000)
 
-                if runobsHistID is not None:
-                    print('Done doing requested obsHistID')
-                    sys.exit()
+                available_connections = galCat._active_connections # store the list of open fatboy connections
+
                 with open(logfilename, 'a') as f:
-                    f.write('{0:d},DONE,{1:3.6f}\n'.format(obs_metadata.phoSimMetaData['Opsim_obshistid'][0], time.time()))
+                    f.write('{0:d},DONE,{1:3.6f}\n'.format(obs_metadata.OpsimMetaData['obsHistID'], time.time()))
                 break
             except RuntimeError:
                 continue
 
-        print("Finished Writing Visit: ", obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
+        print("Finished Writing Visit: ", obs_metadata.OpsimMetaData['obsHistID'])
 
 if __name__ == "__main__":
     import sys
@@ -134,4 +167,10 @@ if __name__ == "__main__":
         mode = str(sys.argv[1])
     else:
         mode = 'a'
-    generatePhosimInput(mode, runobsHistID=220)
+
+    opsimdb = os.path.join('/Users', 'danielsf', 'physics')
+    opsimdb = os.path.join(opsimdb, 'lsst_150412', 'Development')
+    opsimdb = os.path.join(opsimdb, 'garage', 'OpSimData')
+    opsimdb = os.path.join(opsimdb, 'kraken_1042_sqlite.db')
+
+    generatePhosimInput(mode, obsHistIdList=[220], opsimDB=opsimdb)
