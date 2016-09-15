@@ -22,7 +22,7 @@ from lsst.sims.utils import ObservationMetaData
 from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
 # from lsst.sims.catalogs.generation.db import CatalogDBObject
 # from lsst.sims.catalogs.generation.db.dbConnection import DBConnection
-from lsst.sims.catUtils.baseCatalogModels import OpSim3_61DBObject, StarObj, MsStarObj, \
+from lsst.sims.catUtils.baseCatalogModels import StarObj, MsStarObj, \
         BhbStarObj, WdStarObj, RRLyStarObj, CepheidStarObj, GalaxyBulgeObj, GalaxyDiskObj, \
         GalaxyAgnObj, SNDBObj
 # from lsst.sims.catUtils.mixins import FrozenSNCat
