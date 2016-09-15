@@ -17,7 +17,7 @@ import sys
 import os
 import time
 import numpy
-from lsst.sims.catalogs.measures.instance import InstanceCatalog, CompoundInstanceCatalog
+from lsst.sims.catalogs.definition.instance import InstanceCatalog, CompoundInstanceCatalog
 from lsst.sims.utils import ObservationMetaData
 from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
 # from lsst.sims.catalogs.generation.db import CatalogDBObject
