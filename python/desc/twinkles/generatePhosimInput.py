@@ -73,7 +73,7 @@ def generatePhosimInput(mode='a', runobsHistID=None):
 
     starObjNames = ['msstars', 'bhbstars', 'wdstars', 'rrlystars', 'cepheidstars']
 
-    snmodel = SNDBObj()
+    snmodel = SNDBObj(table='twinkSN')
     for obs_metadata in obsMetaDataResults:
         filename = "InstanceCatalogs / phosim_input_%s.txt" \
                    %(obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
