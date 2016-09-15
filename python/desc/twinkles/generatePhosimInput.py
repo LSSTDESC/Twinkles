@@ -20,12 +20,12 @@ import numpy
 from lsst.sims.catalogs.measures.instance import InstanceCatalog, CompoundInstanceCatalog
 from lsst.sims.utils import ObservationMetaData
 from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
-from lsst.sims.catalogs.generation.db import CatalogDBObject
-from lsst.sims.catalogs.generation.db.dbConnection import DBConnection
+# from lsst.sims.catalogs.generation.db import CatalogDBObject
+# from lsst.sims.catalogs.generation.db.dbConnection import DBConnection
 from lsst.sims.catUtils.baseCatalogModels import OpSim3_61DBObject, StarObj, MsStarObj, \
         BhbStarObj, WdStarObj, RRLyStarObj, CepheidStarObj, GalaxyBulgeObj, GalaxyDiskObj, \
-        GalaxyAgnObj, SNObj
-from lsst.sims.catUtils.mixins import FrozenSNCat
+        GalaxyAgnObj, SNDBObj
+# from lsst.sims.catUtils.mixins import FrozenSNCat
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
         PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogSN
 from sprinkler import sprinklerCompound
@@ -48,13 +48,13 @@ def generatePhosimInput(mode='a', runobsHistID=None):
             pass
         elif filewrite == 'clobber':
             with open('run.log', 'w') as f:
-                f.write('obsHistID,status,timestamp\n')
+                f.write('obsHistID, status, timestamp\n')
         else:
             print('file exists and mode uncertain')
             exit()
     else:
         with open('run.log', 'w') as f:
-            f.write('obsHistID,status,time\n')
+            f.write('obsHistID, status, time\n')
 
 
     #you need to provide ObservationMetaDataGenerator with the connection
@@ -64,7 +64,7 @@ def generatePhosimInput(mode='a', runobsHistID=None):
     obsHistIDList = numpy.genfromtxt('FirstSet_obsHistIDs.csv', delimiter=',', usecols=0)
     obsMetaDataResults = []
     # Change the slicing in this line for the range of visits
-    for obsHistID in obsHistIDList[600:700]:
+    for obsHistID in obsHistIDList[0:5]:
         if runobsHistID is not None:
             obsHistID = runobsHistID
         obsMetaDataResults.append(generator.getObservationMetaData(obsHistID=obsHistID,
@@ -73,7 +73,7 @@ def generatePhosimInput(mode='a', runobsHistID=None):
 
     starObjNames = ['msstars', 'bhbstars', 'wdstars', 'rrlystars', 'cepheidstars']
 
-    snmodel = SNObj()
+    snmodel = SNDBObj()
     for obs_metadata in obsMetaDataResults:
         filename = "InstanceCatalogs / phosim_input_%s.txt" \
                    %(obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
