@@ -24,7 +24,8 @@ from lsst.sims.catUtils.baseCatalogModels import (StarObj, CepheidStarObj,
                                                   GalaxyAgnObj, SNDBObj)
 # from lsst.sims.catUtils.mixins import FrozenSNCat
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
-        PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogSN
+        PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogSN, \
+        DefaultPhoSimHeaderMap
 from sprinkler import sprinklerCompound
 from twinklesCatalogDefs import TwinklesCatalogZPoint
 
@@ -95,9 +96,11 @@ def generatePhosimInput(mode='a', obsHistIdList=None, opsimDB='kraken_1042_sqlit
     obsMetaDataResults = []
 
     for obsHistID in obsHistIdList:
+
         obsMetaDataResults.append(generator.getObservationMetaData(obsHistID=obsHistID,
                                   fieldRA=(53, 54), fieldDec=(-29, -27),
-                                  boundLength=0.3)[0])
+                                  boundLength=0.03)[0])
+        use_obsHistID_list.append(obsHistID)
 
     snmodel = SNDBObj(table='twinkSN')
     available_connections = [snmodel.connection] # store a list of open connections to fatboy
@@ -134,6 +137,7 @@ def generatePhosimInput(mode='a', obsHistIdList=None, opsimDB='kraken_1042_sqlit
 
                 print("writing starCat ")
                 starCat.write_catalog(filename, chunk_size=10000)
+
                 galCat = CompoundInstanceCatalog(compoundGalICList,
                                                  compoundGalDBList,
                                                  obs_metadata=obs_metadata,
@@ -143,6 +147,7 @@ def generatePhosimInput(mode='a', obsHistIdList=None, opsimDB='kraken_1042_sqlit
                 galCat._active_connections = starCat._active_connections # pass along already open fatboy connections
 
                 print("writing galCat")
+
                 galCat.write_catalog(filename, write_mode='a',
                                      write_header=False, chunk_size=10000)
 
