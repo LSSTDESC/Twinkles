@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function
 import numpy
 import math
 from scipy.interpolate import interp1d
-from lsst.sims.catalogs.measures.instance import register_class, register_method, compound
+from lsst.sims.catalogs.decorators import register_class, register_method, compound
 from lsst.sims.catUtils.mixins import Variability
 
 @register_class

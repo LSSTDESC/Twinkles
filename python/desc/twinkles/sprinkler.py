@@ -29,13 +29,14 @@ class sprinklerCompound(GalaxyTileCompoundObj):
                 results[name] = np.radians(results[name])
 
         #Use Sprinkler now
-        sp = sprinkler(results, density_param = 0.2)
+        sp = sprinkler(results, density_param = 0.5)
         results = sp.sprinkle()
 
         return results
 
 class sprinkler():
-    def __init__(self, catsim_cat, om10_cat='twinkles_tdc_rung4.fits', density_param = 1.):
+    def __init__(self, catsim_cat, om10_cat='../../../data/twinkles_tdc_rung4.fits',
+                 density_param = 1.):
         """
         Input:
         catsim_cat:
@@ -67,6 +68,14 @@ class sprinkler():
         self.LRG.readSED_flambda(str(galDir + self.LRG_name))
         #return
 
+        #Calculate imsimband magnitudes of source galaxies for matching
+        agn_sed = Sed()
+        agn_fname = str(getPackageDir('sims_sed_library') + '/agnSED/agn.spec.gz')
+        agn_sed.readSED_flambda(agn_fname)
+        src_iband = self.lenscat['ABMAG_I']
+        src_imsim_mags = matchBase().calcMagNorm(src_iband, agn_sed,
+                                                 self.bandpassDict)
+
     def sprinkle(self):
         # Define a list that we can write out to a text file
         lenslines = []
@@ -77,7 +86,8 @@ class sprinkler():
             if rowNum == 100 or rowNum % 100000==0:
                 print("Gone through ", rowNum, " lines of catalog.")
             if not np.isnan(row['galaxyAgn_magNorm']):
-                candidates = self.find_lens_candidates(row['galaxyAgn_redshift'])
+                candidates = self.find_lens_candidates(row['galaxyAgn_redshift'],
+                                                       row['galaxyAgn_magNorm'])
                 varString = json.loads(row['galaxyAgn_varParamStr'])
                 varString['pars']['t0_mjd'] = 59300.0
                 row['galaxyAgn_varParamStr'] = json.dumps(varString)
@@ -156,9 +166,10 @@ class sprinkler():
 
         return updated_catalog
 
-    def find_lens_candidates(self, galz):
+    def find_lens_candidates(self, galz, gal_mag):
         # search the OM10 catalog for all sources +- 0.05 in redshift from the catsim source
-        w = np.where(np.abs(self.lenscat['ZSRC'] - galz) <= 0.05)[0]
+        w = np.where((np.abs(self.lenscat['ZSRC'] - galz) <= 0.05) &
+                     (np.abs(self.lenscat['ABMAG_I'] - gal_mag) <= 0.25))[0]
         lens_candidates = self.lenscat[w]
 
         return lens_candidates

@@ -17,17 +17,18 @@ import sys
 import os
 import time
 import numpy
-from lsst.sims.catalogs.measures.instance import InstanceCatalog, CompoundInstanceCatalog
+from lsst.sims.catalogs.definitions import InstanceCatalog, CompoundInstanceCatalog
 from lsst.sims.utils import ObservationMetaData
 from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
-from lsst.sims.catalogs.generation.db import CatalogDBObject
-from lsst.sims.catalogs.generation.db.dbConnection import DBConnection
+from lsst.sims.catalogs.db import CatalogDBObject
+from lsst.sims.catalogs.db.dbConnection import DBConnection
 from lsst.sims.catUtils.baseCatalogModels import OpSim3_61DBObject, StarObj, MsStarObj, \
         BhbStarObj, WdStarObj, RRLyStarObj, CepheidStarObj, GalaxyBulgeObj, GalaxyDiskObj, \
-        GalaxyAgnObj, SNObj
+        GalaxyAgnObj, SNDBObj
 from lsst.sims.catUtils.mixins import FrozenSNCat
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
-        PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogSN
+        PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogSN, \
+        DefaultPhoSimHeaderMap
 from sprinkler import sprinklerCompound
 from twinklesCatalogDefs import TwinklesCatalogZPoint
 
@@ -61,26 +62,32 @@ def generatePhosimInput(mode='a', runobsHistID=None):
     #string to an OpSim output database.  This is the connection string
     #to a test database that comes when you install CatSim.
     generator = ObservationMetaDataGenerator(database=opsimDB, driver='sqlite')
-    obsHistIDList = numpy.genfromtxt('FirstSet_obsHistIDs.csv', delimiter=',', usecols=0)
+    obsHistIDList = numpy.genfromtxt('../../../data/SelectedKrakenVisits.csv', delimiter=',', usecols=0)
     obsMetaDataResults = []
     # Change the slicing in this line for the range of visits
-    for obsHistID in obsHistIDList[600:700]:
+    use_obsHistID_list = []
+    for obsHistID in obsHistIDList[600:602]:
         if runobsHistID is not None:
             obsHistID = runobsHistID
         obsMetaDataResults.append(generator.getObservationMetaData(obsHistID=obsHistID,
                                   fieldRA=(53, 54), fieldDec=(-29, -27),
-                                  boundLength=0.3)[0])
+                                  boundLength=0.03)[0])
+        use_obsHistID_list.append(obsHistID)
 
     starObjNames = ['msstars', 'bhbstars', 'wdstars', 'rrlystars', 'cepheidstars']
 
-    snmodel = SNObj()
-    for obs_metadata in obsMetaDataResults:
-        filename = "InstanceCatalogs / phosim_input_%s.txt" \
-                   %(obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
-        obs_metadata.phoSimMetaData['SIM_NSNAP'] = (1, numpy.dtype(int))
-        obs_metadata.phoSimMetaData['SIM_VISTIME'] = (30, numpy.dtype(float))
-        print('Starting Visit: ',
-              obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
+    snmodel = SNDBObj(table='twinkSN')
+    for obs_metadata, obs_id in zip(obsMetaDataResults, use_obsHistID_list):
+        filename = "InstanceCatalogs/phosim_input_%s.txt" \
+                   %(obs_id)
+                   #%(obs_metadata.phoSimMetaData['Opsim_obshistid'][0])
+
+        phosim_header_map = DefaultPhoSimHeaderMap
+        phosim_header_map['nsnap'] = (1, numpy.dtype(int))
+        phosim_header_map['vistime'] = (30, numpy.dtype(int))
+        #obs_metadata.phoSimMetaData['SIM_NSNAP'] = (1, numpy.dtype(int))
+        #obs_metadata.phoSimMetaData['SIM_VISTIME'] = (30, numpy.dtype(float))
+        print('Starting Visit: ', obs_id)
 
         compoundStarDBList = [MsStarObj, BhbStarObj, WdStarObj, RRLyStarObj,
                               CepheidStarObj]
@@ -94,6 +101,7 @@ def generatePhosimInput(mode='a', runobsHistID=None):
         snphosim = PhoSimCatalogSN(db_obj=snmodel,
                                    obs_metadata=obs_metadata,
                                    column_outputs=['EBV'])
+        snphosim.phoSimHeaderMap = phosim_header_map
         snphosim.writeSedFile = True
         snphosim.suppressDimSN = True
         snphosim.prefix = 'spectra_files/'
@@ -104,12 +112,14 @@ def generatePhosimInput(mode='a', runobsHistID=None):
                                                   obs_metadata=obs_metadata,
                                                   constraint='gmag > 11.',
                                                   compoundDBclass=sprinklerCompound)
-                starCat.write_catalog(filename, chunk_size=10000)
+                starCat.phoSimHeaderMap = phosim_header_map
+                starCat.write_catalog(filename, chunk_size=100)
                 galCat = CompoundInstanceCatalog(compoundGalICList,
                                                  compoundGalDBList,
                                                  obs_metadata=obs_metadata,
                                                  # constraint='g_ab > 11.',
                                                  compoundDBclass=sprinklerCompound)
+                galCat.phoSimHeaderMap = phosim_header_map
                 galCat.write_catalog(filename, write_mode='a',
                                      write_header=False, chunk_size=10000)
 
