@@ -168,9 +168,4 @@ if __name__ == "__main__":
     else:
         mode = 'a'
 
-    opsimdb = os.path.join('/Users', 'danielsf', 'physics')
-    opsimdb = os.path.join(opsimdb, 'lsst_150412', 'Development')
-    opsimdb = os.path.join(opsimdb, 'garage', 'OpSimData')
-    opsimdb = os.path.join(opsimdb, 'kraken_1042_sqlite.db')
-
     generatePhosimInput(mode, obsHistIdList=[220], opsimDB=opsimdb)
