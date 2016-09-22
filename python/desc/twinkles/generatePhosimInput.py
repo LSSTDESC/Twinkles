@@ -99,7 +99,7 @@ def generatePhosimInput(mode='a', obsHistIdList=None, opsimDB='kraken_1042_sqlit
 
         obsMetaDataResults.append(generator.getObservationMetaData(obsHistID=obsHistID,
                                   fieldRA=(53, 54), fieldDec=(-29, -27),
-                                  boundLength=0.03)[0])
+                                  boundLength=0.3)[0])
         use_obsHistID_list.append(obsHistID)
 
     snmodel = SNDBObj(table='twinkSN')
@@ -130,6 +130,7 @@ def generatePhosimInput(mode='a', obsHistIdList=None, opsimDB='kraken_1042_sqlit
                                                   obs_metadata=obs_metadata,
                                                   constraint='gmag > 11.',
                                                   compoundDBclass=sprinklerCompound)
+<<<<<<< 1e82e8ad648188358499887ba7d56c383a4bd01e
 
                 starCat._active_connections += available_connections # append already open fatboy connections
 
@@ -138,6 +139,10 @@ def generatePhosimInput(mode='a', obsHistIdList=None, opsimDB='kraken_1042_sqlit
                 print("writing starCat ")
                 starCat.write_catalog(filename, chunk_size=10000)
 
+=======
+                starCat.phoSimHeaderMap = phosim_header_map
+                starCat.write_catalog(filename)#, chunk_size=10000)
+>>>>>>> Testing branch
                 galCat = CompoundInstanceCatalog(compoundGalICList,
                                                  compoundGalDBList,
                                                  obs_metadata=obs_metadata,
@@ -149,11 +154,11 @@ def generatePhosimInput(mode='a', obsHistIdList=None, opsimDB='kraken_1042_sqlit
                 print("writing galCat")
 
                 galCat.write_catalog(filename, write_mode='a',
-                                     write_header=False, chunk_size=10000)
+                                     write_header=False)#, chunk_size=10000)
 
                 print("writing sne")
                 snphosim.write_catalog(filename, write_header=False,
-                                       write_mode='a', chunk_size=10000)
+                                       write_mode='a')#, chunk_size=10000)
 
                 available_connections = galCat._active_connections # store the list of open fatboy connections
 
