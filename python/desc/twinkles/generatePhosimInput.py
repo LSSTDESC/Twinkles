@@ -71,7 +71,7 @@ def generatePhosimInput(mode='a', runobsHistID=None):
             obsHistID = runobsHistID
         obsMetaDataResults.append(generator.getObservationMetaData(obsHistID=obsHistID,
                                   fieldRA=(53, 54), fieldDec=(-29, -27),
-                                  boundLength=0.03)[0])
+                                  boundLength=0.3)[0])
         use_obsHistID_list.append(obsHistID)
 
     starObjNames = ['msstars', 'bhbstars', 'wdstars', 'rrlystars', 'cepheidstars']
@@ -113,7 +113,7 @@ def generatePhosimInput(mode='a', runobsHistID=None):
                                                   constraint='gmag > 11.',
                                                   compoundDBclass=sprinklerCompound)
                 starCat.phoSimHeaderMap = phosim_header_map
-                starCat.write_catalog(filename, chunk_size=100)
+                starCat.write_catalog(filename)#, chunk_size=10000)
                 galCat = CompoundInstanceCatalog(compoundGalICList,
                                                  compoundGalDBList,
                                                  obs_metadata=obs_metadata,
@@ -121,10 +121,10 @@ def generatePhosimInput(mode='a', runobsHistID=None):
                                                  compoundDBclass=sprinklerCompound)
                 galCat.phoSimHeaderMap = phosim_header_map
                 galCat.write_catalog(filename, write_mode='a',
-                                     write_header=False, chunk_size=10000)
+                                     write_header=False)#, chunk_size=10000)
 
                 snphosim.write_catalog(filename, write_header=False,
-                                       write_mode='a', chunk_size=10000)
+                                       write_mode='a')#, chunk_size=10000)
 
                 if runobsHistID is not None:
                     print('Done doing requested obsHistID')
