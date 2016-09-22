@@ -100,7 +100,6 @@ def generatePhosimInput(mode='a', obsHistIdList=None, opsimDB='kraken_1042_sqlit
         obsMetaDataResults.append(generator.getObservationMetaData(obsHistID=obsHistID,
                                   fieldRA=(53, 54), fieldDec=(-29, -27),
                                   boundLength=0.3)[0])
-        use_obsHistID_list.append(obsHistID)
 
     snmodel = SNDBObj(table='twinkSN')
     available_connections = [snmodel.connection] # store a list of open connections to fatboy
