@@ -163,7 +163,8 @@ def generatePhosimInput(mode='a', obsHistIdList=None, opsimDB='kraken_1042_sqlit
 if __name__ == "__main__":
     import sys
 
-    if len(sys.argv) > 1:
+    opsimdb = sys.argv[1]
+    if len(sys.argv) > 2:
         mode = str(sys.argv[1])
     else:
         mode = 'a'
