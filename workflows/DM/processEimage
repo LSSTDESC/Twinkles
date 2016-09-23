@@ -1,3 +1,3 @@
 mkdir -p ${OUT_DIR}
 setup -m none -r ${AND_DIR} astrometry_net_data
-processEimage.py ${IN_DIR} --id visit=${VISIT} --output ${OUT_DIR} --doraise --clobber-config --config charImage.repair.doCosmicRay=True
+processEimage.py ${IN_DIR} --id visit=${VISIT} --output ${OUT_DIR} --doraise --clobber-config --config charImage.repair.doCosmicRay=True charImage.repair.cosmicray.nCrPixelMax=100000
