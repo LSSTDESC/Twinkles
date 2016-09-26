@@ -9,6 +9,7 @@ from lsst.sims.catUtils.baseCatalogModels import (StarObj,
                                                   GalaxyDiskObj,
                                                   GalaxyAgnObj,
                                                   SNDBObj)
+
 from lsst.sims.catUtils.exampleCatalogDefinitions import\
     (PhoSimCatalogPoint,
      PhoSimCatalogSersic2D,
@@ -16,6 +17,7 @@ from lsst.sims.catUtils.exampleCatalogDefinitions import\
      DefaultPhoSimHeaderMap,
      DefaultPhoSimInstanceCatalogCols)
 
+from sprinkler import sprinklerCompound
 class TwinklesSky(object):
     """
     Class to describe the Twinkles Sky for a particular pointing through its
@@ -47,19 +49,36 @@ class TwinklesSky(object):
 
         ..notes : 
         """
+        # Observation MetaData
+        self.obs_metadata = obs_metadata
+        # Constrain on the brightest star 
+        self.brightestStar_gmag_inCat = brightestStar_gmag_inCat
+        self.brightestStarMag = 'g_ab > {}'.format(self.brightestStar_gmag_inCat)
 
         # SN catalogDBObject
         self.snObj = SNDBObj(table=sntable)
         self.available_connections = [snObj.connection] # an list of open connections to fatboy
-        compoundStarDBList = [StarObj, CepheidStarObj]
-        compoundGalDBList = [GalaxyBulgeObj, GalaxyDiskObj, GalaxyAgnObj]
+        self.compoundStarDBList = [StarObj, CepheidStarObj]
+        self.compoundGalDBList = [GalaxyBulgeObj, GalaxyDiskObj, GalaxyAgnObj]
         
         # Lists of phosim Instance Catalogs
-        compoundStarICList = [PhoSimCatalogPoint, PhoSimCatalogPoint]
-        compoundGalICList = [PhoSimCatalogSersic2D, PhoSimCatalogSersic2D,
+        self.compoundStarICList = [PhoSimCatalogPoint, PhoSimCatalogPoint]
+        self.compoundGalICList = [PhoSimCatalogSersic2D, PhoSimCatalogSersic2D,
                              TwinklesCatalogZPoint]
 
-        snphosim = PhoSimCatalogSN(db_obj=self.snObj,
+        self.snphosim = PhoSimCatalogSN(db_obj=self.snObj,
                                    obs_metadata=obs_metadata)
+        self.availableConnections = list()
 
+    def phosimStarCatalog(self):
+
+        starCat = CompoundInstanceCatalog(sellf.compoundStarICList,
+                                          self.compoundStarDBList,
+                                          obs_metadata=self.obs_metadata,
+                                          constraint=self.brightestStarMag,
+                                          compoundDBclass=sprinklerCompound)
+	starCat._active_connections = self.availableConnections
+	starCat.phoSimHeaderMap = DefaultPhoSimHeaderMap
+
+    def writePhoSimStarCatalog(fileName):
 
