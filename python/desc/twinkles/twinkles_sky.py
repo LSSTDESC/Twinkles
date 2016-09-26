@@ -42,7 +42,8 @@ class TwinklesSky(object):
 
         Attributes
         ----------
-
+        snObj : CatalogDBObj for SN
+        available_connections : available connections
 
         ..notes : 
         """
