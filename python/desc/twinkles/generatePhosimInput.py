@@ -122,7 +122,7 @@ def generatePhosimInput(mode='a', obsHistIdList=None, opsimDB='kraken_1042_sqlit
 
         snphosim.writeSedFile = True
         snphosim.suppressDimSN = True
-        snphosim.prefix = 'spectra_files/'
+        snphosim.sn_sedfile_prefix = 'spectra_files/specFile_'
         while True:
             try:
                 starCat = CompoundInstanceCatalog(compoundStarICList,

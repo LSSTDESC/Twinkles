@@ -35,7 +35,7 @@ class sprinklerCompound(GalaxyTileCompoundObj):
         return results
 
 class sprinkler():
-    def __init__(self, catsim_cat, om10_cat='../../../data/twinkles_tdc_rung4.fits',
+    def __init__(self, catsim_cat, om10_cat='../../../../data/twinkles_tdc_rung4.fits',
                  density_param = 1.):
         """
         Input:
