@@ -18,6 +18,7 @@ from lsst.sims.photUtils.BandpassDict import BandpassDict
 from lsst.sims.photUtils.Sed import Sed
 from lsst.sims.utils import radiansFromArcsec
 
+
 class sprinklerCompound(GalaxyTileCompoundObj):
     objid = 'sprinklerCompound'
     objectTypeID = 1024
@@ -35,22 +36,27 @@ class sprinklerCompound(GalaxyTileCompoundObj):
         return results
 
 class sprinkler():
-    def __init__(self, catsim_cat, om10_cat='../../../../data/twinkles_tdc_rung4.fits',
-                 density_param = 1.):
+    def __init__(self, catsim_cat, om10_cat='twinkles_tdc_rung4.fits',
+                 density_param=1.):
         """
-        Input:
-        catsim_cat:
+        Parameters
+        ----------
+        catsim_cat: catsim catalog
             The results array from an instance catalog.
-
-        density_param:
-            A float between 0. and 1.0 that determines the fraction of eligible agn objects that become lensed.
-
-        Output:
+        om10_cat: optional, defaults to 'twinkles_tdc_rung4.fits
+            fits file with OM10 catalog
+        density_param: `np.float`, optioanl, defaults to 1.0
+            the fraction of eligible agn objects that become lensed and should
+            be between 0.0 and 1.0.
+        
+        Returns
+        -------
         updated_catalog:
             A new results array with lens systems added.
         """
 
-
+        twinklesDir = getPackageDir('Twinkles')
+        om10_cat = os.path.join(twinklesDir, 'data', om10_cat)
         self.catalog = catsim_cat
         # ****** THIS ASSUMES THAT THE ENVIRONMENT VARIABLE OM10_DIR IS SET *******
         lensdb = om10.DB(catalog=om10_cat)
