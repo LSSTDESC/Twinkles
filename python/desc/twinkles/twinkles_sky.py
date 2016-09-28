@@ -44,7 +44,7 @@ class TwinklesSky(object):
                  brightestGal_gmag_inCat=11.0,
                  availableConnections=None,
                  sntable='TwinkSN',
-                 sn_sedfile_prefix='spectra_files/spec'):
+                 sn_sedfile_prefix='spectra_files/specFile_'):
         """
         Parameters
         ----------
@@ -80,9 +80,6 @@ class TwinklesSky(object):
         else:
             self.availableConnections = availableConnections
 
-        # SN catalogDBObject
-        self.snObj = SNDBObj(table=sntable)
-        
         # Lists of component phosim Instance Catalogs and CatalogDBObjects
         
         # Stars
@@ -94,46 +91,77 @@ class TwinklesSky(object):
         self.compoundGalICList = [PhoSimCatalogSersic2D, PhoSimCatalogSersic2D,
                                   TwinklesCatalogZPoint]
 
+        # SN 
+        ## SN catalogDBObject
+        self.snObj = SNDBObj(table=sntable)
+        
         self.sn_sedfile_prefix = sn_sedfile_prefix
 
     def writePhoSimCatalog(self, fileName):
-        # PhoSim Instance Catalogs
-        
-        ## SN 
-        print ('self.availableConnections', self.availableConnections)
-        # Add the connection to the list of connections
-        self.availableConnections.append(self.snObj.connection)
-        
+        starCat = CompoundInstanceCatalog(self.compoundStarICList,
+                                          self.compoundStarDBList,
+                                          obs_metadata=self.obs_metadata,
+                                          constraint=self.brightestStarMag)
+
+        starCat._active_connections += self.availableConnections # append already open fatboy connections
+        starCat.phoSimHeaderMap = TwinklesPhoSimHeader
+
+        print("writing starCat ")
+        starCat.write_catalog(fileName, chunk_size=10000)
+
+        galCat = CompoundInstanceCatalog(self.compoundGalICList,
+                                         self.compoundGalDBList,
+                                         obs_metadata=self.obs_metadata,
+                                         constraint=self.brightestGalMag,
+                                         compoundDBclass=sprinklerCompound)
+
+        # galCat._active_connections = starCat._active_connections # pass along already open fatboy connections
+        galCat._active_connections = self.availableConnections
+        print("writing galCat")
+        galCat.write_catalog(fileName, write_mode='a',
+                             write_header=False)
+
         snphosim = PhoSimCatalogSN(db_obj=self.snObj,
                                         obs_metadata=self.obs_metadata)
         ### Set properties
         snphosim.writeSedFile = True
         snphosim.suppressDimSN = True
         snphosim.sn_sedfile_prefix = self.sn_sedfile_prefix
+        print("writing sne")
+        snphosim.write_catalog(fileName, write_header=False,
+                               write_mode='a', chunk_size=10000)
+        self.availableConnections.append(self.snObj.connection)
 
-        # Stars
-        print('write Star Catalog')
-        starCat = CompoundInstanceCatalog(self.compoundStarICList,
-                                          self.compoundStarDBList,
-                                          obs_metadata=self.obs_metadata,
-                                          constraint=self.brightestStarMag,
-                                          compoundDBclass=sprinklerCompound)
-        ## Now there is already an active connection, use it
-	starCat._active_connections = self.availableConnections
-	starCat.phoSimHeaderMap = TwinklesPhoSimHeader
-        starCat.write_catalog(fileName, chunk_size=10000)
-
-        print('write Gal Catalog')
-        galCat = CompoundInstanceCatalog(self.compoundGalICList,
-                                         self.compoundGalDBList,
-                                         obs_metadata=self.obs_metadata,
-                                         compoundDBclass=sprinklerCompound)
-
-        galCat._active_connections = self.availableConnections
-        galCat.write_catalog(fileName, write_mode='a',
-                                     write_header=False)
-
-        print('write SN Catalog')
-        snphosim.write_catalog(filename, write_header=False,
-                               write_mode='a')
-
+        #        #available_connections = galCat._active_connections # store the list of open fatboy connections
+        #        
+        #        # PhoSim Instance Catalogs
+        #        # print ('self.availableConnections', self.availableConnections)
+        #        # Add the connection to the list of connections
+        #        
+        #
+        #        # Stars
+        #        print('write Star Catalog')
+        #        starCat = CompoundInstanceCatalog(self.compoundStarICList,
+        #                                          self.compoundStarDBList,
+        #                                          obs_metadata=self.obs_metadata,
+        #                                          constraint=self.brightestStarMag,
+        #                                          compoundDBclass=sprinklerCompound)
+        #        ## Now there is already an active connection, use it
+        #	starCat._active_connections = self.availableConnections
+        #	starCat.phoSimHeaderMap = TwinklesPhoSimHeader
+        #        starCat.write_catalog(fileName, chunk_size=10000)
+        #
+        #        print('write Gal Catalog')
+        #        galCat = CompoundInstanceCatalog(self.compoundGalICList,
+        #                                         self.compoundGalDBList,
+        #                                         obs_metadata=self.obs_metadata,
+        #                                         compoundDBclass=sprinklerCompound)
+        #
+        #        galCat._active_connections = self.availableConnections
+        #        galCat.write_catalog(fileName, write_mode='a',
+        #                                     write_header=False)
+        #
+        #        print('write SN Catalog')
+        #        snphosim.write_catalog(filename, write_header=False,
+        #                               write_mode='a')
+        #
