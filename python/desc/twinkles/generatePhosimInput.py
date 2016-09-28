@@ -26,8 +26,8 @@ from lsst.sims.catUtils.baseCatalogModels import (StarObj, CepheidStarObj,
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
         PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogSN, \
         DefaultPhoSimHeaderMap
-from sprinkler import sprinklerCompound
-from twinklesCatalogDefs import TwinklesCatalogZPoint
+from desc.twinkles.sprinkler import sprinklerCompound
+from desc.twinkles.twinklesCatalogDefs import TwinklesCatalogZPoint
 
 PhoSimHeaderMap = {'rottelpos': ('rotTelPos', np.degrees),
                    'obshistid': ('obsHistID', None),
@@ -176,6 +176,6 @@ if __name__ == "__main__":
         mode = 'a'
 
     tstart = time.time()
-    generatePhosimInput(mode, obsHistIdList=[220], opsimDB=opsimdb)
+    generatePhosimInput(mode, obsHistIdList=[230], opsimDB=opsimdb)
     tend = time.time()
     print (tend - tstart)
