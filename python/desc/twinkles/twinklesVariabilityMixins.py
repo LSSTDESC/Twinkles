@@ -5,6 +5,7 @@ from scipy.interpolate import interp1d
 from lsst.sims.catalogs.decorators import register_class, register_method, compound
 from lsst.sims.catUtils.mixins import Variability
 
+__all__ = ['TimeDelayVariability', 'VariabilityTwinkles']
 @register_class
 class TimeDelayVariability(Variability):
 

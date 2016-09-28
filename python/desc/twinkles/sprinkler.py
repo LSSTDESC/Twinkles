@@ -18,7 +18,7 @@ from lsst.sims.photUtils.BandpassDict import BandpassDict
 from lsst.sims.photUtils.Sed import Sed
 from lsst.sims.utils import radiansFromArcsec
 
-
+__all__ = ['sprinklerCompound', 'sprinkler']
 class sprinklerCompound(GalaxyTileCompoundObj):
     objid = 'sprinklerCompound'
     objectTypeID = 1024

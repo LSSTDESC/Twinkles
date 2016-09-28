@@ -149,11 +149,11 @@ def generatePhosimInput(mode='a', obsHistIdList=None, opsimDB='kraken_1042_sqlit
                 print("writing galCat")
 
                 galCat.write_catalog(filename, write_mode='a',
-                                     write_header=False)#, chunk_size=10000)
+                                     write_header=False)
 
                 print("writing sne")
                 snphosim.write_catalog(filename, write_header=False,
-                                       write_mode='a')#, chunk_size=10000)
+                                       write_mode='a', chunk_size=10000)
 
                 available_connections = galCat._active_connections # store the list of open fatboy connections
 
@@ -167,6 +167,7 @@ def generatePhosimInput(mode='a', obsHistIdList=None, opsimDB='kraken_1042_sqlit
 
 if __name__ == "__main__":
     import sys
+    import time
 
     opsimdb = sys.argv[1]
     if len(sys.argv) > 2:
@@ -174,4 +175,7 @@ if __name__ == "__main__":
     else:
         mode = 'a'
 
+    tstart = time.time()
     generatePhosimInput(mode, obsHistIdList=[220], opsimDB=opsimdb)
+    tend = time.time()
+    print (tend - tstart)

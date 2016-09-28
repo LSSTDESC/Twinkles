@@ -1,9 +1,12 @@
 """
-Class describing the Twinkles Sky
+Module describing the Twinkles Sky composed of each astrophysical source.
+The module provides access to 
+- TwinklesSky : a class describing the astrophysical sources used in Twinkles
+- TwinklesPhoSimHeader : A dict which describes the observing conditions as recorded
+    in header files of PhoSim instance catalogs.
 """
 from __future__ import with_statement, absolute_import, division, print_function
 import time
-import logging
 import copy
 from lsst.sims.catUtils.baseCatalogModels import (StarObj,
                                                   CepheidStarObj,
@@ -18,8 +21,8 @@ from lsst.sims.catUtils.exampleCatalogDefinitions import\
      PhoSimCatalogSN,
      DefaultPhoSimHeaderMap,
      DefaultPhoSimInstanceCatalogCols)
-from twinklesCatalogDefs import TwinklesCatalogZPoint
-from sprinkler import sprinklerCompound
+from .twinklesCatalogDefs import TwinklesCatalogZPoint
+from .sprinkler import sprinklerCompound
 
 __all__ = ['TwinklesPhoSimHeader', 'TwinklesSky']
 
@@ -50,13 +53,20 @@ class TwinklesSky(object):
         ----------
         obs_metadata : instance of `lsst.sims.utils.ObservationMetaData`
             Observational MetaData associated with an OpSim Pointing
-        brightestStar_gmag_inCat : optional, defaults to 11.0
-            brightest star allowed in terms of its magnitude in g band
-            The reason for this constraint is to keep phosim catalog generation
-            times in check.
+        brightestStar_gmag_inCat : optional, float, defaults to 11.0
+            brightest star allowed in terms of its g band magnitude in
+            'ab' magsys. The reason for this constraint is to keep phosim
+            catalog generation times in check.
+        brightestGal_gmag_inCat : optional, float, defaults to 11.0
+            brightest galaxy allowed in terms of its g band magnitude in
+            'ab' magsys. The reason for this constraint is to keep phosim
+            catalog generation times in check.
+        availableConnections : list of connections, optional, defaults to None
+            list of available connections for DBObject
         sntable : string, optional, defaults to `TwinkSN`
             Name of the table on fatboy with the SN parameters desired. 
-
+        sn_sedfile_prefix : string, optional, defaults to `spectra_files/specFile_'
+            prefix for sed of the supernovae.
         Attributes
         ----------
         snObj : CatalogDBObj for SN
@@ -75,13 +85,9 @@ class TwinklesSky(object):
         self.brightestGal_gmag_inCat = brightestGal_gmag_inCat
         self.brightestGalMag = 'g_ab > {}'.format(self.brightestGal_gmag_inCat)
 
-        if availableConnections is None:
-            self.availableConnections = list()
-        else:
-            self.availableConnections = availableConnections
+        self.availableConnections = availableConnections
 
         # Lists of component phosim Instance Catalogs and CatalogDBObjects
-        
         # Stars
         self.compoundStarDBList = [StarObj, CepheidStarObj]
         self.compoundStarICList = [PhoSimCatalogPoint, PhoSimCatalogPoint]
@@ -93,11 +99,27 @@ class TwinklesSky(object):
 
         # SN 
         ## SN catalogDBObject
-        self.snObj = SNDBObj(table=sntable)
+        if self.availableConnections is None:
+            self.availableConnections = list()
+            self.snObj = SNDBObj(table=sntable, connection=None)
+            self.availableConnections.append(self.snObj.connection)
+        else:
+            self.snObj = SNDBObj(table=sntable, connection=self.availableConnections[0])
         
         self.sn_sedfile_prefix = sn_sedfile_prefix
 
     def writePhoSimCatalog(self, fileName):
+        """
+        write the phosim instance catalogs of stars, galaxies and supernovae in
+        the Twinkles Sky to fileName
+
+        Parameters
+        ----------
+        fileName : string, mandatory
+            Name of the file to which the phoSim Instance Catalog will be
+            written
+
+        """
         starCat = CompoundInstanceCatalog(self.compoundStarICList,
                                           self.compoundStarDBList,
                                           obs_metadata=self.obs_metadata,
@@ -106,8 +128,10 @@ class TwinklesSky(object):
         starCat._active_connections += self.availableConnections # append already open fatboy connections
         starCat.phoSimHeaderMap = TwinklesPhoSimHeader
 
+        t_before_starCat = time.time()
         print("writing starCat ")
         starCat.write_catalog(fileName, chunk_size=10000)
+        t_after_starCat = time.time()
 
         galCat = CompoundInstanceCatalog(self.compoundGalICList,
                                          self.compoundGalDBList,
@@ -117,10 +141,12 @@ class TwinklesSky(object):
 
         # galCat._active_connections = starCat._active_connections # pass along already open fatboy connections
         galCat._active_connections = self.availableConnections
+        t_before_galCat = time.time()
         print("writing galCat")
         galCat.write_catalog(fileName, write_mode='a',
                              write_header=False)
 
+        t_after_galCat = time.time()
         snphosim = PhoSimCatalogSN(db_obj=self.snObj,
                                         obs_metadata=self.obs_metadata)
         ### Set properties
@@ -128,40 +154,7 @@ class TwinklesSky(object):
         snphosim.suppressDimSN = True
         snphosim.sn_sedfile_prefix = self.sn_sedfile_prefix
         print("writing sne")
+        t_before_snCat = time.time()
         snphosim.write_catalog(fileName, write_header=False,
                                write_mode='a', chunk_size=10000)
-        self.availableConnections.append(self.snObj.connection)
-
-        #        #available_connections = galCat._active_connections # store the list of open fatboy connections
-        #        
-        #        # PhoSim Instance Catalogs
-        #        # print ('self.availableConnections', self.availableConnections)
-        #        # Add the connection to the list of connections
-        #        
-        #
-        #        # Stars
-        #        print('write Star Catalog')
-        #        starCat = CompoundInstanceCatalog(self.compoundStarICList,
-        #                                          self.compoundStarDBList,
-        #                                          obs_metadata=self.obs_metadata,
-        #                                          constraint=self.brightestStarMag,
-        #                                          compoundDBclass=sprinklerCompound)
-        #        ## Now there is already an active connection, use it
-        #	starCat._active_connections = self.availableConnections
-        #	starCat.phoSimHeaderMap = TwinklesPhoSimHeader
-        #        starCat.write_catalog(fileName, chunk_size=10000)
-        #
-        #        print('write Gal Catalog')
-        #        galCat = CompoundInstanceCatalog(self.compoundGalICList,
-        #                                         self.compoundGalDBList,
-        #                                         obs_metadata=self.obs_metadata,
-        #                                         compoundDBclass=sprinklerCompound)
-        #
-        #        galCat._active_connections = self.availableConnections
-        #        galCat.write_catalog(fileName, write_mode='a',
-        #                                     write_header=False)
-        #
-        #        print('write SN Catalog')
-        #        snphosim.write_catalog(filename, write_header=False,
-        #                               write_mode='a')
-        #
+        t_after_snCat = time.time()

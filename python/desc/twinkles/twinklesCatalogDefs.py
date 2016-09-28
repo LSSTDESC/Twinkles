@@ -7,7 +7,7 @@ from lsst.sims.utils import arcsecFromRadians
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import PhosimInputBase
 from lsst.sims.catUtils.mixins import PhoSimAstrometryGalaxies, \
                                       EBVmixin, VariabilityStars
-from twinklesVariabilityMixins import VariabilityTwinkles
+from .twinklesVariabilityMixins import VariabilityTwinkles
 
 class TwinklesCatalogZPoint(PhosimInputBase, PhoSimAstrometryGalaxies, EBVmixin, VariabilityTwinkles):
 
