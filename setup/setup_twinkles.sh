@@ -9,7 +9,7 @@ elif [ "$#" -eq 1 ]
 then
     name=$1
 else
-    name=$USER
+    name=sims
 fi
-setup Twinkles -t $name -t sims
+setup Twinkles -t $USER -t $name
 
