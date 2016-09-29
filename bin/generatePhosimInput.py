@@ -10,7 +10,11 @@ import pandas as pd
 from sqlalchemy import create_engine
 import time
 
-opSimDBPath = '/Users/rbiswas/data/LSST/OpSimData/minion_1016_sqlite.db'
+# Choose OpSim Output database
+OpSimDB = 'minion_1016_sqlite.db'
+# Combine the environment variable setup using `source setup/setup_locations.sh`
+# after modifying the variable
+opSimDBPath = os.path.join(os.environ['OpSimDir'], OpSimDB)
 engine = create_engine('sqlite:///' + opSimDBPath)
 obsHistIDList =  [230]
 
@@ -48,10 +52,11 @@ def _sql_constraint(obsHistIDList):
 obs_gen = ObservationMetaDataGenerator(database=opSimDBPath)
 
 # Read in all of the OpSim records relevant for Twinkles or from a list
-# of obsHistID
-# df = pd.read_sql_query('SELECT * FROM Summary WHERE FieldID == 1427', engine)
+# of obsHistID (remove limit 4 part of the query
+df = pd.read_sql_query('SELECT * FROM Summary WHERE FieldID == 1427 and propID in (54, 56) limit 4', engine).drop_duplicates(subset='obsHistID')
 sql_query = _sql_constraint(obsHistIDList)
-df = pd.read_sql_query(sql_query, engine)
+# Use if you want to use a list of obsHistIDs
+# df = pd.read_sql_query(sql_query, engine)
 recs = df.to_records()
 obsMetaDataResults = []
 obsMetaDataResults = obs_gen.ObservationMetaDataFromPointingArray(recs)
@@ -68,7 +73,7 @@ for obs_metaData in obsMetaDataResults:
     tSky = TwinklesSky(obs_metadata=obs_metaData,
                        availableConnections=availConns,
                        brightestStar_gmag_inCat=11.0,
-                       brightestGal_gmag_inCat=1.0,
+                       brightestGal_gmag_inCat=11.0,
                        sntable='TwinkSN',
                        sn_sedfile_prefix='spectra_files/specFile_')
     fname = phoSimInputFileName(obsHistID)  
