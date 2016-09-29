@@ -80,7 +80,7 @@ for obs_metaData in obsMetaDataResults:
     fname = phoSimInputFileName(obsHistID)  
     if not os.path.exists(os.path.dirname(fname)):
         os.makedirs(os.path.dirname(fname))
-    if not os.path.exists(os.path.dirname(sn_sed_file_dir)):
+    if not os.path.exists(sn_sed_file_dir):
         os.makedirs(sn_sed_file_dir)
     tSky.writePhoSimCatalog(fname)
     availConns = tSky.availableConnections
