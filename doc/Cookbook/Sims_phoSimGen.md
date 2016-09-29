@@ -33,6 +33,8 @@ source setup/setup_twinkles.sh current
 At this point, the directories of the Twinkles repositories become available as part of the `desc` namespace, and an environment variable `$TWINKLES_DIR` is exported to the SHELL.
 The code uses this variable.
 
+Finally, there are scripts that use the OpSim output which is a sqlite database of ~ 4 GB size. We assume that many users will already have this database on their disk stored in a location convenient to them, and therefore this location will be different for everyone. To deal with this, we suggest, that each user copy the file `setup/setup_location_templates.sh` to `setup/setup_locations.sh` and set the value of the OpSimDir to suit their needs.
+
 
 ### Generate the `phoSim` inputs
 
