@@ -76,12 +76,12 @@ for obs_metaData in obsMetaDataResults:
                        brightestStar_gmag_inCat=11.0,
                        brightestGal_gmag_inCat=11.0,
                        sntable='TwinkSN',
-                       sn_sedfile_prefix=os.path.join(sn_sed_file_dir, 'specFile_')
+                       sn_sedfile_prefix=os.path.join(sn_sed_file_dir, 'specFile_'))
     fname = phoSimInputFileName(obsHistID)  
     if not os.path.exists(os.path.dirname(fname)):
         os.makedirs(os.path.dirname(fname))
     if not os.path.exists(os.path.dirname(sn_sed_file_dir)):
-        os.makedirs(os.path.dirname(sn_sed_file_dir))
+        os.makedirs(sn_sed_file_dir)
     tSky.writePhoSimCatalog(fname)
     availConns = tSky.availableConnections
     tend = time.time()
