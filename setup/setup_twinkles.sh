@@ -12,4 +12,5 @@ else
     name=sims
 fi
 setup Twinkles -t $USER -t $name
+source setup/setup_locations.sh
 
