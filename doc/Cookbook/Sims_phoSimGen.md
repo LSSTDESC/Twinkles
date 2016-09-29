@@ -21,6 +21,8 @@ When first setting up Twinkles, from the top level directory of `Twinkles` use
 source setup/declare_eups.sh
 ```
 to declare this package location and name to the `eups` database with a tag given by your user name. This step will not required to be repeated. 
+
+Now, there are scripts that use the OpSim output which is a sqlite database of ~ 4 GB size. We assume that many users will already have this database on their disk stored in a location convenient to them, and therefore this location will be different for everyone. To deal with this, we suggest, that each user copy the file `setup/setup_location_templates.sh` to `setup/setup_locations.sh` and set the value of the OpSimDir to suit their needs.
 After you have done this, everytime you want to work with Twinkles in a new SHELL, you have to setup Twinkles. Once you have `eups` database loaded in that SHELL, you can source the
 script 
 ```
@@ -32,9 +34,6 @@ source setup/setup_twinkles.sh current
 ```
 At this point, the directories of the Twinkles repositories become available as part of the `desc` namespace, and an environment variable `$TWINKLES_DIR` is exported to the SHELL.
 The code uses this variable.
-
-Finally, there are scripts that use the OpSim output which is a sqlite database of ~ 4 GB size. We assume that many users will already have this database on their disk stored in a location convenient to them, and therefore this location will be different for everyone. To deal with this, we suggest, that each user copy the file `setup/setup_location_templates.sh` to `setup/setup_locations.sh` and set the value of the OpSimDir to suit their needs.
-
 
 ### Generate the `phoSim` inputs
 
