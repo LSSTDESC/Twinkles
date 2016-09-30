@@ -139,8 +139,7 @@ class TwinklesSky(object):
                                          constraint=self.brightestGalMag,
                                          compoundDBclass=sprinklerCompound)
 
-        # galCat._active_connections = starCat._active_connections # pass along already open fatboy connections
-        galCat._active_connections = self.availableConnections
+        galCat._active_connections = starCat._active_connections # pass along already open fatboy connections
         t_before_galCat = time.time()
         print("writing galCat")
         galCat.write_catalog(fileName, write_mode='a',

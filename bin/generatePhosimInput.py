@@ -60,8 +60,8 @@ def generateSinglePointing(obs_metaData, availableConns, sntable,
                        sntable='TwinkSN',
                        sn_sedfile_prefix=os.path.join(sn_sed_file_dir, 'specFile_'))
     #fname = phoSimInputFileName(obsHistID)  
-    if not os.path.exists(os.path.dirname(fname)):
-        os.makedirs(os.path.dirname(fname))
+    # if not os.path.exists(os.path.dirname(fname)):
+    #    os.makedirs(os.path.dirname(fname))
     if not os.path.exists(sn_sed_file_dir):
         os.makedirs(sn_sed_file_dir)
     tSky.writePhoSimCatalog(fname)
@@ -107,6 +107,7 @@ if __name__ == '__main__':
     
     availConns = None
     
+    print('will generate pointing for {0} and write to filename {1}'.format(obs_metaData._OpsimMetaData['obsHistID'], args.outfile))
     generateSinglePointing(obs_metaData,
                            availableConns=availConns,
                            sntable='TwinkSN',
