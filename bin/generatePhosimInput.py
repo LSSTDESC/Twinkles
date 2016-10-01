@@ -2,14 +2,13 @@
 Script to run the generation of phoSim instance catalogs
 """
 from __future__ import with_statement, absolute_import, division, print_function
+import time
 import os
+import argparse
 import pandas as pd
 from sqlalchemy import create_engine
-import time
 from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
 from desc.twinkles import TwinklesSky
-import argparse
-
 
 
 def phoSimInputFileName(obsHistID,
@@ -29,6 +28,7 @@ def phoSimInputFileName(obsHistID,
 
     return os.path.join(location, prefix + '_{}'.format(obsHistID) + suffix)
 
+
 def _sql_constraint(obsHistIDList):
     """
     sql constraint to get OpSim pointing records for a list of obsHistID
@@ -43,9 +43,19 @@ def _sql_constraint(obsHistIDList):
     sql_string += ')'
     return sql_string
 
+
 def generateSinglePointing(obs_metaData, availableConns, sntable,
-                            fname,
-                            sn_sed_file_dir):
+                           fname,
+                           sn_sed_file_dir):
+    """
+    obs_metaData : instance of `lsst.sims.utils.ObservationMetaData`
+        observation metadata corresponding to an OpSim pointing
+    availableConns : available connections to fatboy
+    sntable : Table for SN on the fatboy database
+    fname : output file for phoSim instance Catalog
+    sn_sed_file_dir : directory to which the SN seds corresponding to this
+        phoSim metadat
+    """
     tstart = time.time()
     obs_metaData.boundLength = 0.3
     print(obs_metaData.summary)
@@ -57,9 +67,9 @@ def generateSinglePointing(obs_metaData, availableConns, sntable,
                        availableConnections=availableConns,
                        brightestStar_gmag_inCat=11.0,
                        brightestGal_gmag_inCat=11.0,
-                       sntable='TwinkSN',
+                       sntable=sntable,
                        sn_sedfile_prefix=os.path.join(sn_sed_file_dir, 'specFile_'))
-    #fname = phoSimInputFileName(obsHistID)  
+    # fname = phoSimInputFileName(obsHistID)
     # if not os.path.exists(os.path.dirname(fname)):
     #    os.makedirs(os.path.dirname(fname))
     if not os.path.exists(sn_sed_file_dir):
@@ -71,13 +81,18 @@ def generateSinglePointing(obs_metaData, availableConns, sntable,
 
 
 if __name__ == '__main__':
-     
+
     parser = argparse.ArgumentParser(description='Write phoSim Instance Catalogs'
-                                     'and SN spectra to disk')
+                                     'and SN spectra to disk '
+                                     'example : '
+                                     'python generatePhosimInput.py 230\ '
+                                     '--OpSimDBDir ~/data/LSST/OpSimData/\ '
+                                     '--seddir "./"\ '
+                                     '--outfile phosim_instance_catalog_220.txt')
     parser.add_argument('--opsimDB',
-                       type=str,
-                       help='OpSim database sqlite filename',
-                       default='minion_1016_sqlite.db')
+                        type=str,
+                        help='OpSim database sqlite filename',
+                        default='minion_1016_sqlite.db')
     parser.add_argument('visit',
                         type=int,
                         help='Visit number (obsHistID)')
@@ -92,22 +107,21 @@ if __name__ == '__main__':
                         default=None,
                         help='directory to contain SED files')
     args = parser.parse_args()
-
     # Set up OpSim database
     opSimDBPath = os.path.join(args.OpSimDBDir, args.opsimDB)
     engine = create_engine('sqlite:///' + opSimDBPath)
-    
+
     obs_gen = ObservationMetaDataGenerator(database=opSimDBPath)
-    sql_query = 'SELECT * FROM Summary WHERE ObsHistID == {}'.format(args.visit) 
+    sql_query = 'SELECT * FROM Summary WHERE ObsHistID == {}'.format(args.visit)
     df = pd.read_sql_query(sql_query, engine)
     recs = df.to_records()
     obsMetaDataResults = obs_gen.ObservationMetaDataFromPointingArray(recs)
     obs_metaData = obsMetaDataResults[0]
     sn_sed_file_dir = os.path.join(args.seddir, 'spectra_files')
-    
+
     availConns = None
-    
-    print('will generate pointing for {0} and write to filename {1}'.format(obs_metaData._OpsimMetaData['obsHistID'], args.outfile))
+    print('will generate pointing for {0} and write to filename {1}'.format(
+          obs_metaData._OpsimMetaData['obsHistID'], args.outfile))
     generateSinglePointing(obs_metaData,
                            availableConns=availConns,
                            sntable='TwinkSN',
