@@ -104,9 +104,17 @@ if __name__ == '__main__':
                         help='output filename for instance catalog')
     parser.add_argument('--seddir',
                         type=str,
-                        default=None,
+                        default='.',
                         help='directory to contain SED files')
     args = parser.parse_args()
+    
+
+    # set the filename default to a sensible value using the obsHistID
+    if args.outfile is None:
+        args.outfile = phoSimInputFileName(args.visit,
+                                           prefix='phosim_input',
+                                           suffix='.txt',
+                                           location='./')
     # Set up OpSim database
     opSimDBPath = os.path.join(args.OpSimDBDir, args.opsimDB)
     engine = create_engine('sqlite:///' + opSimDBPath)
