@@ -1,4 +1,4 @@
-ID, zlens, vdisp, Reff, Mstar, zlens_err, vdisp_err, Reff_err, Mstar_err
+#ID, zlens, vdisp, Reff, Mstar, zlens_err, vdisp_err, Reff_err, Mstar_err
 SL2SJ021247-055552, 0.750, 267, 8.92, 11.45, 0.001, 17, 0.01, 0.17
 SL2SJ021325-074355, 0.717, 287, 17.67, 11.97, 0.001, 33, 0.01, 0.19
 SL2SJ021411-040502, 0.609, 238, 6.29, 11.60, 0.001, 15, 0.01, 0.14
