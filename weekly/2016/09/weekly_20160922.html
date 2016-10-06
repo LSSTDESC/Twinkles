@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: September 22, 2016</h1>
+<p>Our <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/milestone/10"><em>Run 3 sprint</em></a> is well defined: major deliverables are the instance catalog generating code, which is to be run at SLAC, and the capability of the phosim pipeline to run all jobs (ie, with checkpointing of some kind). The former is almost ready, while the latter is looking unlikely to happen. We discussed possible fallback positions - as extreme as turning off the Moon!</p>
+<h2 id="instance-catalogs-at-slac"><strong>Instance Catalogs at SLAC</strong></h2>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/320"><em>Epic here (#320)</em></a></p>
+<p>Quick note, since I know we had talked about starting the new runs during the first week of October. Construction on UW campus means they are going to have to cut power to our building for about eight hours on Sunday, October 2nd. UW IT plans to gently power fatboy down on Friday September 30. Presumably, fatboy will be back up sometime Monday October 3rd, but I don't know how long powering up every machine in the physics and astronomy building will take.</p>
+<p>Update as of September 26: UW IT will actually not begin powering down serves (like fatboy) until Saturday, October 1, so fatboy should be up all day on Friday. They anticipate everything will be back up and ready to use by 8am PDT on Monday, October 3.</p>
+<p>We believe we have a version of the instance catalog generator which is sufficiently ready that it would be worth trying at SLAC. Rahul now has an account at SLAC but does not know which machines to log in to. Heather can do software installs from source if necessary. The normal node to use at SLAC is rhel6-64.slac.stanford.edu.</p>
+<p>Rahul will create a setup script for generating instance catalogs.</p>
+<h2 id="phosim-pipeline-preparation"><strong>PhoSim Pipeline Preparation</strong></h2>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/315"><em>Discussion here (#315)</em></a>, epic to follow (Tom).</p>
+<p>Phosim preparation, studying internal phosim check-pointing mechanism. It is not adequate to solve our issues, since time is not evenly spread among jobs. Not clear this is a high priority for phosim team. We could decide to just go ahead and accept that some jobs will fail for lack of time (as for Run 1).</p>
+<p>We could also look into dmtcp as a different mechanism for handling checkpointing. Heather is going to look into this. Unlikely to be ready on a very short timescale.</p>
+<p>Should we consider other options like dropping moon? Rahul makes the sensible suggestion that we should consider removing it for visits that we would not otherwise be able to run to completion.</p>
+</div>
+</div>
+</body>
+</html>
