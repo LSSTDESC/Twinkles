@@ -20,7 +20,7 @@ from lsst.sims.utils import radiansFromArcsec
 
 class sprinklerCompound(GalaxyTileCompoundObj):
     objid = 'sprinklerCompound'
-    objectTypeID = 1024
+    objectTypeId = 66
 
     def _final_pass(self, results):
         #From the original GalaxyTileCompoundObj final pass method
