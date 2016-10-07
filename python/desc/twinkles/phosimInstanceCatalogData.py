@@ -27,7 +27,6 @@ class PhoSimHeaders:
     defaultHeaders = deepcopy(DefaultPhoSimInstanceCatalogCols)
     keepObsHistID = True
 
-
     def _remove_object(self, keepObsHistID):
         x = list(self.defaultHeaders)
         if keepObsHistID:
@@ -63,11 +62,10 @@ class PhoSimInputCatalog(PhoSimHeaders):
     def __init__(self, fname, checkSpectralFileNamesForEquality=False):
         self.fname = fname 
         self._data = self.parsePhoSimInstanceCatalog(self.fname)
-        # with NumNulls, self.data has samenumber of columns as the original
-        # data
         self.maxnumCols = self.data.columns.size - 1
-        #self.activeCols = self.maxnumCols - np.array(self.numNulls)
         self._obshistid = None
+        self.checkSpectralFileNames  = checkSpectralFileNamesForEquality
+
     @property
     def data(self):
         data = self._data.copy()
@@ -131,47 +129,13 @@ class PhoSimInputCatalog(PhoSimHeaders):
         x.rename(columns=dict(zip(cols, self.PointHeader)), inplace=True)
         return x
 
-    def _remove_extracols(self, df):
-        df.drop('NumNulls', axis=1, inplace=True)
-        if self.keepObsHistID:
-            df['a'] = self.obsHistID
-        else:
-            df.drop('a', axis=1, inplace=True)
-        cols = df.columns
-        return cols, df
-
     @property
     def galaxyData(self):
         return self._get_data(dataType='galaxy')
     @property
     def pointData(self):
         return self._get_data(dataType='point')
-    @property
-    def _pointData(self):
-        # extraCols = 0
-        # if self.keepObsHistID:
-        #    extraCols = 1
-        dataCols = len(self.PointHeader) # - extraCols
-        numNulls = self.maxnumCols - dataCols
-        x = self.cats.get_group(numNulls).dropna(axis=1).copy()
-        cols, x = self._remove_extracols(x) 
-        x.rename(columns=dict(zip(cols, self.PointHeader)), inplace=True)
-        return x
 
-    @property
-    def __galaxyData(self):
-        dataCols = len(self.GalaxyHeader) # - extrCols
-        numNulls = self.maxnumCols - dataCols
-        x = self.cats.get_group(numNulls).dropna(axis=1).copy()
-        cols, x = self._remove_extracols(x) 
-        x.rename(columns=dict(zip(cols, self.PointHeader)), inplace=True)
-
-        if self.keepObsHistID:
-            x['a'] = self.obsHistID
-        x.drop('NumNulls', axis=1)
-        x.rename(columns=dict(zip(pc.GalaxyHeader, pc.pointData.columns)),
-                 inplace=True)
-        return x
 
 if __name__ == '__main__':
     pc = PhoSimInputCatalog('testScript.dat')
