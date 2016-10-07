@@ -1,6 +1,7 @@
 """
 Script to run the generation of phoSim instance catalogs
 """
+#!/usr/bin/env python
 from __future__ import with_statement, absolute_import, division, print_function
 import time
 import os
