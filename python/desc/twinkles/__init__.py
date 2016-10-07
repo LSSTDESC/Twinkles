@@ -11,3 +11,4 @@ from .cleanupspectra import *
 from .PostageStampMaker import PostageStampMaker, create_postage_stamps
 from .Display import render_fits_image
 from .registry_tools import *
+from .phosimInstanceCatalogData import *
