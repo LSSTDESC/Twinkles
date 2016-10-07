@@ -220,11 +220,12 @@ class PhoSimInputCatalog(PhoSimHeaders):
         """
         val = copy(other.keepObsHistID)
         other.keepObsHistID = self.keepObsHistID
-        metadata = False
+        metaData = False
         pointData = False
         galaxyData = False
-        metadata = assert_frame_equal(other.metadata, self.metadata,
+        assert_frame_equal(other.metadata, self.metadata,
                                       check_exact=False)
+        metaData = True
 
         val2 = copy(other.checkSpectralFileNamesForEquality) 
         if not self.checkSpectralFileNamesForEquality:
@@ -242,18 +243,19 @@ class PhoSimInputCatalog(PhoSimHeaders):
             if other.galaxyData is None:
                 galaxyData = True 
         else:
-            print('testing ', galaxyHeader, self.galaxyData.columns)
-            galaxyData = assert_frame_equal(self.galaxyData[galaxyHeader],
-                                            other.galaxyData[galaxyHeader],
-                                            check_exact=False)
+            assert_frame_equal(self.galaxyData[galaxyHeader],
+                               other.galaxyData[galaxyHeader],
+                               check_exact=False)
+            galaxyData = True
 
         if self.pointData is None:
             if other.pointData is None:
                 pointData = True 
         else:
-            pointData = assert_frame_equal(self.pointData[pointHeader],
-                                           other.pointData[pointHeader],
-                                           check_exact=False)
+            assert_frame_equal(self.pointData[pointHeader],
+                               other.pointData[pointHeader],
+                               check_exact=False)
+            pointData = True
         other.keepObsHistID = val
         other.checkSpectralFileNamesForEquality = val2
         return metaData and pointData and galaxyData
