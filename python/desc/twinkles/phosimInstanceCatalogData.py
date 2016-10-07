@@ -1,3 +1,14 @@
+"""
+Classes to represent the data in PhoSim instance Catalogs. PhoSim instance
+Catalogs are ascii files used as inputs for PhoSim. The format includes a
+few lines summarizing metadata, and then tables (without headers) describing
+sources. The tables are non-rectangular because sources of different types have
+different numbers of columns.
+
+- PhoSimHeaders : Class for headers needed for phosim Instance catalogs
+- PhoSimInputCatalog : Data in a phosim instance catalog splitted into three
+    tables. It is possible to test for (approximate) equality of instances of such classes
+"""
 from __future__ import absolute_import, division, print_function
 import numpy as np
 from lsst.sims.catUtils.exampleCatalogDefinitions \
@@ -20,6 +31,9 @@ class PhoSimHeaders:
 
     Attributes
     ----------
+    defaultHeaders: a tuple of defaultHeaders (not customized to different
+        kinds of sources obtained from `sims.catUtils.exampleCatalogDefinitions`
+        This is not to be modified and is only kept as a deepcopy
     keepObsHistID : Bool, defaults to True
         keep first column 'ObsHistID' instead of 'object'
     PointHeader : sequence of strings
@@ -87,8 +101,25 @@ class PhoSimInputCatalog(PhoSimHeaders):
         the word 'object' is replaced with a column of `ObsHistID` if
         `keepObsHistID` is True, If False, this column is dropped. The dataframe
         is sorted by values of uniqueID
+
+    Methods
+    -------
+    parsePhoSimInstanceCatalog
+    getdata
     """
-    def __init__(self, fname, checkSpectralFileNamesForEquality=False):
+    def __init__(self, fname, checkSpectralFileNamesForEquality=True):
+        """
+        Parameters
+        ----------
+        fname : string, mandatory
+            absolute path to filename of PhoSim Instance Catalog
+        checkSpectralFileNamesForEquality : Bool, default to True 
+            Two phosim instance catalogs may have the same data except for
+            locations of where the spectral files are located (for example
+            if they are on two different computers). Equality can then be
+            checked by ignoring the file name column, by setting this parameter
+            to be False.
+        """
         self.fname = fname 
         self._data = self.parsePhoSimInstanceCatalog(self.fname)
         self.maxnumCols = self.data.columns.size - 1
@@ -110,6 +141,9 @@ class PhoSimInputCatalog(PhoSimHeaders):
 
     @staticmethod
     def parsePhoSimInstanceCatalog(fname):
+        """
+        parses the PhoSim Instance Catalog file to a dataframe
+        """
         with open(fname, 'r') as fh:
             data = fh.read()
         maxlen = max(map(len, map(lambda x: x.split(), data.split('\n'))))
@@ -131,17 +165,20 @@ class PhoSimInputCatalog(PhoSimHeaders):
         return x
     @property
     def obsHistID(self):
-        return self.metadata.obshistid.values[0]
+        if self._obshistid is None:
+            self._obshistid = self.metadata.obshistid.values[0]
+        return self._obshistid
 
     def get_data(self, dataType='point'):
         """
+        Parses the PhoSim Instance Catalog records of astrophysical sources
+        of a particular type. 
         dataType : {'point', 'galaxy'}
         """
         if dataType.lower() == 'point':
             headerCols = self.PointHeader
         elif dataType.lower() == 'galaxy':
             headerCols = self.GalaxyHeader
-
 
         extraCols = 1
         if self.keepObsHistID:
@@ -175,6 +212,12 @@ class PhoSimInputCatalog(PhoSimHeaders):
 
 
     def __eq__(self, other):
+        """
+        Defined to be equal if
+        - each of the metadata, pointData, galaxyData are equal
+        - each of those are equal if they are both None, or the dataframe
+        on the subset of desired columns are equal (with check_exact=False)
+        """
         val = copy(other.keepObsHistID)
         other.keepObsHistID = self.keepObsHistID
         metadata = False
@@ -204,7 +247,6 @@ class PhoSimInputCatalog(PhoSimHeaders):
                                             other.galaxyData[galaxyHeader],
                                             check_exact=False)
 
-
         if self.pointData is None:
             if other.pointData is None:
                 pointData = True 
@@ -215,7 +257,3 @@ class PhoSimInputCatalog(PhoSimHeaders):
         other.keepObsHistID = val
         other.checkSpectralFileNamesForEquality = val2
         return metaData and pointData and galaxyData
-if __name__ == '__main__':
-    pc = PhoSimInputCatalog('testScript.dat')
-    df = pc.parse_phosimInstanceCatalogs('testScript.dat')
-    print(df)
