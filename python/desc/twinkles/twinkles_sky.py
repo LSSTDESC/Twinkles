@@ -142,7 +142,7 @@ class TwinklesSky(object):
         galCat._active_connections = starCat._active_connections # pass along already open fatboy connections
         t_before_galCat = time.time()
         print("writing galCat")
-        galCat.write_catalog(fileName, write_mode='a',
+        galCat.write_catalog(fileName, write_mode='a', chunk_size=10000,
                              write_header=False)
 
         t_after_galCat = time.time()
