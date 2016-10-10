@@ -49,5 +49,9 @@ class SqlLiteToolsTestCase(unittest.TestCase):
         self.assertEqual(len(df_sel), len(self._obsHistIDs))
         self.assertTupleEqual(tuple(df_sel['obsHistID']), self._obsHistIDs)
 
+        df_uniq = my_factory.create('obsHistID fieldID'.split(), 'Summary',
+                                    distinct=True)
+        self.assertEqual(len(df_uniq), len(set(df_uniq['obsHistID'])))
+
 if __name__ == '__main__':
     unittest.main()
