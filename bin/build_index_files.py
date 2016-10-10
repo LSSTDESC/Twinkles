@@ -17,15 +17,15 @@ def instcat_to_astrometry_net_input(instcat, ref_file='ref.txt'):
     @return The file name of the FITS file.
     """
     output = open(ref_file, 'w')
-    output.write('#id RA DEC r starnotgal\n')
+    output.write('#id RA DEC r isvariable starnotgal\n')
     for line in open(instcat):
         tokens = line.split()
         if tokens[0] != 'object' or not tokens[5].startswith('starSED'):
             continue
-        output.write('%s %s %s %s 1\n' % tuple(tokens[1:5]))
+        output.write('%s %s %s %s 0 1\n' % tuple(tokens[1:5]))
     output.close()
     outfile = ref_file.replace('.txt', '.fits')
-    command = "text2fits.py %(ref_file)s %(outfile)s -f 'kdddj'" % locals()
+    command = "text2fits.py %(ref_file)s %(outfile)s -f 'kdddjj'" % locals()
     subprocess.call(command, shell=True)
     os.remove(ref_file)
     return outfile
@@ -59,11 +59,11 @@ def build_index_files(ref_file, index_id, max_scale_number=4, output_dir='.'):
 
 if __name__ == '__main__':
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="Script to generate astrometry.net index files from a phosim instance catalog")
     parser.add_argument('instcat', help='phosim instance catalog')
     parser.add_argument('index_id', help='id for index files')
-    parser.add_argument('--max_scale_number', type=int, default=4, 
+    parser.add_argument('--max_scale_number', type=int, default=4,
                         help='maximum scale_number for index files')
     parser.add_argument('--output_dir', type=str, default='.',
                         help='output directory')
@@ -73,3 +73,4 @@ if __name__ == '__main__':
     build_index_files(ref_file, args.index_id,
                       max_scale_number=args.max_scale_number,
                       output_dir=args.output_dir)
+    os.remove(ref_file)
