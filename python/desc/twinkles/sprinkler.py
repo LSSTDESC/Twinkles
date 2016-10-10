@@ -21,13 +21,24 @@ from lsst.sims.utils import radiansFromArcsec
 __all__ = ['sprinklerCompound', 'sprinkler']
 class sprinklerCompound(GalaxyTileCompoundObj):
     objid = 'sprinklerCompound'
-    objectTypeID = 1024
+    objectTypeId = 66
 
     def _final_pass(self, results):
         #From the original GalaxyTileCompoundObj final pass method
         for name in results.dtype.fields:
             if 'raJ2000' in name or 'decJ2000' in name:
                 results[name] = np.radians(results[name])
+
+        # the stored procedure on fatboy that queries the galaxies
+        # constructs galtileid by taking
+        #
+        # tileid*10^8 + galid
+        #
+        # this causes galtileid to be so large that the uniqueIDs in the
+        # Twinkles InstanceCatalogs are too large for PhoSim to handle.
+        # Since Twinkles is only focused on one tile on the sky, we will remove
+        # the factor of 10^8, making the uniqueIDs a more manageable size
+        results['galtileid'] = results['galtileid']%100000000
 
         #Use Sprinkler now
         sp = sprinkler(results, density_param = 1.0)
