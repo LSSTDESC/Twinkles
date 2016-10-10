@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: September 29, 2016</h1>
+<p>Our <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/milestone/10"><em>Run 3 sprint</em></a> (<a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/milestone/10"><em>milestone #10</em></a>) is due this week: we will make a plan for executing the pipeline review, after checking in with everyone working on the various pieces.</p>
+<h2 id="science-inputs"><strong>Science Inputs</strong></h2>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/321"><em>Epic here (#321)</em></a> - Bryce, Phil and Rahul to report on the readiness of the sprinkling/SN code to be run at SLAC.</p>
+<p>Do we now have reasonable and useful models for the lens galaxies and source AGN?</p>
+<ul>
+<li><blockquote>
+<p>Source AGN issue <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/309"><em>#309</em></a> - we’ll use 0.1 dex tolerance in both source redshift and flux</p>
+</blockquote></li>
+<li><blockquote>
+<p>Lens Galaxies issue <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/310"><em>#310</em></a> - Bryce and Phil will work on this this afternoon.</p>
+</blockquote></li>
+</ul>
+<p>Do we now have reasonable and useful abundances and distributions of SNe?</p>
+<ul>
+<li><blockquote>
+<p>Rahul and Phil will quickly converge via the Design Note, but we’re looking at avoiding multiple SNe per host over 10 years, and using the natural redshift distribution. EmpiriciSN is not yet production ready - we’ll adopt it when it is published, for Twinkles 2.</p>
+</blockquote></li>
+</ul>
+<h2 id="instance-catalogs-at-slac"><strong>Instance Catalogs at SLAC</strong></h2>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/320"><em>Epic here (#320)</em></a></p>
+<p>Last week Rahul reported that construction on UW campus means they are going to have to cut power to the astronomy building for about eight hours on Sunday, October 2nd. UW IT will actually not begin powering down serves (like fatboy) until Saturday, October 1, so fatboy should be up all day on Friday Sept 30. They anticipate everything will be back up and ready to use by 8am PDT on Monday, October 3.</p>
+<p>The UW group reported last week that they have a version of the instance catalog generator which is sufficiently ready that it would be worth trying at SLAC. Rahul was going to create a setup script for generating instance catalogs, and also log in to SLAC to test things out - he has submitted a pull request which Jim will review.</p>
+<p>Which version of the sims code should we install and use at SLAC? (<a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/319"><em>#319</em></a>) - Scott will publish a new version this afternoon, for Heather to eups install and build, and then Tom to use tomorrow.</p>
+<h2 id="phosim-issues-crosstalk-ghosts"><strong>PhoSim Issues: Crosstalk, Ghosts</strong></h2>
+<p>Seth has been investigating PhoSim’s treatment of bright stars, in the DC1 PhoSim Deep run - there are image and runtime issues that we are in the process of understanding.</p>
+<ul>
+<li><blockquote>
+<p>There are dark patches that seem to be due to crosstalk. <em><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/315#issuecomment-250264296">Here’s the thread, #315.</a></em> We decided to turn off crosstalk in PhoSim, which is not trivial (but still straightforward). Jim will issue this, and also report to John P about why we are doing this. We also noted that eimages should not really contain crosstalk, if they are supposed to be above-detector images - maybe worth a PhoSim ticket?</p>
+</blockquote></li>
+</ul>
+<ul>
+<li><blockquote>
+<p>Bright stars lead to high CPUtime in adjacent chips, see <a href="https://confluence.slac.stanford.edu/display/LSSTDESC/Phosim+CPU+time+in+PhoSim_deep-pre2+runs"><em>here</em></a>. A bright star can influence simulations for a large fraction of the focal plane; due to effects from ghosting and mirror scratches(!), phosim considers progressively larger (square) regions of influence as the stellar magnitude decreases. 7th magnitude stars such as we have ~2 per field, can each influence 25 CCDs, and the phosim simulations for the ‘outlier’ CCDs are particularly expensive. More of an issue for DC1 PhoSim Deep, but interesting nonetheless. Simon and Tom will continue the conversation with John P about DC1 PhoSim Deep. We noted that the Twinkles assumption is that there are no artifacts from bright stars on nearby chips.</p>
+</blockquote></li>
+</ul>
+<h2 id="phosim-pipeline-preparation"><strong>PhoSim Pipeline Preparation</strong></h2>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/315"><em>Discussion here (#315)</em></a>, led by Tom.</p>
+<p>Given the lack of checkpointing capability, we should go ahead with Run 3 and accept that some jobs will fail for lack of time (as they did in Run 1). The new task is structurally ready and waiting for a few more pieces (e.g., instanceCatalog generation, and validation of instance catalog that is produced)</p>
+<p>Regarding validation of the PhoSim instance catalogs, we discussed a few options. Initially, a line by line comparison with an IC made at UW with the same code seems useful - Rahul will supply this. Beyond this, there are some basic checks to do (eg IC is not empty or too small), and then we are into comparing the IC with the PhoSim output image FITS headers, with an “after-burner” validation script. The temporary files made by PhoSim could also be useful, but this would mean calling PhoSim by means other than phosim.py, which, while not discouraged, is not the industry standard way of using the software.</p>
+<p>Heather has looked into dmctp as an alternative checkpointing mechanism, and will report on what she has found out. See <a href="https://confluence.slac.stanford.edu/display/~heather/DMTCP+Trial+at+NERSC+and+SLAC"><em>Heather’s confluence page</em></a> for gory details. High level summary, testing continues at SLAC using the batch system and simple phosim runs. Checkpoint files generated take up about 1.4 GB gzip or 2.4 GB unzipped. Runtimes are somewhat impacted, very little if we avoid gzipping the checkpoint files while running (~4%) and a larger impact if gzipping occurs (~18%). Currently running some restarted jobs using checkpoints to make sure the output remains the same with and without dmtcp. That should/could be done by end of the week or early next week - and so could be a viable option during Twinkles 3 production.</p>
+<p>Should we consider other options, like dropping moon? Rahul made the sensible suggestion that we should consider removing it for visits that we would not otherwise be able to run to completion. However, there are limits to how far we should compromise our principles: Phil thinks we should retain the Moon, because it is so important for the background and we care about the realism of the photometry and its uncertainties.</p>
+<h2 id="pipeline-review"><strong>Pipeline Review</strong></h2>
+<p>In <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/323"><em>issue #323</em></a> we have been discussing a pilot error-reducing “pipeline review”. Simon, Seth, Jim and Phil seem willing to take part, with review materials being prepared by Rahul, Scott, Bryce and Tom.</p>
+<p>Materials to be reviewed are:</p>
+<ul>
+<li><blockquote>
+<p>Sims Cookbook Recipe (Author: Scott, Phil)</p>
+</blockquote></li>
+<li><blockquote>
+<p>Input catalog generation code (catalogs include catsim instance, phosim instance, phosim centroid, and so code includes treatment of lens sprinkling, SNe, and OpSim) (Author: Rahul et al, Phil)</p>
+</blockquote></li>
+<li><blockquote>
+<p>PhoSim pipeline tasks and configuration files, including default values (Author: Tom)</p>
+</blockquote></li>
+<li><blockquote>
+<p>DM Level 2 Cookbook Recipe (still without image differencing, for now) (Author: Simon)</p>
+</blockquote></li>
+<li><blockquote>
+<p>DM Level 2 pipeline tasks and configuration files (Author: Tony)</p>
+</blockquote></li>
+</ul>
+<p>When can all this be prepared by? Simon has limited availability next week, so we will plan out time around him. He will provide a short list of windows, which we will promptly doodle for.</p>
+<p>What needs to be done in order for the reviewers to be walked through it? We need a review page where links to each piece of material is provided. Phil and Jim will design this.</p>
+<p>How long should we assign to this important review meeting? An hour in person might be enough, especially if some work has been done offline first.</p>
+<p>Who needs to be at the review? Rahul, Jim and Tom can represent the coding, Phil, Simon, Jim and Seth can act as reviewers. Scott, Bryce, and Tony can help provide links to the pipeline materials, which must all be up to date and ready to run.</p>
+</div>
+</div>
+</body>
+</html>
