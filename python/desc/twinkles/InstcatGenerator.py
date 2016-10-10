@@ -11,8 +11,9 @@ from lsst.sims.catalogs.generation.db import CatalogDBObject
 from lsst.sims.catalogs.measures.instance import CompoundInstanceCatalog
 from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
-        PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogZPoint
+        PhoSimCatalogPoint, PhoSimCatalogZPoint
 from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
+from desk.twinkles.twinklesCatalogDefs import TwinklesCatalogSersic2D
 from .sprinkler import sprinklerCompound
 
 class InstcatFactory(object):
@@ -42,8 +43,8 @@ class InstcatGenerator(object):
                         'cepheidstars']
         for objid in starObjNames:
             self.update_factories(objid, PhoSimCatalogPoint)
-        self.update_factories('galaxyBulge', PhoSimCatalogSersic2D)
-        self.update_factories('galaxyDisk', PhoSimCatalogSersic2D)
+        self.update_factories('galaxyBulge', TwinklesCatalogSersic2D)
+        self.update_factories('galaxyDisk', TwinklesCatalogSersic2D)
         self.update_factories('galaxyAgn', PhoSimCatalogZPoint)
 
     def update_factories(self, objid, catobj):

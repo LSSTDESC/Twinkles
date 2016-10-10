@@ -24,10 +24,10 @@ from lsst.sims.catUtils.baseCatalogModels import (StarObj, CepheidStarObj,
                                                   GalaxyAgnObj, SNDBObj)
 # from lsst.sims.catUtils.mixins import FrozenSNCat
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import \
-        PhoSimCatalogPoint, PhoSimCatalogSersic2D, PhoSimCatalogSN, \
+        PhoSimCatalogPoint, PhoSimCatalogSN, \
         DefaultPhoSimHeaderMap
 from desc.twinkles.sprinkler import sprinklerCompound
-from desc.twinkles.twinklesCatalogDefs import TwinklesCatalogZPoint
+from desc.twinkles.twinklesCatalogDefs import TwinklesCatalogZPoint, TwinklesCatalogSersic2D
 
 PhoSimHeaderMap = {'rottelpos': ('rotTelPos', np.degrees),
                    'obshistid': ('obsHistID', None),
@@ -114,7 +114,7 @@ def generatePhosimInput(mode='a', obsHistIdList=None, opsimDB='kraken_1042_sqlit
         compoundGalDBList = [GalaxyBulgeObj, GalaxyDiskObj, GalaxyAgnObj]
 
         compoundStarICList = [PhoSimCatalogPoint, PhoSimCatalogPoint]
-        compoundGalICList = [PhoSimCatalogSersic2D, PhoSimCatalogSersic2D,
+        compoundGalICList = [TwinklesCatalogSersic2D, TwinklesCatalogSersic2D,
                              TwinklesCatalogZPoint]
 
         snphosim = PhoSimCatalogSN(db_obj=snmodel,
