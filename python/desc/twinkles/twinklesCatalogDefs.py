@@ -7,6 +7,7 @@ from lsst.sims.utils import arcsecFromRadians
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import PhosimInputBase
 from lsst.sims.catUtils.mixins import PhoSimAstrometryGalaxies, \
                                       EBVmixin, VariabilityStars
+from lsst.sims.catUtils.exampleCatalogDefinitions import PhoSimCatalogSersic2D
 from .twinklesVariabilityMixins import VariabilityTwinkles
 
 class TwinklesCatalogZPoint(PhosimInputBase, PhoSimAstrometryGalaxies, EBVmixin, VariabilityTwinkles):
@@ -26,3 +27,8 @@ class TwinklesCatalogZPoint(PhosimInputBase, PhoSimAstrometryGalaxies, EBVmixin,
     delimiter = " "
     spatialModel = "point"
     transformations = {'raPhoSim':numpy.degrees, 'decPhoSim':numpy.degrees}
+
+
+class TwinklesCatalogSersic2D(PhoSimCatalogSersic2D):
+    transformations = {'raPhoSim': numpy.degrees, 'decPhoSim': numpy.degrees,
+                       'majorAxis': arcsecFromRadians, 'minorAxis': arcsecFromRadians}

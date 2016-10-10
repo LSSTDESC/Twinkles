@@ -17,11 +17,10 @@ from lsst.sims.catUtils.baseCatalogModels import (StarObj,
 from lsst.sims.catalogs.definitions import CompoundInstanceCatalog
 from lsst.sims.catUtils.exampleCatalogDefinitions import\
     (PhoSimCatalogPoint,
-     PhoSimCatalogSersic2D,
      PhoSimCatalogSN,
      DefaultPhoSimHeaderMap,
      DefaultPhoSimInstanceCatalogCols)
-from .twinklesCatalogDefs import TwinklesCatalogZPoint
+from .twinklesCatalogDefs import TwinklesCatalogZPoint, TwinklesCatalogSersic2D
 from .sprinkler import sprinklerCompound
 
 __all__ = ['TwinklesPhoSimHeader', 'TwinklesSky']
@@ -94,7 +93,7 @@ class TwinklesSky(object):
 
         # Galaxies
         self.compoundGalDBList = [GalaxyBulgeObj, GalaxyDiskObj, GalaxyAgnObj]
-        self.compoundGalICList = [PhoSimCatalogSersic2D, PhoSimCatalogSersic2D,
+        self.compoundGalICList = [TwinklesCatalogSersic2D, TwinklesCatalogSersic2D,
                                   TwinklesCatalogZPoint]
 
         # SN 
