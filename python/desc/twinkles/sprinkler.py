@@ -47,7 +47,7 @@ class sprinklerCompound(GalaxyTileCompoundObj):
         return results
 
 class sprinkler():
-    def __init__(self, catsim_cat, om10_cat='twinkles_tdc_rung4.fits',
+    def __init__(self, catsim_cat, om10_cat='twinkles_lenses_v2.fits',
                  density_param=1.):
         """
         Parameters
@@ -59,7 +59,7 @@ class sprinkler():
         density_param: `np.float`, optioanl, defaults to 1.0
             the fraction of eligible agn objects that become lensed and should
             be between 0.0 and 1.0.
-        
+
         Returns
         -------
         updated_catalog:
@@ -175,14 +175,13 @@ class sprinkler():
                     row['galaxyAgn_magNorm'] = np.nan
                     row['galaxyAgn_sedFilename'] = None
                     #Now insert desired Bulge properties
-                    row['galaxyBulge_sedFilename'] = self.LRG_name
+                    row['galaxyBulge_sedFilename'] = newlens['lens_sed']
                     row['galaxyBulge_redshift'] = newlens['ZLENS']
                     row['galaxyDisk_redshift'] = newlens['ZLENS']
                     row['galaxyAgn_redshift'] = newlens['ZLENS']
                     row['galaxyBulge_magNorm'] = matchBase().calcMagNorm([newlens['APMAG_I']], self.LRG, self.bandpassDict) #Changed from i band to imsimband
-                    newlens['REFF'] = 1.0 #Hard coded for now. See issue in OM10 github.
-                    row['galaxyBulge_majorAxis'] = radiansFromArcsec(newlens['REFF'])
-                    row['galaxyBulge_minorAxis'] = radiansFromArcsec(newlens['REFF'] * (1 - newlens['ELLIP']))
+                    row['galaxyBulge_majorAxis'] = radiansFromArcsec(newlens['REFF'] / np.sqrt(1 - newlens['ELLIP']))
+                    row['galaxyBulge_minorAxis'] = radiansFromArcsec(newlens['REFF'] * np.sqrt(1 - newlens['ELLIP']))
                     #Convert orientation angle to west of north from east of north by *-1.0 and convert to radians
                     row['galaxyBulge_positionAngle'] = newlens['PHIE']*(-1.0)*np.pi/180.0
                     #Replace original entry with new entry
