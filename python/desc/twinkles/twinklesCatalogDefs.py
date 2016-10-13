@@ -2,12 +2,12 @@
 from __future__ import absolute_import, division, print_function
 import numpy
 from lsst.sims.utils import SpecMap, defaultSpecMap
-from lsst.sims.catalogs.measures.instance import InstanceCatalog
+from lsst.sims.catalogs.definitions import InstanceCatalog
 from lsst.sims.utils import arcsecFromRadians
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import PhosimInputBase
 from lsst.sims.catUtils.mixins import PhoSimAstrometryGalaxies, \
                                       EBVmixin, VariabilityStars
-from twinklesVariabilityMixins import VariabilityTwinkles
+from .twinklesVariabilityMixins import VariabilityTwinkles
 
 class TwinklesCatalogZPoint(PhosimInputBase, PhoSimAstrometryGalaxies, EBVmixin, VariabilityTwinkles):
 

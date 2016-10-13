@@ -18,9 +18,10 @@ from lsst.sims.photUtils.BandpassDict import BandpassDict
 from lsst.sims.photUtils.Sed import Sed
 from lsst.sims.utils import radiansFromArcsec
 
+__all__ = ['sprinklerCompound', 'sprinkler']
 class sprinklerCompound(GalaxyTileCompoundObj):
     objid = 'sprinklerCompound'
-    objectTypeID = 1024
+    objectTypeId = 66
 
     def _final_pass(self, results):
         #From the original GalaxyTileCompoundObj final pass method
@@ -28,28 +29,45 @@ class sprinklerCompound(GalaxyTileCompoundObj):
             if 'raJ2000' in name or 'decJ2000' in name:
                 results[name] = np.radians(results[name])
 
+        # the stored procedure on fatboy that queries the galaxies
+        # constructs galtileid by taking
+        #
+        # tileid*10^8 + galid
+        #
+        # this causes galtileid to be so large that the uniqueIDs in the
+        # Twinkles InstanceCatalogs are too large for PhoSim to handle.
+        # Since Twinkles is only focused on one tile on the sky, we will remove
+        # the factor of 10^8, making the uniqueIDs a more manageable size
+        results['galtileid'] = results['galtileid']%100000000
+
         #Use Sprinkler now
-        sp = sprinkler(results, density_param = 0.2)
+        sp = sprinkler(results, density_param = 1.0)
         results = sp.sprinkle()
 
         return results
 
 class sprinkler():
-    def __init__(self, catsim_cat, om10_cat='twinkles_tdc_rung4.fits', density_param = 1.):
+    def __init__(self, catsim_cat, om10_cat='twinkles_tdc_rung4.fits',
+                 density_param=1.):
         """
-        Input:
-        catsim_cat:
+        Parameters
+        ----------
+        catsim_cat: catsim catalog
             The results array from an instance catalog.
-
-        density_param:
-            A float between 0. and 1.0 that determines the fraction of eligible agn objects that become lensed.
-
-        Output:
+        om10_cat: optional, defaults to 'twinkles_tdc_rung4.fits
+            fits file with OM10 catalog
+        density_param: `np.float`, optioanl, defaults to 1.0
+            the fraction of eligible agn objects that become lensed and should
+            be between 0.0 and 1.0.
+        
+        Returns
+        -------
         updated_catalog:
             A new results array with lens systems added.
         """
 
-
+        twinklesDir = getPackageDir('Twinkles')
+        om10_cat = os.path.join(twinklesDir, 'data', om10_cat)
         self.catalog = catsim_cat
         # ****** THIS ASSUMES THAT THE ENVIRONMENT VARIABLE OM10_DIR IS SET *******
         lensdb = om10.DB(catalog=om10_cat)
@@ -67,6 +85,21 @@ class sprinkler():
         self.LRG.readSED_flambda(str(galDir + self.LRG_name))
         #return
 
+        #Calculate imsimband magnitudes of source galaxies for matching
+        agn_sed = Sed()
+        agn_fname = str(getPackageDir('sims_sed_library') + '/agnSED/agn.spec.gz')
+        agn_sed.readSED_flambda(agn_fname)
+        src_iband = self.lenscat['MAGI_IN']
+        self.src_mag_norm = []
+        for src in src_iband:
+            self.src_mag_norm.append(matchBase().calcMagNorm([src],
+                                                             agn_sed,
+                                                             self.bandpassDict))
+        #self.src_mag_norm = matchBase().calcMagNorm(src_iband,
+        #                                            [agn_sed]*len(src_iband),
+        #                                            self.bandpassDict)
+
+
     def sprinkle(self):
         # Define a list that we can write out to a text file
         lenslines = []
@@ -77,7 +110,8 @@ class sprinkler():
             if rowNum == 100 or rowNum % 100000==0:
                 print("Gone through ", rowNum, " lines of catalog.")
             if not np.isnan(row['galaxyAgn_magNorm']):
-                candidates = self.find_lens_candidates(row['galaxyAgn_redshift'])
+                candidates = self.find_lens_candidates(row['galaxyAgn_redshift'],
+                                                       row['galaxyAgn_magNorm'])
                 varString = json.loads(row['galaxyAgn_varParamStr'])
                 varString['pars']['t0_mjd'] = 59300.0
                 row['galaxyAgn_varParamStr'] = json.dumps(varString)
@@ -156,9 +190,11 @@ class sprinkler():
 
         return updated_catalog
 
-    def find_lens_candidates(self, galz):
-        # search the OM10 catalog for all sources +- 0.05 in redshift from the catsim source
-        w = np.where(np.abs(self.lenscat['ZSRC'] - galz) <= 0.05)[0]
+    def find_lens_candidates(self, galz, gal_mag):
+        # search the OM10 catalog for all sources +- 0.1 dex in redshift
+        # and within .25 mags of the CATSIM source
+        w = np.where((np.abs(np.log10(self.lenscat['ZSRC']) - np.log10(galz)) <= 0.1) &
+                     (np.abs(self.src_mag_norm - gal_mag) <= .25))[0]
         lens_candidates = self.lenscat[w]
 
         return lens_candidates
