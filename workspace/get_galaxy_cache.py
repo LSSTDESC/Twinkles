@@ -1,3 +1,10 @@
+"""
+This script  queries fatboy for all of the galaxies in the Twinkles
+field of view and writes them to the file
+
+$TWINKLES_DIR/data/twinkles_galaxy_cache.txt
+"""
+
 from __future__ import with_statement
 from lsst.utils import getPackageDir
 from lsst.sims.catUtils.baseCatalogModels import GalaxyTileObj
@@ -8,7 +15,11 @@ import numpy as np
 import os
 
 class GalaxyTileObjDegrees(GalaxyTileObj):
-
+    """
+    We needed to sub-class GalaxyTileObj so that we can replace
+    _final_pass, which requires you to query for
+    (raJ2000, decJ2000), rather than (ra, dec)
+    """
     def _final_pass(self, results):
         return results
 
