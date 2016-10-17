@@ -55,6 +55,11 @@ def getGalaxyCacheConnection():
     return dbo.connection
 
 
+# the code below defines a series of CatalogDBObjects
+# specifically designed to access the off-line Twinkles
+# galaxy cache, but otherwise mimic the behavior of
+# GalaxyDiskObj,GalaxyBulgeObj, and GalaxyAgnObj
+
 class GalaxyCacheBase(CatalogDBObject):
     tableid = _galaxy_cache_table_name
     idColKey = 'galtileid'
@@ -111,6 +116,15 @@ class GalaxyCacheAgnObj(GalaxyCacheBase):
                ('sedFilename', 'sedname_agn', str, 50),
                ('variabilityParameters', 'varParamStr', str, 256)]
 
+
+# This CompoundCatalogDBObject deploys the sprinkler
+# on the CatalogDBObjects defined above.  It differs from
+# sprinklerCompound in that it does not cast 'raJ2000' and
+# 'decJ2000' into radians in the _final_pass() method.
+# That operation was an artifact of how GalaxyTileObj differs
+# from all other CatalogDBObjects.  Since we are no longer
+# connecting to GalaxyTileObj, we no longer have to perform
+# the operation.
 
 class GalaxyCacheSprinklerObj(CompoundCatalogDBObject):
     objid = 'galaxyCacheSprinkler'
