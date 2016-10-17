@@ -26,7 +26,7 @@ class GalaxyTileObjDegrees(GalaxyTileObj):
 obs = ObservationMetaData(pointingRA=53.0091385,
                           pointingDec=-27.4389488,
                           boundType='circle',
-                          boundLength=0.1)
+                          boundLength=0.31)
 
 db = GalaxyTileObjDegrees()
 
