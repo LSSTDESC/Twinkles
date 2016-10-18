@@ -8,11 +8,10 @@ The module provides access to
 from __future__ import with_statement, absolute_import, division, print_function
 import time
 import copy
+import numpy as np
+import os
 from lsst.sims.catUtils.baseCatalogModels import (StarObj,
                                                   CepheidStarObj,
-                                                  GalaxyBulgeObj,
-                                                  GalaxyDiskObj,
-                                                  GalaxyAgnObj,
                                                   SNDBObj)
 from lsst.sims.catalogs.definitions import CompoundInstanceCatalog
 from lsst.sims.catUtils.exampleCatalogDefinitions import\
@@ -22,7 +21,10 @@ from lsst.sims.catUtils.exampleCatalogDefinitions import\
      DefaultPhoSimHeaderMap,
      DefaultPhoSimInstanceCatalogCols)
 from .twinklesCatalogDefs import TwinklesCatalogZPoint
-from .sprinkler import sprinklerCompound
+from desc.twinkles import (GalaxyCacheDiskObj, GalaxyCacheBulgeObj,
+                           GalaxyCacheAgnObj, GalaxyCacheSprinklerObj,
+                           create_galaxy_cache,
+                           _galaxy_cache_db_name)
 
 __all__ = ['TwinklesPhoSimHeader', 'TwinklesSky']
 
@@ -93,9 +95,12 @@ class TwinklesSky(object):
         self.compoundStarICList = [PhoSimCatalogPoint, PhoSimCatalogPoint]
 
         # Galaxies
-        self.compoundGalDBList = [GalaxyBulgeObj, GalaxyDiskObj, GalaxyAgnObj]
+        self.compoundGalDBList = [GalaxyCacheBulgeObj, GalaxyCacheDiskObj, GalaxyCacheAgnObj]
         self.compoundGalICList = [PhoSimCatalogSersic2D, PhoSimCatalogSersic2D,
                                   TwinklesCatalogZPoint]
+
+        if not os.path.exists(_galaxy_cache_db_name):
+            create_galaxy_cache()
 
         # SN 
         ## SN catalogDBObject
@@ -137,9 +142,9 @@ class TwinklesSky(object):
                                          self.compoundGalDBList,
                                          obs_metadata=self.obs_metadata,
                                          constraint=self.brightestGalMag,
-                                         compoundDBclass=sprinklerCompound)
+                                         compoundDBclass=GalaxyCacheSprinklerObj)
 
-        galCat._active_connections = starCat._active_connections # pass along already open fatboy connections
+        galCat._active_connections = starCat._active_connections  # pass along already open fatboy connections
         t_before_galCat = time.time()
         print("writing galCat")
         galCat.write_catalog(fileName, write_mode='a', chunk_size=10000,
