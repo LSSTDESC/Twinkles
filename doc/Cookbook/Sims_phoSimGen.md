@@ -14,6 +14,28 @@ Instructions for getting all this done are on the  [setup Twinkles](https://gith
 Now, there are scripts that use the OpSim output which is a sqlite database of ~ 4 GB size representing a simulated LSST Survey.  If you do not already have access to one of these databases, they can be downloaded from [here](https://www.lsst.org/scientists/simulations/opsim/opsim-survey-data). Once you have downloaded an OpSim simulated survey, you can point Twinkles toward it by copying the file `setup/setup_location_templates.sh` to `setup/setup_locations.sh` and set the value of the OpSimDir to suit their needs.
 
 ### Setting up Twinkles
+
+Twinkles and the LSST Simulations stack consist of a series disparate software packages that all depend on each other.  The linking between these packages is managed by a product called `eups` (the Extended Unix Product System).  If you installed the LSST Simulations stack, you also installed `eups`.  To activate `eups`, go into the the directory where you installed the LSST Simulations stack and type
+```
+source loadLSST.*
+```
+where the suffix of `loadLSST` depends on the kernel you are running.  `eups` keeps track of every version of every LSST package installed on your machine and the dependencies between them.  In order to use an `eups`-managed package, you must set it up.  You can control which version of the package is setup using a command like this
+
+```
+setup my_package -t prototype -t v2.1
+```
+
+The arguments following `-t` are `eups` tags.  The command above tells `eups` to setup `my_package`, using the versions tagged as `prototype` or, if `prototype` does not exist, the version tagged `v2.1`.  `eups` walks down the dependency tree of `my_package`, at each step, checking for a version tagged `prototype`.  If it finds one, it sets it up.  If it does not find one, it looks for a version tagged `v2.1` and sets that up.  If it cannot find a version tagged `v2.1`, it will finally try to set up the version tagged `current` (a catch-all tag for the most up-to-date version on your system; you should not try to set the `current` tag by hand unless you know what you are doing).  If it cannot even find a version tagged `current`, `eups` will fail.
+
+To see the versions of a package available to your system, you can type
+```
+eups list my_package
+```
+which will show all of the versions of `my_package` available on your system, along with their corresponding `eups` tags.  If you want to see the directories in which these versions reside, use
+```
+eups list -v my_package
+```
+
 Once you have a version of the LSST sims stack working, you have the `eups` database loaded. Now you should be able to do
 ```
 eups list sims_catUtils
