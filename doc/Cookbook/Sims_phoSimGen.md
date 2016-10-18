@@ -22,7 +22,8 @@ source setup/declare_eups.sh
 ```
 to declare this package location and name to the `eups` database with a tag given by your user name. This step will not required to be repeated. 
 
-Now, there are scripts that use the OpSim output which is a sqlite database of ~ 4 GB size. We assume that many users will already have this database on their disk stored in a location convenient to them, and therefore this location will be different for everyone. To deal with this, we suggest, that each user copy the file `setup/setup_location_templates.sh` to `setup/setup_locations.sh` and set the value of the OpSimDir to suit their needs.
+Now, there are scripts that use the OpSim output which is a sqlite database of ~ 4 GB size representing a simulated LSST Survey.  If you do not already have access to one of these databases, they can be downloaded from [here](https://www.lsst.org/scientists/simulations/opsim/opsim-survey-data). Once you have downloaded an OpSim simulated survey, you can point Twinkles toward it by copying the file `setup/setup_location_templates.sh` to `setup/setup_locations.sh` and set the value of the OpSimDir to suit their needs.
+
 After you have done this, everytime you want to work with Twinkles in a new SHELL, you have to setup Twinkles. Once you have `eups` database loaded in that SHELL, you can source the
 script 
 ```
