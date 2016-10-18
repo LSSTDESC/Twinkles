@@ -21,7 +21,35 @@ $> eups distrib install lsst_sims -t sims
 $> setup lsst_sims -t sims
 ```
 
-2) Install `PhoSim`.
+2) Enable connection to CatSim databases
+
+    a) Create a directory `$HOME/.lsst/`
+
+    b) Create a file `db-auth.paf` in that directory whose contents are
+    ```
+    database: {
+        authIfno: {
+            host: localhost
+            port: 51433
+            user: <shared username>
+            password: <shared password>
+        }
+    }
+    ```
+
+    c) Set the permissions on `$HOME/.lsst/` to 700 using
+    `chmod 700 $HOME/.lsst'
+
+    d) Set the permissions on `$HOME/.lsst/db-auth.paf` to 600 using
+    `chomd 600 $HOME/.lsst/db-auth.paf`
+
+    c) Email your public ssh key to Scott Daniel (`scottvalscott@gmail.com`).
+    He will also give you the shared username and password that belongs in
+    `$HOME/.lsst/db-auth.paf`.  If you do not already have an ssh key,
+    instructions for creating one can be found
+    [here](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/).
+
+3) Install `PhoSim`.
 ```
 $> mkdir ~/repos
 $> cd ~/repos
@@ -35,7 +63,7 @@ You'll have to point to the correct cfitsio and fftw3 libraries and headers for 
 $> make
 ```
 
-3) Test `PhoSim`.
+4) Test `PhoSim`.
 ```
 $> mkdir ~/TwinklesData
 $> cd ~/TwinklesData
