@@ -69,22 +69,6 @@ One instantiation of `TwinklesSky` corresponds to one pointing of the simulated 
 
 - Gravitational lensing is not simulated in the native CatSim database tables.  `TwinklesSky` uses a custom python class called the [sprinkler](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/python/desc/twinkles/sprinkler.py) to search through the galaxies returned from the CatSim database and replace suitable candidates with multiply lensed quasar systems from the OM10 database.  These lensed systems include a time-delay variability model which is visible in the resulting series of `phoSim`-generated images.
 
-`desc.twinkles.TwinklesSky` implements a selection cut to remove all stars and galaxies brighter than a particular magnitude (set to 11.0 by default, but can be adjusted for
-each of these classes in terms of a g band magnitude). Finally, it has a method `writePhoSimCatalog` for serializing this information to an ascii file (phosim instance catalog) in a file format appropriate for phosim inputs. For static objects, PhoSim uses seds that are stored (with compression) in `CatSim`. For supernovae, the SEDs at each point of time are calculated on the fly from a model and written to disk. While writing out the phoSim instance catalog, the `writePhoSimCatalog` method also writes these SEDs to disk.
-
-There is an additional subtlety: If we want to be doing many pointings, it is inefficient to open too many new connections to fatboy (even though parallel connections are allowed).
-Hence, `TwinklesSky` has an attribute `availableConnections` which allows it to reuse connections made to fatboy. This is also used as an input (It can start as None) 
-
-The class constructor for `TwinklesSky` has parameters
-
-- obs_metadata : Observaton MetaData of the relevant OpSim pointing
-- brightestStar_gmag_inCat : the g band magnitude threshold for rejecting bright stars 
-- brightestGal_gmag_inCat : the g band magnitude threshold for rejecting bright Galalxies 
-- sntable : name of the supernova Table to use.
-- sn_sed_file_prefix : controls the location and filenames of the SN spectra written to disk
-- availableConnections : At the beginning, this can be None, but it is good to hand back available connections to a new instance rather than having it create the connections
-
-
 #### Putting it altogether ...
 
 To generate all the phosim instance catalogs and the spectra, we must:
