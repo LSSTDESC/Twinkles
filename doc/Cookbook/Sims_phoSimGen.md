@@ -52,7 +52,7 @@ script
 ```
 source setup/setup_twinkles.sh
 ```
-if your sims stack has the tag `sims` (you can check by using `eups list -v sims_catUtils`: the output includes each record of an installation of the package `sims_catUtils` known to the `eups` database with each record listing a version, the eups database location, location of the package, and finally the tag. Of these packages the one that is setup will have the tag followed by the word setup as following the tag of interest. If this tag is not 'sims' (for example, if you use a conda install, this tag is most likely 'current'), you can pass that tag to the setup script like this:
+if your sims stack has the tag `sims` (you can check by using `eups list -v sims_catUtils`).  Of these packages the one that is setup will have the tag followed by the word setup as following the tag of interest. If this tag is not 'sims' (for example, if you use a conda install, this tag is most likely 'current'), you can pass that tag to the setup script like this:
 ```
 source setup/setup_twinkles.sh current
 ```
