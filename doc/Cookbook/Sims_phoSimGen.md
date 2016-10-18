@@ -35,14 +35,13 @@ which will show all of the versions of `my_package` available on your system, al
 ```
 eups list -v my_package
 ```
-
-Once you have a version of the LSST sims stack working, you have the `eups` database loaded. Now you should be able to do
+To see the versions of the LSST Simulations stack available to you, try
 ```
 eups list sims_catUtils
 ```
-and see the the versions and tags listed for this eups package.
+`sims_catUtils` is the highest-level LSST package on which Twinkles depends.
 
-When first setting up Twinkles, from the top level directory of `Twinkles` use 
+In order to use Twinkles, you must tell `eups` that Twinkles exists.  From the top level directory of `Twinkles` use
 ```
 source setup/declare_eups.sh
 ```
