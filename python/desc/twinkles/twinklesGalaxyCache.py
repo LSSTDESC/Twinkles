@@ -1,9 +1,10 @@
 import numpy as np
 import os
 from lsst.utils import getPackageDir
+from lsst.sims.utils import ObservationMetaData
 from lsst.sims.catalogs.db import fileDBObject
 from lsst.sims.catalogs.db import CatalogDBObject, CompoundCatalogDBObject
-from lsst.sims.catUtils.baseCatalogModels import GalaxyObj
+from lsst.sims.catUtils.baseCatalogModels import GalaxyObj, GalaxyTileObj
 from desc.twinkles import sprinkler
 
 __all__ = ["_galaxy_cache_file_name",
@@ -13,7 +14,8 @@ __all__ = ["_galaxy_cache_file_name",
            "GalaxyCacheAgnObj", "GalaxyCacheSprinklerObj"]
 
 
-_galaxy_cache_file_name = 'twinkles_galaxy_cache.txt'
+_galaxy_cache_file_name = os.path.join(getPackageDir('twinkles'), 'data',
+                                       'twinkles_galaxy_cache.txt')
 
 _galaxy_cache_table_name = 'galaxy_cache'
 
@@ -33,19 +35,63 @@ _galaxy_cache_dtype = np.dtype([('galtileid', int),
                                 ('rv_d', float)])
 
 
+class GalaxyTileObjDegrees(GalaxyTileObj):
+    """
+    We needed to sub-class GalaxyTileObj so that we can replace
+    _final_pass, which requires you to query for
+    (raJ2000, decJ2000), rather than (ra, dec)
+    """
+    def _final_pass(self, results):
+        return results
+
+
+def create_galaxy_cache():
+
+    obs = ObservationMetaData(pointingRA=53.0091385,
+                              pointingDec=-27.4389488,
+                              boundType='circle',
+                              boundLength=0.31)
+
+    db = GalaxyTileObjDegrees()
+
+    col_names = list(_galaxy_cache_dtype.names)
+
+    result_iterator = db.query_columns(colnames=col_names, chunk_size=100000,
+                                       obs_metadata=obs)
+
+    with open(_galaxy_cache_file_name, 'w') as output_file:
+        output_file.write('# galtileid ')
+        for name in col_names:
+            output_file.write('%s ' % name)
+        output_file.write('\n')
+        for chunk in result_iterator:
+            for line in chunk:
+                output_file.write(('%ld;%.17g;%.17g;%s;%.17g;%s;%.17g;%s;%.17g;%s;%.17g;%.17g;'
+                                   % (line[0], line[1], line[2],
+                                      line[3], line[4], line[5],
+                                      line[6], line[7], line[8],
+                                      line[9], line[10], line[11])).replace('nan', 'NULL').replace('None', 'NULL')
+                                   + ('%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g'
+                                      % (line[12], line[13], line[14],
+                                         line[15], line[16], line[17],
+                                         line[18], line[19], line[20],
+                                         line[21], line[22], line[23])).replace('nan', 'NULL').replace('None', 'NULL')
+                                   + '\n')
+
+
 def getGalaxyCacheConnection():
     """
     Read in the galaxy cache, convert it to a database, and return a
     connection to that database.
     """
 
-    file_name = os.path.join(getPackageDir('twinkles'), 'data',
-                             _galaxy_cache_file_name)
+    if not os.path.exists(_galaxy_cache_file_name):
+        create_galaxy_cache()
 
     if os.path.exists(_galaxy_cache_db_name):
         os.unlink(_galaxy_cache_db_name)
 
-    dbo = fileDBObject(file_name, driver='sqlite',
+    dbo = fileDBObject(_galaxy_cache_file_name, driver='sqlite',
                        runtable=_galaxy_cache_table_name,
                        database=_galaxy_cache_db_name,
                        dtype=_galaxy_cache_dtype,
