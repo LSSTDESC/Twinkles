@@ -63,16 +63,6 @@ The code uses this variable.
 
 `phoSim` expects as input an ASCII file describing both the pointing of the telescope and the celestial objects in the field of view.  The schema for these 'InstanceCatalogs' can be found [here](https://bitbucket.org/phosim/phosim_release/wiki/Instance%20Catalog).  The LSST Simulations stack has many tools designed specifically to convert data from both OpSim and CatSim into the format expected by `phoSim`.  Twinkles uses these tools.  Meta-data about the telescope (altitude, azimuth, rotator angle, etc.) are taken from the OpSim database.  Data about the celestial objects in the field of view are taken from the CatSim database, the OM10 database of lensed galaxies, and supernova simulations generated on-the-fly using the `sncosmo` package.  Code to query the OpSim database and produce objects containing the metadata needed by both CatSim and `phoSim` can be found in the class `ObservationMetaDataGenerator`, which can be imported from `lsst.sims.catUtils.utils`.  Code to use this metadata to generate a list of celestial objects can be found in the class `TwinklesSky`, which can be imported from `desc.twinkles`.
 
-The inputs to `phoSim` are phoSim Instance Catalogs which contains
--  all of the meta-data characterizing the observation :
-- the astrophysical sources and their fluxes/models at the time of observation.
-
-The relevant information is represented in `Twinkles` as `desc.twinkles.TwinklesSky`. In order to create an instance of `TwinklesSky`, it requires input in the form of
-- instances of `lsst.sims.utils.ObservationMetaData`
-- The catalogDB Objects that define the properties of astrophysical sources in the form of database tables on fatboy. These are hard-coded into the class, as there is not much to choose. The exception is the classs representing SN, since we may use different SN tables. Each class of object Stars (static and variable) and Galaxies (Bugle, Disc, AGN) form their own groups in a Compound Catalog class. This is particularly important for the construction of time-delayed AGN (manifestations of strongly lensed AGNs). 
-
-#### Functionality 
-
 `desc.twinkles.TwinklesSky` implements a selection cut to remove all stars and galaxies brighter than a particular magnitude (set to 11.0 by default, but can be adjusted for
 each of these classes in terms of a g band magnitude). Finally, it has a method `writePhoSimCatalog` for serializing this information to an ascii file (phosim instance catalog) in a file format appropriate for phosim inputs. For static objects, PhoSim uses seds that are stored (with compression) in `CatSim`. For supernovae, the SEDs at each point of time are calculated on the fly from a model and written to disk. While writing out the phoSim instance catalog, the `writePhoSimCatalog` method also writes these SEDs to disk.
 
