@@ -14,14 +14,18 @@ __all__ = ["_galaxy_cache_file_name",
            "GalaxyCacheAgnObj", "GalaxyCacheSprinklerObj"]
 
 
+# the name of the text file that will contain the galaxy cache
 _galaxy_cache_file_name = os.path.join(getPackageDir('twinkles'), 'data',
                                        'twinkles_galaxy_cache.txt')
 
+# the name of the table containing the galaxies in the galaxy cache database
 _galaxy_cache_table_name = 'galaxy_cache'
 
+# the name of the sqlite database produced from the galaxy cache
 _galaxy_cache_db_name = os.path.join(getPackageDir('twinkles'), 'data',
                                      'galaxy_cache.db')
 
+# the dtype describing the contents of the galaxy cache
 _galaxy_cache_dtype = np.dtype([('galtileid', int),
                                 ('ra', float), ('dec', float),
                                 ('sedname_disk', str, 50), ('magnorm_disk', float),
