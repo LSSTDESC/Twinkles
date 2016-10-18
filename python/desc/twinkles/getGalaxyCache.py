@@ -23,37 +23,39 @@ class GalaxyTileObjDegrees(GalaxyTileObj):
     def _final_pass(self, results):
         return results
 
-obs = ObservationMetaData(pointingRA=53.0091385,
-                          pointingDec=-27.4389488,
-                          boundType='circle',
-                          boundLength=0.31)
+def create_galaxy_cache():
 
-db = GalaxyTileObjDegrees()
+    obs = ObservationMetaData(pointingRA=53.0091385,
+                              pointingDec=-27.4389488,
+                              boundType='circle',
+                              boundLength=0.31)
 
-col_names = list(_galaxy_cache_dtype.names)
+    db = GalaxyTileObjDegrees()
 
-result_iterator = db.query_columns(colnames=col_names, chunk_size=100000,
-                                   obs_metadata=obs)
+    col_names = list(_galaxy_cache_dtype.names)
 
-file_name = os.path.join(getPackageDir('twinkles'),
-                         'data', 'twinkles_galaxy_cache.txt')
+    result_iterator = db.query_columns(colnames=col_names, chunk_size=100000,
+                                       obs_metadata=obs)
 
-with open(file_name, 'w') as output_file:
-    output_file.write('# galtileid ')
-    for name in col_names:
-        output_file.write('%s ' % name)
-    output_file.write('\n')
-    for chunk in result_iterator:
-        for line in chunk:
-            output_file.write(('%ld;%.17g;%.17g;%s;%.17g;%s;%.17g;%s;%.17g;%s;%.17g;%.17g;'
-                               % (line[0], line[1], line[2],
-                                  line[3], line[4], line[5],
-                                  line[6], line[7], line[8],
-                                  line[9], line[10], line[11])).replace('nan', 'NULL').replace('None', 'NULL')
-                               + ('%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g'
-                                  % (line[12], line[13], line[14],
-                                     line[15], line[16], line[17],
-                                     line[18], line[19], line[20],
-                                     line[21], line[22], line[23])).replace('nan', 'NULL').replace('None', 'NULL')
-                               + '\n')
+    file_name = os.path.join(getPackageDir('twinkles'),
+                             'data', 'twinkles_galaxy_cache.txt')
+
+    with open(file_name, 'w') as output_file:
+        output_file.write('# galtileid ')
+        for name in col_names:
+            output_file.write('%s ' % name)
+        output_file.write('\n')
+        for chunk in result_iterator:
+            for line in chunk:
+                output_file.write(('%ld;%.17g;%.17g;%s;%.17g;%s;%.17g;%s;%.17g;%s;%.17g;%.17g;'
+                                   % (line[0], line[1], line[2],
+                                      line[3], line[4], line[5],
+                                      line[6], line[7], line[8],
+                                      line[9], line[10], line[11])).replace('nan', 'NULL').replace('None', 'NULL')
+                                   + ('%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g'
+                                      % (line[12], line[13], line[14],
+                                         line[15], line[16], line[17],
+                                         line[18], line[19], line[20],
+                                         line[21], line[22], line[23])).replace('nan', 'NULL').replace('None', 'NULL')
+                                   + '\n')
 
