@@ -9,6 +9,7 @@ from __future__ import with_statement, absolute_import, division, print_function
 import time
 import copy
 import numpy as np
+import os
 from lsst.sims.catUtils.baseCatalogModels import (StarObj,
                                                   CepheidStarObj,
                                                   SNDBObj)
@@ -22,7 +23,8 @@ from lsst.sims.catUtils.exampleCatalogDefinitions import\
 from .twinklesCatalogDefs import TwinklesCatalogZPoint
 from desc.twinkles import (GalaxyCacheDiskObj, GalaxyCacheBulgeObj,
                            GalaxyCacheAgnObj, GalaxyCacheSprinklerObj,
-                           getGalaxyCacheConnection)
+                           create_galaxy_cache,
+                           _galaxy_cache_db_name)
 
 __all__ = ['TwinklesPhoSimHeader', 'TwinklesSky']
 
@@ -97,14 +99,15 @@ class TwinklesSky(object):
         self.compoundGalICList = [PhoSimCatalogSersic2D, PhoSimCatalogSersic2D,
                                   TwinklesCatalogZPoint]
 
+        if not os.path.exists(_galaxy_cache_db_name):
+            create_galaxy_cache()
+
         # SN 
         ## SN catalogDBObject
         if self.availableConnections is None:
             self.availableConnections = list()
             self.snObj = SNDBObj(table=sntable, connection=None)
             self.availableConnections.append(self.snObj.connection)
-            galaxy_connection = getGalaxyCacheConnection()
-            self.availableConnections.append(galaxy_connection)
         else:
             self.snObj = SNDBObj(table=sntable, connection=self.availableConnections[0])
         

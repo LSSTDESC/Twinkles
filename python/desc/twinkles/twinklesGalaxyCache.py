@@ -7,9 +7,8 @@ from lsst.sims.catalogs.db import CatalogDBObject, CompoundCatalogDBObject
 from lsst.sims.catUtils.baseCatalogModels import GalaxyObj, GalaxyTileObj
 from desc.twinkles import sprinkler
 
-__all__ = ["_galaxy_cache_file_name",
-           "_galaxy_cache_dtype",
-           "getGalaxyCacheConnection",
+__all__ = ["_galaxy_cache_db_name",
+           "create_galaxy_cache",
            "GalaxyCacheDiskObj", "GalaxyCacheBulgeObj",
            "GalaxyCacheAgnObj", "GalaxyCacheSprinklerObj"]
 
@@ -50,6 +49,10 @@ class GalaxyTileObjDegrees(GalaxyTileObj):
 
 
 def create_galaxy_cache():
+    """
+    Create an sqlite .db file in data/ containing all of the galaxies
+    in the Twinkles field of view.
+    """
 
     obs = ObservationMetaData(pointingRA=53.0091385,
                               pointingDec=-27.4389488,
@@ -82,16 +85,6 @@ def create_galaxy_cache():
                                          line[21], line[22], line[23])).replace('nan', 'NULL').replace('None', 'NULL')
                                    + '\n')
 
-
-def getGalaxyCacheConnection():
-    """
-    Read in the galaxy cache, convert it to a database, and return a
-    connection to that database.
-    """
-
-    if not os.path.exists(_galaxy_cache_file_name):
-        create_galaxy_cache()
-
     if os.path.exists(_galaxy_cache_db_name):
         os.unlink(_galaxy_cache_db_name)
 
@@ -102,8 +95,9 @@ def getGalaxyCacheConnection():
                        delimiter=';',
                        idColKey='galtileid')
 
-    return dbo.connection
 
+    if os.path.exists(_galaxy_cache_file_name):
+        os.unlink(_galaxy_cache_file_name)
 
 # the code below defines a series of CatalogDBObjects
 # specifically designed to access the off-line Twinkles
