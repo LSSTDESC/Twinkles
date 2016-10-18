@@ -9,6 +9,10 @@ The starting point comprises an `OpSim` output database which stores each OpSim 
 - And the abililty to conect the UW catsim database on the server fatboy (For the first time, this might need some steps in contacting people)
 Instructions for getting all this done are on the  [setup Twinkles](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Setup.md)
 
+### Downloading a Simulated LSST Survey (an OpSim Database)
+
+Now, there are scripts that use the OpSim output which is a sqlite database of ~ 4 GB size representing a simulated LSST Survey.  If you do not already have access to one of these databases, they can be downloaded from [here](https://www.lsst.org/scientists/simulations/opsim/opsim-survey-data). Once you have downloaded an OpSim simulated survey, you can point Twinkles toward it by copying the file `setup/setup_location_templates.sh` to `setup/setup_locations.sh` and set the value of the OpSimDir to suit their needs.
+
 ### Setting up Twinkles
 Once you have a version of the LSST sims stack working, you have the `eups` database loaded. Now you should be able to do
 ```
@@ -21,8 +25,6 @@ When first setting up Twinkles, from the top level directory of `Twinkles` use
 source setup/declare_eups.sh
 ```
 to declare this package location and name to the `eups` database with a tag given by your user name. This step will not required to be repeated. 
-
-Now, there are scripts that use the OpSim output which is a sqlite database of ~ 4 GB size representing a simulated LSST Survey.  If you do not already have access to one of these databases, they can be downloaded from [here](https://www.lsst.org/scientists/simulations/opsim/opsim-survey-data). Once you have downloaded an OpSim simulated survey, you can point Twinkles toward it by copying the file `setup/setup_location_templates.sh` to `setup/setup_locations.sh` and set the value of the OpSimDir to suit their needs.
 
 After you have done this, everytime you want to work with Twinkles in a new SHELL, you have to setup Twinkles. Once you have `eups` database loaded in that SHELL, you can source the
 script 
