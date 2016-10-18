@@ -56,7 +56,7 @@ if your sims stack has the tag `sims` (you can check by using `eups list -v sims
 ```
 source setup/setup_twinkles.sh current
 ```
-At this point, the directories of the Twinkles repositories become available as part of the `desc` namespace, and an environment variable `$TWINKLES_DIR` is exported to the SHELL.
+This script tells `eups` to setup Twinkles and a self-consistent copy of the LSST Simulations stack.  At this point, the directories of the Twinkles repositories become available as part of the `desc` namespace, and an environment variable `$TWINKLES_DIR` is exported to the SHELL.
 The code uses this variable.
 
 ### Generate the `phoSim` inputs
