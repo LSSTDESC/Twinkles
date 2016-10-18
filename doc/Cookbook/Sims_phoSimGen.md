@@ -3,7 +3,7 @@
 This recipe shows how to generate inputs to `phoSim` known as phosim Instance Catalogs for the Twinkles Sky.  These catalogs record the position and characteristics of every astrophysical object in the simulation, along with characteristics of the observation and form the input to PhoSim. We will discuss the generation of such catalogs using the tools available to Twinkles. 
 
 The starting point comprises an `OpSim` output database which stores each OpSim pointing as a record, the `CatSim` mock sky database. You will also need to [setup Twinkles](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Setup.md). As you can see by following that link, this requires having
-- the LSST simulation stack running (version > Scott's release version)
+- the LSST simulation stack running (version > 2.3.1)
 - A working version of OM10 
 - Setup Twinkles 
 - And the abililty to conect the UW catsim database on the server fatboy (For the first time, this might need some steps in contacting people)
