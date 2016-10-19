@@ -47,7 +47,8 @@ def _sql_constraint(obsHistIDList):
 
 def generateSinglePointing(obs_metaData, availableConns, sntable,
                            fname,
-                           sn_sed_file_dir):
+                           sn_sed_file_dir,
+                           db_config):
     """
     obs_metaData : instance of `lsst.sims.utils.ObservationMetaData`
         observation metadata corresponding to an OpSim pointing
@@ -56,6 +57,7 @@ def generateSinglePointing(obs_metaData, availableConns, sntable,
     fname : output file for phoSim instance Catalog
     sn_sed_file_dir : directory to which the SN seds corresponding to this
         phoSim metadat
+    db_config : the name of a file overriding the fatboy connection information
     """
     tstart = time.time()
     obs_metaData.boundLength = 0.3
@@ -69,7 +71,8 @@ def generateSinglePointing(obs_metaData, availableConns, sntable,
                        brightestStar_gmag_inCat=11.0,
                        brightestGal_gmag_inCat=11.0,
                        sntable=sntable,
-                       sn_sedfile_prefix=os.path.join(sn_sed_file_dir, 'specFile_'))
+                       sn_sedfile_prefix=os.path.join(sn_sed_file_dir, 'specFile_'),
+                       db_config=db_config)
     # fname = phoSimInputFileName(obsHistID)
     # if not os.path.exists(os.path.dirname(fname)):
     #    os.makedirs(os.path.dirname(fname))
@@ -107,8 +110,9 @@ if __name__ == '__main__':
                         type=str,
                         default='.',
                         help='directory to contain SED files')
+    parser.add_argument('--db_config', type=str, default=None,
+                        help='config file overriding CatSim database connection information')
     args = parser.parse_args()
-    
 
     # set the filename default to a sensible value using the obsHistID
     if args.outfile is None:
@@ -135,4 +139,5 @@ if __name__ == '__main__':
                            availableConns=availConns,
                            sntable='TwinkSN',
                            fname=args.outfile,
-                           sn_sed_file_dir=sn_sed_file_dir)
+                           sn_sed_file_dir=sn_sed_file_dir,
+                           db_config=args.db_config)

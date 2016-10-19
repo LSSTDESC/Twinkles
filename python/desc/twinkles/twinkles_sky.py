@@ -10,7 +10,9 @@ import time
 import copy
 import numpy as np
 import os
-from lsst.sims.catUtils.baseCatalogModels import (StarObj,
+from lsst.utils import getPackageDir
+from lsst.sims.catUtils.baseCatalogModels import (BaseCatalogConfig,
+                                                  StarObj,
                                                   CepheidStarObj,
                                                   SNDBObj)
 from lsst.sims.catalogs.definitions import CompoundInstanceCatalog
@@ -49,7 +51,8 @@ class TwinklesSky(object):
                  brightestGal_gmag_inCat=11.0,
                  availableConnections=None,
                  sntable='TwinkSN',
-                 sn_sedfile_prefix='spectra_files/specFile_'):
+                 sn_sedfile_prefix='spectra_files/specFile_',
+                 db_config=None):
         """
         Parameters
         ----------
@@ -69,6 +72,7 @@ class TwinklesSky(object):
             Name of the table on fatboy with the SN parameters desired. 
         sn_sedfile_prefix : string, optional, defaults to `spectra_files/specFile_'
             prefix for sed of the supernovae.
+        db_config : the name of a file overriding the fatboy connection information
         Attributes
         ----------
         snObj : CatalogDBObj for SN
@@ -88,6 +92,16 @@ class TwinklesSky(object):
         self.brightestGalMag = 'g_ab > {}'.format(self.brightestGal_gmag_inCat)
 
         self.availableConnections = availableConnections
+
+        # override the database connection configuration
+        if db_config is not None:
+            config = BaseCatalogConfig()
+            config.load(db_config)
+            for target in (StarObj, CepheidStarObj, SNDBObj):
+                target.host = config.host
+                target.port = config.port
+                target.database = config.database
+                target.driver = config.driver
 
         # Lists of component phosim Instance Catalogs and CatalogDBObjects
         # Stars
