@@ -6,7 +6,7 @@ To run your own `twinkles` simulations, you will need to have taken the followin
 
 See [this LSST Sims confluence page](https://confluence.lsstcorp.org/display/SIM/Catalogs+and+MAF) for install instructions. In short:
 
-1) Install the LSST DM software stack, including the `sims` utilities.
+### 1) Install the LSST DM software stack, including the `sims` utilities.
 ```
 $> mkdir ~/stack
 $> cd ~/stack
@@ -21,7 +21,7 @@ $> eups distrib install lsst_sims -t sims
 $> setup lsst_sims -t sims
 ```
 
-2) Enable connection to CatSim databases
+### 2) Enable connection to CatSim databases
 
 For security reasons, the CatSim database are behind a fairly restrictive
 firewall.  The two ways to gain access to the database are to get your machine
@@ -60,7 +60,7 @@ He will also give you the shared username and password that belongs in
 instructions for creating one can be found
 [here](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/).
 
-3) Install `PhoSim`.
+### 3) Install `PhoSim`.
 ```
 $> mkdir ~/repos
 $> cd ~/repos
@@ -74,7 +74,7 @@ You'll have to point to the correct cfitsio and fftw3 libraries and headers for 
 $> make
 ```
 
-4) Test `PhoSim`.
+### 4) Test `PhoSim`.
 ```
 $> mkdir ~/TwinklesData
 $> cd ~/TwinklesData
