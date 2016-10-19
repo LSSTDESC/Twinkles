@@ -19,7 +19,7 @@ Twinkles and the LSST Simulations stack consist of a series disparate software p
 ```
 source loadLSST.*
 ```
-where the suffix of `loadLSST` depends on the kernel you are running.  `eups` keeps track of every version of every LSST package installed on your machine and the dependencies between them.  In order to use an `eups`-managed package, you must set it up.  You can control which version of the package is setup using a command like this
+where the suffix of `loadLSST` depends on the shell you are running.  `eups` keeps track of every version of every LSST package installed on your machine and the dependencies between them.  In order to use an `eups`-managed package, you must set it up.  You can control which version of the package is setup using a command like this
 
 ```
 setup my_package -t prototype -t v2.1
