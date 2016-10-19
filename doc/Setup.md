@@ -32,11 +32,11 @@ connect via the SSH tunnel.  To connect via the whitelist, see the appropriate
 section in [this
 document](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Cookbook/Sims_Recipe.md).
 
-    #### Instructions to enable connection via the SSH tunnel
+#### Instructions to enable connection via the SSH tunnel
 
-    a) Create a directory `$HOME/.lsst/`
+a) Create a directory `$HOME/.lsst/`
 
-    b) Create a file `db-auth.paf` in that directory whose contents are
+b) Create a file `db-auth.paf` in that directory whose contents are
     ```
     database: {
         authIfno: {
@@ -48,17 +48,17 @@ document](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master
     }
     ```
 
-    c) Set the permissions on `$HOME/.lsst/` to 700 using
-    `chmod 700 $HOME/.lsst'
+c) Set the permissions on `$HOME/.lsst/` to 700 using
+`chmod 700 $HOME/.lsst'
 
-    d) Set the permissions on `$HOME/.lsst/db-auth.paf` to 600 using
-    `chomd 600 $HOME/.lsst/db-auth.paf`
+d) Set the permissions on `$HOME/.lsst/db-auth.paf` to 600 using
+`chomd 600 $HOME/.lsst/db-auth.paf`
 
-    c) Email your public ssh key to Scott Daniel (`scottvalscott@gmail.com`).
-    He will also give you the shared username and password that belongs in
-    `$HOME/.lsst/db-auth.paf`.  If you do not already have an ssh key,
-    instructions for creating one can be found
-    [here](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/).
+c) Email your public ssh key to Scott Daniel (`scottvalscott@gmail.com`).
+He will also give you the shared username and password that belongs in
+`$HOME/.lsst/db-auth.paf`.  If you do not already have an ssh key,
+instructions for creating one can be found
+[here](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/).
 
 3) Install `PhoSim`.
 ```
