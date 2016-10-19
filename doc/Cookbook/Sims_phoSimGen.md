@@ -25,7 +25,7 @@ where the suffix of `loadLSST` depends on the kernel you are running.  `eups` ke
 setup my_package -t prototype -t v2.1
 ```
 
-The arguments following `-t` are `eups` tags.  The command above tells `eups` to setup `my_package`, using the versions tagged as `prototype` or, if `prototype` does not exist, the version tagged `v2.1`.  `eups` walks down the dependency tree of `my_package`, at each step, checking for a version tagged `prototype`.  If it finds one, it sets it up.  If it does not find one, it looks for a version tagged `v2.1` and sets that up.  If it cannot find a version tagged `v2.1`, it will finally try to set up the version tagged `current` (a catch-all tag for the most up-to-date version on your system; you should not try to set the `current` tag by hand unless you know what you are doing).  If it cannot even find a version tagged `current`, `eups` will fail.
+The arguments following `-t` are `eups` tags.  The command above tells `eups` to setup `my_package`, using the version tagged as `prototype` or, if `prototype` does not exist, the version tagged `v2.1`.  `eups` walks down the dependency tree of `my_package`, at each step, checking for a version tagged `prototype`.  If it finds one, it sets it up.  If it does not find one, it looks for a version tagged `v2.1` and sets that up.  If it cannot find a version tagged `v2.1`, it will finally try to set up the version tagged `current` (a catch-all tag for the most up-to-date version on your system; you should not try to set the `current` tag by hand unless you know what you are doing).  If it cannot even find a version tagged `current`, `eups` will fail.
 
 To see the versions of a package available to your system, you can type
 ```
