@@ -37,7 +37,7 @@ document](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master
 a) Create a directory `$HOME/.lsst/`
 
 b) Create a file `db-auth.paf` in that directory whose contents are
-    ```
+
     database: {
         authIfno: {
             host: localhost
@@ -46,7 +46,6 @@ b) Create a file `db-auth.paf` in that directory whose contents are
             password: <shared password>
         }
     }
-    ```
 
 c) Set the permissions on `$HOME/.lsst/` to 700 using
 `chmod 700 $HOME/.lsst'
