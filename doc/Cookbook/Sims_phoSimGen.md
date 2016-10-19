@@ -66,6 +66,38 @@ export PYTHONPATH=$OM10_DIR:$PYTHONPATH
 ```
 where `$PWD` refers to the home directory of your OM10 clone.
 
+### Connecting to the CatSim database
+
+For security reasons, the CatSim database exists behind a fairly restrictive firewall.  The two ways to access it are to get the IP address of your machine whitelisted for access through the firewall, or to establish an SSH tunnel through a communal account that has been created on one of the University of Washington computers.
+
+## If you are whitelisted
+
+If your machine has been whitelisted, you must add the following entry to your `$HOME/.lsst/db-auth.paf` file:
+```
+database: {
+    authIfno: {
+        host: fatboy.phys.washington.edu
+        port: 1433
+        user: <shared username>
+        password: <shared password>
+    }
+}
+```
+
+You must then go into the the file `$LSST_HOME/sims_catUtils/config/db.py` and make change it so that
+```
+config.host='fatboy.phys.washington.edu'
+config.port='1433'
+```
+
+## To establish the SSH tunnel
+
+Open a new terminal, and type
+```
+ssh -L 51433:fatboy.phys.washington.edu:1433 simsuser@gateway.astro.washington.edu
+```
+This will connect the port 51433 on `localhost` to the port 1433 on `fatboy.phys.washington.edu`.  In order for this to work, you must have emailed your SSH public key to Scott Daniel (`scottvalscott@gmail.com`) as outlined in the `docs/Setup.md` documentation in this repository.
+
 ### Generate the `phoSim` inputs
 
 `phoSim` expects as input an ASCII file describing both the pointing of the telescope and the celestial objects in the field of view.  The schema for these 'InstanceCatalogs' can be found [here](https://bitbucket.org/phosim/phosim_release/wiki/Instance%20Catalog).  The LSST Simulations stack has many tools designed specifically to convert data from both OpSim and CatSim into the format expected by `phoSim`.  Twinkles uses these tools.  Meta-data about the telescope (altitude, azimuth, rotator angle, etc.) are taken from the OpSim database.  Data about the celestial objects in the field of view are taken from the CatSim database, the OM10 database of lensed galaxies, and supernova simulations generated on-the-fly using the `sncosmo` package.  Code to query the OpSim database and produce objects containing the metadata needed by both CatSim and `phoSim` can be found in the class `ObservationMetaDataGenerator`, which can be imported from `lsst.sims.catUtils.utils`.  The `ObservationMetaDataGenerator` queries the OpSim database and returns instantiations of `ObservationMetaData`, a CatSim class used to characterize simulated telescope pointings.  Code to use this metadata to generate a list of celestial objects can be found in the class `TwinklesSky`, which can be imported from `desc.twinkles`.
