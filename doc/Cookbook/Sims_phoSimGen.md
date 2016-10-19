@@ -90,7 +90,7 @@ config.host='fatboy.phys.washington.edu'
 config.port='1433'
 ```
 
-*Note:* If you have more than one copy of the LSST Simulations Stack on your
+**Note:** If you have more than one copy of the LSST Simulations Stack on your
 machine, make sure you make these changes to the copy that you told `eups` to
 setup.
 
