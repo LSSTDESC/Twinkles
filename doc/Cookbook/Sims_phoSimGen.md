@@ -70,7 +70,7 @@ where `$PWD` refers to the home directory of your OM10 clone.
 
 For security reasons, the CatSim database exists behind a fairly restrictive firewall.  The two ways to access it are to get the IP address of your machine whitelisted for access through the firewall, or to establish an SSH tunnel through a communal account that has been created on one of the University of Washington computers.
 
-##### If you are whitelisted
+#### If you are whitelisted
 
 If your machine has been whitelisted, you must add the following entry to your `$HOME/.lsst/db-auth.paf` file:
 ```
@@ -90,7 +90,7 @@ config.host='fatboy.phys.washington.edu'
 config.port='1433'
 ```
 
-##### To establish the SSH tunnel
+#### To establish the SSH tunnel
 
 Open a new terminal, and type
 ```
