@@ -59,6 +59,13 @@ source setup/setup_twinkles.sh current
 This script tells `eups` to setup Twinkles and a self-consistent copy of the LSST Simulations stack.  At this point, the directories of the Twinkles repositories become available as part of the `desc` namespace, and an environment variable `$TWINKLES_DIR` is exported to the SHELL.
 The code uses this variable.
 
+You will also need to tell python how to find your copy of OM10.  Go into the directory where you cloned the OM10 repository and follow the instructions in the README.md, namely
+```
+export OM10_DIR=$PWD
+export PYTHONPATH=$OM10_DIR:$PYTHONPATH
+```
+where `$PWD` refers to the home directory of your OM10 clone.
+
 ### Generate the `phoSim` inputs
 
 `phoSim` expects as input an ASCII file describing both the pointing of the telescope and the celestial objects in the field of view.  The schema for these 'InstanceCatalogs' can be found [here](https://bitbucket.org/phosim/phosim_release/wiki/Instance%20Catalog).  The LSST Simulations stack has many tools designed specifically to convert data from both OpSim and CatSim into the format expected by `phoSim`.  Twinkles uses these tools.  Meta-data about the telescope (altitude, azimuth, rotator angle, etc.) are taken from the OpSim database.  Data about the celestial objects in the field of view are taken from the CatSim database, the OM10 database of lensed galaxies, and supernova simulations generated on-the-fly using the `sncosmo` package.  Code to query the OpSim database and produce objects containing the metadata needed by both CatSim and `phoSim` can be found in the class `ObservationMetaDataGenerator`, which can be imported from `lsst.sims.catUtils.utils`.  Code to use this metadata to generate a list of celestial objects can be found in the class `TwinklesSky`, which can be imported from `desc.twinkles`.
