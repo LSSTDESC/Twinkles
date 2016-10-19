@@ -23,6 +23,17 @@ $> setup lsst_sims -t sims
 
 2) Enable connection to CatSim databases
 
+For security reasons, the CatSim database are behind a fairly restrictive
+firewall.  The two ways to gain access to the database are to get your machine
+listed on the whitelist of IP addresses allowed through the firewall, or to
+establish an SSH tunnel through a shared account on one of the University of
+Washington computers.  Below, we present the instructions for setting up to
+connect via the SSH tunnel.  To connect via the whitelist, see the appropriate
+section in [this
+document](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Cookbook/Sims_Recipe.md).
+
+    #### Instructions to enable connection via the SSH tunnel
+
     a) Create a directory `$HOME/.lsst/`
 
     b) Create a file `db-auth.paf` in that directory whose contents are
