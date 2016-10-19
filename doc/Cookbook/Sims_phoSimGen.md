@@ -82,16 +82,16 @@ To generate all the phosim instance catalogs and the spectra, we must:
 
 Iterate through each pointing of OpSim relevant for us:
 
-1. Create the ObservationMetaData corresponding to the pointing 
-2. create an instance of `TwinklesSky` , with this ObservationMetaData as input, along with the selection cut desired and location of filenames for the spectra
+1. Create the `ObservationMetaData` corresponding to the pointing 
+2. create an instance of `TwinklesSky` , with this `ObservationMetaData` as input, along with the selection cut desired and location of filenames for the spectra
 3. Have a filename corresponding to the pointing for the catalog, and call the `writePhoSimCatalog` method to write to it
 4. Finally, after writing, store the available connections and hand it to the next instance that will be created
 
 All of this is done in an example script `bin/generatePhosimInput.py` 
 
 - First we get a set of pointings by doing a sql query on the OpSim database. We can do the queries restricting to FieldID=1427 (for Twinkles) or can restrict to list of obSHistIds (preferred).
-- We then use ObservationMetaDataGneerator to create ObservationMetaData corresponding to these.
-Then iterating through the ObservationMetaData in this, we follow the steps above to write out the phosim instance catalog. To run the example (after the setup steps above)
+- We then use `ObservationMetaDataGenerator` to create `ObservationMetaData` corresponding to these.
+Then iterating through the `ObservationMetaData` in this, we follow the steps above to write out the phosim instance catalog. To run the example (after the setup steps above)
 and changing the path to the OpSim database, run 
 ```
 python bin/generatePhoSimInput.py
