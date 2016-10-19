@@ -84,15 +84,12 @@ database: {
 }
 ```
 
-You must then go into the the file `$LSST_HOME/sims_catUtils/config/db.py` and make change it so that
+Next, create a `.py` file whose contents are
 ```
 config.host='fatboy.phys.washington.edu'
 config.port='1433'
 ```
-
-**Note:** If you have more than one copy of the LSST Simulations Stack on your
-machine, make sure you make these changes to the copy that you told `eups` to
-setup.
+You will pass this file into `generatePhoSimInput.py` as the `--db_config` argument.  This overrides the default CatSim configuration, which assumes you are connecting to the database through the SSH tunnel.
 
 #### To establish the SSH tunnel
 
