@@ -64,7 +64,7 @@ document](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master
 ```
 $> mkdir ~/repos
 $> cd ~/repos
-$> git clone https://stash.lsstcorp.org/scm/sim/sims_phosim.git
+$> git clone https://bitbucket.org/phosim/phosim_release.git
 $> setup cfitsio
 $> setup fftw
 $> ./configure
