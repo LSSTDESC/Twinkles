@@ -130,5 +130,6 @@ All of this is done in our production script `bin/generatePhosimInput.py`
 Then iterating through the `ObservationMetaData` in this, we follow the steps above to write out the phosim instance catalog. To run the production script (after the setup steps above)
 and changing the path to the OpSim database, run 
 ```
-python bin/generatePhoSimInput.py
+python bin/generatePhoSimInput.py <version #> --OpSimDBDir /path/to/OpSim/DB/ --outfile my_phosim_catalog.txt
 ```
+(in Linux, one can omit the explicit call to `python`).
