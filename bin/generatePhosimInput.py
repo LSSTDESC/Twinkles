@@ -137,7 +137,7 @@ if __name__ == '__main__':
           obs_metaData._OpsimMetaData['obsHistID'], args.outfile))
     generateSinglePointing(obs_metaData,
                            availableConns=availConns,
-                           sntable='TwinkSN',
+                           sntable='TwinkSN_run3',
                            fname=args.outfile,
                            sn_sed_file_dir=sn_sed_file_dir,
                            db_config=args.db_config)
