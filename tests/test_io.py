@@ -2,7 +2,7 @@ from __future__ import absolute_import, division
 import os
 import unittest
 from lsst.utils import getPackageDir
-from desc.twinkles.io import read_catsimInstCat
+from desc.twinkles import read_catsimInstCat
 
 class test_readInstCatalogs(unittest.TestCase):
     """
