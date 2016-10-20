@@ -1,104 +1,86 @@
 ![](./_static/header.png)
 
-LSST DESC Notes Template and Author Guidelines
-==============================================
+# Twinkles: Science Goals, Survey Design and Development Methodology
 
-*Heather Kelly (SLAC), Phil Marshall (SLAC)*
+*Phil Marshall (SLAC) and the Twinkles Task Force*
 
-LSST DESC Notes are designed to be citeable, and so need to conform to
-the expectations of the academic research community to some extent. They
-should contain a short abstract, which should be placed here. In this
-Note we outline the steps for starting a new LSST DESC Note, getting it
-reviewed within the collaboration, and then "publishing" it (not in a
-journal, but on the web nonetheless). We then provide a quick
-introduction to preparing Notes in restructuredtext, highlighting
-aspects of LSST DESC Note style, and giving some pointers to good
-resources.
+A necessary condition for accurate cosmography is a demonstration that
+input cosmological parameters can be recovered in a "round trip" test on
+realistic mock data. Twinkles is a project to partially fulfill this
+condition for the two LSST DESC time domain probes, type Ia supernovae
+and strong lens time delays. It involves simulating a 10-year
+multi-filter LSST sky survey of a tiny (100 square arcmin) patch of sky
+that has been "sprinkled" with an over-abundance of supernovae and
+strong lenses, and then processing the images using LSST DM stack
+software and analyzing the resulting catalogs. The project has two
+phases, corresponding to the DC1 and DC2 LSST DESC data challenge eras,
+enabling a staged progression in dataset realism and analysis
+sophistication. Twinkles 1 focuses on the problem of accurate light
+curve extraction in annual release (level 2) data. Its small dataset size but end-to-end nature make Twinkles useful as a "pathfinder" for other LSST DESC data challenge datasets.
 
-This Note was generated on: <add date here by hand>
+This Note was generated on: 2016-09-XX
 
-Introduction
-------------
 
-This is a template markdown LSST DESC Note, for you to adapt for
-your own work. It also contains instructions for how to get started
-writing a note.
+## Introduction
 
-Getting Started
----------------
+Brief notes on end-to-end test philosophy. Where to publish and why.
 
--   Fork the GitHub repository of your project if you haven't already.
--   Under the doc/LSST\_DESC\_Notes directory (which you might have to
-    create), make a new subdirectory with a suitable name to contain
-    your LSST DESC Note. This name needs to be unique to this
-    repository, but need not contain the name of the repository.
--   Copy the [Computing Infrastructure LSST DESC Note
-    template](https://github.com/DarkEnergyScienceCollaboration/ComputingInfrastructure/blob/master/doc/LSST_DESC_Notes/template_LSST_DESC_Note.md) (i.e.
-    this file) into your new directory, and rename it `index.md`.
--   Edit your new `index.md` file with the contents of your Note,
-    following the guidelines in the template.
--   Add files for figures in a subfolder called `_static`.
--   When your Note is complete and ready for review, submit a Pull
-    Request to the base repo and ask your project's leads and/or your
-    working group's conveners to review it.
--   The project leads will review your Note, iterate with you on
-    modifications to it via the comments on the Pull Request, and
-    finally merge it into the repository to signify that the Note
-    is accepted. They will then tag the repo, to mark the first version
-    of this LSST DESC Note.
+Brief notes on infrastructure pathfinding.
 
-Sectioning
-----------
+Broad science goals for each DC era. Focus on Twinkles 1, with notes on Twinkles 2.
 
-As you can see above, your content can easily be divided into sections.
-You can also make subsections, as follows.
+Scope and layout of this note.
 
-### A Subsection
+## Twinkles: a Tiny Simulated LSST Sky Survey
 
-You can even have subsubsections, like this:
+Twinkles concepts, including Twinkles 1 and 2 differences.
 
-#### A Subsubsection
 
-See? This is a subsubsection.
+## Science Analysis
 
-#### Another Subsubsection
+Twinkles 1 science analysis plan, following from goals.
 
-And so is this.
+Brief discussion of Twinkles 2.
 
-### Another Subsection
 
-And so on.
+## Survey Specifications
 
-Math
-----
+### Twinkles 1
 
-You can typeset mathematics using latex commands like this:
+Run 3 DG and DA plan (that we will follow)
 
-$$\langle f(k) \rangle = \frac{ \sum_{t=0}^{N}f(t,k) }{N}$$
+### Twinkles 2
 
-While this does not render on GitHub, it should get [picked up by
-Sphinx](http://www.sphinx-doc.org/en/stable/ext/math.html) later and
-will be available for you to re-use in future latex documents.
+Brief notes.
 
-Code
-----
 
-You can show code in blocks like this:
+## Pipeline Development
 
-```python
-print "Hello World"
-```
+Twinkles 1 R&D plan that we followed, so that people understand what Run 1.1 is etc).
 
-or this:
+### Science-specific Tools
 
-```bash
-echo "Hello World"
-```
+SN and SL Sprinklers.
 
-Inline mentions of code `objects` can be made using pairs of backquotes.
+Monitor.
 
-Figures
--------
+### General-purpose Infrastructure
+
+Introductions to:
+
+PhoSim pipeline.
+
+DM Level 2 pipeline.
+
+Pserv.
+
+
+## Discussion and Conclusions
+
+
+<!--
+
+## Notes
 
 To add figures, add the required image file (PNG, SVG or JPG preferred)
 to the `_static` subdirectory in your Note's folder. Here's an example:
@@ -109,30 +91,9 @@ This is the figure caption: above we have the LSST DESC logo, in PNG format.
 And then the text continues. Note that GitHub ignores the image sizing
 commands when presenting markdown format documents; Sphinx might not.
 
-References
-----------
-
 You can cite papers (or anything else) by providing hyperlinks. For
 example, you might have been impressed by the DESC White Paper [(LSST
 Dark Energy Science Collaboration
-2012)](http://arxiv.org/abs/1211.0310). It should be possible to convert
-these links to latex citations automatically later.
+2012)](http://arxiv.org/abs/1211.0310).
 
-Further Resources
------------------
-
-LSST DESC notes are styled after LSST technotes [(Sick
-2016)](https://sqr-000.lsst.io/). You can also [view the restructured
-text of (Sick
-2016)](https://github.com/lsst-sqre/sqr-000/blob/master/index.rst).
-Another nice example of an LSST technote is [(Wood-Vasey
-2016)](http://dmtn-008.lsst.io/) - again, the restructured text is
-visible
-[here](https://github.com/lsst-dm/dmtn-008/blob/master/index.rst).
-
-<!-- For a guide to reStructuredText writing, please see the [LSST docs reST
-styleguide](http://docs.lsst.codes/en/latest/development/docs/rst_styleguide.html).
-There are many other reST resources on the web, such as [this
-cheatsheet](https://github.com/ralsina/rst-cheatsheet/blob/master/rst-cheatsheet.rst).-->
-
-For a guide to writing markdown documents, check out this [useful little cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet).
+-->
