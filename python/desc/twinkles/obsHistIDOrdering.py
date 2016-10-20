@@ -7,6 +7,9 @@ from sqlalchemy import create_engine
 __all__ = ['OpSimOrdering']
 class OpSimOrdering(object):
     """
+    Code to split the Twinkles 3 obsHistIDs into sets that will be ordered so
+    that we would try to do Twinkles_3p1 first, followed by Twinkles_3p2,
+    followed by Twinkles_3p3
     Parameters
     ----------
     opSimDBPath : absolute path to OpSim database
@@ -35,18 +38,39 @@ class OpSimOrdering(object):
         self.distinctGroup = ['night', 'filter']
     
     @property
-    def filteredOpSim(self):
+    def uniqueOpSimRecords(self):
         """
         - drop duplicates in favor of propID for WFD
-        - drop records where the phoSim Runtime estimate exceeds threshold
         """
         pts = self._opsimDF.copy()
         # Since the original SQL query ordered by propID, keep=first 
         # preferentially chooses the propID for WFD
         pts.drop_duplicates(subset='obsHistID', inplace=True, keep='first')
+        return pts
+
+    @property
+    def filteredOpSim(self):
+        """
+        - drop records where the phoSim Runtime estimate exceeds threshold
+        """
         thresh = self.timeMax
-        return pts.query('predictedPhoSimTimes < @thresh')
-    
+        return self.uniqueOpSimRecords.query('predictedPhoSimTimes < @thresh')
+
+    @property
+    def obsHIstIDsTooLong(self):
+        """
+        obsHistIDs dropped from Twink_3p1, Twink_3p2, Twink_3p3 because the
+        estimated phoSim run time is too long.
+        """
+        filteredObsHistID = \
+            tuple(self.filteredOpSim.reset_index().obsHistID.values.tolist())
+
+        missing = self.uniqueOpSimRecords.query('obsHistID not in @filteredObsHistID')
+        if len(missing) > 0:
+            return missing.obsHistID.values
+        else:
+            return list()
+
     @property
     def Twinkles_WFD(self):
         """
