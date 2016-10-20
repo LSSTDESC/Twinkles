@@ -50,7 +50,7 @@ class TwinklesSky(object):
                  brightestStar_gmag_inCat=11.0,
                  brightestGal_gmag_inCat=11.0,
                  availableConnections=None,
-                 sntable='TwinkSN',
+                 sntable='TwinkSN_run3',
                  sn_sedfile_prefix='spectra_files/specFile_',
                  db_config=None):
         """
@@ -68,7 +68,7 @@ class TwinklesSky(object):
             catalog generation times in check.
         availableConnections : list of connections, optional, defaults to None
             list of available connections for DBObject
-        sntable : string, optional, defaults to `TwinkSN`
+        sntable : string, optional, defaults to `TwinkSN_run3`
             Name of the table on fatboy with the SN parameters desired. 
         sn_sedfile_prefix : string, optional, defaults to `spectra_files/specFile_'
             prefix for sed of the supernovae.
