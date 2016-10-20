@@ -6,6 +6,27 @@ from sqlalchemy import create_engine
 
 __all__ = ['OpSimOrdering']
 class OpSimOrdering(object):
+    """
+    Parameters
+    ----------
+    opSimDBPath : absolute path to OpSim database
+    timeMax : float, unit of hours, default to 0.9
+        a threshold of time, such that any OpSim pointings with predictedPhoSim
+        times above that threshold will be dropped.
+
+    Attributes
+    ----------
+    distinctGroup : list
+        unique combination of variables in which the records are grouped. The
+        variables are 'night' and 'filter'
+    timeMax : float,
+        max value of `predictedPhoSimTimes` in hours for a record for it to be
+        used in the calculation
+    filteredOpSim : `pd.DataFrame`
+        dataFrame representing the OpSim data with duplicate records dropped in
+        favor of the ones with propID ==54 (WFD) and any record that has a
+        `predictedPhoSimTimes` > `self.timeMax` dropped
+    """
     def __init__(self, opSimDBPath, timeMax=0.9):
         self._opsimDF = self.fullOpSimDF(opSimDBPath)
         self._opsimDF['predictedPhoSimTimes'] = np.random.uniform(size=len(self._opsimDF))
