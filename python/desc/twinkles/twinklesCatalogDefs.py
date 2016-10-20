@@ -8,7 +8,7 @@ from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import P
 from lsst.sims.catUtils.mixins import PhoSimAstrometryGalaxies, \
                                       EBVmixin, VariabilityStars
 from .twinklesVariabilityMixins import VariabilityTwinkles
-
+__all__ = ['TwinklesCatalogZPoint']
 class TwinklesCatalogZPoint(PhosimInputBase, PhoSimAstrometryGalaxies, EBVmixin, VariabilityTwinkles):
 
     catalog_type = 'twinkles_catalog_ZPOINT'
