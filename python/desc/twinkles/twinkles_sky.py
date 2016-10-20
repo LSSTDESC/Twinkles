@@ -19,10 +19,10 @@ from lsst.sims.catalogs.definitions import CompoundInstanceCatalog
 from lsst.sims.catUtils.exampleCatalogDefinitions import\
     (PhoSimCatalogPoint,
      PhoSimCatalogSersic2D,
-     PhoSimCatalogSN,
      DefaultPhoSimHeaderMap,
      DefaultPhoSimInstanceCatalogCols)
 from .twinklesCatalogDefs import TwinklesCatalogZPoint
+from .twinklesCatalogDefs import TwinklesPhoSimCatalogSN as PhoSimCatalogSN
 from desc.twinkles import (GalaxyCacheDiskObj, GalaxyCacheBulgeObj,
                            GalaxyCacheAgnObj, GalaxyCacheSprinklerObj,
                            create_galaxy_cache,
