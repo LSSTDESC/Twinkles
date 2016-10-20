@@ -9,8 +9,9 @@ class TestOpSimOrdering(unittest.TestCase):
 
     def setUp(self):
         self.opSimDBPath = '/Users/rbiswas/data/LSST/OpSimData/minion_1016_sqlite.db'
-        self.ops = OpSimOrdering(self.opSimDBPath, timeMax=3.)
+        self.ops = OpSimOrdering(self.opSimDBPath, timeMax=0.8)
         self.numRecords = len(self.ops.filteredOpSim)
+        self.numUniqueRecords = len(self.ops.uniqueOpSimRecords)
 
     def test_numRecords(self):
         """
@@ -21,7 +22,8 @@ class TestOpSimOrdering(unittest.TestCase):
         """
         pts = self.ops.fullOpSimDF(self.opSimDBPath)
         pts.drop_duplicates(subset='obsHistID', inplace=True)
-        self.assertEqual(len(pts), self.numRecords)
+        self.assertEqual(len(pts), self.numUniqueRecords)
+        self.assertGreaterEqual(self.numUniqueRecords, self.numRecords)
 
     def test_conservedNumRecordsInSplit(self):
         """
