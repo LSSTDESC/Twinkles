@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: October 6, 2016</h1>
+<p>We’ll discuss and resolve the various hold-ups with the Run 3 Pipeline Review.</p>
+<h2 id="run-3-pipeline-review-readiness"><strong>Run 3 Pipeline Review Readiness</strong></h2>
+<p>We have three epics relating to this, all with open issues:</p>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=is%3Aissue+is%3Aopen+label%3A%22Epic%3A+Run+3+Science+Inputs%22"><em>Epic: Run 3 Science Inputs</em></a> - these issues need to be resolved so that the instance catalog code can be run.</p>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=is%3Aissue+is%3Aopen+label%3A%22Epic%3A+Instance+Catalogs+at+SLAC%22"><em>Epic: Instance Catalogs at SLAC</em></a> - these issues need to be resolved before the Run 3 phoSim pipeline (including the instance catalog generation) can be run.</p>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=is%3Aissue+is%3Aopen+label%3A%22Epic%3A+Run+3+phoSim+Workflow%22"><em>Epic: Run 3 phoSim Workflow</em></a> - these issues need to be resolved before the Run 3 phoSIm pipeline can be run from the workflow engine..</p>
+<p>Tom going over the status</p>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/325"><em>Issue #325</em></a>: Rahul reports he may have a script which Phil requests Rahul check in</p>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/315"><em>Issue #315</em></a>: setup and mostly run and if we want to add phosim/catsim output check could be added and then it needs to be tested and validated. Phil wonders if it is necessary to add the output check. Tom asks if this is meant to be a spot check or should it be done all the time? Jim would rather we check all of output rather than just spot check for now, but does not necessarily need to be part of the pipeline itself.</p>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/288"><em>Issue #288</em></a>: phosim 3.5.2 vs 3.4.2 Simon proposes we go back to 3.4.2 and wait for 3.6. With contamination mode turned off, the divots are eliminated in 3.5.2 but we have a better understanding of 3.4.2 and there do not seem to additional features available in 3.5.2 that we require. Phil mentions 3.5.2 includes a sky model improvement. There are flags available in 3.5.2 we need to handle.<br />
+ContaminationMode = 0 and should run without any cloud contamination</p>
+<p>Tom also notes that using 3.5.2 in the upcoming Twinkles runs provides an opportunity to test phosim and provide feedback to the developers for 3.6.<br />
+No xtalk in the e-images and will not account for xtalk in L2. Phil asked to confirm that xtalk is not accounted for in the current L2 pipeline, and it is not.</p>
+<p>Action: We will use 3.5.2 and we need to check all the defaults. Jim reminds us that all those defaults are saved to the FITS headers.</p>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/144"><em>Issue #144</em></a>: will be closed</p>
+<p>Before the meeting, we’ll try and close as many of these as possible!</p>
+<h2 id="organizing-the-run-3-pipeline-review"><strong>Organizing the Run 3 Pipeline Review</strong></h2>
+<p>This is happening in <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=is%3Aissue+is%3Aopen+label%3A%22Epic%3A+Run+3+Pipeline+Review%22"><em>Epic: Run 3 Pipeline Review</em></a>. Friday 9 or 10am are possible times, but the pipeline may not be ready to review yet.</p>
+<p>Materials for review need to be posted in the checklist in the top comment of <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/332"><em>issue 332</em></a> - assignments are there but we will discuss this and iterate on this plan.</p>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: October 13, 2016</h1>
+<p>Once again, we’ll discuss and resolve the various hold-ups with the Run 3 Pipeline Review.</p>
+<h2 id="run-3-pipeline-review-readiness"><strong>Run 3 Pipeline Review Readiness</strong></h2>
+<p>We have three epics relating to this, all with open issues:</p>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=is%3Aissue+is%3Aopen+label%3A%22Epic%3A+Run+3+Science+Inputs%22"><em>Epic: Run 3 Science Inputs</em></a> - these issues need to be resolved so that the instance catalog code can be run.</p>
+<ul>
+<li><blockquote>
+<p>Bryce reported that the SL matching is now complete, with an updated lens catalog checked in.</p>
+</blockquote></li>
+</ul>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=is%3Aissue+is%3Aopen+label%3A%22Epic%3A+Instance+Catalogs+at+SLAC%22"><em>Epic: Instance Catalogs at SLAC</em></a> - these issues need to be resolved before the Run 3 phoSim pipeline (including the instance catalog generation) can be run.</p>
+<ul>
+<li><blockquote>
+<p>What order should we run the ObsHistIDs? Rahul: suggests the following sequence: Run 3.1) Repeating the approach we took to Run1, selecting a subset of ~1000 visits that span all years and all filters. Then Run 3.2) do all the WFD visits (that have not yet been done, some 1500 or so). Then, Run 3.3) fill in the gaps to complete Year 3 (~2000 visits). Then, Run 3.4+) do all the rest in chronological order, Year 1, then Year 2, Year 4 etc (around 20,000 total, in several batches).</p>
+</blockquote></li>
+<li><blockquote>
+<p>SL needs WFD visits, primarily - this is where Run 3.2 came from above. Rahul points out this means we need to use proposal option 54 not 56.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Down-selection script is called “VisitDownSelector” - Rahul will write this simple script, with all of the above functionality, so that Tom can divide up the visits into Runs.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Seth: what about high Moon? Runtime is up to 30-40 times longer. Jim: put them in the XXL queue and wait? Turns out they hit a hard batch farm limit. Suggestion: downselector should read the outputs from PhoSimPredictor, and avoid high Moon nights for now. (We don’t want to discard high moon visits completely, as we still hope to one day complete these runs, perhaps when checkpointing is operational). Rahul will work with Seth to make this happen, starting with issuing the downselector work.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Scott will finish off the Sims Recipe ready for the review (see <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/pulls/328"><em>PR #328</em></a>)</p>
+</blockquote></li>
+</ul>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=is%3Aissue+is%3Aopen+label%3A%22Epic%3A+Run+3+phoSim+Workflow%22"><em>Epic: Run 3 phoSim Workflow</em></a> - these issues need to be resolved before the Run 3 phoSIm pipeline can be run from the workflow engine.</p>
+<ul>
+<li><blockquote>
+<p>Since we’ll be running PhoSim 3.5 in Run 3, Rahul needs a test eimage to compare with his instance catalog - Jim, Seth and Tom will make one as per his request in <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/325"><em>#325</em></a></p>
+</blockquote></li>
+<li><blockquote>
+<p>The instance catalogs seem to be taking a long time to generate - Scott says this because FatBoy is having to work hard to get the galaxies out. He and Rahul think they can speed it up by dumping out the galaxies (which don’t change) and checking them into the Twinkles repo, so that the instance catalogs can work from that, and reduce the load on FatBoy. Scott will work on this <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/346"><em>#346</em></a></p>
+</blockquote></li>
+</ul>
+<h2 id="organizing-the-run-3-pipeline-review"><strong>Organizing the Run 3 Pipeline Review</strong></h2>
+<p>This is happening in <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=is%3Aissue+is%3Aopen+label%3A%22Epic%3A+Run+3+Pipeline+Review%22"><em>Epic: Run 3 Pipeline Review</em></a>. It looks as though we really shoudl be able to hold a pipeline review next Thursday, when Tom is back from the CHEP meeting and has had time to pull things together for us to look at.</p>
+<p>Materials for review need to be posted in the checklist in the top comment of <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/332"><em>issue 332</em></a> - assignments are there, now we just need to fill in our sections. Phil will re-doodle for a good time to meet on Thursday.</p>
+</div>
+</div>
+</body>
+</html>
