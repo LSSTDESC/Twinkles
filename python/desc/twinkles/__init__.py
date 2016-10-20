@@ -14,4 +14,4 @@ from .Display import render_fits_image
 from .registry_tools import *
 from .sqlite_tools import *
 from .twinkles_sky import *
-from .io import *
+from .twinkles_io import *
