@@ -1,6 +1,7 @@
 """Instance Catalog"""
 from __future__ import absolute_import, division, print_function
 import numpy
+import numpy as np
 from lsst.sims.utils import SpecMap, defaultSpecMap
 from lsst.sims.catalogs.definitions import InstanceCatalog
 from lsst.sims.utils import arcsecFromRadians
@@ -39,9 +40,18 @@ class TwinklesPhoSimCatalogSN(PhoSimCatalogSN):
     def get_shorterFileNames(self):
         fnames = self.column_by_name('sedFilepath')
         sep = 'spectra_files/specFile_'
-        split_names = list(sep + fname.split(sep)[-1] for fname in fnames)
-        return split_names
+        split_names = []
+        for fname in fnames:
+            if 'None' not in fname:
+                fname = sep + fname.split(sep)[-1] 
+            else:
+                fname = 'None'
+            split_names.append(fname)
+        return np.array(split_names)
 
     column_outputs = PhoSimCatalogSN.column_outputs
     column_outputs[PhoSimCatalogSN.column_outputs.index('sedFilepath')] = \
         'shorterFileNames'
+
+    cannot_be_null = ['x0', 't0', 'z', 'shorterFileNames']
+
