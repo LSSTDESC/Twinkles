@@ -3,7 +3,7 @@ Estimates the CPU time required for a phosim simulation of a 30-s visit.  The
 inputs are filter, moonalt, and moonphase, or obsHistID (an Opsim ID from
 a specified (hard coded) Opsim sqlite database.
 
-The random forest is generated (and saved as a pickle file) by 
+The random forest is generated (and saved as a pickle file) by
 run1_cpu_generate_rf.py, using only the filter, moonalt, and moonphase
 features.  This script needs to be run only once.
 """
@@ -16,12 +16,14 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import pylab
-from desc.twinkles.sqlite_tools import SqliteDataFrameFactory
+from .sqlite_tools import SqliteDataFrameFactory
+
+__all__ = ['CpuPred']
 
 class CpuPred(object):
     """
     Returns predicted fell-class CPU time in seconds for user-supplied
-    filter (0-5 for ugrizy), moon altitude (deg), and moon phase (0-100) 
+    filter (0-5 for ugrizy), moon altitude (deg), and moon phase (0-100)
     -or- ObsHistID from the kraken_1042 Opsim run.  By default the code
     looks for the sqlite database for kraken_1042 in a specific location on
     SLAC Linux.  Also by default it looks only for obsHistID values that are
@@ -29,7 +31,7 @@ class CpuPred(object):
 
     RF_pickle.p is written by run1_cpu_generate_rf.py
     """
-    def __init__(self, rf_pickle_file='RF_pickle.p', 
+    def __init__(self, rf_pickle_file='RF_pickle.p',
         opsim_db_file='/nfs/farm/g/lsst/u1/DESC/Twinkles/kraken_1042_sqlite.db',
             fieldID=1427):
         self.RFbest = pickle.load(open(rf_pickle_file, 'rb'))
@@ -39,7 +41,7 @@ class CpuPred(object):
 
     def __call__(self, obsid):
         """
-        Return the predicted CPU time given an obsHistID.  The obsHistID 
+        Return the predicted CPU time given an obsHistID.  The obsHistID
         must be in the Opsim database file and fieldID specified on
         initialization of the instance.
         """
@@ -65,7 +67,7 @@ class CpuPred(object):
         return filter_index, moonalt, moonphase
 
     def cputime(self, filter_index, moonalt, moonphase):
-        return 10.**self.RFbest.predict(np.array([[filter_index, moonalt, 
+        return 10.**self.RFbest.predict(np.array([[filter_index, moonalt,
             moonphase]]))
 
 if __name__ == '__main__':

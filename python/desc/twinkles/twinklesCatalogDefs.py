@@ -2,6 +2,7 @@
 from __future__ import absolute_import, division, print_function
 from lsst.sims.catUtils.exampleCatalogDefinitions import PhoSimCatalogZPoint
 from twinklesVariabilityMixins import VariabilityTwinkles
+import numpy
 
 class TwinklesCatalogZPoint(PhoSimCatalogZPoint, VariabilityTwinkles):
     """
