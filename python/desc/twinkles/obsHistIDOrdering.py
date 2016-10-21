@@ -23,18 +23,33 @@ class OpSimOrdering(object):
         unique combination of variables in which the records are grouped. The
         variables are 'night' and 'filter'
     timeMax : float,
-        max value of `predictedPhoSimTimes` in hours for a record for it to be
+        max value of `predictedPhoSimTimes` in sec for a record for it to be
         used in the calculation
     filteredOpSim : `pd.DataFrame`
         dataFrame representing the OpSim data with duplicate records dropped in
         favor of the ones with propID ==54 (WFD) and any record that has a
         `predictedPhoSimTimes` > `self.timeMax` dropped
     """
-    def __init__(self, opSimDBPath, timeMax=0.9):
+    def __init__(self, opSimDBPath, randomForestPickle=None, timeMax=120.0):
+        """
+        Parameters
+        ----------
+        opSimDBPath : string, mandatory
+            absolute path to a sqlite OpSim database
+        randomForestPickle : string, defaults to None
+            absolute path to a pickle of an instance of
+            `sklearn.ensemble.forest.RandomForestRegressor`
+        timeMax: float, defaults to 120.0
+            max value of predicted PhoSim Run times of selected OpSim records.
+            Records with predicted PhoSIm run times beyond this value are
+            filtered out of `filteredOpSim`
+        """
+        twinklesDir = getPackageDir('Twinkles')
+        twinklesData = os.path.join(twinklesDir, 'data', 'RF_pickle.p')
         self._opsimDF = self.fullOpSimDF(opSimDBPath)
         self._opsimDF['predictedPhoSimTimes'] = np.random.uniform(size=len(self._opsimDF))
         self._opsimDF['year'] = self._opsimDF.night // 365
-        self.timeMax = timeMax
+        self.timeMax = timeMax * 3600.
         self.distinctGroup = ['night', 'filter']
     
     @property
