@@ -1,6 +1,5 @@
 """Instance Catalog"""
 from __future__ import absolute_import, division, print_function
-import numpy
 import numpy as np
 from lsst.sims.utils import SpecMap, defaultSpecMap
 from lsst.sims.catalogs.definitions import InstanceCatalog
@@ -30,7 +29,7 @@ class TwinklesCatalogZPoint(PhosimInputBase, PhoSimAstrometryGalaxies, EBVmixin,
     default_formats = {'S':'%s', 'f':'%.9g', 'i':'%i'}
     delimiter = " "
     spatialModel = "point"
-    transformations = {'raPhoSim':numpy.degrees, 'decPhoSim':numpy.degrees}
+    transformations = {'raPhoSim':np.degrees, 'decPhoSim':np.degrees}
 
 class TwinklesPhoSimCatalogSN(PhoSimCatalogSN):
     """
