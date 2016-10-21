@@ -1,17 +1,21 @@
 from __future__ import absolute_import
-from .analyseICat import *
-from .calc_snr import *
-from .cleanupspectra import *
-#from .generatePhosimInput import generatePhosimInput
-#from .InstcatGenerationBooKeeping import *
-#from .InstcatGenerator import InstcatFactory, InstcatFactory
-from .sprinkler import *
-from .twinklesGalaxyCache import *
-from .twinklesCatalogDefs import *
-from .twinklesVariabilityMixins import * #TimeDelayVariability, VariabilityTwinkles
-from .PostageStampMaker import PostageStampMaker, create_postage_stamps
-from .Display import render_fits_image
-from .registry_tools import *
-from .sqlite_tools import *
-from .twinkles_sky import *
-from .twinkles_io import *
+import warnings
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore', 'Duplicate object type id', UserWarning)
+    warnings.filterwarnings('ignore', 'duplicate object identifie', UserWarning)
+    from .analyseICat import *
+    from .calc_snr import *
+    from .cleanupspectra import *
+    from .phosim_cpu_pred import *
+    from .registry_tools import *
+    from .sprinkler import *
+    from .sqlite_tools import *
+    from .twinklesCatalogDefs import *
+    from .twinklesGalaxyCache import *
+    from .twinklesVariabilityMixins import *
+    from .twinkles_io import *
+    from .twinkles_sky import *
+    try:
+        from .version import *
+    except ImportError:
+        pass
