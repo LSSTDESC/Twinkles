@@ -4,7 +4,8 @@ import numpy
 from lsst.sims.utils import SpecMap, defaultSpecMap
 from lsst.sims.catalogs.definitions import InstanceCatalog
 from lsst.sims.utils import arcsecFromRadians
-from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import PhosimInputBase
+from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples \
+        import PhosimInputBase, PhoSimCatalogSN
 from lsst.sims.catUtils.mixins import PhoSimAstrometryGalaxies, \
                                       EBVmixin, VariabilityStars
 from .twinklesVariabilityMixins import VariabilityTwinkles
@@ -41,5 +42,6 @@ class TwinklesPhoSimCatalogSN(PhoSimCatalogSN):
         split_names = list(sep + fname.split(sep)[-1] for fname in fnames)
         return split_names
 
-    self.column_outputs[self.column_outputs.index('sedFilepath')] = \
-            shorterFileNames
+    column_outputs = PhoSimCatalogSN.column_outputs
+    column_outputs[PhoSimCatalogSN.column_outputs.index('sedFilepath')] = \
+        'shorterFileNames'
