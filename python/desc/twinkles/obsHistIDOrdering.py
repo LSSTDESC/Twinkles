@@ -34,7 +34,11 @@ class OpSimOrdering(object):
         favor of the ones with propID ==54 (WFD) and any record that has a
         `predictedPhoSimTimes` > `self.timeMax` dropped
     """
-    def __init__(self, opSimDBPath, randomForestPickle=None, timeMax=120.0):
+    def __init__(self, opSimDBPath,
+                 randomForestPickle=None,
+                 timeMax=120.0,
+                 ignorePredictedTimes=False,
+                 minimizeBy='predictedPhoSimTimes'):
         """
         Parameters
         ----------
@@ -49,19 +53,28 @@ class OpSimOrdering(object):
             filtered out of `filteredOpSim`
         """
         twinklesDir = getPackageDir('Twinkles')
+
+        self.ignorePredictedTimes = ignorePredictedTimes
         self._opsimDF = self.fullOpSimDF(opSimDBPath)
+        self._opsimDF['year'] = self._opsimDF.night // 365
+
         if randomForestPickle is None:
             randomForestPickle = os.path.join(twinklesDir, 'data',
                                               'RF_pickle.p')
-        if not os.path.exists(randomForestPickle):
-            raise ValueError('pickle does not exist at {}'.format(randomForestPickle))
 
-        self.cpuPred = CpuPred(rf_pickle_file=randomForestPickle,
-                                             opsim_df=self._opsimDF,
-                                             fieldID=1427)
-        self._opsimDF['predictedPhoSimTimes'] = self.predictedTimes()
+        if self.ignorePredictedTimes:
+            if minimizeBy not in self._opsimDF.columns:
+                raise NotImplementedError('minimizing by {} not implemented, try `expMJD`' minimizeBy)
+            self.minimizeBy = minimizeBy
+        else:
+            if not os.path.exists(randomForestPickle):
+                raise ValueError('pickle does not exist at {}'.format(randomForestPickle))
 
-        self._opsimDF['year'] = self._opsimDF.night // 365
+            self.cpuPred = CpuPred(rf_pickle_file=randomForestPickle,
+                                   opsim_df=self._opsimDF,
+                                   fieldID=1427)
+            self._opsimDF['predictedPhoSimTimes'] = self.predictedTimes()
+
         self.timeMax = timeMax 
         self.distinctGroup = ['night', 'filter']
 
@@ -108,15 +121,23 @@ class OpSimOrdering(object):
         - drop records where the phoSim Runtime estimate exceeds threshold
         """
         thresh = self.timeMax
-        return self.uniqueOpSimRecords.query('predictedPhoSimTimes < @thresh')
+        if self.ignorePredictedTimes:
+            return self.uniqueOpSimRecords
+        else:
+            return self.uniqueOpSimRecords.query('predictedPhoSimTimes < @thresh')
 
     @property
-    def obsHIstIDsTooLong(self):
+    def obsHistIDsPredictedToTakeTooLong(self):
         """
         obsHistIDs dropped from Twink_3p1, Twink_3p2, Twink_3p3 because the
         estimated phoSim run time is too long in the form a dataframe with
         column headers `obsHistID` and `predictedPhoSimTimes`.
+
+        This returns None, if no obsHistIds are missing due to their
+        predictedPhoSimRunTime being too long
         """
+        if self.ignorePredictedTimes:
+            return None
         filteredObsHistID = \
             tuple(self.filteredOpSim.reset_index().obsHistID.values.tolist())
 
@@ -144,7 +165,8 @@ class OpSimOrdering(object):
         combination with the lowest value of the `predictedPhoSimTimes`
         """
         grouped = self.Twinkles_WFD.groupby(self.distinctGroup)
-        idx  = grouped.predictedPhoSimTimes.transform(min) == self.Twinkles_WFD.predictedPhoSimTimes
+        idx  = grouped[self.minimizeBy]transform(min) == \
+            self.Twinkles_WFD[self.minimizeBy]
         return self.Twinkles_WFD[idx].sort_values(by='expMJD', inplace=False)
     
     @property
