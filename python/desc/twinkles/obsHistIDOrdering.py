@@ -91,7 +91,6 @@ class OpSimOrdering(object):
         # convert to hours from seconds before return
         return times / 3600.0
 
-    
     @property
     def uniqueOpSimRecords(self):
         """
@@ -115,16 +114,17 @@ class OpSimOrdering(object):
     def obsHIstIDsTooLong(self):
         """
         obsHistIDs dropped from Twink_3p1, Twink_3p2, Twink_3p3 because the
-        estimated phoSim run time is too long.
+        estimated phoSim run time is too long in the form a dataframe with
+        column headers `obsHistID` and `predictedPhoSimTimes`.
         """
         filteredObsHistID = \
             tuple(self.filteredOpSim.reset_index().obsHistID.values.tolist())
 
         missing = self.uniqueOpSimRecords.query('obsHistID not in @filteredObsHistID')
         if len(missing) > 0:
-            return missing.obsHistID.values
+            return missing[['obsHistID', 'predictedPhoSimTimes']]
         else:
-            return list()
+            return None
 
     @property
     def Twinkles_WFD(self):
