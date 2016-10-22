@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine
 from lsst.utils import getPackageDir
-from .phosim_cpu_pred import CpuPred 
+from .phosim_cpu_pred import CpuPred
 
 
 __all__ = ['OpSimOrdering']
@@ -74,20 +74,21 @@ class OpSimOrdering(object):
             randomForestPickle = os.path.join(twinklesDir, 'data',
                                               'RF_pickle.p')
 
-        if self.ignorePredictedTimes:
-            if minimizeBy not in self._opsimDF.columns:
-                raise NotImplementedError('minimizing by {} not implemented, try `expMJD`' minimizeBy)
-            self.minimizeBy = minimizeBy
-        else:
+        if minimizeBy not in self._opsimDF.columns and minimizeBy != 'predictedPhoSimTimes':
+                raise NotImplementedError('minimizing by {} not implemented, try `expMJD`', minimizeBy)
+        self.minimizeBy = minimizeBy
+
+        # We don't need a pickle file if we an ignorePredictedTimes and have a minimize
+        predictionsNotRequired = self.ignorePredictedTimes and minimizeBy != 'predictedPhoSimTimes'  
+        if not predictionsNotRequired:
             if not os.path.exists(randomForestPickle):
                 raise ValueError('pickle does not exist at {}'.format(randomForestPickle))
-
             self.cpuPred = CpuPred(rf_pickle_file=randomForestPickle,
                                    opsim_df=self._opsimDF,
                                    fieldID=1427)
             self._opsimDF['predictedPhoSimTimes'] = self.predictedTimes()
 
-        self.timeMax = timeMax 
+        self.timeMax = timeMax
         self.distinctGroup = ['night', 'filter']
 
     def predictedTimes(self, obsHistIDs=None):
@@ -177,7 +178,7 @@ class OpSimOrdering(object):
         combination with the lowest value of the `predictedPhoSimTimes`
         """
         grouped = self.Twinkles_WFD.groupby(self.distinctGroup)
-        idx  = grouped[self.minimizeBy]transform(min) == \
+        idx  = grouped[self.minimizeBy].transform(min) == \
             self.Twinkles_WFD[self.minimizeBy]
         return self.Twinkles_WFD[idx].sort_values(by='expMJD', inplace=False)
     
