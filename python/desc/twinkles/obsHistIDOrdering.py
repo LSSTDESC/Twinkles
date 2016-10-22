@@ -27,7 +27,7 @@ class OpSimOrdering(object):
         unique combination of variables in which the records are grouped. The
         variables are 'night' and 'filter'
     timeMax : float,
-        max value of `predictedPhoSimTimes` in sec for a record for it to be
+        max value of `predictedPhoSimTimes` in hours for a record for it to be
         used in the calculation
     filteredOpSim : `pd.DataFrame`
         dataFrame representing the OpSim data with duplicate records dropped in
@@ -62,15 +62,34 @@ class OpSimOrdering(object):
         self._opsimDF['predictedPhoSimTimes'] = self.predictedTimes()
 
         self._opsimDF['year'] = self._opsimDF.night // 365
-        self.timeMax = timeMax * 3600.
+        self.timeMax = timeMax 
         self.distinctGroup = ['night', 'filter']
 
-    def predictedTimes(self):
-        opsim_len = len(self._opsimDF)
-        times = np.ones(opsim_len) * np.nan 
-        for i, obshistid in enumerate(self._opsimDF.reset_index()['obsHistID']):
+    def predictedTimes(self, obsHistIDs=None):
+        """
+        predicted time for `PhoSim` image sigmulation on a SLAC 'fell' CPU
+        in units of hours 
+
+        Parameters
+        ----------
+        obsHistIDs : float or sequence of integers, defaults to None
+            if None, obsHistIDs defaults to the sequence of obsHistIDs in
+            `self._opsimDF`
+        Returns
+        -------
+        `numpy.ndarray` of predicted PhoSim simulation times in hours
+        """
+        # default obsHistIDs
+        if obsHistIDs is None:
+            obsHistIDs = self._opsimDF.reset_index()['obsHistID'].values
+
+        obsHistIds = np.ravel(obsHistIDs)
+        times = np.ones_like(obsHistIds) * np.nan 
+        for i, obshistid in enumerate(obsHistIds):
             times[i] = self.cpuPred(obshistid)
-        return times
+
+        # convert to hours from seconds before return
+        return times / 3600.0
 
     
     @property
