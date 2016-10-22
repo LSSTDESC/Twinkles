@@ -33,6 +33,10 @@ class OpSimOrdering(object):
         dataFrame representing the OpSim data with duplicate records dropped in
         favor of the ones with propID ==54 (WFD) and any record that has a
         `predictedPhoSimTimes` > `self.timeMax` dropped
+    ignorePredictedTimes : Bool
+    cpuPred : instance of `sklearn.ensemble.forest.RandomForestRegressor`
+        obtained from a pickle file if `self.ignorePredictedTimes` is False
+    minimizeBy : parameter `minimizeBy`
     """
     def __init__(self, opSimDBPath,
                  randomForestPickle=None,
@@ -51,6 +55,14 @@ class OpSimOrdering(object):
             max value of predicted PhoSim Run times of selected OpSim records.
             Records with predicted PhoSIm run times beyond this value are
             filtered out of `filteredOpSim`
+        ignorePredictedTimes : Bool, defaults to False
+            If True, ignores predicted PhoSim Run times, and therefore does not
+            require a `randomForestPickle`
+        minimizeBy : string, defaults to `predictedPhoSimTimes`
+            the column of `OpSim` which is minimized to select a single record
+            from all the members of a group having the same values of `self.distinctGroup`.
+            An example for such a parameter would be `expMJD` which is by definition unique
+            for every pointing and thus a minimization is easy
         """
         twinklesDir = getPackageDir('Twinkles')
 
