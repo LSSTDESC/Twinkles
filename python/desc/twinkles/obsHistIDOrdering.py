@@ -17,7 +17,7 @@ class OpSimOrdering(object):
     Parameters
     ----------
     opSimDBPath : absolute path to OpSim database
-    timeMax : float, unit of hours, default to 0.9
+    timeMax : float, unit of hours, default to 100.0
         a threshold of time, such that any OpSim pointings with predictedPhoSim
         times above that threshold will be dropped.
 
@@ -40,7 +40,7 @@ class OpSimOrdering(object):
     """
     def __init__(self, opSimDBPath,
                  randomForestPickle=None,
-                 timeMax=120.0,
+                 timeMax=100.0,
                  ignorePredictedTimes=False,
                  minimizeBy='predictedPhoSimTimes'):
         """
