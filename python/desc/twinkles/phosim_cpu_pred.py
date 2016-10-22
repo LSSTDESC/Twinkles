@@ -38,10 +38,10 @@ class CpuPred(object):
         self.RFbest = pickle.load(open(rf_pickle_file, 'rb'))
         if opsim_df is None:
             factory = SqliteDataFrameFactory(opsim_db_file)
+            self.obs_conditions = factory.create('obsHistID filter moonAlt moonPhase'.split(), 'Summary',
+                condition='where fieldID=%d'%fieldID)
         else:
-            factory = opsim_df
-        self.obs_conditions = factory.create('obsHistID filter moonAlt moonPhase'.split(), 'Summary',
-            condition='where fieldID=%d'%fieldID)
+            self.obs_conditions = opsim_df['obsHistID filter moonAlt moonPhase'.split()]
 
     def __call__(self, obsid):
         """
