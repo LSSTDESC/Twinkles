@@ -43,8 +43,15 @@ if args.orderObsHistIDsByDesign:
     ops = OpSimOrdering(opSimDBPath=args.opsimDB,
                         randomForestPickle=randomForestPickle,
                         timeMax=args.maxPredictedTime)
-    df = pd.concat([ops.Twinkles_3p1, ops.Twinkles_3p2, ops.Twinkles_3p3])
-    df.obsHistID.to_csv(args.outfile, index=False)
+    with open(args.outfile, 'w') as output:
+        output.write('# Begin Section Twinkles 3.1\n')
+    ops.Twinkles_3p1.obsHistID.to_csv(args.outfile, index=False, mode='a')
+    with open(args.outfile, 'a') as output:
+        output.write('# Begin Section Twinkles 3.2\n')
+    ops.Twinkles_3p2.obsHistID.to_csv(args.outfile, index=False, mode='a')
+    with open(args.outfile, 'a') as output:
+        output.write('# Begin Section Twinkles 3.3\n')
+    ops.Twinkles_3p2.obsHistID.to_csv(args.outfile, index=False, mode='a')
 else:
     obsHistIDs = get_twinkles_visits(args.opsimDB)
 
