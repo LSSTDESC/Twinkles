@@ -140,6 +140,13 @@ class OpSimOrdering(object):
             return self.uniqueOpSimRecords.query('predictedPhoSimTimes < @thresh')
 
     @property
+    def opSimCols(self):
+        """
+        columns in `filteredOpSim`
+        """
+        return self.filteredOpSim.columns
+
+    @property
     def obsHistIDsPredictedToTakeTooLong(self):
         """
         obsHistIDs dropped from Twink_3p1, Twink_3p2, Twink_3p3 because the
@@ -168,8 +175,10 @@ class OpSimOrdering(object):
         combination
         """
         groupDistinct = self.filteredOpSim.groupby(self.distinctGroup)
-        SelectedObsHistIDs = groupDistinct.propID.transform(min) == self.filteredOpSim.propID
-        return self.filteredOpSim[SelectedObsHistIDs]
+        gdf = groupDistinct[self.opSimCols].agg(dict(propID=min))
+        idx = gdf.propID.obsHistID.values 
+        df = self.filteredOpSim.set_index('obsHistID').ix[idx].sort_values(by='expMJD')
+        return df.reset_index()
      
     @property
     def Twinkles_3p1(self):
@@ -177,10 +186,12 @@ class OpSimOrdering(object):
         For visits selected in Twinkles_WFD, pick the visit in each unique
         combination with the lowest value of the `predictedPhoSimTimes`
         """
-        grouped = self.Twinkles_WFD.groupby(self.distinctGroup)
-        idx  = grouped[self.minimizeBy].transform(min) == \
-            self.Twinkles_WFD[self.minimizeBy]
-        return self.Twinkles_WFD[idx].sort_values(by='expMJD', inplace=False)
+        groupDistinct = self.Twinkles_WFD.groupby(self.distinctGroup)
+        discVar = self.minimizeBy
+        gdf = groupDistinct[self.opSimCols].agg(dict(discVar=min))
+        idx = gdf.discVar.obsHistID.values 
+        df = self.filteredOpSim.set_index('obsHistID').ix[idx]
+        return df.sort_values(by='expMJD', inplace=False).reset_index()
     
     @property
     def Twinkles_3p2(self):
