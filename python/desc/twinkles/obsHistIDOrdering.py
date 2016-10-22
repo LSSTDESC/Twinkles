@@ -3,8 +3,12 @@ import os
 import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine
+from lsst.utils import getPackageDir
+from .phosim_cpu_pred import CpuPred 
+
 
 __all__ = ['OpSimOrdering']
+
 class OpSimOrdering(object):
     """
     Code to split the Twinkles 3 obsHistIDs into sets that will be ordered so
@@ -45,12 +49,29 @@ class OpSimOrdering(object):
             filtered out of `filteredOpSim`
         """
         twinklesDir = getPackageDir('Twinkles')
-        twinklesData = os.path.join(twinklesDir, 'data', 'RF_pickle.p')
         self._opsimDF = self.fullOpSimDF(opSimDBPath)
-        self._opsimDF['predictedPhoSimTimes'] = np.random.uniform(size=len(self._opsimDF))
+        if randomForestPickle is None:
+            randomForestPickle = os.path.join(twinklesDir, 'data',
+                                              'RF_pickle.p')
+        if not os.path.exists(randomForestPickle):
+            raise ValueError('pickle does not exist at {}'.format(randomForestPickle))
+
+        self.cpuPred = CpuPred(rf_pickle_file=randomForestPickle,
+                                             opsim_df=self._opsimDF,
+                                             fieldID=1427)
+        self._opsimDF['predictedPhoSimTimes'] = self.predictedTimes()
+
         self._opsimDF['year'] = self._opsimDF.night // 365
         self.timeMax = timeMax * 3600.
         self.distinctGroup = ['night', 'filter']
+
+    def predictedTimes(self):
+        opsim_len = len(self._opsimDF)
+        times = np.ones(opsim_len) * np.nan 
+        for i, obshistid in enumerate(self._opsimDF.reset_index()['obsHistID']):
+            times[i] = self.cpuPred(obshistid)
+        return times
+
     
     @property
     def uniqueOpSimRecords(self):
