@@ -9,7 +9,7 @@ class TestOpSimOrdering(unittest.TestCase):
 
     def setUp(self):
         self.opSimDBPath = '/Users/rbiswas/data/LSST/OpSimData/minion_1016_sqlite.db'
-        self.ops = OpSimOrdering(self.opSimDBPath, timeMax=0.8)
+        self.ops = OpSimOrdering(self.opSimDBPath, timeMax=100., randomForestPickle=None)
         self.numRecords = len(self.ops.filteredOpSim)
         self.numUniqueRecords = len(self.ops.uniqueOpSimRecords)
 
