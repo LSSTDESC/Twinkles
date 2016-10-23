@@ -163,7 +163,7 @@ class OpSimOrdering(object):
 
         missing = self.uniqueOpSimRecords.query('obsHistID not in @filteredObsHistID')
         if len(missing) > 0:
-            return missing[['obsHistID', 'predictedPhoSimTimes']]
+            return missing[['obsHistID', 'predictedPhoSimTimes', 'filter']]
         else:
             return None
 
