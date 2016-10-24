@@ -9,7 +9,7 @@ install:
   - pip install coveralls
   - setup lsst_sims
   - eups declare -r . Twinkles -t current
-  - setup twinkles
+  - setup Twinkles
 
 cache:
   directories:
