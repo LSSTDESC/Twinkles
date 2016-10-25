@@ -16,33 +16,31 @@ parser.add_argument('opsimDB', help='OpSim database sqlite file')
 parser.add_argument('--fieldID', type=int, default=1427,
                     help='ID number of the desired field')
 parser.add_argument('--outfile', type=str, default=None, help='output file')
-parser.add_argument('--orderObsHistIDsByDesign', type=bool, default=True,
+parser.add_argument('--orderObsHistID', type=bool, default=True,
                     help='order obsHistIDs as decided for Twinkles 3')
-parser.add_argument('--randomForestPickleFileName', type=str, default='RF_pickle.p',
-                    help='filename for a pickle of a RandomForest Predictor of PhoSim Run times')
-parser.add_argument('--randomForestPickleFileDir', type=str, default=None,
-                    help='absolute path to the directory holding the RandomForest Predictor of PhoSim Run times. The default `None` expects the file at `TWINKLES_DIR/data/`')
-parser.add_argument('--maxPredictedTime', type=float, default=100.0,
+parser.add_argument('--RF_pickle_file', type=str, default=None,
+                    help='absolute path for a pickle of a RandomForest Predictor of PhoSim Run times, defaults to None which effectively sets the variable to Twinkles/data/RF_pickle.p')
+parser.add_argument('--maxPredTime', type=float, default=100.0,
                     help='max predicted phosim run time for the opsim record'
                     ' in hours beyond which the record index obsHistID will '
-                    'not be included') 
+                    'not be included')
 args = parser.parse_args()
 
 # output filename is common
-if args.outfile is None :
+if args.outfile is None:
     args.outfile = 'twinkles_visits_fieldID_%i.txt' % args.fieldID
 
 # Random Forest Generator Pickle:
-if args.randomForestPickleFileDir is None:
+if args.RF_pickle_file is None:
     twinklesDir = getPackageDir('Twinkles')
-    randomForestPickleFileDir = os.path.join(twinklesDir, 'data') 
+    randomForestPickle = os.path.join(twinklesDir, 'data', 'RF_pickle.p')
 else:
-    randomForestPickleFileDir = args.randomForestPickleFileDir
-randomForestPickle = os.path.join(randomForestPickleFileDir, args.randomForestPickleFileName)
-if args.orderObsHistIDsByDesign:
+    randomForestPickle = args.RF_pickle_file
+
+if args.orderObsHistID:
     ops = OpSimOrdering(opSimDBPath=args.opsimDB,
                         randomForestPickle=randomForestPickle,
-                        timeMax=args.maxPredictedTime)
+                        timeMax=args.maxPredTime)
     with open(args.outfile, 'w') as output:
         output.write('# Begin Section Twinkles 3.1\n')
     ops.Twinkles_3p1.obsHistID.to_csv(args.outfile, index=False, mode='a')
