@@ -8,7 +8,9 @@ import unittest
 class TestOpSimOrdering(unittest.TestCase):
 
     def setUp(self):
-        self.opSimDBPath = '/Users/rbiswas/data/LSST/OpSimData/minion_1016_sqlite.db'
+        twinklesdir = getPackageDir('Twinkles')
+        self.opSimDBPath = os.path.join(twinklesdir, 'data',
+                                        'enigma_1189_micro.db')
         self.ops = OpSimOrdering(self.opSimDBPath, timeMax=100., randomForestPickle=None)
         self.numRecords = len(self.ops.filteredOpSim)
         self.numUniqueRecords = len(self.ops.uniqueOpSimRecords)
