@@ -1,0 +1,43 @@
+This directory contains the "config" area of the working directory
+tree for SLAC Pipeline task TW-phoSim-r3.  
+
+In real life, this directory will exist as
+/nfs/farm/g/desc/u1/Pipeline-tasks/TW-phoSim-r3/config.
+
+Neighboring directories will contain: phoSim output, log files,
+directories for special task-related tests, and a reference copy of
+the Twinkles git project.
+
+
+Contents of this directory:
+
+
+task.xml - defines workflow task
+
+--- Data files
+
+sensorList.txt - list of sensors to be simulated
+twinkles_visits.txt  - list of obsHistIDs to simulate (output of Twinkles/bin/get_twinkles_visits.py)
+phoSim_commands.txt - template command (physics overrides) file read by phoSim
+
+
+--- Main Pipeline task scripts
+
+setupVisit.py - initial setup for processing a single visit, including identifying the obsHistID
+setupPhoSim.jy - create one substream per sensor
+  phoSimPrep.sh - set up environment to run phoSimPrep.py
+  phoSimPrep.py - perform any potentially lengthy preparatory steps prior to running phoSim
+  runPhoSim.py - run phoSim
+  phoSimReg.py - register phoSim data products in dataCatalog
+  phoSimFinalize.jy - [no-op placeholder] for preparing single sensor data needed downstream
+wrapUp.jy - [no-op] for collecting data from all sub-streams
+wrapUp.py - [no-op] for summarizing data from all sub-streams (single visit)
+
+--- Imports
+
+config.py - common configuration used by some/all python scripts in task
+setupPhoSimInput.py - class to handle setting up of phoSim inputs and working environment
+registry.py - class to register files in dataCatalog
+
+--- /helpers -- miscellaneous scripts needed at some point in the
+    past.  Not required for production.

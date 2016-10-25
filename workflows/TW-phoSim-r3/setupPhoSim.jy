@@ -1,0 +1,61 @@
+## setupPhoSim.jy
+##
+##  Runs as a jython scriptlet from a Pipeline task
+##
+import os,sys
+from java.util import HashMap
+
+### Example: extract pipeline variable
+## parentPI = pipeline.getProcessInstance('setupVisit')
+## run = parentPI.getVariable("RUN")
+
+## Prepare to extract pipeline variables from the setupVisit step
+setupVisit = pipeline.getProcessInstance('setupVisit')
+
+workingDir = setupVisit.getVariable("TW_PHOSIMOUT")
+instanceCat = setupVisit.getVariable("TW_INSTANCE_CATALOG")
+obsHistID = setupVisit.getVariable("TW_OBSHISTID")
+#seds = setupVisit.getVariable("TW_SEDS")
+physOverride = setupVisit.getVariable("TW_PHYSICS_OVERRIDE")
+
+print 'workingDir = ',workingDir
+print 'instanceCat = ',instanceCat
+print 'obsHistID = ',obsHistID
+#print 'seds = ',seds
+print 'physOverride = ',physOverride
+
+## Package up data for subtask
+pipeVars = HashMap()
+pipeVars.put('TW_PHOSIMOUT',workingDir)
+pipeVars.put('TW_INSTANCE_CATALOG',instanceCat)
+pipeVars.put('TW_OBSHISTID',obsHistID)
+#pipeVars.put('TW_SEDS',seds)
+pipeVars.put('TW_PHYSICS_OVERRIDE',physOverride)
+
+## Prepare to create one subtask per sensor
+numSensors = int(setupVisit.getVariable("TW_NUM_SENSORS"))
+print 'numSensors = ',numSensors
+
+## (Hack around email limitation of ~1000 characters per variable definition)
+sensors1 = setupVisit.getVariable("TW_SENSOR_LIST1")
+sensorList1 = sensors1.split(',')
+
+sensors2 = setupVisit.getVariable("TW_SENSOR_LIST2")
+sensorList2 = []
+if len(sensors2)>0 and sensors2 != 'None' :sensorList2 = sensors2.split(',')
+
+sensorList = sensorList1+sensorList2
+print 'sensorList = ',sensorList
+
+## Create one substream per sensor, each of which will run phoSim
+nSubStream = 0
+for sensor in sensorList:
+    print 'Create subStream for sensor ',sensor
+    pipeVars.put('TW_SENSOR',sensor)
+    pipeline.createSubstream('singleSensor',nSubStream,pipeVars)
+    nSubStream += 1
+    pass
+
+sys.stdout.flush()
+print "All done."
+
