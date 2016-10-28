@@ -22,7 +22,7 @@ from lsst.sims.catUtils.exampleCatalogDefinitions import\
      DefaultPhoSimHeaderMap,
      DefaultPhoSimInstanceCatalogCols)
 from .twinklesCatalogDefs import TwinklesCatalogZPoint
-from .twinklesCatalogDefs import TwinklesPhoSimCatalogSN as PhoSimCatalogSN
+from .twinklesCatalogDefs import TwinklesPhoSimCatalogSN
 from desc.twinkles import (GalaxyCacheDiskObj, GalaxyCacheBulgeObj,
                            GalaxyCacheAgnObj, GalaxyCacheSprinklerObj,
                            create_galaxy_cache,
@@ -165,8 +165,8 @@ class TwinklesSky(object):
                              write_header=False)
 
         t_after_galCat = time.time()
-        snphosim = PhoSimCatalogSN(db_obj=self.snObj,
-                                        obs_metadata=self.obs_metadata)
+        snphosim = TwinklesPhoSimCatalogSN(db_obj=self.snObj,
+                                           obs_metadata=self.obs_metadata)
         ### Set properties
         snphosim.writeSedFile = True
         snphosim.suppressDimSN = True
