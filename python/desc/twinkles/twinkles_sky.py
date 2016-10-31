@@ -12,14 +12,11 @@ import numpy as np
 import os
 from lsst.utils import getPackageDir
 from lsst.sims.catalogs.definitions import CompoundInstanceCatalog
-from lsst.sims.catUtils.exampleCatalogDefinitions import\
-    (PhoSimCatalogPoint,
-     PhoSimCatalogSersic2D,
-     DefaultPhoSimHeaderMap,
-     DefaultPhoSimInstanceCatalogCols)
 from .twinklesDBConnections import StarCacheDBObj, SNCacheDBObj
-from .twinklesCatalogDefs import TwinklesCatalogZPoint
-from .twinklesCatalogDefs import TwinklesPhoSimCatalogSN
+from lsst.sims.catUtils.exampleCatalogDefinitions import (DefaultPhoSimHeaderMap,
+                                                          DefaultPhoSimInstanceCatalogCols)
+from .twinklesCatalogDefs import (TwinklesCatalogZPoint, TwinklesCatalogPoint,
+                                  TwinklesCatalogSersic2D, TwinklesCatalogSN)
 from desc.twinkles import (GalaxyCacheDiskObj, GalaxyCacheBulgeObj,
                            GalaxyCacheAgnObj, GalaxyCacheSprinklerObj,
                            create_galaxy_cache,
@@ -93,11 +90,11 @@ class TwinklesSky(object):
         # Lists of component phosim Instance Catalogs and CatalogDBObjects
         # Stars
         self.compoundStarDBList = [StarCacheDBObj]
-        self.compoundStarICList = [PhoSimCatalogPoint]
+        self.compoundStarICList = [TwinklesPhoSimCatalogPoint]
 
         # Galaxies
         self.compoundGalDBList = [GalaxyCacheBulgeObj, GalaxyCacheDiskObj, GalaxyCacheAgnObj]
-        self.compoundGalICList = [PhoSimCatalogSersic2D, PhoSimCatalogSersic2D,
+        self.compoundGalICList = [TwinklesPhoSimCatalogSersic2D, TwinklesPhoSimCatalogSersic2D,
                                   TwinklesCatalogZPoint]
 
         if not os.path.exists(_galaxy_cache_db_name):

@@ -1,13 +1,30 @@
 """PhoSim Instance Catalog"""
 from __future__ import absolute_import, division, print_function
-from lsst.sims.catUtils.exampleCatalogDefinitions import PhoSimCatalogZPoint
-from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import PhoSimCatalogSN
 import numpy as np
+from lsst.sims.catUtils.exampleCatalogDefinitions import (PhoSimCatalogZPoint,
+                                                          PhoSimCatalogPoint,
+                                                          PhoSimCatalogSersic2D,
+                                                          PhoSimCatalogSN)
 from .twinklesVariabilityMixins import VariabilityTwinkles
 
 
 __all__ = ['TwinklesCatalogZPoint', 'TwinklesPhoSimCatalogSN']
 
+
+class TwinklesCatalogPoint(PhoSimCatalogPoint):
+
+    column_outputs = ['prefix', 'uniqueId', 'raPhoSim', 'decPhoSim', 'phoSimMagNorm', 'sedFilepath',
+                      'redshift', 'shear1', 'shear2', 'kappa', 'raOffset', 'decOffset',
+                      'spatialmodel', 'internalExtinctionModel',
+                      'galacticExtinctionModel', 'galacticAv', 'galacticRv']
+
+class TwinklesCatalogSersic2D(PhoSimCatalogSersic2D):
+
+    column_outputs = ['prefix', 'uniqueId', 'raPhoSim', 'decPhoSim', 'phoSimMagNorm', 'sedFilepath',
+                      'redshift', 'shear1', 'shear2', 'kappa', 'raOffset', 'decOffset',
+                      'spatialmodel', 'majorAxis', 'minorAxis', 'positionAngle', 'sindex',
+                      'internalExtinctionModel', 'internalAv', 'internalRv',
+                      'galacticExtinctionModel', 'galacticAv', 'galacticRv']
 
 class TwinklesCatalogZPoint(PhoSimCatalogZPoint, VariabilityTwinkles):
     """
@@ -15,6 +32,11 @@ class TwinklesCatalogZPoint(PhoSimCatalogZPoint, VariabilityTwinkles):
     AGN
     """
     catalog_type = 'twinkles_catalog_ZPOINT'
+
+    column_outputs = ['prefix', 'uniqueId', 'raPhoSim', 'decPhoSim', 'phoSimMagNorm', 'sedFilepath',
+                      'redshift', 'shear1', 'shear2', 'kappa', 'raOffset', 'decOffset',
+                      'spatialmodel', 'internalExtinctionModel',
+                      'galacticExtinctionModel', 'galacticAv', 'galacticRv']
 
 class TwinklesPhoSimCatalogSN(PhoSimCatalogSN):
     """
@@ -42,4 +64,3 @@ class TwinklesPhoSimCatalogSN(PhoSimCatalogSN):
                       'spatialmodel', 'internalExtinctionModel',
                       'galacticExtinctionModel', 'galacticAv', 'galacticRv']
     cannot_be_null = ['x0', 't0', 'z', 'shorterFileNames']
-
