@@ -3,6 +3,14 @@ import os
 import sqlite3
 
 def createDummyFatboy(file_name):
+    """
+    This method creates a sqlite database with two tables:
+    StarAllForceSeek is a table of stars with a fatboy-like schema
+    TwinkSN_run3 is a table of supernovae with a fatboy-like schema
+    both are centered on the Twinkles field of view.
+
+    The parameter file_name indicates the name of the file storing the database.
+    """
     ra=53.0091385
     dec=-27.4389488
     rng = np.random.RandomState(112)

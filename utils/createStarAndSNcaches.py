@@ -14,6 +14,17 @@ _obs = ObservationMetaData(pointingRA=53.0091385,
                            boundLength=0.31)
 
 def create_star_cache(db=None):
+    """
+    Read the stars from a database and cache them in
+    $TWINKLES_DIR/data/star_cache.db
+    in the table 'star_cache_table'
+
+    Params
+    ------
+    db is a CatalogDBObject connecting to the database from which to read
+    the data.  If None, this will use the CatSim class StarObj(), which
+    connects to the star table on fatboy.
+    """
     star_dtype = np.dtype([('simobjid', int),
                            ('ra', float), ('decl', float),
                            ('magNorm', float),
@@ -56,7 +67,19 @@ def create_star_cache(db=None):
     if os.path.exists(star_cache_name):
         os.unlink(star_cache_name)
 
+
 def create_sn_cache(db=None):
+    """
+    Read the supernova data from a database and cache it in the file
+    $TWINKLES_DIR/data/sn_cache.db
+    in the table 'sn_cache_table'
+
+    Param
+    -----
+    db is a CatalogDBObject from which to read the data.  If None,
+    use the CatSim class SNDBObj, which will connect to the
+    TwinkSN_run3 table on fatboy.
+    """
     sn_dtype = np.dtype([('galtileid', int), ('id', int),
                         ('snra', float), ('sndec', float),
                         ('t0', float), ('x0', float), ('x1', float),
@@ -97,6 +120,10 @@ def create_sn_cache(db=None):
 
 
 if __name__ == "__main__":
+    """
+    Right now, __main__ is configured to read from a dummy fatboy database
+    created for testing while fatboy is down.
+    """
     from create_dummy_fatboy import createDummyFatboy
     db_name = os.path.join(getPackageDir('twinkles'), 'data', 'scratch_database.db')
     if os.path.exists(db_name):
