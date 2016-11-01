@@ -22,6 +22,7 @@ from lsst.sims.catUtils.exampleCatalogDefinitions import\
      PhoSimCatalogSN,
      DefaultPhoSimHeaderMap,
      DefaultPhoSimInstanceCatalogCols)
+from .twinklesDBConnections import StarCacheDBObj
 from .twinklesCatalogDefs import TwinklesCatalogZPoint
 from desc.twinkles import (GalaxyCacheDiskObj, GalaxyCacheBulgeObj,
                            GalaxyCacheAgnObj, GalaxyCacheSprinklerObj,
@@ -105,8 +106,8 @@ class TwinklesSky(object):
 
         # Lists of component phosim Instance Catalogs and CatalogDBObjects
         # Stars
-        self.compoundStarDBList = [StarObj, CepheidStarObj]
-        self.compoundStarICList = [PhoSimCatalogPoint, PhoSimCatalogPoint]
+        self.compoundStarDBList = [StarCacheDBObj]
+        self.compoundStarICList = [PhoSimCatalogPoint]
 
         # Galaxies
         self.compoundGalDBList = [GalaxyCacheBulgeObj, GalaxyCacheDiskObj, GalaxyCacheAgnObj]
