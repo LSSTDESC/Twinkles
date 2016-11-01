@@ -6,7 +6,7 @@ from lsst.sims.utils import ObservationMetaData
 from lsst.sims.catalogs.db import fileDBObject
 from lsst.sims.catUtils.baseCatalogModels import (StarObj, CepheidStarObj,
                                                   SNDBObj)
-# sndbobj needs to connect to TwinkSN_run3
+
 
 _obs = ObservationMetaData(pointingRA=53.0091385,
                            pointingDec=-27.4389488,
