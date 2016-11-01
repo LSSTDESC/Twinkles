@@ -56,6 +56,42 @@ def create_star_cache(db=None):
     if os.path.exists(star_cache_name):
         os.unlink(star_cache_name)
 
+def create_sn_cache(db=None):
+    sn_dtype = np.dtype([('galtileid', int),
+                        ('snra', float), ('sndec', float),
+                        ('t0', float), ('x0', float), ('x1', float),
+                        ('c', float), ('redshift', float)])
+    col_names = list(sn_dtype.names)
+    sn_cache_name = os.path.join(getPackageDir('twinkles'), 'data', 'twinkles_sn_cache.txt')
+    if os.path.exists(sn_cache_name):
+        os.unlink(sn_cache_name)
+
+    sn_db_name = os.path.join(getPackageDir('twinkles'), 'data', 'sn_cache.db')
+    if db is None:
+        db = SNDBObj()
+        db.tableid = 'TwinkSN_run3'
+
+    result_iterator = db.query_columns(colnames=col_names, chunk_size=10000,
+                                       obs_metadata = _obs)
+
+    with open(sn_cache_name, 'w') as output_file:
+        output_file.write('# ')
+        for name in col_names:
+            output_file.write('%s ' % name)
+        output_file.write('\n')
+        for chunk in result_iterator:
+            for line in chunk:
+                output_file.write(('%d;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g\n' %
+                                   (line[0], line[1], line[2], line[3],
+                                    line[4], line[5], line[6], line[7])).replace('nan', 'NULL').replace('None','NULL'))
+
+
+    dbo = fileDBObject(sn_cache_name, driver='sqlite', runtable='sn_cache_table',
+                       database=sn_db_name, dtype=sn_dtype, delimiter=';', idColKey='galtileid')
+
+    if os.path.exists(sn_cache_name):
+        os.unlink(sn_cache_name)
+
 
 if __name__ == "__main__":
     from create_dummy_fatboy import createDummyFatboy
@@ -77,3 +113,16 @@ if __name__ == "__main__":
 
     db = dummyStars()
     create_star_cache(db=db)
+
+    class dummySN(CatalogDBObject):
+        tableid='TwinkSN_run3'
+        idColKey='galtileid'
+        raColName='snra'
+        decColName='sndec'
+        database=db_name
+        host=None
+        port=None
+        driver='sqlite'
+
+    db = dummySN()
+    create_sn_cache(db=db)

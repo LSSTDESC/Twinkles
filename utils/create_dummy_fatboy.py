@@ -13,8 +13,8 @@ def createDummyFatboy(file_name):
         raise RuntimeError("Cannot create %s; it already exists" % file_name)
 
     conn = sqlite3.connect(file_name)
-    c = conn.cursor()
-    c.execute('''CREATE TABLE StarAllForceSeek
+    cur = conn.cursor()
+    cur.execute('''CREATE TABLE StarAllForceSeek
                  (simobjid int, ra real, decl real, magNorm real, mura real, mudecl real,
                   parallax real, ebv real, vrad real, varParamStr text, sedfilename text, gmag real)''')
 
@@ -34,9 +34,31 @@ def createDummyFatboy(file_name):
                   vrad_list, sed_dex_list)):
 
         cmd = '''INSERT INTO StarAllForceSeek VALUES(
-                 %d, %f, %f, %f, %f, %f, %f, %f, %f, 'None', '%s', 15.0)''' % \
+                 %d, %.12g, %.12g, %.12g, %.12g, %.12g, %.12g, %.12g, %.12g, 'None', '%s', 15.0)''' % \
                  (ix, ra, dec, norm, mura, mudecl, px, ebv, vrad, star_seds[sed])
-        c.execute(cmd)
+        cur.execute(cmd)
+    conn.commit()
+
+
+    cur.execute('''CREATE TABLE TwinkSN_run3
+                 (snra real, sndec real, t0 real, x0 real, x1 real, c real, redshift real,
+                  galtileid int)''')
+
+    n_sn = 100
+    rr = rng.random_sample(n_sn)*radius
+    theta = rng.random_sample(n_sn)*2.0*np.pi
+    snra_list = ra + rr*np.cos(theta)
+    sndec_list = dec + rr*np.sin(theta)
+    t0_list = rng.random_sample(n_sn)
+    x0_list = rng.random_sample(n_sn)*1.0e-5+1.0e-6
+    x1_list = rng.random_sample(n_sn)*5.0
+    c_list = rng.random_sample(n_sn)*5.0
+    redshift_list = rng.random_sample(n_sn)*1.1 + 0.1
+    for ix, (snra, sndec, t0, x0, x1, c, redshift) in \
+    enumerate(zip(snra_list, sndec_list, t0_list, x0_list, x1_list, c_list, redshift_list)):
+        cmd = '''INSERT INTO TwinkSN_run3
+                 VALUES (%.12g, %.12g, %.12g, %12.g, %.12g, %.12g, %.12g, %d)''' % \
+                 (snra, sndec, t0, x0, x1, c, redshift, ix)
+        cur.execute(cmd)
     conn.commit()
     conn.close()
-

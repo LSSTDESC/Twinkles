@@ -22,7 +22,7 @@ from lsst.sims.catUtils.exampleCatalogDefinitions import\
      PhoSimCatalogSN,
      DefaultPhoSimHeaderMap,
      DefaultPhoSimInstanceCatalogCols)
-from .twinklesDBConnections import StarCacheDBObj
+from .twinklesDBConnections import StarCacheDBObj, SNCacheDBObj
 from .twinklesCatalogDefs import TwinklesCatalogZPoint
 from desc.twinkles import (GalaxyCacheDiskObj, GalaxyCacheBulgeObj,
                            GalaxyCacheAgnObj, GalaxyCacheSprinklerObj,
@@ -121,10 +121,10 @@ class TwinklesSky(object):
         ## SN catalogDBObject
         if self.availableConnections is None:
             self.availableConnections = list()
-            self.snObj = SNDBObj(table=sntable, connection=None)
+            self.snObj = SNCacheDBObj()
             self.availableConnections.append(self.snObj.connection)
         else:
-            self.snObj = SNDBObj(table=sntable, connection=self.availableConnections[0])
+            self.snObj = SNCacheDBObj(table=sntable, connection=self.availableConnections[0])
         
         self.sn_sedfile_prefix = sn_sedfile_prefix
 
