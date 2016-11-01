@@ -33,10 +33,10 @@ class TwinklesPhoSimCatalogSN(PhoSimCatalogSN):
     # column_outputs = PhoSimCatalogSN.column_outputs
     # column_outputs[PhoSimCatalogSN.column_outputs.index('sedFilepath')] = \
     #    'shorterFileNames'
-
-    column_outputs = ['prefix', 'uniqueId', 'raPhoSim', 'decPhoSim', 'phoSimMagNorm', 'shorterFileNames',
-                      'redshift', 'shear1', 'shear2', 'kappa', 'raOffset', 'decOffset',
-                      'spatialmodel', 'galacticExtinctionModel', 'galacticAv', 'galacticRv',
-                      'internalExtinctionModel']
+    column_outputs = ['prefix', 'uniqueId', 'raPhoSim', 'decPhoSim',
+                      'phoSimMagNorm', 'shorterFileNames', 'redshift',
+                      'shear1', 'shear2', 'kappa', 'raOffset', 'decOffset',
+                      'spatialmodel', 'internalExtinctionModel',
+                      'galacticExtinctionModel', 'galacticAv', 'galacticRv']
     cannot_be_null = ['x0', 't0', 'z', 'shorterFileNames']
 
