@@ -57,7 +57,7 @@ def create_star_cache(db=None):
         os.unlink(star_cache_name)
 
 def create_sn_cache(db=None):
-    sn_dtype = np.dtype([('galtileid', int),
+    sn_dtype = np.dtype([('galtileid', int), ('id', int),
                         ('snra', float), ('sndec', float),
                         ('t0', float), ('x0', float), ('x1', float),
                         ('c', float), ('redshift', float)])
@@ -81,10 +81,13 @@ def create_sn_cache(db=None):
         output_file.write('\n')
         for chunk in result_iterator:
             for line in chunk:
-                output_file.write(('%d;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g\n' %
+                output_file.write(('%d;%d;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g\n' %
                                    (line[0], line[1], line[2], line[3],
-                                    line[4], line[5], line[6], line[7])).replace('nan', 'NULL').replace('None','NULL'))
+                                    line[4], line[5], line[6], line[7],
+                                    line[8])).replace('nan', 'NULL').replace('None','NULL'))
 
+    if os.path.exists(sn_db_name):
+        os.unlink(sn_db_name)
 
     dbo = fileDBObject(sn_cache_name, driver='sqlite', runtable='sn_cache_table',
                        database=sn_db_name, dtype=sn_dtype, delimiter=';', idColKey='galtileid')

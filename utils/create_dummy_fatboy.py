@@ -42,7 +42,7 @@ def createDummyFatboy(file_name):
 
     cur.execute('''CREATE TABLE TwinkSN_run3
                  (snra real, sndec real, t0 real, x0 real, x1 real, c real, redshift real,
-                  galtileid int)''')
+                  galtileid int, id int)''')
 
     n_sn = 100
     rr = rng.random_sample(n_sn)*radius
@@ -57,8 +57,8 @@ def createDummyFatboy(file_name):
     for ix, (snra, sndec, t0, x0, x1, c, redshift) in \
     enumerate(zip(snra_list, sndec_list, t0_list, x0_list, x1_list, c_list, redshift_list)):
         cmd = '''INSERT INTO TwinkSN_run3
-                 VALUES (%.12g, %.12g, %.12g, %12.g, %.12g, %.12g, %.12g, %d)''' % \
-                 (snra, sndec, t0, x0, x1, c, redshift, ix)
+                 VALUES (%.12g, %.12g, %.12g, %12.g, %.12g, %.12g, %.12g, %d,%d)''' % \
+                 (snra, sndec, t0, x0, x1, c, redshift, ix, ix)
         cur.execute(cmd)
     conn.commit()
     conn.close()

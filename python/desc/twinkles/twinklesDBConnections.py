@@ -30,28 +30,12 @@ class StarCacheDBObj(CatalogDBObject):
                ('sedFilename', 'sedfilename', unicode, 40)]
 
 
-class SNCacheDBObj(CatalogDBObject):
+class SNCacheDBObj(SNDBObj, CatalogDBObject):
     database = os.path.join(getPackageDir('twinkles'), 'data', 'sn_cache.db')
     host = None
     port = None
     tableid = 'sn_cache_table'
     driver = 'sqlite'
 
-    objid = 'TwinkUnlensedSN'
-    # From now on the tableid should be specified in instantiating the class
-    # table = 'TwinkSN' or 'TwinkSNKraken'
-    idColKey = 'galtileid'
-    raColName = 'snra'
-    decColName = 'sndec'
-    objectTypeId = 42
-
-    columns = [('raJ2000', 'snra*PI()/180.'),
-               ('decJ2000', 'sndec*PI()/180.'),
-               ('Tt0', 't0'),
-               ('Tx0', 'x0'),
-               ('Tx1', 'x1'),
-               ('Tc', 'c'),
-               ('Tsnid', 'id'),
-               ('Tredshift', 'redshift'),
-               ('Tgaltileid', 'galtileid')
-              ]
+    def query_columns(self, *args, **kwargs):
+        return CatalogDBObject.query_columns(self, *args, **kwargs)
