@@ -11,10 +11,6 @@ import copy
 import numpy as np
 import os
 from lsst.utils import getPackageDir
-from lsst.sims.catUtils.baseCatalogModels import (BaseCatalogConfig,
-                                                  StarObj,
-                                                  CepheidStarObj,
-                                                  SNDBObj)
 from lsst.sims.catalogs.definitions import CompoundInstanceCatalog
 from lsst.sims.catUtils.exampleCatalogDefinitions import\
     (PhoSimCatalogPoint,
@@ -93,16 +89,6 @@ class TwinklesSky(object):
         self.brightestGalMag = 'g_ab > {}'.format(self.brightestGal_gmag_inCat)
 
         self.availableConnections = availableConnections
-
-        # override the database connection configuration
-        if db_config is not None:
-            config = BaseCatalogConfig()
-            config.load(db_config)
-            for target in (StarObj, CepheidStarObj, SNDBObj):
-                target.host = config.host
-                target.port = config.port
-                target.database = config.database
-                target.driver = config.driver
 
         # Lists of component phosim Instance Catalogs and CatalogDBObjects
         # Stars
