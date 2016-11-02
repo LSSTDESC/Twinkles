@@ -53,9 +53,10 @@ def create_star_cache(db=None):
         output_file.write('\n')
         for chunk in result_iterator:
             for line in chunk:
+                print line
                 output_file.write(('%d;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%s;%s;%.17g\n' %
-                                  (line[0], line[1], line[2], line[3], line[4], line[5], line[6],
-                                   line[7], line[8], line[9], line[10],line[11])).replace('nan','NULL').replace('None','NULL'))
+                                  (line[1], line[2], line[3], line[4], line[5], line[6], line[7],
+                                   line[8], line[9], str(line[10]), str(line[11]),line[12])).replace('nan','NULL').replace('None','NULL'))
 
     if os.path.exists(star_db_name):
         os.unlink(star_db_name)
@@ -91,8 +92,7 @@ def create_sn_cache(db=None):
 
     sn_db_name = os.path.join(getPackageDir('twinkles'), 'data', 'sn_cache.db')
     if db is None:
-        db = SNDBObj()
-        db.tableid = 'TwinkSN_run3'
+        db = SNDBObj(table='TwinkSN_run3')
 
     result_iterator = db.query_columns(colnames=col_names, chunk_size=10000,
                                        obs_metadata = _obs)
@@ -123,6 +123,14 @@ if __name__ == "__main__":
     """
     Right now, __main__ is configured to read from a dummy fatboy database
     created for testing while fatboy is down.
+    """
+
+    #from desc.twinkles import create_galaxy_cache
+    #create_galaxy_cache()
+    create_star_cache()
+    create_sn_cache()
+
+
     """
     from create_dummy_fatboy import createDummyFatboy
     db_name = os.path.join(getPackageDir('twinkles'), 'data', 'scratch_database.db')
@@ -156,3 +164,4 @@ if __name__ == "__main__":
 
     db = dummySN()
     create_sn_cache(db=db)
+    """
