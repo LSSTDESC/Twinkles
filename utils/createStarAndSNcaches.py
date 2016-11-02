@@ -4,9 +4,8 @@ import os
 from lsst.utils import getPackageDir
 from lsst.sims.utils import ObservationMetaData
 from lsst.sims.catalogs.db import fileDBObject
-from lsst.sims.catUtils.baseCatalogModels import (StarObj, CepheidStarObj,
-                                                  SNDBObj)
-
+from lsst.sims.catUtils.baseCatalogModels import StarObj, SNDBObj
+from desc.twinkles import create_galaxy_cache
 
 _obs = ObservationMetaData(pointingRA=53.0091385,
                            pointingDec=-27.4389488,
@@ -119,48 +118,7 @@ def create_sn_cache(db=None):
 
 
 if __name__ == "__main__":
-    """
-    Right now, __main__ is configured to read from a dummy fatboy database
-    created for testing while fatboy is down.
-    """
 
-    #from desc.twinkles import create_galaxy_cache
-    #create_galaxy_cache()
+    create_galaxy_cache()
     create_star_cache()
     create_sn_cache()
-
-
-    """
-    from create_dummy_fatboy import createDummyFatboy
-    db_name = os.path.join(getPackageDir('twinkles'), 'data', 'scratch_database.db')
-    if os.path.exists(db_name):
-        os.unlink(db_name)
-    createDummyFatboy(db_name)
-
-    from lsst.sims.catalogs.db import CatalogDBObject
-    class dummyStars(CatalogDBObject):
-        tableid='StarAllForceSeek'
-        idColKey='simobjid'
-        raColName='ra'
-        decColName='decl'
-        database=db_name
-        host=None
-        port=None
-        driver='sqlite'
-
-    db = dummyStars()
-    create_star_cache(db=db)
-
-    class dummySN(CatalogDBObject):
-        tableid='TwinkSN_run3'
-        idColKey='galtileid'
-        raColName='snra'
-        decColName='sndec'
-        database=db_name
-        host=None
-        port=None
-        driver='sqlite'
-
-    db = dummySN()
-    create_sn_cache(db=db)
-    """
