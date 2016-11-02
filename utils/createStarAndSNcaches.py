@@ -53,7 +53,6 @@ def create_star_cache(db=None):
         output_file.write('\n')
         for chunk in result_iterator:
             for line in chunk:
-                print line
                 output_file.write(('%d;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%s;%s;%.17g\n' %
                                   (line[1], line[2], line[3], line[4], line[5], line[6], line[7],
                                    line[8], line[9], str(line[10]), str(line[11]),line[12])).replace('nan','NULL').replace('None','NULL'))
