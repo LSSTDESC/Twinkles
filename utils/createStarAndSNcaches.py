@@ -81,7 +81,7 @@ def create_sn_cache(db=None):
     use the CatSim class SNDBObj, which will connect to the
     TwinkSN_run3 table on fatboy.
     """
-    sn_dtype = np.dtype([('galtileid', int), ('id', int),
+    sn_dtype = np.dtype([('id', int), ('galtileid', int),
                         ('snra', float), ('sndec', float),
                         ('t0', float), ('x0', float), ('x1', float),
                         ('c', float), ('redshift', float)])
@@ -104,7 +104,7 @@ def create_sn_cache(db=None):
         output_file.write('\n')
         for chunk in result_iterator:
             for line in chunk:
-                output_file.write(('%d;%d;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g\n' %
+                output_file.write(('%d;%ld;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g;%.17g\n' %
                                    (line[0], line[1], line[2], line[3],
                                     line[4], line[5], line[6], line[7],
                                     line[8])).replace('nan', 'NULL').replace('None','NULL'))
@@ -113,7 +113,7 @@ def create_sn_cache(db=None):
         os.unlink(sn_db_name)
 
     dbo = fileDBObject(sn_cache_name, driver='sqlite', runtable='sn_cache_table',
-                       database=sn_db_name, dtype=sn_dtype, delimiter=';', idColKey='galtileid')
+                       database=sn_db_name, dtype=sn_dtype, delimiter=';', idColKey='id')
 
     if os.path.exists(sn_cache_name):
         os.unlink(sn_cache_name)
