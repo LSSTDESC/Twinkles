@@ -90,11 +90,11 @@ class TwinklesSky(object):
         # Lists of component phosim Instance Catalogs and CatalogDBObjects
         # Stars
         self.compoundStarDBList = [StarCacheDBObj]
-        self.compoundStarICList = [TwinklesPhoSimCatalogPoint]
+        self.compoundStarICList = [TwinklesCatalogPoint]
 
         # Galaxies
         self.compoundGalDBList = [GalaxyCacheBulgeObj, GalaxyCacheDiskObj, GalaxyCacheAgnObj]
-        self.compoundGalICList = [TwinklesPhoSimCatalogSersic2D, TwinklesPhoSimCatalogSersic2D,
+        self.compoundGalICList = [TwinklesCatalogSersic2D, TwinklesCatalogSersic2D,
                                   TwinklesCatalogZPoint]
 
         if not os.path.exists(_galaxy_cache_db_name):
@@ -149,8 +149,8 @@ class TwinklesSky(object):
                              write_header=False)
 
         t_after_galCat = time.time()
-        snphosim = TwinklesPhoSimCatalogSN(db_obj=self.snObj,
-                                           obs_metadata=self.obs_metadata)
+        snphosim = TwinklesCatalogSN(db_obj=self.snObj,
+                                     obs_metadata=self.obs_metadata)
         ### Set properties
         snphosim.writeSedFile = True
         snphosim.suppressDimSN = True
