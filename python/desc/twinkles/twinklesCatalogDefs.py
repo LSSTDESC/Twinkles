@@ -11,6 +11,9 @@ from .twinklesVariabilityMixins import VariabilityTwinkles
 __all__ = ['TwinklesCatalogZPoint', 'TwinklesPhoSimCatalogSN']
 
 
+__all__ = ["TwinklesCatalogPoint", "TwinklesCatalogSersic2D",
+           "TwinklesCatalogZPoint", "TwinklesCatalogSN"]
+
 class TwinklesCatalogPoint(PhoSimCatalogPoint):
 
     column_outputs = ['prefix', 'uniqueId', 'raPhoSim', 'decPhoSim', 'phoSimMagNorm', 'sedFilepath',
