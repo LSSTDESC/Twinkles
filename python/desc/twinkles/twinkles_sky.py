@@ -11,10 +11,6 @@ import copy
 import numpy as np
 import os
 from lsst.utils import getPackageDir
-from lsst.sims.catUtils.baseCatalogModels import (BaseCatalogConfig,
-                                                  StarObj,
-                                                  CepheidStarObj,
-                                                  SNDBObj)
 from lsst.sims.catalogs.definitions import CompoundInstanceCatalog
 from lsst.sims.catUtils.exampleCatalogDefinitions import\
     (PhoSimCatalogPoint,
@@ -22,6 +18,7 @@ from lsst.sims.catUtils.exampleCatalogDefinitions import\
      PhoSimCatalogSN,
      DefaultPhoSimHeaderMap,
      DefaultPhoSimInstanceCatalogCols)
+from .twinklesDBConnections import StarCacheDBObj, SNCacheDBObj
 from .twinklesCatalogDefs import TwinklesCatalogZPoint
 from desc.twinkles import (GalaxyCacheDiskObj, GalaxyCacheBulgeObj,
                            GalaxyCacheAgnObj, GalaxyCacheSprinklerObj,
@@ -93,20 +90,10 @@ class TwinklesSky(object):
 
         self.availableConnections = availableConnections
 
-        # override the database connection configuration
-        if db_config is not None:
-            config = BaseCatalogConfig()
-            config.load(db_config)
-            for target in (StarObj, CepheidStarObj, SNDBObj):
-                target.host = config.host
-                target.port = config.port
-                target.database = config.database
-                target.driver = config.driver
-
         # Lists of component phosim Instance Catalogs and CatalogDBObjects
         # Stars
-        self.compoundStarDBList = [StarObj, CepheidStarObj]
-        self.compoundStarICList = [PhoSimCatalogPoint, PhoSimCatalogPoint]
+        self.compoundStarDBList = [StarCacheDBObj]
+        self.compoundStarICList = [PhoSimCatalogPoint]
 
         # Galaxies
         self.compoundGalDBList = [GalaxyCacheBulgeObj, GalaxyCacheDiskObj, GalaxyCacheAgnObj]
@@ -120,10 +107,10 @@ class TwinklesSky(object):
         ## SN catalogDBObject
         if self.availableConnections is None:
             self.availableConnections = list()
-            self.snObj = SNDBObj(table=sntable, connection=None)
+            self.snObj = SNCacheDBObj()
             self.availableConnections.append(self.snObj.connection)
         else:
-            self.snObj = SNDBObj(table=sntable, connection=self.availableConnections[0])
+            self.snObj = SNCacheDBObj(table=sntable, connection=self.availableConnections[0])
         
         self.sn_sedfile_prefix = sn_sedfile_prefix
 
