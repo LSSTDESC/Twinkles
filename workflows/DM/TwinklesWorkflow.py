@@ -12,10 +12,11 @@ def setupFilters():
         dir,visit,f = line.split()
         if filter==f:
            visits.append(visit)  
-     vars.put("VISITS","^".join(visits))
-     print i,vars
-     pipeline.createSubstream("processFilter",i,vars)
-     i += 1
+     if visits:
+        vars.put("VISITS","^".join(visits))
+        print i,vars
+        pipeline.createSubstream("processFilter",i,vars)
+        i += 1
 
 def setupVisits():
    vars = HashMap()
