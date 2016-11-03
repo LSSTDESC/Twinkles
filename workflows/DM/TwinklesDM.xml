@@ -8,7 +8,7 @@
         <variables>
             <var name="SITE">NERSC</var>
             <var name="MAXCPU">${100000 / (SITE=="NERSC" ? 10 : 1)}</var>
-            <var name="MAXCPULONG">${100000 / (SITE=="NERSC" ? 10 : 1)}</var>
+            <var name="MAXCPULONG">${1000000 / (SITE=="NERSC" ? 10 : 1)}</var>
             <var name="SLAC_BATCH_OPTIONS">-R rhel60 -R bullet</var>
             <var name="NERSC_BATCH_OPTIONS">-p shared | -L SCRATCH</var>
             <var name="BATCH_OPTIONS">${SITE=="NERSC" ? NERSC_BATCH_OPTIONS : SLAC_BATCH_OPTIONS}</var>
@@ -34,7 +34,7 @@
         </variables>
         <process name="serialIngest" site="${JOBSITE}">
             <notation>Ingest the input data (output from phosim) serially</notation>
-            <job maxCPU="${MAXCPU}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
+            <job maxCPU="${MAXCPULONG}" batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_LOCATION}/${BATCH_NAME}"/>
         </process>
         <process name="setupEimageVisits">
             <notation>Decide how to parallelize the eImage processing</notation>
@@ -81,7 +81,7 @@
         <process name="setupForcedPhotometryVisits">
             <notation>Decide how to parallelize the visits</notation>
             <script><![CDATA[ 
-          execfile("%s/%s" % (SCRIPT_LOCATION, SCRIPT_NAME))
+          execfile("%s/%s" % (SLAC_SCRIPT_LOCATION, SCRIPT_NAME))
           setupForcedPhotometryVisits()
       ]]>
             </script>
