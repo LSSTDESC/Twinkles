@@ -93,17 +93,22 @@ class TwinklesSky(object):
 
         self.availableConnections = availableConnections
 
-        full_gal_name = os.path.join(cache_dir, _galaxy_cache_db_name)
-        full_star_name = os.path.join(cache_dir, 'star_cache.db')
-        full_sn_name = os.path.join(cache_dir, 'sn_cache.db')
-        if not os.path.exists(full_gal_name):
-            create_galaxy_cache(cache_dir)
+        # The databases of astrophysical objects
+        gal_db_name = os.path.join(cache_dir, _galaxy_cache_db_name)
+        star_db_name = os.path.join(cache_dir, 'star_cache.db')
+        sn_db_name = os.path.join(cache_dir, 'sn_cache.db')
+        if not os.path.exists(gal_db_name):
+            raise RuntimeError("Cannot find %s" % gal_db_name)
+        if not os.path.exists(star_db_name):
+            raise RuntimeError("Cannot find %s" % star_db_name)
+        if not os.path.exists(sn_db_name):
+            raise RuntimeError("Cannot find %s" % sn_db_name)
 
-        StarCacheDBObj.database = full_star_name
-        GalaxyCacheBulgeObj.database = full_gal_name
-        GalaxyCacheDiskObj.database = full_gal_name
-        GalaxyCacheAgnObj.database = full_gal_name
-        SNCacheDBObj.database = full_sn_name
+        StarCacheDBObj.database = star_db_name
+        GalaxyCacheBulgeObj.database = gal_db_name
+        GalaxyCacheDiskObj.database = gal_db_name
+        GalaxyCacheAgnObj.database = gal_db_name
+        SNCacheDBObj.database = sn_db_name
 
         # Lists of component phosim Instance Catalogs and CatalogDBObjects
         # Stars
