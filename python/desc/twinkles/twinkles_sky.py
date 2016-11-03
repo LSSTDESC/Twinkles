@@ -46,7 +46,8 @@ class TwinklesSky(object):
                  availableConnections=None,
                  sntable='TwinkSN_run3',
                  sn_sedfile_prefix='spectra_files/specFile_',
-                 db_config=None):
+                 db_config=None,
+                 cache_dir=None):
         """
         Parameters
         ----------
@@ -67,6 +68,8 @@ class TwinklesSky(object):
         sn_sedfile_prefix : string, optional, defaults to `spectra_files/specFile_'
             prefix for sed of the supernovae.
         db_config : the name of a file overriding the fatboy connection information
+        cache_dir : the directory containing the source data of astrophysical objects
+
         Attributes
         ----------
         snObj : CatalogDBObj for SN
@@ -74,6 +77,9 @@ class TwinklesSky(object):
 
         ..notes : 
         """
+        if cache_dir is None:
+            raise RuntimeError("Must specify cache_dir in TwinklesSky")
+
         # Observation MetaData
         self.obs_metadata = obs_metadata
 
@@ -87,6 +93,18 @@ class TwinklesSky(object):
 
         self.availableConnections = availableConnections
 
+        full_gal_name = os.path.join(cache_dir, _galaxy_cache_db_name)
+        full_star_name = os.path.join(cache_dir, 'star_cache.db')
+        full_sn_name = os.path.join(cache_dir, 'sn_cache.db')
+        if not os.path.exists(full_gal_name):
+            create_galaxy_cache(cache_dir)
+
+        StarCacheDBObj.database = full_star_name
+        GalaxyCacheBulgeObj.database = full_gal_name
+        GalaxyCacheDiskObj.database = full_gal_name
+        GalaxyCacheAgnObj.database = full_gal_name
+        SNCacheDBObj.database = full_sn_name
+
         # Lists of component phosim Instance Catalogs and CatalogDBObjects
         # Stars
         self.compoundStarDBList = [StarCacheDBObj]
@@ -96,9 +114,6 @@ class TwinklesSky(object):
         self.compoundGalDBList = [GalaxyCacheBulgeObj, GalaxyCacheDiskObj, GalaxyCacheAgnObj]
         self.compoundGalICList = [TwinklesCatalogSersic2D, TwinklesCatalogSersic2D,
                                   TwinklesCatalogZPoint]
-
-        if not os.path.exists(_galaxy_cache_db_name):
-            create_galaxy_cache()
 
         # SN 
         ## SN catalogDBObject
