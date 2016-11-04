@@ -8,6 +8,20 @@ import subprocess,shlex
 print '\n\n=====================================================================\n Entering runPhoSim.py\n=====================================================================\n'
 sys.stdout.flush()
 
+
+
+################## DEBUG #######################
+################## DEBUG #######################
+################## DEBUG #######################
+print 'Exiting without doing anything...'
+sys.exit(0)
+################## DEBUG #######################
+################## DEBUG #######################
+################## DEBUG #######################
+
+
+
+
 ## Insert task config area for python modules (insert as 2nd element in sys.path)
 sys.path.insert(1,os.getenv('TW_CONFIGDIR'))
 from config import *

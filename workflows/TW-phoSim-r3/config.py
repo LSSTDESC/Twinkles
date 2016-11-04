@@ -12,7 +12,8 @@ log.basicConfig(stream=sys.stdout, format='%(asctime)s %(levelname)s in %(filena
 ## For archiving old working directories
 archivesDirName = 'archives'
 phoSimOutputRoot = 'phosim_output'
-filePermissions = 0o2775     #   rwxrwxr-x
+#filePermissions = 0o2775     #   rwxrwsr-x
+filePermissions = 0o3755     #   rwxr-sr-t
 
 ## Somewhere here should be code to detect architecture and set $ARCH
 ARCH = 'redhat6-x86_64-64bit-gcc44'

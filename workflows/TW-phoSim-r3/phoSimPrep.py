@@ -63,6 +63,7 @@ sys.stdout.flush()
 rc = os.system(cmd)
 sys.stdout.flush()
 print 'rc = ',rc
+if rc > 255: rc = 1
 
 ## Confirm working directory
 cmd = 'ls -l '+destSEDdir

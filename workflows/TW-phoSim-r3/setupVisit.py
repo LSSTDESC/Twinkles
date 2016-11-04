@@ -96,7 +96,7 @@ elif icMode == 'dynamic':
 
 
 
-## Preserve the instance catalog and SED info for subsequent processing steps
+## Prepare the instance catalog and SED info for subsequent processing steps
 cmd = 'pipelineSet TW_INSTANCE_CATALOG '+icSelect
 print cmd
 rc = os.system(cmd)
@@ -142,7 +142,7 @@ log.info('Number of sensors to process = %i',ns)
 
 
 
-## Preserve the sensor info for subsequent processing steps
+## Prepare the sensor info for subsequent processing steps
 cmd = 'pipelineSet TW_NUM_SENSORS '+str(ns)
 print cmd
 rc = os.system(cmd)
