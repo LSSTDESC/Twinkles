@@ -41,7 +41,7 @@ class TwinklesCatalogZPoint(PhoSimCatalogZPoint, VariabilityTwinkles):
                       'spatialmodel', 'internalExtinctionModel',
                       'galacticExtinctionModel', 'galacticAv', 'galacticRv']
 
-class TwinklesPhoSimCatalogSN(PhoSimCatalogSN):
+class TwinklesCatalogSN(PhoSimCatalogSN):
     """
     Modification of the PhoSimCatalogSN mixin to provide shorter sedFileNames
     by leaving out the parts of the directory name 
