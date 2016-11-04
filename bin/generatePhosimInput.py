@@ -8,6 +8,7 @@ import os
 import argparse
 import pandas as pd
 from sqlalchemy import create_engine
+from lsst.utils import getPackageDir
 from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
 from desc.twinkles import TwinklesSky
 
@@ -48,7 +49,8 @@ def _sql_constraint(obsHistIDList):
 def generateSinglePointing(obs_metaData, availableConns, sntable,
                            fname,
                            sn_sed_file_dir,
-                           db_config):
+                           db_config,
+                           cache_dir):
     """
     obs_metaData : instance of `lsst.sims.utils.ObservationMetaData`
         observation metadata corresponding to an OpSim pointing
@@ -58,6 +60,7 @@ def generateSinglePointing(obs_metaData, availableConns, sntable,
     sn_sed_file_dir : directory to which the SN seds corresponding to this
         phoSim metadat
     db_config : the name of a file overriding the fatboy connection information
+    cache_dir : the directory containing the source data of astrophysical objects
     """
     tstart = time.time()
     obs_metaData.boundLength = 0.3
@@ -72,7 +75,8 @@ def generateSinglePointing(obs_metaData, availableConns, sntable,
                        brightestGal_gmag_inCat=11.0,
                        sntable=sntable,
                        sn_sedfile_prefix=os.path.join(sn_sed_file_dir, 'specFile_'),
-                       db_config=db_config)
+                       db_config=db_config,
+                       cache_dir=cache_dir)
     # fname = phoSimInputFileName(obsHistID)
     # if not os.path.exists(os.path.dirname(fname)):
     #    os.makedirs(os.path.dirname(fname))
@@ -112,6 +116,9 @@ if __name__ == '__main__':
                         help='directory to contain SED files')
     parser.add_argument('--db_config', type=str, default=None,
                         help='config file overriding CatSim database connection information')
+    parser.add_argument('--cache_dir', type=str,
+                        default=os.path.join(getPackageDir('twinkles'), 'data'),
+                        help='directory containing the source data for the InstanceCatalogs')
     args = parser.parse_args()
 
     # set the filename default to a sensible value using the obsHistID
@@ -140,4 +147,5 @@ if __name__ == '__main__':
                            sntable='TwinkSN_run3',
                            fname=args.outfile,
                            sn_sed_file_dir=sn_sed_file_dir,
-                           db_config=args.db_config)
+                           db_config=args.db_config,
+                           cache_dir=args.cache_dir)

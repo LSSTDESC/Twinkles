@@ -7,7 +7,6 @@ __all__ = ["StarCacheDBObj"]
 
 class StarCacheDBObj(CatalogDBObject):
     tableid = 'star_cache_table'
-    database = os.path.join(getPackageDir('twinkles'), 'data', 'star_cache.db')
     host = None
     port = None
     driver = 'sqlite'
@@ -31,7 +30,6 @@ class StarCacheDBObj(CatalogDBObject):
 
 
 class SNCacheDBObj(SNDBObj, CatalogDBObject):
-    database = os.path.join(getPackageDir('twinkles'), 'data', 'sn_cache.db')
     host = None
     port = None
     tableid = 'sn_cache_table'

@@ -21,8 +21,7 @@ _galaxy_cache_file_name = os.path.join(getPackageDir('twinkles'), 'data',
 _galaxy_cache_table_name = 'galaxy_cache'
 
 # the name of the sqlite database produced from the galaxy cache
-_galaxy_cache_db_name = os.path.join(getPackageDir('twinkles'), 'data',
-                                     'galaxy_cache.db')
+_galaxy_cache_db_name = 'galaxy_cache.db'
 
 # the dtype describing the contents of the galaxy cache
 _galaxy_cache_dtype = np.dtype([('galtileid', int),
@@ -48,10 +47,12 @@ class GalaxyTileObjDegrees(GalaxyTileObj):
         return results
 
 
-def create_galaxy_cache():
+def create_galaxy_cache(db_dir):
     """
     Create an sqlite .db file in data/ containing all of the galaxies
     in the Twinkles field of view.
+
+    db_dir is the directory in which we want to create the galaxy cache
     """
 
     obs = ObservationMetaData(pointingRA=53.0091385,
@@ -85,12 +86,14 @@ def create_galaxy_cache():
                                          line[21], line[22], line[23])).replace('nan', 'NULL').replace('None', 'NULL')
                                    + '\n')
 
+    full_db_name = os.path.join(db_dir, _galaxy_cache_db_name)
+
     if os.path.exists(_galaxy_cache_db_name):
-        os.unlink(_galaxy_cache_db_name)
+        raise RuntimeError("Trying to create %s, but it already exists" % full_db_name)
 
     dbo = fileDBObject(_galaxy_cache_file_name, driver='sqlite',
                        runtable=_galaxy_cache_table_name,
-                       database=_galaxy_cache_db_name,
+                       database=full_db_name,
                        dtype=_galaxy_cache_dtype,
                        delimiter=';',
                        idColKey='galtileid')
@@ -109,7 +112,6 @@ class GalaxyCacheBase(CatalogDBObject):
     idColKey = 'galtileid'
     raColName = 'ra'
     decColName = 'dec'
-    database = _galaxy_cache_db_name
     host = None
     port = None
     driver = 'sqlite'
