@@ -11,18 +11,12 @@ import copy
 import numpy as np
 import os
 from lsst.utils import getPackageDir
-from lsst.sims.catUtils.baseCatalogModels import (BaseCatalogConfig,
-                                                  StarObj,
-                                                  CepheidStarObj,
-                                                  SNDBObj)
 from lsst.sims.catalogs.definitions import CompoundInstanceCatalog
-from lsst.sims.catUtils.exampleCatalogDefinitions import\
-    (PhoSimCatalogPoint,
-     PhoSimCatalogSersic2D,
-     PhoSimCatalogSN,
-     DefaultPhoSimHeaderMap,
-     DefaultPhoSimInstanceCatalogCols)
-from .twinklesCatalogDefs import TwinklesCatalogZPoint
+from .twinklesDBConnections import StarCacheDBObj, SNCacheDBObj
+from lsst.sims.catUtils.exampleCatalogDefinitions import (DefaultPhoSimHeaderMap,
+                                                          DefaultPhoSimInstanceCatalogCols)
+from .twinklesCatalogDefs import (TwinklesCatalogZPoint, TwinklesCatalogPoint,
+                                  TwinklesCatalogSersic2D, TwinklesCatalogSN)
 from desc.twinkles import (GalaxyCacheDiskObj, GalaxyCacheBulgeObj,
                            GalaxyCacheAgnObj, GalaxyCacheSprinklerObj,
                            create_galaxy_cache,
@@ -52,7 +46,8 @@ class TwinklesSky(object):
                  availableConnections=None,
                  sntable='TwinkSN_run3',
                  sn_sedfile_prefix='spectra_files/specFile_',
-                 db_config=None):
+                 db_config=None,
+                 cache_dir=None):
         """
         Parameters
         ----------
@@ -73,6 +68,8 @@ class TwinklesSky(object):
         sn_sedfile_prefix : string, optional, defaults to `spectra_files/specFile_'
             prefix for sed of the supernovae.
         db_config : the name of a file overriding the fatboy connection information
+        cache_dir : the directory containing the source data of astrophysical objects
+
         Attributes
         ----------
         snObj : CatalogDBObj for SN
@@ -80,6 +77,9 @@ class TwinklesSky(object):
 
         ..notes : 
         """
+        if cache_dir is None:
+            raise RuntimeError("Must specify cache_dir in TwinklesSky")
+
         # Observation MetaData
         self.obs_metadata = obs_metadata
 
@@ -93,37 +93,41 @@ class TwinklesSky(object):
 
         self.availableConnections = availableConnections
 
-        # override the database connection configuration
-        if db_config is not None:
-            config = BaseCatalogConfig()
-            config.load(db_config)
-            for target in (StarObj, CepheidStarObj, SNDBObj):
-                target.host = config.host
-                target.port = config.port
-                target.database = config.database
-                target.driver = config.driver
+        # The databases of astrophysical objects
+        gal_db_name = os.path.join(cache_dir, _galaxy_cache_db_name)
+        star_db_name = os.path.join(cache_dir, 'star_cache.db')
+        sn_db_name = os.path.join(cache_dir, 'sn_cache.db')
+        if not os.path.exists(gal_db_name):
+            raise RuntimeError("Cannot find %s" % gal_db_name)
+        if not os.path.exists(star_db_name):
+            raise RuntimeError("Cannot find %s" % star_db_name)
+        if not os.path.exists(sn_db_name):
+            raise RuntimeError("Cannot find %s" % sn_db_name)
+
+        StarCacheDBObj.database = star_db_name
+        GalaxyCacheBulgeObj.database = gal_db_name
+        GalaxyCacheDiskObj.database = gal_db_name
+        GalaxyCacheAgnObj.database = gal_db_name
+        SNCacheDBObj.database = sn_db_name
 
         # Lists of component phosim Instance Catalogs and CatalogDBObjects
         # Stars
-        self.compoundStarDBList = [StarObj, CepheidStarObj]
-        self.compoundStarICList = [PhoSimCatalogPoint, PhoSimCatalogPoint]
+        self.compoundStarDBList = [StarCacheDBObj]
+        self.compoundStarICList = [TwinklesCatalogPoint]
 
         # Galaxies
         self.compoundGalDBList = [GalaxyCacheBulgeObj, GalaxyCacheDiskObj, GalaxyCacheAgnObj]
-        self.compoundGalICList = [PhoSimCatalogSersic2D, PhoSimCatalogSersic2D,
+        self.compoundGalICList = [TwinklesCatalogSersic2D, TwinklesCatalogSersic2D,
                                   TwinklesCatalogZPoint]
-
-        if not os.path.exists(_galaxy_cache_db_name):
-            create_galaxy_cache()
 
         # SN 
         ## SN catalogDBObject
         if self.availableConnections is None:
             self.availableConnections = list()
-            self.snObj = SNDBObj(table=sntable, connection=None)
+            self.snObj = SNCacheDBObj()
             self.availableConnections.append(self.snObj.connection)
         else:
-            self.snObj = SNDBObj(table=sntable, connection=self.availableConnections[0])
+            self.snObj = SNCacheDBObj(table=sntable, connection=self.availableConnections[0])
         
         self.sn_sedfile_prefix = sn_sedfile_prefix
 
@@ -165,8 +169,8 @@ class TwinklesSky(object):
                              write_header=False)
 
         t_after_galCat = time.time()
-        snphosim = PhoSimCatalogSN(db_obj=self.snObj,
-                                        obs_metadata=self.obs_metadata)
+        snphosim = TwinklesCatalogSN(db_obj=self.snObj,
+                                     obs_metadata=self.obs_metadata)
         ### Set properties
         snphosim.writeSedFile = True
         snphosim.suppressDimSN = True

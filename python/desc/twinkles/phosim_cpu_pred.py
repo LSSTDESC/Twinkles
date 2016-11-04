@@ -33,11 +33,15 @@ class CpuPred(object):
     """
     def __init__(self, rf_pickle_file='RF_pickle.p',
         opsim_db_file='/nfs/farm/g/lsst/u1/DESC/Twinkles/kraken_1042_sqlite.db',
+            opsim_df = None,
             fieldID=1427):
         self.RFbest = pickle.load(open(rf_pickle_file, 'rb'))
-        factory = SqliteDataFrameFactory(opsim_db_file)
-        self.obs_conditions = factory.create('obsHistID filter moonAlt moonPhase'.split(), 'Summary',
-            condition='where fieldID=%d'%fieldID)
+        if opsim_df is None:
+            factory = SqliteDataFrameFactory(opsim_db_file)
+            self.obs_conditions = factory.create('obsHistID filter moonAlt moonPhase'.split(), 'Summary',
+                condition='where fieldID=%d'%fieldID)
+        else:
+            self.obs_conditions = opsim_df['obsHistID filter moonAlt moonPhase'.split()]
 
     def __call__(self, obsid):
         """

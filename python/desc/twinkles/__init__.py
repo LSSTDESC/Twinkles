@@ -12,9 +12,11 @@ with warnings.catch_warnings():
     from .sqlite_tools import *
     from .twinklesCatalogDefs import *
     from .twinklesGalaxyCache import *
+    from .twinklesDBConnections import *
     from .twinklesVariabilityMixins import *
     from .twinkles_io import *
     from .twinkles_sky import *
+    from .obsHistIDOrdering import *
     try:
         from .version import *
     except ImportError:
