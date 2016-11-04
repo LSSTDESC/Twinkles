@@ -14,3 +14,6 @@ zenith_v 21.8
 # Leave on CRs but turn off fringing.  ISR will take care of fringing, # but CRs are currently taken out in
 # image characterization.
 fringing 0
+
+# Disable optics contamination
+contaminationmode 0

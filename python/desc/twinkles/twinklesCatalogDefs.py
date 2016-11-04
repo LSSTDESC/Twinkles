@@ -4,7 +4,10 @@ from lsst.sims.catUtils.exampleCatalogDefinitions import PhoSimCatalogZPoint
 from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples import PhoSimCatalogSN
 import numpy as np
 from .twinklesVariabilityMixins import VariabilityTwinkles
+
+
 __all__ = ['TwinklesCatalogZPoint', 'TwinklesPhoSimCatalogSN']
+
 
 class TwinklesCatalogZPoint(PhoSimCatalogZPoint, VariabilityTwinkles):
     """
