@@ -131,8 +131,12 @@ class sprinkler():
                         # raPhSim and decPhoSim are in radians
                         #Shift all parts of the lensed object, not just its agn part
                         for lensPart in ['galaxyBulge', 'galaxyDisk', 'galaxyAgn']:
-                            lensrow[str(lensPart + '_raJ2000')] += np.radians(newlens['XIMG'][i]/(np.cos(np.radians(lensrow[str(lensPart + '_decJ2000')]))*3600.))
-                            lensrow[str(lensPart + '_decJ2000')] += np.radians(newlens['YIMG'][i]/3600.)
+                            lens_ra = lensrow[str(lensPart+'_raJ2000')]
+                            lens_dec = lensrow[str(lensPart+'_decJ2000')]
+                            delta_ra = np.radians(newlens['XIMG'][i] / 3600.0) / np.cos(lens_dec)
+                            delta_dec = np.radians(newlens['YIMG'][i] / 3600.0)
+                            lensrow[str(lensPart + '_raJ2000')] = lens_ra + delta_ra
+                            lensrow[str(lensPart + '_decJ2000')] = lens_dec + delta_dec
                         mag_adjust = 2.5*np.log10(np.abs(newlens['MAG'][i]))
                         lensrow['galaxyAgn_magNorm'] -= mag_adjust
                         varString = json.loads(lensrow['galaxyAgn_varParamStr'])
