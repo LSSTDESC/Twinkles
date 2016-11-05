@@ -65,3 +65,12 @@ PHOSIMCLEANUP = True
 #SEDLIB = '/nfs/farm/g/desc/u1/LSST_Stack_2016-02-23/lsstsw/stack/Linux64/sims_sed_library/2016.01.26'
 SEDLIB = '/lustre/ki/pfs/fermi_scratch/lsst/phosim/sims_sed_library/2016.01.26'
 #SEDLIB = '/nfs/farm/g/lsst/u1/software/redhat6-x86_64-64bit-gcc44/DMstack/v12_0/opt/lsst/sims_sed_library'
+
+## Twinkles UW-FATBOY cache location
+TW_CACHEDIR = '/nfs/farm/g/desc/u1/data/Twinkles/fatboy_caches'
+TW_OPSSIMDIR = '/nfs/farm/g/desc/u1/data/Twinkles'
+
+## Location of Twinkles git project and binary for instanceCatalog generation
+TW_ROOT = '/nfs/farm/g/desc/u1/software/redhat6-x86_64-64bit-devtoolset-3/Twinkles'
+TW_BIN = TW_ROOT+'/bin'
+

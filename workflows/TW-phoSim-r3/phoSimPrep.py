@@ -43,20 +43,26 @@ if not os.path.exists(PHOSIMSCRATCH): os.makedirs(PHOSIMSCRATCH)
 destIC = os.path.join(PHOSIMSCRATCH,'instanceCatalog.txt')
 destSEDdir = PHOSIMSCRATCH
 obsHistID = os.getenv('TW_OBSHISTID')
+cacheDir = os.getenv('TW_CACHEDIR')
+opssimDir = os.getenv('TW_OPSSIMDIR')
+twbinDir = os.getenv('TW_BIN')
 print 'destIC = ',destIC
 print 'destSEDdir = ',destSEDdir
 print 'obsHistID = ',obsHistID
+print 'cacheDir = ',cacheDir
+print 'opssimDir = ',opssimDir
+print 'twbinDir = ',twbinDir
 
 ##       SCRIPT to generate phoSim instance catalog and custom SED library
 ##
-# generatePhosimInput.py <opsHistID> --OpSimDBDir <loc-opsSim database> --seddir <loc-to-write-output SEDs> --outfile <instanceCat-name>
+# generatePhosimInput.py <opsHistID> --OpSimDBDir <loc-opsSim database> --seddir <loc-to-write-output SEDs> --outfile <instanceCat-name> --cache_dir <catsim-cacheDir>
 ### e.g., (the SEDs will occupy the "spectra_files" directory)
 # generatePhosimInput.py 200 --OpSimDBDir /nfs/farm/g/desc/u1/data/Twinkles --seddir . --outfile phosim_input_200.txt
 
-genCmd = 'generatePhosimInput.py'
+genCmd = os.path.join(twbinDir,'generatePhosimInput.py')
 
 print '\nGenerate InstanceCatalog and SED files'
-cmd = "time "+genCmd+" "+obsHistID+" --OpSimDBDir /nfs/farm/g/desc/u1/data/Twinkles --seddir "+destSEDdir+" --outfile "+destIC
+cmd = "time "+genCmd+" "+obsHistID+" --OpSimDBDir "+opssimDir+" --seddir "+destSEDdir+" --outfile "+destIC+" --cache_dir "+cacheDir
 print 'cmd = ',cmd
 print
 sys.stdout.flush()
