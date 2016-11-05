@@ -43,15 +43,16 @@ if not os.path.exists(PHOSIMSCRATCH): os.makedirs(PHOSIMSCRATCH)
 destIC = os.path.join(PHOSIMSCRATCH,'instanceCatalog.txt')
 destSEDdir = PHOSIMSCRATCH
 obsHistID = os.getenv('TW_OBSHISTID')
-cacheDir = os.getenv('TW_CACHEDIR')
-opssimDir = os.getenv('TW_OPSSIMDIR')
-twbinDir = os.getenv('TW_BIN')
+cacheDir = TW_CACHEDIR
+opssimDir = TW_OPSSIMDIR
+twbinDir = TWINKLES_BIN
 print 'destIC = ',destIC
 print 'destSEDdir = ',destSEDdir
 print 'obsHistID = ',obsHistID
 print 'cacheDir = ',cacheDir
 print 'opssimDir = ',opssimDir
 print 'twbinDir = ',twbinDir
+sys.stdout.flush()
 
 ##       SCRIPT to generate phoSim instance catalog and custom SED library
 ##
@@ -70,6 +71,20 @@ rc = os.system(cmd)
 sys.stdout.flush()
 print 'rc = ',rc
 if rc > 255: rc = 1
+
+## Protect scratch directory: rwxr-sr-t
+cmd = 'chmod -R 3755 '+PHOSIMSCRATCH
+print 'Protect scratch directory\n',cmd
+
+rc = os.system(cmd)
+if rc != 0:
+    print "%ERROR: unable to execute command, ",cmd
+    sys.exit(1)
+    pass
+pass
+
+
+
 
 ## Confirm working directory
 cmd = 'ls -l '+destSEDdir

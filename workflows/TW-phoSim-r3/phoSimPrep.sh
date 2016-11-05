@@ -6,6 +6,7 @@ echo
 echo "============================================================================================="
 echo
 echo "Entering phoSimPrep.sh"
+date
 dir=`dirname $(readlink -f $0)`
 echo "dir = "$dir
 
@@ -20,9 +21,13 @@ if [ $rc1 != 0 ]; then
 fi
 
 echo "Setup Twinkles environment"
+cmd=" $TW_CONFIGDIR/tempSetup.sh"
 ## source /nfs/farm/g/desc/u1/twinkles/setup.sh      ##### PRODUCTION
-source $TW_ROOT/newICgen/setup.sh                 ##### DEVELOPMENT/TESTING/DEBUGGING
+##source $TW_ROOT/newICgen/setup.sh                 ##### DEVELOPMENT/TESTING/DEBUGGING
+echo "source "$cmd
+source $cmd                 ##### DEVELOPMENT/TESTING/DEBUGGING
 
+echo "Return from setup, rc = " $?
 
 ## Redefine $HOME to prevent contention of /u/lt/lsstsim
 cp -prv $HOME/.lsst $PWD
@@ -39,3 +44,5 @@ rc=$?
 
 # Exit with phoSimPrep.py exit code
 exit $rc
+
+

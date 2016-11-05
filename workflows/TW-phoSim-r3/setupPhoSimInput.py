@@ -78,6 +78,21 @@ class setupPhoSimInput:
         if not os.access(self.locWork,os.W_OK):os.makedirs(self.locWork)
         return
 
+
+    def protectScratch(self):
+        ## Protect scratch directory: rwxr-sr-t
+        if trace: print 'Entering protectScratch().'
+        cmd = 'chmod -R 3755 '+self.scratch
+        print 'Protect scratch directory\n',cmd
+
+        rc = os.system(cmd)
+        if rc != 0:
+            print "%ERROR: unable to execute command, ",cmd
+            sys.exit(1)
+        return
+
+
+
     def getSEDfromIC(self,ic):
         ## Construct SED file name from instanceCatalog file name IC
         ## and SED file names should be identical except one is txt.gz
@@ -291,13 +306,16 @@ class setupPhoSimInput:
         ## TWINKLES: Run through all steps to prepare phoSim inputs and return resultant paths
         if trace: print 'Entering Run()'
         self.getScratch()
-        os.system('echo run1;ls -l '+self.scratch)    ##### DEBUG
-        #self.sedFile = self.getSEDfromIC(self.icFile)
-        #self.sedFile = os.path.join(self.inputRoot,'SEDs.tar.gz')
+        #os.system('echo checkpoint1;ls -l '+self.scratch)    ##### DEBUG
+
         self.prepInputs()
-        os.system('echo run2;ls -l '+self.scratch)    ##### DEBUG
+        #os.system('echo checkpoint2;ls -l '+self.scratch)    ##### DEBUG
+
         self.makeSEDtree()
-        os.system('echo rin3;ls -l '+self.scratch)    ##### DEBUG
+        os.system('echo checkpoint3;ls -l '+self.scratch)    ##### DEBUG
+
+        self.protectScratch()
+        os.system('echo checkpoint4;ls -l '+self.scratch)    ##### DEBUG
         return(self.locWork,self.locIC,self.locSEDs,self.locCF)
 
     def run2(self):
