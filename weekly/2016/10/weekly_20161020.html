@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: October 20, 2016</h1>
+<p>The science inputs to Run 3 are now done, and notebooks will present them to the Pipeline Reviewers next week. The review will happen mostly offline, prior to next week’s meeting. Tom will run 10 “operational test” images for us to look at, and compare with the inputs.</p>
+<h2 id="run-3-pipeline-review-readiness"><strong>Run 3 Pipeline Review Readiness</strong></h2>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=is%3Aissue+is%3Aopen+label%3A%22Epic%3A+Run+3+Science+Inputs%22"><em>Epic: Run 3 Science Inputs</em></a> - these issues need to be resolved so that the instance catalog code can be run.</p>
+<ul>
+<li><blockquote>
+<p>Apart from updating the SN tables used (<a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/360"><em>#360</em></a>) the Run 3 science inputs are all ready! Rahul and Bryce will prepare notebooks that demonstrate this, and also compute some useful statistics about the SN and SL populations, respectively. These notebooks will become DESC Notes (later).</p>
+</blockquote></li>
+</ul>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=is%3Aissue+is%3Aopen+label%3A%22Epic%3A+Instance+Catalogs+at+SLAC%22"><em>Epic: Instance Catalogs at SLAC</em></a> - these issues need to be resolved before the Run 3 phoSim pipeline (including the instance catalog generation) can be run.</p>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=is%3Aissue+is%3Aopen+label%3A%22Epic%3A+Run+3+phoSim+Workflow%22"><em>Epic: Run 3 phoSim Workflow</em></a> - these issues need to be resolved before the Run 3 phoSIm pipeline can be run from the workflow engine. We discussed:</p>
+<ul>
+<li><blockquote>
+<p>The PhoSim command file (<a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/348"><em>#348</em></a>) needs tweaking. We also talked about how this file relates to the one that the workflow engine actually uses (they are not the same, because the engine operator often needs to change the config parameters - not the physics parameters - during the batch run…)</p>
+</blockquote></li>
+<li><blockquote>
+<p>The path shortening issue (<a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/351"><em>#351</em></a>) needs addressing before Tom can phosimulate a set of 10 test images for the review.</p>
+</blockquote></li>
+</ul>
+<h2 id="organizing-the-run-3-pipeline-review"><strong>Organizing the Run 3 Pipeline Review</strong></h2>
+<p>This is happening in <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=is%3Aissue+is%3Aopen+label%3A%22Epic%3A+Run+3+Pipeline+Review%22"><em>Epic: Run 3 Pipeline Review</em></a>. Tom suggested that he provide views of the inputs and outputs of his “operational test” runs as they appear, and that we look through those in our own time early next week. By Thursday we shoudl have completed much of the review, and so can use our regular meeting time to finish off.</p>
+<h2 id="tracking-software-versions"><strong>Tracking software versions</strong></h2>
+<p>Can we create a list of the software versions we are using for Run 3?</p>
+<ul>
+<li><blockquote>
+<p>DMstack lsst_apps sims_2_3_1</p>
+</blockquote></li>
+<li><blockquote>
+<p>Phosim 3.5.3</p>
+</blockquote></li>
+</ul>
+<h2 id="preparing-for-the-hack-week"><strong>Preparing for the Hack Week</strong></h2>
+<p>We’ll take a look at the confluence page and edit the hack table with a refined version of our science analysis (Rahul, Bryce, Phil) and image differencing (Simon) plans. Phil plans to try and work with Twinkles data via the NERSC jupyter interface - but has some homework to do to make that work. We briefly discussed breakouts: a workflow engine tutorial <em>might</em> be in order, we’ll see.</p>
+</div>
+</div>
+</body>
+</html>
