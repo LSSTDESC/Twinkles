@@ -1,0 +1,7 @@
+Helper scripts that are run manually (if at all).  NOT run by the workflow task.
+
+findSED.py - parse instance catalog and verify all needed SED files are available
+icSetup.py - analyze a directory of Instance Catalogs from UW (Rahul)
+genFocalPlane.py- create a text file containing a list of phoSim sensors (sensorList.txt)
+status.py - Summarize status of a phoSim task which uses checkpoints
+
