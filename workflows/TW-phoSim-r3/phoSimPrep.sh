@@ -21,7 +21,7 @@ if [ $rc1 != 0 ]; then
 fi
 
 echo "Setup Twinkles environment"
-cmd=" $TW_CONFIGDIR/tempSetup.sh"
+cmd=" $TW_CONFIGDIR/helpers/TWsetup.sh"
 ## source /nfs/farm/g/desc/u1/twinkles/setup.sh      ##### PRODUCTION
 ##source $TW_ROOT/newICgen/setup.sh                 ##### DEVELOPMENT/TESTING/DEBUGGING
 echo "source "$cmd

@@ -41,3 +41,17 @@ registry.py - class to register files in dataCatalog
 
 --- /helpers -- miscellaneous scripts needed at some point in the
     past.  Not required for production.
+
+--- Preparation
+
+A list of obsHistIDs must be created prior to running this task.  For
+Twinkles Run 3, first establish the Twinkles execution environment by
+sourcing the config/helpers/TWsetup.sh.  Next, the obsHistID
+generation command looks like this:
+
+
+
+$TWINKLES_DIR/bin/get_twinkles_visits.py /nfs/farm/g/desc/u1/data/Twinkles/minion_1016_sqlite.db
+
+This command may take quite some time to run (~15 min).  It produces
+the following file: twinkles_visits_fieldID_1427.txt
