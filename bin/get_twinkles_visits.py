@@ -49,7 +49,10 @@ if args.orderObsHistID:
     ops.Twinkles_3p2.obsHistID.to_csv(args.outfile, index=False, mode='a')
     with open(args.outfile, 'a') as output:
         output.write('# Begin Section Twinkles 3.3\n')
-    ops.Twinkles_3p2.obsHistID.to_csv(args.outfile, index=False, mode='a')
+    ops.Twinkles_3p3.obsHistID.to_csv(args.outfile, index=False, mode='a')
+    print("Left out {0} visits due to"
+          "the time limit of {1}".format(len(ops.obsHistIDsPredictedToTakeTooLong),
+                                         args.maxPredTime))
 else:
     obsHistIDs = get_twinkles_visits(args.opsimDB)
 
