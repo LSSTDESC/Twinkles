@@ -21,11 +21,11 @@ if [ $rc1 != 0 ]; then
 fi
 
 echo "Setup Twinkles environment"
-cmd=" $TW_CONFIGDIR/helpers/TWsetup.sh"
-## source /nfs/farm/g/desc/u1/twinkles/setup.sh      ##### PRODUCTION
-##source $TW_ROOT/newICgen/setup.sh                 ##### DEVELOPMENT/TESTING/DEBUGGING
+cmd="/nfs/farm/g/desc/u1/software/redhat6-x86_64-64bit-devtoolset-3/setup.sh"
+##cmd=" $TW_CONFIGDIR/helpers/TWsetup.sh"
+##source /nfs/farm/g/desc/u1/twinkles/setup.sh
 echo "source "$cmd
-source $cmd                 ##### DEVELOPMENT/TESTING/DEBUGGING
+source $cmd
 
 echo "Return from setup, rc = " $?
 
