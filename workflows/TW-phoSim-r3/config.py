@@ -73,6 +73,6 @@ TW_OPSSIMDIR = '/nfs/farm/g/desc/u1/data/Twinkles'
 ## Location of Twinkles git project and binary for instanceCatalog generation
 #TWINKLES_ROOT = '/nfs/farm/g/desc/u1/software/redhat6-x86_64-64bit-devtoolset-3/Twinkles/...........'
 #TWINKLES_ROOT = os.path.join(os.getenv('TW_ROOT'),'Twinkles.master')
-TWINKLES_ROOT = '/nfs/farm/g/desc/u1/software/redhat6-x86_64-64bit-devtoolset-3/Twinkles/Run3-phoSim-v1'
+TWINKLES_ROOT = '/nfs/farm/g/desc/u1/software/redhat6-x86_64-64bit-devtoolset-3/Twinkles/prod'
 TWINKLES_BIN = TWINKLES_ROOT+'/bin'
 
