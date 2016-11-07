@@ -119,6 +119,6 @@ def create_sn_cache(db=None):
 
 if __name__ == "__main__":
 
-    create_galaxy_cache(os.path.join(getPackageDir('twinkles'),'data')
+    create_galaxy_cache(os.path.join(getPackageDir('twinkles'),'data'))
     create_star_cache()
     create_sn_cache()
