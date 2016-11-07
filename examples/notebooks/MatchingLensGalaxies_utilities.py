@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import numpy as np
 from matplotlib import pyplot as plt
 # from astroML.plotting.tools import draw_ellipse

@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import os
 from lsst.utils import getPackageDir
 from lsst.sims.catalogs.db import CatalogDBObject
