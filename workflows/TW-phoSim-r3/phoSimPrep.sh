@@ -26,8 +26,12 @@ cmd="/nfs/farm/g/desc/u1/software/redhat6-x86_64-64bit-devtoolset-3/setup.sh"
 ##source /nfs/farm/g/desc/u1/twinkles/setup.sh
 echo "source "$cmd
 source $cmd
-
-echo "Return from setup, rc = " $?
+rc2=$?
+echo "Return from setup, rc = " $rc2
+if [ $rc2 != 0 ]; then
+    echo "ERROR: failed to setup Twinkles environment"
+    exit $rc2
+fi
 
 ## Redefine $HOME to prevent contention of /u/lt/lsstsim
 cp -prv $HOME/.lsst $PWD

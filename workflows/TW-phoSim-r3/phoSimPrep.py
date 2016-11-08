@@ -19,24 +19,6 @@ print '\n\nWelcome to phoSimPrep.py\n========================\n'
 
 if not os.path.exists(PHOSIMSCRATCH): os.makedirs(PHOSIMSCRATCH)
 
-## ### Until actual code is available, simply copy/link necessary files
-## ### into pre-agreed scratch space.
-## base = 'phosim_input_200'
-
-## src = os.path.join(PHOSIMIN,base+'.txt.gz')
-## dst = os.path.join(PHOSIMSCRATCH,'instanceCatalog.txt.gz')
-## print 'Instance Catalog:'
-## print 'src = ',src
-## print 'dst = ',dst
-## shutil.copy2(src,dst)
-
-## src = os.path.join(PHOSIMIN,base+'.tar.gz')
-## dst = os.path.join(PHOSIMSCRATCH,'SEDs.tar.gz')
-## print 'SEDs:'
-## print 'src = ',src
-## print 'dst = ',dst
-## shutil.copy2(src,dst)
-
 ## generate instance catalog and SED files for phoSim
 
 #  generatePhosimInput.py obsHistID [options]
@@ -70,23 +52,24 @@ sys.stdout.flush()
 rc = os.system(cmd)
 sys.stdout.flush()
 print 'rc = ',rc
-if rc > 255: rc = 1
+if rc > 255:
+    rc = 1
+    print 'Awkward return code, redefining rc = ',rc
+    pass
 
 ## Protect scratch directory: rwxr-sr-t
 cmd = 'chmod -R 3755 '+PHOSIMSCRATCH
 print 'Protect scratch directory\n',cmd
 
-rc = os.system(cmd)
-if rc != 0:
+rc2 = os.system(cmd)
+if rc2 != 0:
     print "%ERROR: unable to execute command, ",cmd
     sys.exit(1)
     pass
 pass
 
 
-
-
-## Confirm working directory
+## Confirm working directory contents
 cmd = 'ls -l '+destSEDdir
 print cmd
 os.system(cmd)
@@ -95,6 +78,35 @@ os.system(cmd)
 ##      (not yet, if ever)
 
 sys.exit(rc)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
