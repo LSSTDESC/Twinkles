@@ -2,9 +2,9 @@ import numpy as np
 import numbers
 from lsst.sims.utils import cartesianFromSpherical, sphericalFromCartesian
 from lsst.sims.utils import rotationMatrixFromVectors
-from lsst.sims.utils import _observedFromICRS
+from lsst.sims.utils import _observedFromICRS, icrsFromObserved
 
-__all__ = ["_rePrecess"]
+__all__ = ["_rePrecess", "icrsFromPhoSim"]
 
 def _rePrecess(ra_list, dec_list, obs):
     """
@@ -48,4 +48,29 @@ def _rePrecess(ra_list, dec_list, obs):
         xyz_re_precessed = np.array([np.dot(rotMat, xx) for xx in xyz_list])
 
     ra_re_precessed, dec_re_precessed = sphericalFromCartesian(xyz_re_precessed)
-    return np.array([ra_re_precessed, dec_re_precessed])
+
+    return ra_re_precessed, dec_re_precessed
+
+
+def icrsFromPhoSim(ra_list, dec_list, obs):
+    """
+    Parameters
+    ----------
+    ra_list is the PhoSim ra value in degrees
+
+    dec_list is the PhoSim dec value in degrees
+
+    obs is the ObservationMetaData characterizing the pointing
+
+    Returns
+    -------
+    RA, Dec in ICRS in degrees
+    """
+
+    ra_precessed, dec_precessed = _rePrecess(np.radians(ra_list),
+                                             np.radians(dec_list),
+                                             obs)
+
+    return icrsFromObserved(np.degrees(ra_precessed), np.degrees(dec_precessed),
+                            obs_metadata=obs, epoch=2000.0,
+                            includeRefraction=False)
