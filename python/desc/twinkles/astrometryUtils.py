@@ -1,4 +1,5 @@
 import numpy as np
+import numbers
 from lsst.sims.utils import cartesianFromSpherical, sphericalFromCartesian
 from lsst.sims.utils import rotationMatrixFromVectors
 from lsst.sims.utils import _observedFromICRS
@@ -41,6 +42,10 @@ def _rePrecess(ra_list, dec_list, obs):
 
     xyz_list = cartesianFromSpherical(ra_list, dec_list)
 
-    xyz_re_precessed = np.array([np.dot(rotMat, xx) for xx in xyz_list])
+    if isinstance(ra_list, numbers.Number):
+        xyz_re_precessed = np.dot(rotMat, xyz_list)
+    else:
+        xyz_re_precessed = np.array([np.dot(rotMat, xx) for xx in xyz_list])
+
     ra_re_precessed, dec_re_precessed = sphericalFromCartesian(xyz_re_precessed)
     return np.array([ra_re_precessed, dec_re_precessed])

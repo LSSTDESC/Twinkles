@@ -35,7 +35,20 @@ class PrecessionTestCase(unittest.TestCase):
         xyz1 = cartesianFromSpherical(ra_test, dec_test)
         for control, test in zip(xyz0, xyz1):
             dd = np.sqrt(np.power(xyz0-xyz1,2).sum())
-            self.assertLess(dd, 1.0e-6)
+            self.assertLess(dd, 1.0e-10)
+
+        # try it one at a time
+        for ix, (ra_in, dec_in) in enumerate(zip(ra_precessed, dec_precessed)):
+            ra_test, dec_test = _rePrecess(ra_in, dec_in, obs)
+            xyz0 = cartesianFromSpherical(ra_list[ix], dec_list[ix])
+            xyz1 = cartesianFromSpherical(ra_test, dec_test)
+            xyz2 = cartesianFromSpherical(ra_precessed[ix], dec_precessed[ix])
+            self.assertEqual(xyz0.shape, (3,))
+            self.assertEqual(xyz1.shape, (3,))
+            dd = np.sqrt(np.power(xyz0-xyz1, 2).sum())
+            self.assertLess(dd, 1.0e-10)
+            dd2 = np.sqrt(np.power(xyz0-xyz2, 2).sum())
+            self.assertGreater(dd2,1.0e-6)
 
 if __name__ == "__main__":
     unittest.main()
