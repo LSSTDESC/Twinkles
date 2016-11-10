@@ -13,8 +13,6 @@ import sys
 catsim_name = sys.argv[2]
 phosim_name = sys.argv[1]
 
-print catsim_name,phosim_name
-
 catsim_dtype = np.dtype([('id', long), ('x', float), ('y', float)])
 phosim_dtype = np.dtype([('id', long), ('nphot', int),
                          ('x', float), ('y', float)])
