@@ -3,7 +3,7 @@ import numpy as np
 import pandas
 
 from lsst.sims.utils import ObservationMetaData
-from lsst.sims.coordUtils import chipNameFromRaDec, pixelCoordsFromRaDec
+from lsst.sims.coordUtils import pixelCoordsFromRaDec
 from lsst.obs.lsstSim import LsstSimMapper
 from desc.twinkles import icrsFromPhoSim
 
