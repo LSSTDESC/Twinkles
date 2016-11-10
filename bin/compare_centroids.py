@@ -31,6 +31,13 @@ phosim_data = pandas.DataFrame({'id': _phosim_data['id'],
                                 'x': _phosim_data['x'],
                                 'y':_phosim_data['y']})
 
+just_phosim = phosim_data[np.logical_not(phosim_data.id.isin(catsim_data.id.values).values)]
+
+try:
+    assert just_phosim.id.max() == 0
+except:
+    print 'a source with non-zero ID appears in PhoSim centroid file, but not CatSim centroid file'
+    raise
 
 # find all of the CatSim sources that appeared in PhoSim
 catsim_phosim = catsim_data.merge(phosim_data, left_on='id', right_on='id',
