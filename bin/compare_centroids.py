@@ -40,17 +40,17 @@ catsim_phosim['dx'] = pandas.Series(catsim_phosim['x_catsim']-catsim_phosim['x_p
 catsim_phosim['dy'] = pandas.Series(catsim_phosim['y_catsim']-catsim_phosim['y_phosim'], index=catsim_phosim.index)
 
 # select points that actually showed up on the PhoSim image
-good = np.logical_not(np.logical_or(catsim_phosim['x_phosim'].isnull(), catsim_phosim['y_phosim'].isnull()))
+overlap = np.logical_not(np.logical_or(catsim_phosim['x_phosim'].isnull(), catsim_phosim['y_phosim'].isnull()))
 
-dx = catsim_phosim[good].as_matrix(columns=['dx']).flatten()
-dy = catsim_phosim[good].as_matrix(columns=['dy']).flatten()
-nphot = catsim_phosim[good].as_matrix(columns=['nphot']).flatten()
+dx = catsim_phosim[overlap].as_matrix(columns=['dx']).flatten()
+dy = catsim_phosim[overlap].as_matrix(columns=['dy']).flatten()
+nphot = catsim_phosim[overlap].as_matrix(columns=['nphot']).flatten()
 
 # limit to sources with more than 0 photons
-good_dex = np.where(nphot>0)
-dx=dx[good_dex]
-dy=dy[good_dex]
-nphot=nphot[good_dex]
+bright_dex = np.where(nphot>0)
+dx=dx[bright_dex]
+dy=dy[bright_dex]
+nphot=nphot[bright_dex]
 
 # plot the displacement in x and y
 sorted_dex = np.argsort(nphot)
