@@ -26,6 +26,8 @@ if __name__ == "__main__":
 
     parser.add_argument("--cat", type=str, help="path to the InstanceCatalog", default=None)
     parser.add_argument("--cent", type=str, help="path to the centroid file", default=None)
+    parser.add_argument("--clean", type=bool, help="delete old files, if names conflict",
+                        default=False)
     parser.add_argument("--out_dir", type=str, help="directory where we will put output files",
                         default="")
 
@@ -81,6 +83,12 @@ if __name__ == "__main__":
 
     scatter_fig_name = os.path.join(args.out_dir, 'dx_dy_scatter.png')
     displacement_fig_name = os.path.join(args.out_dir, 'max_displacement.png')
+
+    if os.path.exists(scatter_fig_name) and args.clean:
+        os.unlink(scatter_fig_name)
+
+    if os.path.exists(displacement_fig_name) and args.clean:
+        os.unlink(displacement_fig_name)
 
     if os.path.exists(scatter_fig_name) or os.path.exists(displacement_fig_name):
         scatter_root = scatter_fig_name.replace('.png', '')
