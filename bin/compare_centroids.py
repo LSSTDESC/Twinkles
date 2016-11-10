@@ -106,19 +106,30 @@ if __name__ == "__main__":
     if os.path.exists(scatter_fig_name):
         raise RuntimeError('%s already exists; not going to overwrite it' % scatter_fig_name)
 
+    _dx = bright_sources.dx.max()-bright_sources.dx.min()
+    _dy = bright_sources.dy.max()-bright_sources.dy.min()
+
     plt.figsize=(30,30)
-    for i_fig, limit in enumerate(((-50, 50), (-200,200), (-4000, 4000))):
+    for i_fig, limit in enumerate([((-20, 20),(-20, 20)),
+                                   ((-50, 50),(-50, 50)),
+                                   ((-200,200),(-200,200)),
+                                   ((bright_sources.dx.min()-0.01*_dx, bright_sources.dx.max()+0.01*_dx),
+                                    (bright_sources.dy.min()-0.01*_dy, bright_sources.dy.max()+0.01*_dy))]):
         plt.subplot(2,2,i_fig+1)
         plt.scatter(bright_sources.dx,bright_sources.dy,c=bright_sources.nphot,
                     s=10,edgecolor='',cmap=plt.cm.gist_ncar,norm=LogNorm())
 
-        ticks = np.arange(limit[0],limit[1],(limit[1]-limit[0])/5)
-        tick_labels = ['%.2e' % vv if ix%2==0 else '' for ix, vv in enumerate(ticks)]
 
-        plt.xlim(limit)
-        plt.ylim(limit)
-        plt.xticks(ticks, tick_labels, fontsize=10)
-        plt.yticks(ticks, tick_labels, fontsize=10)
+        plt.xlim(limit[0])
+        plt.ylim(limit[1])
+        xticks = np.arange(limit[0][0],limit[0][1],(limit[0][1]-limit[0][0])/5)
+        xtick_labels = ['%.2e' % vv if ix%2==0 else '' for ix, vv in enumerate(xticks)]
+
+        yticks = np.arange(limit[1][0],limit[1][1],(limit[1][1]-limit[1][0])/5)
+        ytick_labels = ['%.2e' % vv if ix%2==0 else '' for ix, vv in enumerate(yticks)]
+
+        plt.xticks(xticks, xtick_labels, fontsize=10)
+        plt.yticks(yticks, ytick_labels, fontsize=10)
         plt.minorticks_on()
         plt.tick_params(axis='both', length=10)
 
