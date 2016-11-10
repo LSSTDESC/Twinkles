@@ -90,20 +90,3 @@ print 'weighted dx/dy: ',weighted_dx, weighted_dy
 print 'mean dx/dy: ',dx.mean(),dy.mean()
 print 'median dx/dy: ',dx.median(),dy.median()
 
-
-exit(1)
-
-
-print 'dx sum: ',catsim_phosim['dx'].mean()
-print 'dy sum: ',catsim_phosim['dy'].mean()
-print 'dx max: ',np.abs(catsim_phosim['dx']).max()
-print 'dy max: ',np.abs(catsim_phosim['dy']).max()
-dex = np.argmax(np.abs(catsim_phosim['dx']))
-print 'bad id ',catsim_phosim['id'][dex]
-exit(1)
-
-bad_rows = catsim_phosim[np.logical_or(catsim_phosim['x_phosim'].isnull(), catsim_phosim['y_phosim'].isnull())]
-print 'max photons in a null (x,y) source: ',bad_rows['nphot'].max()
-
-not_joined = phosim_data[np.logical_not(phosim_data.id.isin(catsim_phosim.id))]
-print not_joined
