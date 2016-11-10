@@ -31,6 +31,8 @@ phosim_data = pandas.DataFrame({'id': _phosim_data['id'],
                                 'x': _phosim_data['x'],
                                 'y':_phosim_data['y']})
 
+# make sure that any sources whicha appear in the PhoSim centroid file, but
+# not in the CatSim-predicted centroid file have id==0
 just_phosim = phosim_data[np.logical_not(phosim_data.id.isin(catsim_data.id.values).values)]
 
 try:
