@@ -86,17 +86,7 @@ def getPredictedCentroids(cat_name):
     ra_icrs, dec_icrs = icrsFromPhoSim(ra_list, dec_list, obs)
 
     print 'got icrs after ',time.time()-t_start
-    #chip_name_list = chipNameFromRaDec(ra_icrs, dec_icrs,
-    #                                   obs_metadata=obs, camera=camera).astype(str)
 
-    #on_chip_dexes = np.where(np.char.rfind(chip_name_list, target_chip)==0)
-    #print len(chip_name_list)
-    #print len(on_chip_dexes[0])
-
-    #ra_icrs = ra_icrs[on_chip_dexes]
-    #dec_icrs = dec_icrs[on_chip_dexes]
-    #chip_name_list = chip_name_list[on_chip_dexes]
-    #id_list = id_list[on_chip_dexes]
     x_pix, y_pix = pixelCoordsFromRaDec(ra_icrs, dec_icrs,
                                         chipName=[target_chip]*len(id_list),
                                         #chipName=chip_name_list,
