@@ -16,7 +16,7 @@ phosim_name = sys.argv[1]
 print catsim_name,phosim_name
 
 catsim_dtype = np.dtype([('id', long), ('x', float), ('y', float)])
-phosim_dtype = np.dtype([('id', long), ('nphot', float),
+phosim_dtype = np.dtype([('id', long), ('nphot', int),
                          ('x', float), ('y', float)])
 
 _catsim_data = np.genfromtxt(catsim_name, dtype=catsim_dtype)
@@ -46,7 +46,8 @@ dx = catsim_phosim[good].as_matrix(columns=['dx']).flatten()
 dy = catsim_phosim[good].as_matrix(columns=['dy']).flatten()
 nphot = catsim_phosim[good].as_matrix(columns=['nphot']).flatten()
 
-good_dex = np.where(nphot>0.0)
+# limit to sources with more than 0 photons
+good_dex = np.where(nphot>0)
 dx=dx[good_dex]
 dy=dy[good_dex]
 nphot=nphot[good_dex]
