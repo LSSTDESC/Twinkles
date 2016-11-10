@@ -49,22 +49,18 @@ catsim_phosim['dy'] = pandas.Series(catsim_phosim['y_catsim']-catsim_phosim['y_p
 # select points that actually showed up on the PhoSim image
 overlap = np.logical_not(np.logical_or(catsim_phosim['x_phosim'].isnull(), catsim_phosim['y_phosim'].isnull()))
 
-dx = catsim_phosim[overlap].as_matrix(columns=['dx']).flatten()
-dy = catsim_phosim[overlap].as_matrix(columns=['dy']).flatten()
-nphot = catsim_phosim[overlap].as_matrix(columns=['nphot']).flatten()
+overlap = catsim_phosim[overlap]
 
-# limit to sources with more than 0 photons
-bright_dex = np.where(nphot>0)
-dx=dx[bright_dex]
-dy=dy[bright_dex]
-nphot=nphot[bright_dex]
+bright_sources = overlap.query('nphot>0')
+bright_sources = bright_sources.sort_values(by='nphot')
+dx = bright_sources.dx
+dy = bright_sources.dy
+nphot = bright_sources.nphot
 
-# plot the displacement in x and y
-sorted_dex = np.argsort(nphot)
 plt.figsize=(30,30)
 for i_fig, limit in enumerate(((-50, 50), (-200,200), (-4000, 4000))):
     plt.subplot(2,2,i_fig+1)
-    plt.scatter(dx[sorted_dex],dy[sorted_dex],c=nphot[sorted_dex],
+    plt.scatter(bright_sources.dx,bright_sources.dy,c=bright_sources.nphot,
                 s=10,edgecolor='',cmap=plt.cm.gist_ncar,norm=LogNorm())
 
     ticks = np.arange(limit[0],limit[1],(limit[1]-limit[0])/5)
@@ -85,6 +81,15 @@ for i_fig, limit in enumerate(((-50, 50), (-200,200), (-4000, 4000))):
 
 plt.tight_layout()
 plt.savefig('dx_dy_scatter.png')
+
+nphot_sum = nphot.sum()
+weighted_dx = (dx*nphot).sum()/nphot_sum
+weighted_dy = (dy*nphot).sum()/nphot_sum
+
+print 'weighted dx/dy: ',weighted_dx, weighted_dy
+print 'mean dx/dy: ',dx.mean(),dy.mean()
+print 'median dx/dy: ',dx.median(),dy.median()
+
 
 exit(1)
 
