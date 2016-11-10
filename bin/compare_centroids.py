@@ -76,7 +76,7 @@ for i_fig, limit in enumerate(((-50, 50), (-200,200), (-4000, 4000))):
 
     if i_fig==0:
         cb = plt.colorbar()
-        cb.set_label('counts in source')
+        cb.set_label('photons in source')
         plt.xlabel('dx (pixels)')
         plt.ylabel('dy (pixels)')
 
