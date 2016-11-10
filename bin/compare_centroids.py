@@ -78,6 +78,7 @@ for i_fig, limit in enumerate(((-50, 50), (-200,200), (-4000, 4000))):
 
 plt.tight_layout()
 plt.savefig('dx_dy_scatter.png')
+plt.close()
 
 nphot_sum = bright_sources.nphot.sum()
 weighted_dx = (bright_sources.dx*bright_sources.nphot).sum()/nphot_sum
@@ -87,3 +88,31 @@ print 'weighted dx/dy: ',weighted_dx, weighted_dy
 print 'mean dx/dy: ',bright_sources.dx.mean(),bright_sources.dy.mean()
 print 'median dx/dy: ',bright_sources.dx.median(),bright_sources.dy.median()
 
+nphot_unique = np.unique(bright_sources.nphot)
+sorted_dex = np.argsort(-1.0*nphot_unique)
+nphot_unique = nphot_unique[sorted_dex]
+
+dx_of_nphot = np.array([np.abs(bright_sources.query('nphot>=%e' % nn).dx).max() for nn in nphot_unique[1:]])
+dy_of_nphot = np.array([np.abs(bright_sources.query('nphot>=%e' % nn).dy).max() for nn in nphot_unique[1:]])
+
+plt.figsize = (30, 30)
+plt.subplot(2,2,1)
+plt.semilogx(nphot_unique[1:], dx_of_nphot, label='dx')
+plt.semilogx(nphot_unique[1:], dy_of_nphot, label='dy')
+plt.xlabel('minimum number of photons')
+plt.ylabel('max pixel displacement')
+plt.subplot(2,2,2)
+plt.semilogx(nphot_unique[1:], dx_of_nphot, label='dx')
+plt.semilogx(nphot_unique[1:], dy_of_nphot, label='dy')
+plt.ylim((0,200))
+plt.subplot(2,2,3)
+plt.semilogx(nphot_unique[1:], dx_of_nphot, label='dx')
+plt.semilogx(nphot_unique[1:], dy_of_nphot, label='dy')
+plt.ylim((0,100))
+plt.subplot(2,2,4)
+plt.semilogx(nphot_unique[1:], dx_of_nphot, label='dx')
+plt.semilogx(nphot_unique[1:], dy_of_nphot, label='dy')
+plt.ylim((0,50))
+plt.legend(loc=0)
+plt.tight_layout()
+plt.savefig('max_displacement.png')
