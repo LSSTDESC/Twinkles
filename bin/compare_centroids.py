@@ -8,21 +8,23 @@ import numpy as np
 import pandas
 
 import sys
+import time
 
+from desc.twinkles import getPredictedCentroids
 
-catsim_name = sys.argv[2]
-phosim_name = sys.argv[1]
+t_start = time.time()
+catalog_name = sys.argv[2]
+centroid_name = sys.argv[1]
 
-catsim_dtype = np.dtype([('id', long), ('x', float), ('y', float)])
+catsim_data = getPredictedCentroids(catalog_name)
+
+print 'got catsim dataframe after ',time.time()-t_start
+
 phosim_dtype = np.dtype([('id', long), ('nphot', int),
                          ('x', float), ('y', float)])
 
-_catsim_data = np.genfromtxt(catsim_name, dtype=catsim_dtype)
-_phosim_data = np.genfromtxt(phosim_name, dtype=phosim_dtype, skip_header=1)
-
-catsim_data = pandas.DataFrame({'id': _catsim_data['id'],
-                                'x': _catsim_data['x'],
-                                'y': _catsim_data['y']})
+print 'loading centroid ',centroid_name
+_phosim_data = np.genfromtxt(centroid_name, dtype=phosim_dtype, skip_header=1)
 
 phosim_data = pandas.DataFrame({'id': _phosim_data['id'],
                                 'nphot': _phosim_data['nphot'],
@@ -32,6 +34,8 @@ phosim_data = pandas.DataFrame({'id': _phosim_data['id'],
 # make sure that any sources whicha appear in the PhoSim centroid file, but
 # not in the CatSim-predicted centroid file have id==0
 just_phosim = phosim_data[np.logical_not(phosim_data.id.isin(catsim_data.id.values).values)]
+
+print 'got all dataframes after ',time.time()-t_start
 
 try:
     assert just_phosim.id.max() == 0
@@ -80,6 +84,8 @@ plt.tight_layout()
 plt.savefig('dx_dy_scatter.png')
 plt.close()
 
+print 'first figure after ',time.time()-t_start
+
 nphot_sum = bright_sources.nphot.sum()
 weighted_dx = (bright_sources.dx*bright_sources.nphot).sum()/nphot_sum
 weighted_dy = (bright_sources.dy*bright_sources.nphot).sum()/nphot_sum
@@ -116,3 +122,5 @@ plt.ylim((0,50))
 plt.legend(loc=0)
 plt.tight_layout()
 plt.savefig('max_displacement.png')
+
+print 'that took ',time.time()-t_start

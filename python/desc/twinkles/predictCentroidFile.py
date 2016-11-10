@@ -1,17 +1,33 @@
 from __future__ import with_statement
-import sys
 import numpy as np
+import pandas
 
 from lsst.sims.utils import ObservationMetaData
 from lsst.sims.coordUtils import chipNameFromRaDec, pixelCoordsFromRaDec
 from lsst.obs.lsstSim import LsstSimMapper
 from desc.twinkles import icrsFromPhoSim
+
 import time
 
-if __name__ == "__main__":
+def getPredictedCentroids(cat_name):
+    """
+    Read in an InstanceCatalog.  Use CatSim to calculate the expected
+    pixel positions of all of the sources in that InstanceCatalog.
+    Return a pandas dataframe containing each source's id, xpix, and ypix
+    coordinates.
+
+    Parameters
+    ----------
+    cat_name is the path to the InstanceCatalog
+
+    Returns
+    -------
+    a pandas dataframe with columns 'id', 'x', and 'y'
+    """
 
     t_start = time.time()
-    cat_name = sys.argv[1]
+    print cat_name
+
     target_chip = 'R:2,2 S:1,1'
 
     camera = LsstSimMapper().camera
@@ -65,7 +81,11 @@ if __name__ == "__main__":
     ra_list = np.array(ra_list)
     dec_list = np.array(dec_list)
 
+    print 'read in InstanceCatalog after ',time.time()-t_start
+
     ra_icrs, dec_icrs = icrsFromPhoSim(ra_list, dec_list, obs)
+
+    print 'got icrs after ',time.time()-t_start
     #chip_name_list = chipNameFromRaDec(ra_icrs, dec_icrs,
     #                                   obs_metadata=obs, camera=camera).astype(str)
 
@@ -83,11 +103,10 @@ if __name__ == "__main__":
                                         obs_metadata=obs,
                                         camera=camera)
 
-    with open('test_centroid.txt', 'w') as output_file:
-        for ii, xx, yy in zip(id_list, x_pix, y_pix):
-            output_file.write('%ld %.12g %.12g\n' % (ii, yy, xx))  # reverse order of x,y
-                                                                   # because DM and PhoSim
-                                                                   # conventions don't agree
+    print 'got pixel positions after ',time.time()-t_start
 
-    print 'that took ',time.time()-t_start
-
+    return pandas.DataFrame({'id': id_list,
+                             'x': y_pix,
+                             'y': x_pix})  # need to reverse pixel order because
+                                           # DM and PhoSim have different
+                                           # conventions
