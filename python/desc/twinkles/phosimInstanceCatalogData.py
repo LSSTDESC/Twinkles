@@ -20,7 +20,7 @@ from collections import OrderedDict as odict
 from pandas.util.testing import assert_frame_equal
 from copy import deepcopy, copy
 
-__all__ = ['PhoSimInputCatalog', 'PhoSimHeaders']
+__all__ = ['PhoSimInputCatalog', 'PhoSimHeaders', 'PhoSimCentroidData']
 
 class PhoSimHeaders:
     """
@@ -76,6 +76,21 @@ class PhoSimHeaders:
         ind = x.index('source_pars')
         return x[:ind] + ['a', 'b', 'pa', 'sindex'] + x[ind + 1:]
 
+class PhoSimCentroidData(object):
+    """
+    Class to describe data in PhoSim centroid Files
+    """
+    def __init__(self, fname):
+        """
+        """
+        self.fname = fname
+        self.df = pd.read_csv(ed_csv(self.fname, skiprows=1,
+                              delim_whitespace=True,
+                              names=('sourceID', 'photons', 'avgX', 'avgY'))
+
+        self.df[['sourceID', 'photons']] = self.df[['sourceID', 'photons']].astype(np.int)
+
+        
 class PhoSimInputCatalog(PhoSimHeaders):
     """
     Class to represent a phosim instance catalog data as a collection of tables.
