@@ -53,9 +53,6 @@ overlap = catsim_phosim[overlap]
 
 bright_sources = overlap.query('nphot>0')
 bright_sources = bright_sources.sort_values(by='nphot')
-dx = bright_sources.dx
-dy = bright_sources.dy
-nphot = bright_sources.nphot
 
 plt.figsize=(30,30)
 for i_fig, limit in enumerate(((-50, 50), (-200,200), (-4000, 4000))):
@@ -82,11 +79,11 @@ for i_fig, limit in enumerate(((-50, 50), (-200,200), (-4000, 4000))):
 plt.tight_layout()
 plt.savefig('dx_dy_scatter.png')
 
-nphot_sum = nphot.sum()
-weighted_dx = (dx*nphot).sum()/nphot_sum
-weighted_dy = (dy*nphot).sum()/nphot_sum
+nphot_sum = bright_sources.nphot.sum()
+weighted_dx = (bright_sources.dx*bright_sources.nphot).sum()/nphot_sum
+weighted_dy = (bright_sources.dy*bright_sources.nphot).sum()/nphot_sum
 
 print 'weighted dx/dy: ',weighted_dx, weighted_dy
-print 'mean dx/dy: ',dx.mean(),dy.mean()
-print 'median dx/dy: ',dx.median(),dy.median()
+print 'mean dx/dy: ',bright_sources.dx.mean(),bright_sources.dy.mean()
+print 'median dx/dy: ',bright_sources.dx.median(),bright_sources.dy.median()
 
