@@ -10,7 +10,6 @@ import numpy as np
 import pandas
 
 import os
-import time
 
 from desc.twinkles import getPredictedCentroids
 
@@ -60,16 +59,11 @@ if __name__ == "__main__":
         raise RuntimeError("Must specify an InstanceCatalog and a centroid file.\n"
                            "You specified %s and %s" % (args.cat, args.cent))
 
-    t_start = time.time()
-
     catsim_data = getPredictedCentroids(args.cat)
-
-    print 'got catsim dataframe after ',time.time()-t_start
 
     phosim_dtype = np.dtype([('id', long), ('nphot', int),
                              ('x', float), ('y', float)])
 
-    print 'loading centroid ',args.cent
     _phosim_data = np.genfromtxt(args.cent, dtype=phosim_dtype, skip_header=1)
 
     phosim_data = pandas.DataFrame({'id': _phosim_data['id'],
@@ -80,8 +74,6 @@ if __name__ == "__main__":
     # make sure that any sources whicha appear in the PhoSim centroid file, but
     # not in the CatSim-predicted centroid file have id==0
     just_phosim = phosim_data[np.logical_not(phosim_data.id.isin(catsim_data.id.values).values)]
-
-    print 'got all dataframes after ',time.time()-t_start
 
     try:
         assert just_phosim.id.max() == 0
@@ -176,8 +168,6 @@ if __name__ == "__main__":
     plt.savefig(scatter_fig_name)
     plt.close()
 
-    print 'first figure after ',time.time()-t_start
-
     nphot_unique = np.unique(bright_sources.nphot)
     sorted_dex = np.argsort(-1.0*nphot_unique)
     nphot_unique = nphot_unique[sorted_dex]
@@ -246,4 +236,3 @@ if __name__ == "__main__":
         tex_closing_boilerplate(tex_file)
 
     print 'created file: %s\ncompile it with pdflatex' % tex_name
-    print 'that took ',time.time()-t_start

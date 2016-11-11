@@ -7,8 +7,6 @@ from lsst.sims.coordUtils import pixelCoordsFromRaDec
 from lsst.obs.lsstSim import LsstSimMapper
 from desc.twinkles import icrsFromPhoSim
 
-import time
-
 def getPredictedCentroids(cat_name):
     """
     Read in an InstanceCatalog.  Use CatSim to calculate the expected
@@ -24,9 +22,6 @@ def getPredictedCentroids(cat_name):
     -------
     a pandas dataframe with columns 'id', 'x', and 'y'
     """
-
-    t_start = time.time()
-    print cat_name
 
     target_chip = 'R:2,2 S:1,1'
 
@@ -81,19 +76,13 @@ def getPredictedCentroids(cat_name):
     ra_list = np.array(ra_list)
     dec_list = np.array(dec_list)
 
-    print 'read in InstanceCatalog after ',time.time()-t_start
-
     ra_icrs, dec_icrs = icrsFromPhoSim(ra_list, dec_list, obs)
-
-    print 'got icrs after ',time.time()-t_start
 
     x_pix, y_pix = pixelCoordsFromRaDec(ra_icrs, dec_icrs,
                                         chipName=[target_chip]*len(id_list),
                                         #chipName=chip_name_list,
                                         obs_metadata=obs,
                                         camera=camera)
-
-    print 'got pixel positions after ',time.time()-t_start
 
     return pandas.DataFrame({'id': id_list,
                              'x': y_pix,
