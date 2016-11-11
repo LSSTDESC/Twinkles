@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 import matplotlib
 matplotlib.use('Agg')
 
@@ -14,6 +16,27 @@ from desc.twinkles import getPredictedCentroids
 
 import argparse
 import warnings
+
+def tex_opening_boilerplate(file_handle):
+    file_handle.write('\documentclass[preprint]{aastex}\n')
+    file_handle.write('\\topmargin 0.0cm\n\\textheight 8.5in\n')
+    file_handle.write('\\begin{document}\n\n')
+
+
+def tex_closing_boilerplate(file_handle):
+    file_handle.write('\n\end{document}\n')
+
+
+def tex_figure(file_handle, fig_name, caption):
+    file_handle.write('\n\\begin{figure}\n')
+    file_handle.write('\includegraphics[scale=0.9]{%s}\n' % fig_name)
+    file_handle.write('\caption{\n')
+    file_handle.write('%s\n' % caption)
+    file_handle.write('}\n')
+    file_handle.write('\end{figure}\n\n')
+
+def tex_scalar(file_handle, value, caption):
+    file_handle.write('\n\n%s: $%.12e$\n\n' % (caption, value))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("Read in an InstanceCatalog and a centroid file. "
@@ -83,6 +106,10 @@ if __name__ == "__main__":
 
     scatter_fig_name = os.path.join(args.out_dir, 'dx_dy_scatter.png')
     displacement_fig_name = os.path.join(args.out_dir, 'max_displacement.png')
+    tex_name = os.path.join(args.out_dir, args.cent.replace('.txt','_validation.tex'))
+
+    if os.path.exists(tex_name) and args.clean:
+        os.unlink(tex_name)
 
     if os.path.exists(scatter_fig_name) and args.clean:
         os.unlink(scatter_fig_name)
@@ -90,18 +117,24 @@ if __name__ == "__main__":
     if os.path.exists(displacement_fig_name) and args.clean:
         os.unlink(displacement_fig_name)
 
-    if os.path.exists(scatter_fig_name) or os.path.exists(displacement_fig_name):
+    if os.path.exists(scatter_fig_name) or os.path.exists(displacement_fig_name) \
+    or os.path.exists(tex_name):
+
         scatter_root = scatter_fig_name.replace('.png', '')
         displacement_root = displacement_fig_name.replace('.png', '')
+        tex_root = tex_name.replace('.tex', '')
 
         ix = 1
-        while os.path.exists(scatter_fig_name) or os.path.exists(displacement_fig_name):
+        while os.path.exists(scatter_fig_name) or os.path.exists(displacement_fig_name) \
+        or os.path.exists(tex_name):
+
             scatter_fig_name = scatter_root+'_%d.png' % ix
             displacement_fig_name = displacement_root+'_%d.png' % ix
+            tex_name = tex_root+'_%d.tex' % ix
             ix += 1
 
-        warnings.warn('Needed to rename figures to %s, %s to avoid overwriting older files' %
-                      (scatter_fig_name, displacement_fig_name))
+        warnings.warn('Needed to rename figures to %s, %s, %s to avoid overwriting older files' %
+                      (scatter_fig_name, displacement_fig_name, tex_name))
 
     if os.path.exists(scatter_fig_name):
         raise RuntimeError('%s already exists; not going to overwrite it' % scatter_fig_name)
@@ -193,5 +226,24 @@ if __name__ == "__main__":
     print 'mean dx/dy: ',mean_dx, mean_dy
     print 'median dx/dy: ',median_dx, median_dy
 
+    if os.path.exists(tex_name):
+        raise RuntimeError('%s already exists; not going to overwrite it\n' % tex_name)
 
+    with open(tex_name, 'w') as tex_file:
+        tex_opening_boilerplate(tex_file)
+        tex_figure(tex_file, scatter_fig_name,
+                   'The displacement between CatSim and PhoSim in pixel coordinates for each source. '
+                   'Color bar indicates number of photons in the source.')
+        tex_figure(tex_file, displacement_fig_name,
+                   'Maximum displacement in pixel coordinates as a function of number of '
+                   'photons in the source')
+        tex_scalar(tex_file, weighted_dx, 'Weighted (by nphoton) mean displacement in x')
+        tex_scalar(tex_file, weighted_dy, 'Weighted (by nphoton) mean displacement in y')
+        tex_scalar(tex_file, mean_dx, 'Mean displacement in x')
+        tex_scalar(tex_file, mean_dy, 'Mean displacement in y')
+        tex_scalar(tex_file, median_dx, 'Median displacement in x')
+        tex_scalar(tex_file, median_dy, 'Median displacement in y')
+        tex_closing_boilerplate(tex_file)
+
+    print 'created file: %s\ncompile it with pdflatex' % tex_name
     print 'that took ',time.time()-t_start
