@@ -51,7 +51,7 @@ if __name__ == "__main__":
     parser.add_argument("--clean", type=bool, help="delete old files, if names conflict",
                         default=False)
     parser.add_argument("--out_dir", type=str, help="directory where we will put output files",
-                        default="")
+                        default=".")
 
     args = parser.parse_args()
 
