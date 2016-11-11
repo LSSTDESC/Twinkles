@@ -185,4 +185,8 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.savefig(displacement_fig_name)
 
+    just_catsim = catsim_data[np.logical_not(catsim_data.id.isin(phosim_data.id.values).values)]
+    distance = np.sqrt(np.power(just_catsim.x-2000.0,2) + np.power(just_catsim.y-2036.0,2))
+    print 'minimum distance of just_catsim: ',distance.min()
+
     print 'that took ',time.time()-t_start
