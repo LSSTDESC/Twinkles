@@ -145,14 +145,6 @@ if __name__ == "__main__":
 
     print 'first figure after ',time.time()-t_start
 
-    nphot_sum = bright_sources.nphot.sum()
-    weighted_dx = (bright_sources.dx*bright_sources.nphot).sum()/nphot_sum
-    weighted_dy = (bright_sources.dy*bright_sources.nphot).sum()/nphot_sum
-
-    print 'weighted dx/dy: ',weighted_dx, weighted_dy
-    print 'mean dx/dy: ',bright_sources.dx.mean(),bright_sources.dy.mean()
-    print 'median dx/dy: ',bright_sources.dx.median(),bright_sources.dy.median()
-
     nphot_unique = np.unique(bright_sources.nphot)
     sorted_dex = np.argsort(-1.0*nphot_unique)
     nphot_unique = nphot_unique[sorted_dex]
@@ -186,7 +178,20 @@ if __name__ == "__main__":
     plt.savefig(displacement_fig_name)
 
     just_catsim = catsim_data[np.logical_not(catsim_data.id.isin(phosim_data.id.values).values)]
-    distance = np.sqrt(np.power(just_catsim.x-2000.0,2) + np.power(just_catsim.y-2036.0,2))
-    print 'minimum distance of just_catsim: ',distance.min()
+    min_d_just_catsim = np.sqrt(np.power(just_catsim.x-2000.0,2) + np.power(just_catsim.y-2036.0,2)).min()
+    print 'minimum distance of just_catsim: ',min_d_just_catsim
+
+    nphot_sum = bright_sources.nphot.sum()
+    weighted_dx = (bright_sources.dx*bright_sources.nphot).sum()/nphot_sum
+    weighted_dy = (bright_sources.dy*bright_sources.nphot).sum()/nphot_sum
+    mean_dx = bright_sources.dx.mean()
+    mean_dy = bright_sources.dy.mean()
+    median_dx = bright_sources.dx.median()
+    median_dy = bright_sources.dy.median()
+
+    print 'weighted dx/dy: ',weighted_dx, weighted_dy
+    print 'mean dx/dy: ',mean_dx, mean_dy
+    print 'median dx/dy: ',median_dx, median_dy
+
 
     print 'that took ',time.time()-t_start
