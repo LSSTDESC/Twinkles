@@ -53,6 +53,9 @@ if __name__ == "__main__":
     parser.add_argument("--out_dir", type=str, help="directory where we will put output files",
                         default=".")
 
+    _x_center = 2000.0
+    _y_center = 2036.0  # central pixel on chip
+
     args = parser.parse_args()
 
     if args.cat is None or args.cent is None:
@@ -100,6 +103,7 @@ if __name__ == "__main__":
     bright_sources = bright_sources.sort_values(by='nphot')
 
     scatter_fig_name = os.path.join(args.out_dir, 'dx_dy_scatter.png')
+    radial_fig_name = os.path.join(args.out_dir, 'dx_dy_radius.png')
     displacement_fig_name = os.path.join(args.out_dir, 'max_displacement.png')
     tex_name = os.path.join(args.out_dir, args.cent.replace('.txt','_validation.tex'))
 
@@ -112,12 +116,16 @@ if __name__ == "__main__":
     if os.path.exists(displacement_fig_name) and args.clean:
         os.unlink(displacement_fig_name)
 
+    if os.path.exists(radial_fig_name) and args.clean:
+        os.unlink(radial_fig_name)
+
     if os.path.exists(scatter_fig_name) or os.path.exists(displacement_fig_name) \
-    or os.path.exists(tex_name):
+    or os.path.exists(tex_name) or os.path.exists(radial_fig_name):
 
         scatter_root = scatter_fig_name.replace('.png', '')
         displacement_root = displacement_fig_name.replace('.png', '')
         tex_root = tex_name.replace('.tex', '')
+        radial_root = radial_fig_name.replace('.png', '')
 
         ix = 1
         while os.path.exists(scatter_fig_name) or os.path.exists(displacement_fig_name) \
@@ -126,10 +134,11 @@ if __name__ == "__main__":
             scatter_fig_name = scatter_root+'_%d.png' % ix
             displacement_fig_name = displacement_root+'_%d.png' % ix
             tex_name = tex_root+'_%d.tex' % ix
+            radial_fig_name = radial_root+'_%d.tex' % ix
             ix += 1
 
-        warnings.warn('Needed to rename figures to %s, %s, %s to avoid overwriting older files' %
-                      (scatter_fig_name, displacement_fig_name, tex_name))
+        warnings.warn('Needed to rename figures to %s, %s, %s, %s to avoid overwriting older files' %
+                      (scatter_fig_name, displacement_fig_name, radial_fig_name, tex_name))
 
     if os.path.exists(scatter_fig_name):
         raise RuntimeError('%s already exists; not going to overwrite it' % scatter_fig_name)
@@ -171,6 +180,23 @@ if __name__ == "__main__":
     plt.savefig(scatter_fig_name)
     plt.close()
 
+    if os.path.exists(radial_fig_name):
+        raise RuntimeError("%s exists; not willing to overwrite it" % radial_fig_name)
+
+    d_rr = np.sqrt(np.power(bright_sources.dx, 2) + np.power(bright_sources.dy, 2))
+    center_dist = np.sqrt(np.power(bright_sources.x_phosim-_x_center,2) +
+                          np.power(bright_sources.y_phosim-_y_center,2))
+
+    plt.figsize = (30, 30)
+    fig = plt.figure()
+    ax = plt.gca()
+    ax.scatter(center_dist, d_rr)
+    plt.xlabel('distance from center in PhoSim (pixels)')
+    plt.ylabel('displacement between PhoSim and CatSim (pixels)')
+    ax.set_yscale('log')
+    ax.set_xscale('log')
+    plt.savefig(radial_fig_name)
+
     nphot_unique = np.unique(bright_sources.nphot)
     sorted_dex = np.argsort(-1.0*nphot_unique)
     nphot_unique = nphot_unique[sorted_dex]
@@ -204,7 +230,7 @@ if __name__ == "__main__":
     plt.savefig(displacement_fig_name)
 
     just_catsim = catsim_data[np.logical_not(catsim_data.id.isin(phosim_data.id.values).values)]
-    min_d_just_catsim = np.sqrt(np.power(just_catsim.x-2000.0,2) + np.power(just_catsim.y-2036.0,2)).min()
+    min_d_just_catsim = np.sqrt(np.power(just_catsim.x-_x_center,2) + np.power(just_catsim.y-_y_center,2)).min()
     print 'minimum distance of just_catsim: ',min_d_just_catsim
 
     nphot_sum = bright_sources.nphot.sum()
@@ -230,6 +256,9 @@ if __name__ == "__main__":
         tex_figure(tex_file, displacement_fig_name.split('/')[-1],
                    'Maximum displacement in pixel coordinates as a function of number of '
                    'photons in the source')
+        tex_figure(tex_file, radial_fig_name.split('/')[-1],
+                   'Displacement between PhoSim and CatSim as a function of distance from '
+                   'chip center (in PhoSim)')
         tex_scalar(tex_file, weighted_dx, 'Weighted (by nphoton) mean displacement in x')
         tex_scalar(tex_file, weighted_dy, 'Weighted (by nphoton) mean displacement in y')
         tex_scalar(tex_file, mean_dx, 'Mean displacement in x')
