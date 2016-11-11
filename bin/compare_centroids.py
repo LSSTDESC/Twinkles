@@ -233,6 +233,9 @@ if __name__ == "__main__":
         tex_scalar(tex_file, mean_dy, 'Mean displacement in y')
         tex_scalar(tex_file, median_dx, 'Median displacement in x')
         tex_scalar(tex_file, median_dy, 'Median displacement in y')
+        tex_scalar(tex_file, min_d_just_catsim,
+                   'Minimum distance (in pixels) from the center of the chip '
+                   'of objects that appear in CatSim but not PhoSim')
         tex_closing_boilerplate(tex_file)
 
     print 'created file: %s\ncompile it with pdflatex' % tex_name
