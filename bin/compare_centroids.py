@@ -140,6 +140,22 @@ if __name__ == "__main__":
         warnings.warn('Needed to rename figures to %s, %s, %s, %s to avoid overwriting older files' %
                       (scatter_fig_name, displacement_fig_name, radial_fig_name, tex_name))
 
+    just_catsim = catsim_data[np.logical_not(catsim_data.id.isin(phosim_data.id.values).values)]
+    min_d_just_catsim = np.sqrt(np.power(just_catsim.x-_x_center,2) + np.power(just_catsim.y-_y_center,2)).min()
+    print 'minimum distance of just_catsim: ',min_d_just_catsim
+
+    nphot_sum = bright_sources.nphot.sum()
+    weighted_dx = (bright_sources.dx*bright_sources.nphot).sum()/nphot_sum
+    weighted_dy = (bright_sources.dy*bright_sources.nphot).sum()/nphot_sum
+    mean_dx = bright_sources.dx.mean()
+    mean_dy = bright_sources.dy.mean()
+    median_dx = bright_sources.dx.median()
+    median_dy = bright_sources.dy.median()
+
+    print 'weighted dx/dy: ',weighted_dx, weighted_dy
+    print 'mean dx/dy: ',mean_dx, mean_dy
+    print 'median dx/dy: ',median_dx, median_dy
+
     if os.path.exists(scatter_fig_name):
         raise RuntimeError('%s already exists; not going to overwrite it' % scatter_fig_name)
 
@@ -147,9 +163,9 @@ if __name__ == "__main__":
     _dy = bright_sources.dy.max()-bright_sources.dy.min()
 
     plt.figsize=(30,30)
-    for i_fig, limit in enumerate([((-20, 20),(-20, 20)),
-                                   ((-50, 50),(-50, 50)),
-                                   ((-200,200),(-200,200)),
+    for i_fig, limit in enumerate([((-20+weighted_dx, 20+weighted_dx),(-20+weighted_dy, 20+weighted_dy)),
+                                   ((-50+weighted_dx, 50+weighted_dx),(-50+weighted_dy, 50+weighted_dy)),
+                                   ((-200+weighted_dx,200+weighted_dx),(-200+weighted_dy,200+weighted_dy)),
                                    ((bright_sources.dx.min()-0.01*_dx, bright_sources.dx.max()+0.01*_dx),
                                     (bright_sources.dy.min()-0.01*_dy, bright_sources.dy.max()+0.01*_dy))]):
         plt.subplot(2,2,i_fig+1)
@@ -228,22 +244,6 @@ if __name__ == "__main__":
     plt.legend(loc=0)
     plt.tight_layout()
     plt.savefig(displacement_fig_name)
-
-    just_catsim = catsim_data[np.logical_not(catsim_data.id.isin(phosim_data.id.values).values)]
-    min_d_just_catsim = np.sqrt(np.power(just_catsim.x-_x_center,2) + np.power(just_catsim.y-_y_center,2)).min()
-    print 'minimum distance of just_catsim: ',min_d_just_catsim
-
-    nphot_sum = bright_sources.nphot.sum()
-    weighted_dx = (bright_sources.dx*bright_sources.nphot).sum()/nphot_sum
-    weighted_dy = (bright_sources.dy*bright_sources.nphot).sum()/nphot_sum
-    mean_dx = bright_sources.dx.mean()
-    mean_dy = bright_sources.dy.mean()
-    median_dx = bright_sources.dx.median()
-    median_dy = bright_sources.dy.median()
-
-    print 'weighted dx/dy: ',weighted_dx, weighted_dy
-    print 'mean dx/dy: ',mean_dx, mean_dy
-    print 'median dx/dy: ',median_dx, median_dy
 
     if os.path.exists(tex_name):
         raise RuntimeError('%s already exists; not going to overwrite it\n' % tex_name)
