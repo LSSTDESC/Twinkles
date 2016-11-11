@@ -18,7 +18,7 @@ with warnings.catch_warnings():
     from .twinkles_io import *
     from .twinkles_sky import *
     from .obsHistIDOrdering import *
-    from .predictCentroidFile import *
+    from .validateCentroidFile import *
     try:
         from .version import *
     except ImportError:
