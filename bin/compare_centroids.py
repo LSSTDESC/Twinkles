@@ -59,6 +59,9 @@ if __name__ == "__main__":
         raise RuntimeError("Must specify an InstanceCatalog and a centroid file.\n"
                            "You specified %s and %s" % (args.cat, args.cent))
 
+    if not os.path.exists(args.out_dir):
+        os.mkdir(args.out_dir)
+
     catsim_data = getPredictedCentroids(args.cat)
 
     phosim_dtype = np.dtype([('id', long), ('nphot', int),
@@ -221,10 +224,10 @@ if __name__ == "__main__":
 
     with open(tex_name, 'w') as tex_file:
         tex_opening_boilerplate(tex_file)
-        tex_figure(tex_file, scatter_fig_name,
+        tex_figure(tex_file, scatter_fig_name.split('/')[-1],
                    'The displacement between CatSim and PhoSim in pixel coordinates for each source. '
                    'Color bar indicates number of photons in the source.')
-        tex_figure(tex_file, displacement_fig_name,
+        tex_figure(tex_file, displacement_fig_name.split('/')[-1],
                    'Maximum displacement in pixel coordinates as a function of number of '
                    'photons in the source')
         tex_scalar(tex_file, weighted_dx, 'Weighted (by nphoton) mean displacement in x')
