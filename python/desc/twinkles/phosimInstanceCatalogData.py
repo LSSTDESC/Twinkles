@@ -84,7 +84,7 @@ class PhoSimCentroidData(object):
         """
         """
         self.fname = fname
-        self.df = pd.read_csv(ed_csv(self.fname, skiprows=1,
+        self.df = pd.read_csv(self.fname, skiprows=1,
                               delim_whitespace=True,
                               names=('sourceID', 'photons', 'avgX', 'avgY'))
 
