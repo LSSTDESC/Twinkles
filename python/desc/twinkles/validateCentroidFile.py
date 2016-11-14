@@ -260,11 +260,11 @@ class CentroidValidator(object):
         _dy = self.bright_sources.dy.max()-self.bright_sources.dy.min()
 
         plt.figsize=(30,30)
-        for i_fig, limit in enumerate([((-20+self.weighted_dx, 20+self.weighted_dx),(-20+self.weighted_dy, 20+self.weighted_dy)),
-                                       ((-50+self.weighted_dx, 50+self.weighted_dx),(-50+self.weighted_dy, 50+self.weighted_dy)),
-                                       ((-200+self.weighted_dx,200+self.weighted_dx),(-200+self.weighted_dy,200+self.weighted_dy)),
-                                       ((self.bright_sources.dx.min()-0.01*_dx, self.bright_sources.dx.max()+0.01*_dx),
-                                        (self.bright_sources.dy.min()-0.01*_dy, self.bright_sources.dy.max()+0.01*_dy))]):
+        for i_fig, limit in enumerate([([-20+self.weighted_dx, 20+self.weighted_dx],[-20+self.weighted_dy, 20+self.weighted_dy]),
+                                       ([-50+self.weighted_dx, 50+self.weighted_dx],[-50+self.weighted_dy, 50+self.weighted_dy]),
+                                       ([-200+self.weighted_dx,200+self.weighted_dx],[-200+self.weighted_dy,200+self.weighted_dy]),
+                                       ([self.bright_sources.dx.min()-0.01*_dx, self.bright_sources.dx.max()+0.01*_dx],
+                                        [self.bright_sources.dy.min()-0.01*_dy, self.bright_sources.dy.max()+0.01*_dy])]):
             plt.subplot(2,2,i_fig+1)
             plt.scatter(self.bright_sources.dx, self.bright_sources.dy, c=self.bright_sources.nphot,
                         s=10,edgecolor='',cmap=plt.cm.gist_ncar,norm=LogNorm())
@@ -275,10 +275,28 @@ class CentroidValidator(object):
 
             plt.xlim(limit[0])
             plt.ylim(limit[1])
-            xticks = np.arange(limit[0][0],limit[0][1],(limit[0][1]-limit[0][0])/5)
+            if limit[0][1]<0.0 or limit[0][0]>0.0:
+                dx_tick = (limit[0][1]-limit[0][0])/5.0
+            else:
+                if 0.0 - limit[0][0] > 0.5*limit[0][1]:
+                    dx_tick = (0.0-limit[0][0])/2.0
+                else:
+                    dx_tick = limit[0][1]/2.0
+                    limit[0][0] = -dx_tick
+
+            xticks = np.arange(limit[0][0],limit[0][1],dx_tick)
             xtick_labels = ['%.2e' % vv if ix%2==0 else '' for ix, vv in enumerate(xticks)]
 
-            yticks = np.arange(limit[1][0],limit[1][1],(limit[1][1]-limit[1][0])/5)
+            if limit[1][1]<0.0 or limit[1][0]>0.0:
+                dy_tick = (limit[1][1]-limit[1][0])/5.0
+            else:
+                if 0.0 - limit[1][0] > 0.5*limit[1][1]:
+                    dy_tick = (0.0-limit[1][0])/2.0
+                else:
+                    dy_tick = limit[1][1]/2.0
+                    limit[1][0] = -dy_tick
+
+            yticks = np.arange(limit[1][0],limit[1][1],dy_tick)
             ytick_labels = ['%.2e' % vv if ix%2==0 else '' for ix, vv in enumerate(yticks)]
 
             plt.xticks(xticks, xtick_labels, fontsize=10)
