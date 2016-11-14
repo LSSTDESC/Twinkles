@@ -211,7 +211,7 @@ class CentroidValidator(object):
                 self.scatter_fig_name = scatter_root+'_%d.png' % ix
                 self.displacement_fig_name = displacement_root+'_%d.png' % ix
                 self.tex_name = tex_root+'_%d.tex' % ix
-                self.radial_fig_name = radial_root+'_%d.tex' % ix
+                self.radial_fig_name = radial_root+'_%d.png' % ix
                 ix += 1
 
             warnings.warn('Needed to rename figures to %s, %s, %s, %s to avoid overwriting older files' %
