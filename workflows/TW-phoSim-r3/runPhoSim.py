@@ -29,7 +29,7 @@ from setupPhoSimInput import setupPhoSimInput
 
 log.info('Entering runPhoSim.py')
 
-print 'PHOSIMSCRATCH = ',PHOSIMSCRATCH
+print 'PHOSIMPSCRATCH = ',PHOSIMPSCRATCH
 
 ## ################################# DEBUG ############################
 #sys.exit(1)
@@ -66,10 +66,10 @@ log.info('icFile = '+icFile)
 
 prep = setupPhoSimInput(icFile)   ###########
 #prep.inputRoot = PHOSIMIN
-prep.inputRoot = PHOSIMSCRATCH
+prep.inputRoot = PHOSIMPSCRATCH
 prep.phosimInstDir = PHOSIMINST
-prep.SEDlib = SEDLIB
-prep.scratch = PHOSIMSCRATCH
+prep.SEDlib = PHOSIMSEDS
+prep.scratch = PHOSIMPSCRATCH
 prep.refCF = PHOSIMCF   ## cmd file template may require editing
 prep.persistentScratch = True  ## dynamically generated instance catalog + SEDs
 prep.cleanupFlag = False  ## DEBUG - keep contents of scratch (/lustre)
@@ -115,7 +115,8 @@ prep.dump()
 
 ## Prepare phoSim command
 log.info('Prepare phoSim command')
-cmd = 'time '+PHOSIMINST+'/phosim.py '+ic+' -c '+cFile+' -s '+sensor+' '+PHOSIMOPTS+' --sed '+seds+' -w '+workDir+' -o '+outDir
+cmd = PHOSIMINST+'/phosim.py '+ic+' -c '+cFile+' -s '+sensor+' '+PHOSIMOPTS+' --sed '+seds+' -w '+workDir+' -o '+outDir
+#cmd = 'time '+PHOSIMINST+'/phosim.py '+ic+' -c '+cFile+' -s '+sensor+' '+PHOSIMOPTS+' --sed '+seds+' -w '+workDir+' -o '+outDir
 #cmd = 'time '+PHOSIMINST+'/phosim.py '+ic+' -c '+cFile+' -s '+sensor+' '+PHOSIMOPTS+' -w '+workDir+' -o '+outDir
 print 'cmd = ',cmd
 sys.stdout.flush()
@@ -137,6 +138,8 @@ rc = xphosim.returncode
 print 'phoSim rc = ',rc,', type(rc) = ',type(rc)
 if len(yak[1]) > 0:
     print '\n\n$WARNING: phoSim stderr output:\n',yak[1]
+    print 'TERMINATING...'
+    sys.exit(1)
 #    if rc == 0:
 #        print '\nphoSim returned error output but a zero return code...setting rc=1'
 #        rc = 1

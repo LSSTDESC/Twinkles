@@ -62,8 +62,8 @@ PHOSIMSCRATCH = os.path.join('/lustre/ki/pfs/fermi_scratch/lsst',os.environ['PIP
 PHOSIMCLEANUP = True
 
 ## SED files (from DM stack)
-#SEDLIB = '/nfs/farm/g/desc/u1/LSST_Stack_2016-02-23/lsstsw/stack/Linux64/sims_sed_library/2016.01.26'
-SEDLIB = '/lustre/ki/pfs/fermi_scratch/lsst/phosim/sims_sed_library/2016.01.26'
+PHOSIMSEDS = '/lustre/ki/pfs/fermi_scratch/lsst/phosim/sims_sed_library'
+
 #SEDLIB = '/nfs/farm/g/lsst/u1/software/redhat6-x86_64-64bit-gcc44/DMstack/v12_0/opt/lsst/sims_sed_library'
 
 ## Twinkles UW-FATBOY cache location

@@ -15,15 +15,15 @@ print '\n\nWelcome to phoSimPrep.py\n========================\n'
 ## Generate instanceCatalog on-the-fly
 
 ## Create scratch directory in (persistent) /lustre, if necessary.
-## File path = PHOSIMSCRATCH (defined in config.py)
+## File path = PHOSIMPSCRATCH (defined in config.py)
 
-if not os.path.exists(PHOSIMSCRATCH): os.makedirs(PHOSIMSCRATCH)
+if not os.path.exists(PHOSIMPSCRATCH): os.makedirs(PHOSIMPSCRATCH)
 
 ## generate instance catalog and SED files for phoSim
 
 #  generatePhosimInput.py obsHistID [options]
-destIC = os.path.join(PHOSIMSCRATCH,'instanceCatalog.txt')
-destSEDdir = PHOSIMSCRATCH
+destIC = os.path.join(PHOSIMPSCRATCH,'instanceCatalog.txt')
+destSEDdir = PHOSIMPSCRATCH
 obsHistID = os.getenv('TW_OBSHISTID')
 cacheDir = TW_CACHEDIR
 opssimDir = TW_OPSSIMDIR
@@ -58,7 +58,7 @@ if rc > 255:
     pass
 
 ## Protect scratch directory: rwxr-sr-t
-cmd = 'chmod -R 3755 '+PHOSIMSCRATCH
+cmd = 'chmod -R 3755 '+PHOSIMPSCRATCH
 print 'Protect scratch directory\n',cmd
 
 rc2 = os.system(cmd)
