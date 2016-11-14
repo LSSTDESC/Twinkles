@@ -270,6 +270,9 @@ class CentroidValidator(object):
                         s=10,edgecolor='',cmap=plt.cm.gist_ncar,norm=LogNorm())
 
 
+            plt.plot([limit[0][0], limit[0][1]], [0.0, 0.0], color='k', linestyle='--')
+            plt.plot([0.0, 0.0], [limit[1][0], limit[1][1]], color='k', linestyle='--')
+
             plt.xlim(limit[0])
             plt.ylim(limit[1])
             xticks = np.arange(limit[0][0],limit[0][1],(limit[0][1]-limit[0][0])/5)
