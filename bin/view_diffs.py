@@ -4,8 +4,11 @@ import lsst.daf.persistence as daf_persistence
 import lsst.afw.display as afw_display
 
 def list_diffims(butler):
-    """Use the butler to figure out what data are available
-    @param butler  Butler to use to interogate the data repository
+    """
+    Use the butler to figure out what data are available
+    Parameters
+    ----------
+    butler : daf_persistence.Butler, used to interogate the data repository
     """
     id_list = []
     subset = butler.subset('deepDiff_differenceExp')
@@ -16,16 +19,22 @@ def list_diffims(butler):
         print("%i: %s"%(i, " ".join(["%s=%s"%(key, value) for key, value in dataId.iteritems()])))
 
 def show_diffim(butler, dataId):
-    """Construct a display of various difference imaging related views
-    @param butler  Butler to use in interacting with the data repository
-    @param dataId  Dictionary of data identifiers to lookup specific data
+    """
+    Construct a display of various difference imaging related views
+    Parameters
+    ----------
+    butler : daf_persistence.Butler, used in interacting with the data repository
+    dataId : Dictionary, data identifiers to lookup specific data
     """
     def display_image_and_srcs(display, image, title, *srcs):
-        """Display an image with a title and up to 4 source catalogs
-        @param display  Display object to use to display image and plot catalogs
-        @param image  Image like object to send to the display backend
-        @param title  String title for the display frame
-        @param *srcs  afwTable.SourceCatalogs to plot
+        """
+        Display an image with a title and up to 4 source catalogs
+        Parameters
+        ----------
+        display : afw_display.Display, used to display image and plot catalogs
+        image  afw_image.Image-like, pixel data to send to the display backend
+        title  str, title for the display frame
+        *srcs  afw_tab;e.SourceCatalogs, points to plot
         """
         if len(srcs) > 4:
             print("WARNING: more than four source catalogs sent.  Only plotting the first four.")
@@ -53,13 +62,18 @@ def show_diffim(butler, dataId):
     display_image_and_srcs(display1, diffexp, 'Diffim', src, diasrc) 
     im1 = exp.getMaskedImage().getImage()
     im2 = diffexp.getMaskedImage().getImage()
-    im2 -= im1
-    display_image_and_srcs(display2, im2, 'Diffim - Direct', src, diasrc) 
+    im1 -= im2
+    display_image_and_srcs(display2, im1, 'Direct - Diffim', src, diasrc) 
 
 def make_dataId(id_list):
-    """Construct a proper dataId from a list of [key]=[value] strings
-    @param id_list  A list of strings to parse into the dataId
-    @return a disctionary containting data identifiers
+    """
+    Construct a proper dataId from a list of [key]=[value] strings
+    Parameters
+    ----------
+    id_list : List of str, parsee into the dataId
+    Returns
+    -------
+    dictionary containting data identifiers
     """
     dataId = {}
     for el in id_list:
@@ -77,10 +91,13 @@ def make_dataId(id_list):
     return dataId
 
 def run(repository, id_list=None, **kwargs):
-    """Figure out what to do with the inputs and call the appropriate methods
-    @param repository  String path of the data repository
-    @param id_list  Optional list of data identifier parts in [key]=[value] strings.
-    @param **kwargs Ignored.
+    """
+    Figure out what to do with the inputs and call the appropriate methods
+    Parameters
+    ----------
+    repository : str, path of the data repository
+    id_list(optional) : list of str, data identifier parts in [key]=[value] strings.
+    **kwargs : Ignored.
     """
     try:
         butler = daf_persistence.Butler(repository)
