@@ -103,6 +103,15 @@ def getPredictedCentroids(cat_name):
 
 
 class CentroidValidator(object):
+    """
+    Read in an InstanceCatalog (specifiedy by cat_name)and a centroid file
+    (specified by centroid_name).  Calculate the predicted pixel positions
+    of the sources in the InstanceCatalog using Catsim.  Compare those to
+    the pixel positions reported in the centroid file and compute some summary
+    statistics.  Includes an optional method to create a .tex file
+    displaying the distribution of disagreements between PhoSim and CatSim
+    pixel positions.
+    """
 
     def __init__(self, cat_name, centroid_name):
         self.cat_name = cat_name
@@ -184,9 +193,16 @@ class CentroidValidator(object):
 
     def create_tex_file(self, out_dir, clean=False):
         """
+        Create a .tex file that can be compiled with pdflatex to display the distribution
+        of disagreements between PhoSim and CatSim pixel positions.
+
         out_dir is the directory where we should write the figures
+
         clean is a boolean which controls whether or not to overwrite existing files
-        (True means overwrite)
+        (True means overwrite).  If clean is False and the files you want to create
+        already exist, this method will append an integer to the file names so that
+        they are unique.  A message will be printed to stdout, informing you of this
+        name mangling.
         """
 
         if not os.path.exists(out_dir):
@@ -262,7 +278,10 @@ class CentroidValidator(object):
 
     def _create_figures(self, out_dir, clean=False):
         """
+        Create the figures expected by create_tex_file()
+
         out_dir is the directory where we should write the figures
+
         clean is a boolean which controls whether or not to overwrite existing files
         (True means overwrite)
         """
@@ -378,16 +397,30 @@ class CentroidValidator(object):
 
 
     def tex_opening_boilerplate(self, file_handle):
+        """
+        Write the boilerplate needed at the opening of the tex file.
+        file_handle is a file object pointing to the tex file.
+        """
         file_handle.write('\documentclass[preprint]{aastex}\n')
         file_handle.write('\\topmargin 0.0cm\n\\textheight 8.5in\n')
         file_handle.write('\\begin{document}\n\n')
 
 
     def tex_closing_boilerplate(self, file_handle):
+        """
+        Write the boilerplate needed at the end of the tex file.
+        file_handle is a file object pointing to the tex file.
+        """
         file_handle.write('\n\end{document}\n')
 
 
     def tex_figure(self, file_handle, fig_name, caption):
+        """
+        Add a figure to the tex file.
+        file_handle is a file object pointing to the tex file.
+        fig_name is the name of the file containing the figure.
+        caption is the caption that should appear with the figure (a str).
+        """
         file_handle.write('\n\\begin{figure}\n')
         file_handle.write('\includegraphics[scale=0.9]{%s}\n' % fig_name)
         file_handle.write('\caption{\n')
@@ -396,4 +429,10 @@ class CentroidValidator(object):
         file_handle.write('\end{figure}\n\n')
 
     def tex_scalar(self, file_handle, value, caption):
+        """
+        Add a scalar to the tex file.
+        file_handle is a file object pointing to the texfile.
+        value is the numerical value of the scalar.
+        captin is a string that will appear before the scalar value in the tex file.
+        """
         file_handle.write('\n\n%s: $%.12e$\n\n' % (caption, value))
