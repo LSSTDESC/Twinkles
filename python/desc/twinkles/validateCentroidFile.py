@@ -168,6 +168,19 @@ class CentroidValidator(object):
         print 'mean dx/dy: ',self.mean_dx, self.mean_dy
         print 'median dx/dy: ',self.median_dx, self.median_dy
 
+    def get_scalars(self):
+        """
+        Return a dict of the scalar values associated with validation of this InstanceCatalog
+        """
+        return {'mean_dx': (self.mean_dx, 'The mean value of x(CatSim)-x(PhoSim) in pixels'),
+                'mean_dy': (self.mean_dy, 'The mean value of y(CatSim)-y(PhoSim) in pixels'),
+                'weighted_dx': (self.weighted_dx, 'The mean value of x(CatSim)-x(PhoSim) in pixels weighted by number of photons'),
+                'weighted_dy': (self.weighted_dy, 'The mean value of y(CatSim)-y(PhoSim) in pixels weighted by number of photons'),
+                'median_dx': (self.median_dx, 'The median value of x(CatSim)-x(PhoSim) in pixels'),
+                'median_dy': (self.median_dy, 'The median value of y(CatSim)-y(PhoSim) in pixels'),
+                'd_just_catsim': (self.min_d_just_catsim,
+                                  'The minimum distance in pixels from the center of the chip to the sources in the InstanceCatalog '
+                                  'that do not appear in the centroid file')}
 
     def create_tex_file(self, out_dir, clean=False):
         """

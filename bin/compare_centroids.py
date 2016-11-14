@@ -26,3 +26,4 @@ if __name__ == "__main__":
 
     validator = CentroidValidator(args.cat, args.cent)
     validator.create_tex_file(args.out_dir, args.clean)
+    print validator.get_scalars()
