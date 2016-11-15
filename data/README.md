@@ -25,3 +25,13 @@ FITS binary table of mock lensed quasars based on [`twinkles_tdc_rung4.fits`](tw
 
 ### res.dat  written using
 ./generatePhosimInput.py --outfile ../data/res.dat --seddir tmp  --opsimDB minion_1016_sqlite.db --OpSimDBDir ~/data/LSST/OpSimData 230
+### [`phosimCatalog.dat`](phosimCatalog.dat)
+
+A phosim instance catalog written out by using the `./bin/generatePhosimInput.py script in the following way (from the ./bin directory)
+```
+./generatePhosimInput.py --outfile ../data/res.dat --seddir tmp  --opsimDB minion_1016_sqlite.db --OpSimDBDir ~/data/LSST/OpSimData 230
+```
+(the file `data/res.dat` was copied to `data/phpsimCatalog.dat`)
+
+### [`spectra_files.tgz`](spectra_files.tgz)
+The spectra files that were written out were then zipped into a tar archive and moved to this this file
