@@ -57,7 +57,7 @@ PHOSIMOUT = os.path.join(os.environ['TW_ROOT'],'phosim_output')
 
 ## phoSim (persistent) scratch space directory path
 ##    SLAC:  /lustre/ki/pfs/fermi_scratch/lsst/<task>/<subtask>/<stream>/<substream>
-PHOSIMSCRATCH = os.path.join('/lustre/ki/pfs/fermi_scratch/lsst',os.environ['PIPELINE_TASKPATH'].replace('.','/'),os.environ['PIPELINE_STREAMPATH'].replace('.','/'))
+PHOSIMPSCRATCH = os.path.join('/lustre/ki/pfs/fermi_scratch/lsst',os.environ['PIPELINE_TASKPATH'].replace('.','/'),os.environ['PIPELINE_STREAMPATH'].replace('.','/'))
 
 PHOSIMCLEANUP = True
 

@@ -4,26 +4,35 @@
 ##
 
 import os,sys,shutil
+import tarfile
 
 ## Insert task config area for python modules (insert as 2nd element in sys.path)
 sys.path.insert(1,os.getenv('TW_CONFIGDIR'))
 from config import *
+import scratch
 
 
 print '\n\nWelcome to phoSimPrep.py\n========================\n'
 
 ## Generate instanceCatalog on-the-fly
 
-## Create scratch directory in (persistent) /lustre, if necessary.
+## Create persistent scratch directory in /lustre, if necessary.
 ## File path = PHOSIMPSCRATCH (defined in config.py)
-
 if not os.path.exists(PHOSIMPSCRATCH): os.makedirs(PHOSIMPSCRATCH)
 
+
+## Create true scratch directory in /scratch
+scr = scratch.scratch()
+SCRATCH = scr.getScratch()
+scr.statScratch()
+
+    
 ## generate instance catalog and SED files for phoSim
 
 #  generatePhosimInput.py obsHistID [options]
 destIC = os.path.join(PHOSIMPSCRATCH,'instanceCatalog.txt')
-destSEDdir = PHOSIMPSCRATCH
+#destSEDdir = PHOSIMPSCRATCH
+destSEDdir = SCRATCH
 obsHistID = os.getenv('TW_OBSHISTID')
 cacheDir = TW_CACHEDIR
 opssimDir = TW_OPSSIMDIR
@@ -57,9 +66,28 @@ if rc > 255:
     print 'Awkward return code, redefining rc = ',rc
     pass
 
+
+## tar up the sprinkled SED files
+print 'tar up the sprinkled SED files and store in /lustre'
+workingdir = os.getcwd()
+os.chdir(destSEDdir)       ## Move to directory containing SED dir to feed tar relative paths
+
+seddir = 'spectra_files'   ## This is where the sprinkled SEDs are generated
+tarinput = seddir
+tarname = seddir+'.tar.gz'
+taroutput = os.path.join(PHOSIMPSCRATCH,tarname)  ## output goes into /lustre
+
+tarobj = tarfile.open(name=taroutput,mode='w:gz')
+tarobj.add(tarinput,recursive=True)  ## add entire directory tree of SEDs to tar archive
+tarobj.close()
+
+os.chdir(workingdir)
+
+
+
 ## Protect scratch directory: rwxr-sr-t
 cmd = 'chmod -R 3755 '+PHOSIMPSCRATCH
-print 'Protect scratch directory\n',cmd
+print 'Protect scratch directory and its contents\n',cmd
 
 rc2 = os.system(cmd)
 if rc2 != 0:
@@ -70,9 +98,14 @@ pass
 
 
 ## Confirm working directory contents
-cmd = 'ls -l '+destSEDdir
+cmd = 'ls -l '+PHOSIMPSCRATCH
 print cmd
 os.system(cmd)
+
+
+## Clean up the local scratch space
+scr.cleanScratch()
+scr.statScratch()
 
 ## Run a trial phoSim to ensure all inputs+code respond reasonably?
 ##      (not yet, if ever)

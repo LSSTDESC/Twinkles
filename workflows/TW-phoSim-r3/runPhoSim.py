@@ -68,11 +68,12 @@ prep = setupPhoSimInput(icFile)   ###########
 #prep.inputRoot = PHOSIMIN
 prep.inputRoot = PHOSIMPSCRATCH
 prep.phosimInstDir = PHOSIMINST
-prep.SEDlib = PHOSIMSEDS
-prep.scratch = PHOSIMPSCRATCH
-prep.refCF = PHOSIMCF   ## cmd file template may require editing
+prep.SEDlib = PHOSIMSEDS   ## production SEDs
+prep.sedFile = 'spectra_files.tar.gz' ## sprinkled SEDs
+
+prep.refCF = PHOSIMCF   ## cmd file template (may require editing)
 prep.persistentScratch = True  ## dynamically generated instance catalog + SEDs
-prep.cleanupFlag = False  ## DEBUG - keep contents of scratch (/lustre)
+prep.cleanupFlag = False  ## DEBUG - keep contents of scratch
 
 (work1,ic,seds,cFile) = prep.run()
 
