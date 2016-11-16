@@ -1,0 +1,152 @@
+%
+% ======================================================================
+\RequirePackage{docswitch}
+% \flag is set by the user, through the makefile:
+%    make note
+%    make apj
+% etc.
+\setjournal{\flag}
+
+\documentclass[\docopts]{\docclass}
+
+% You could also define the document class directly
+%\documentclass[]{emulateapj}
+
+\input{macros}
+
+\usepackage{graphicx}
+\graphicspath{{./}{./figures/}}
+\bibliographystyle{apj}
+
+%
+% ======================================================================
+
+\begin{document}
+
+\title{ Twinkles: Science Goals, Survey Simulation and Analysis Design }
+
+\maketitlepre
+
+\begin{abstract}
+
+A necessary condition for accurate cosmography is a demonstration that input parameters can be recovered in a ``round trip'' test on plausibly realistic mock data.
+Twinkles is a project to partially fulfill this condition for the two LSST DESC time domain probes, type Ia supernovae and strong lens time delays.
+It involves simulating a 10-year multi-filter LSST sky survey of a tiny (100 square arcmin) patch of sky that has been ``sprinkled'' with an over-abundance of supernovae and strong lenses, and then processing the images using LSST DM stack software and analyzing the resulting catalogs.
+The project has two phases, corresponding to the DC1 and DC2 LSST DESC data challenge eras, enabling a staged progression in dataset realism and analysis sophistication.
+Twinkles 1 focuses on the problem of accurate light curve extraction in annual release (Level 2) data.
+Its small dataset size but end-to-end nature make Twinkles useful as a ``pathfinder'' for other LSST DESC data challenge datasets.
+
+\end{abstract}
+
+% Keywords are ignored in the LSST DESC Note style:
+\dockeys{latex: templates, papers: awesome}
+
+\maketitlepost
+
+% ----------------------------------------------------------------------
+%
+
+\section{Introduction}
+\label{sec:intro}
+
+Brief notes on end-to-end test philosophy. Where to publish and why.
+
+Brief notes on infrastructure pathfinding.
+
+Broad science goals for each DC era. Focus on Twinkles 1, with notes on Twinkles 2.
+
+Scope and layout of this note.
+
+
+% ----------------------------------------------------------------------
+
+\section{Twinkles: a Tiny Simulated LSST Sky Survey}
+\label{sec:concepts}
+
+Twinkles concepts, including Twinkles 1 and 2 differences.
+
+
+% ----------------------------------------------------------------------
+
+\section{Science Analysis}
+\label{sec:science}
+
+Twinkles 1 science analysis plan, following from goals.
+
+Brief discussion of Twinkles 2.
+
+
+
+
+% ----------------------------------------------------------------------
+
+\section{Survey Specifications}
+\label{sec:survey}
+
+
+% ----------------------------------------------------------------------
+
+\section{Pipeline Development}
+\label{sec:pipeline}
+
+Twinkles 1 R\&D plan that we followed, so that people understand what Run 1.1 is etc).
+
+
+
+Science-specific Tools:
+
+SN and SL Sprinklers.
+
+Monitor.
+
+
+
+
+General-purpose Infrastructure:
+
+Introductions to: PhoSim pipeline, DM Level 2 pipeline, Pserv.
+
+
+% \begin{figure}
+% \includegraphics[width=0.9\columnwidth]{example.png}
+% \caption{An example figure: the LSST DESC logo, copied from \code{.logos/desc-logo.png} into \code{figures/example.png}. \label{fig:example}}
+% \end{figure}
+
+
+% ----------------------------------------------------------------------
+
+\section{Discussion}
+\label{sec:discussion}
+
+
+% ----------------------------------------------------------------------
+
+\section{Conclusions}
+\label{sec:conclusions}
+
+Here's a summary of what we just reported.
+
+We can draw the following well-organized and neatly-formatted conclusions:
+\begin{itemize}
+  \item This is important.
+  \item We can measure some number with some precision.
+  \item This has some implications.
+\end{itemize}
+
+Here are some parting thoughts.
+
+
+% ----------------------------------------------------------------------
+
+\subsection*{Acknowledgments}
+
+\input{acknowledgments}
+
+%{\it Facilities:} \facility{LSST}
+
+% Include both collaboration papers and external citations:
+\bibliography{lsstdesc,main}
+
+\end{document}
+% ======================================================================
+%

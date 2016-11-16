@@ -1,0 +1,16 @@
+### Emacs
+\#*#
+\.#*
+*~
+
+### Latex
+*.fls
+*.aux
+*.log
+*.fdb_*
+*.out
+*.blg
+*.bbl
+*Notes.bib
+main.pdf
+main.tar.gz
