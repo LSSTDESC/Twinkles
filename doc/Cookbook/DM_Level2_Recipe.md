@@ -1,4 +1,4 @@
-## Recipe: Emulating the DM Level 2 Pipeline
+# Recipe: Emulating the DM Level 2 Pipeline
 
 _Simon Krughoff_
 
