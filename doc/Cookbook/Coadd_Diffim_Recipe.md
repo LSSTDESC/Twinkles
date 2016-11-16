@@ -1,13 +1,15 @@
-# How to create `DIASources` using PSF Homogenized coadds
+# Recipe: How to create `DIASources` using PSF Homogenized coadds
 
-### Basic sequence of operations
-* produce calibrated exposures
-* produce the skyMap
-* generate a PSF matched coadd
-* produce the DIA sources using image differencing
+The basic sequence of operations is as follows:
 
-This cookbook has a few caveats.
-* This uses the initial 40 visit dataset produced by Tom and Tony.  This means the values of some input variables may not be representative.  For example, the seeing in these images seems quite a bit worse than we expect on average.
+* Produce calibrated exposures
+* Produce the skyMap
+* Generate a PSF matched coadd
+* Produce the DIA sources using image differencing
+
+This cookbook recipe has a few caveats:
+
+* We are currently developing against the initial 40 visit Run 3 test dataset.  This means the values of some input variables may not be representative.  For example, the seeing in these first 40 images seems quite a bit worse than we expect on average.
 * As written, this would duplicate steps in other cookbooks (e.g. `processEimage.py` in the L2 cookbook).  This is primarily because I found that I couldn't use the `calexp`s produced in the default way.  This probably means we'll want to switch to this new way of producing calibrated exposures.
 * I have only processed the r band so far.  Doing the other bands may turn up further issues.
 
