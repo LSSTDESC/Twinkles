@@ -50,22 +50,21 @@ Its small dataset size but end-to-end nature make Twinkles useful as a ``pathfin
 \section{Introduction}
 \label{sec:intro}
 
-Brief notes on end-to-end test philosophy. Where to publish and why.
+Why do end-to-end tests on simulated data?
+Much of astronomy involves relative measurements, where absolute calibration can be done without. Cosmology is different: we are interested in global parameters, by definition. Provides guidance to recovery from systematic errors (both astrophysical and introduced by the data release processing). Errors can include model biases (eg wrong PSF) and uncertainty mis-characterization. Anticipate the need for a flexible model to describe the flux measurement ``data''. (Explain quotes).
+
+Point source fluxes as parameters of model, to be inferred from catalog data via an assumed likelihood function. This likelihood will contain a number of unknown ``nuisance'' hyperparameters that govern its form, as well as physics hyper-parameters that govern the forms of the signals that are assumed to be present. Accurate inference of physics parameters requires accurate inference of the nuisance parameters, which in turn means that 1) we need to assume a sufficiently flexible likelihood function that we can enable ourselves to learn its nuisance parameters during the inference, and 2) we need to assign accurate prior PDFs on the  hyper-parameters of our assumed likelihood.
+
+The design of our likelihood function can be informed by the study of plausibly realistic mock data -- and the priors on any likelihood hyperparameters can be learned from their analysis, given uninformative priors: the posterior PDF for the error model parameters can be used as the prior PDF for the same error model parameters when we come to analyze the real data.  Such a procedure is often followed by the weak lensing community, for example: Jee et al GREAT3.
+Advances since GREAT3 have involved internal calibration (``metacal''), validated on simulated data -- the development of this algorithm was carried out against the simulated data.
+
+Broad science goals for each DC era. Twinkles 1: error model for baseline time domain cosmography. Enables simulations for SN chapter of Observing Strategy assessment, and future time delay challenges. Drive development of Level 3 DESC science analysis.
+
+Focus on Twinkles 1, with notes on Twinkles 2.
 
 Brief notes on infrastructure pathfinding.
 
-Broad science goals for each DC era. Focus on Twinkles 1, with notes on Twinkles 2.
-
 Scope and layout of this note.
-
-
-% ----------------------------------------------------------------------
-
-\section{Twinkles: a Tiny Simulated LSST Sky Survey}
-\label{sec:concepts}
-
-Twinkles concepts, including Twinkles 1 and 2 differences.
-
 
 % ----------------------------------------------------------------------
 
@@ -77,12 +76,14 @@ Twinkles 1 science analysis plan, following from goals.
 Brief discussion of Twinkles 2.
 
 
-
-
 % ----------------------------------------------------------------------
 
-\section{Survey Specifications}
-\label{sec:survey}
+\section{Twinkles: a Tiny Simulated LSST Sky Survey}
+\label{sec:concepts}
+
+Twinkles concepts, including Twinkles 1 and 2 differences.
+
+Survey specifications.
 
 
 % ----------------------------------------------------------------------
@@ -90,22 +91,14 @@ Brief discussion of Twinkles 2.
 \section{Pipeline Development}
 \label{sec:pipeline}
 
+Overview of end-to-end pipeline:
+
+Workflow diagram. Simulation pipeline (including SN and SL Sprinklers).
+DM Level 2 processing pipeline (including DIAObject creation and forced photometry).
+Catalog storage with Pserv.
+Science analysis (including light curve extraction with the Monitor).
+
 Twinkles 1 R\&D plan that we followed, so that people understand what Run 1.1 is etc).
-
-
-
-Science-specific Tools:
-
-SN and SL Sprinklers.
-
-Monitor.
-
-
-
-
-General-purpose Infrastructure:
-
-Introductions to: PhoSim pipeline, DM Level 2 pipeline, Pserv.
 
 
 % \begin{figure}
