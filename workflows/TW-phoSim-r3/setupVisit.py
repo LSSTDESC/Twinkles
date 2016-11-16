@@ -200,7 +200,7 @@ if rc <> 0 :
 ## Create working directory structure for this invocation of phoSim
 
 ### Check if directory already exists from previous execution and, if not, create it.
-## Directory structure: $TW_ROOT/output/<stream>/{work,output}
+## Directory structure: $TW_ROOT/phosim_output/<stream>/{work,output}
 outDir = os.path.join(os.environ['TW_ROOT'],phoSimOutputRoot,os.environ['TW_SIXDIGSTREAM'])
 log.info('PhoSim output directory = \n\t%s',outDir)
 

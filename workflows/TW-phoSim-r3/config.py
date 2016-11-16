@@ -57,13 +57,13 @@ PHOSIMOUT = os.path.join(os.environ['TW_ROOT'],'phosim_output')
 
 ## phoSim (persistent) scratch space directory path
 ##    SLAC:  /lustre/ki/pfs/fermi_scratch/lsst/<task>/<subtask>/<stream>/<substream>
-PHOSIMSCRATCH = os.path.join('/lustre/ki/pfs/fermi_scratch/lsst',os.environ['PIPELINE_TASKPATH'].replace('.','/'),os.environ['PIPELINE_STREAMPATH'].replace('.','/'))
+PHOSIMPSCRATCH = os.path.join('/lustre/ki/pfs/fermi_scratch/lsst',os.environ['PIPELINE_TASKPATH'].replace('.','/'),os.environ['PIPELINE_STREAMPATH'].replace('.','/'))
 
 PHOSIMCLEANUP = True
 
 ## SED files (from DM stack)
-#SEDLIB = '/nfs/farm/g/desc/u1/LSST_Stack_2016-02-23/lsstsw/stack/Linux64/sims_sed_library/2016.01.26'
-SEDLIB = '/lustre/ki/pfs/fermi_scratch/lsst/phosim/sims_sed_library/2016.01.26'
+PHOSIMSEDS = '/lustre/ki/pfs/fermi_scratch/lsst/phosim/sims_sed_library'
+
 #SEDLIB = '/nfs/farm/g/lsst/u1/software/redhat6-x86_64-64bit-gcc44/DMstack/v12_0/opt/lsst/sims_sed_library'
 
 ## Twinkles UW-FATBOY cache location
@@ -73,6 +73,6 @@ TW_OPSSIMDIR = '/nfs/farm/g/desc/u1/data/Twinkles'
 ## Location of Twinkles git project and binary for instanceCatalog generation
 #TWINKLES_ROOT = '/nfs/farm/g/desc/u1/software/redhat6-x86_64-64bit-devtoolset-3/Twinkles/...........'
 #TWINKLES_ROOT = os.path.join(os.getenv('TW_ROOT'),'Twinkles.master')
-TWINKLES_ROOT = '/nfs/farm/g/desc/u1/software/redhat6-x86_64-64bit-devtoolset-3/Twinkles/Run3-phoSim-v1'
+TWINKLES_ROOT = '/nfs/farm/g/desc/u1/software/redhat6-x86_64-64bit-devtoolset-3/Twinkles/prod'
 TWINKLES_BIN = TWINKLES_ROOT+'/bin'
 

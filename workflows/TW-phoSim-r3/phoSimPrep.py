@@ -4,44 +4,35 @@
 ##
 
 import os,sys,shutil
+import tarfile
 
 ## Insert task config area for python modules (insert as 2nd element in sys.path)
 sys.path.insert(1,os.getenv('TW_CONFIGDIR'))
 from config import *
+import scratch
 
 
 print '\n\nWelcome to phoSimPrep.py\n========================\n'
 
 ## Generate instanceCatalog on-the-fly
 
-## Create scratch directory in (persistent) /lustre, if necessary.
-## File path = PHOSIMSCRATCH (defined in config.py)
+## Create persistent scratch directory in /lustre, if necessary.
+## File path = PHOSIMPSCRATCH (defined in config.py)
+if not os.path.exists(PHOSIMPSCRATCH): os.makedirs(PHOSIMPSCRATCH)
 
-if not os.path.exists(PHOSIMSCRATCH): os.makedirs(PHOSIMSCRATCH)
 
-## ### Until actual code is available, simply copy/link necessary files
-## ### into pre-agreed scratch space.
-## base = 'phosim_input_200'
+## Create true scratch directory in /scratch
+scr = scratch.scratch()
+SCRATCH = scr.getScratch()
+scr.statScratch()
 
-## src = os.path.join(PHOSIMIN,base+'.txt.gz')
-## dst = os.path.join(PHOSIMSCRATCH,'instanceCatalog.txt.gz')
-## print 'Instance Catalog:'
-## print 'src = ',src
-## print 'dst = ',dst
-## shutil.copy2(src,dst)
-
-## src = os.path.join(PHOSIMIN,base+'.tar.gz')
-## dst = os.path.join(PHOSIMSCRATCH,'SEDs.tar.gz')
-## print 'SEDs:'
-## print 'src = ',src
-## print 'dst = ',dst
-## shutil.copy2(src,dst)
-
+    
 ## generate instance catalog and SED files for phoSim
 
 #  generatePhosimInput.py obsHistID [options]
-destIC = os.path.join(PHOSIMSCRATCH,'instanceCatalog.txt')
-destSEDdir = PHOSIMSCRATCH
+destIC = os.path.join(PHOSIMPSCRATCH,'instanceCatalog.txt')
+#destSEDdir = PHOSIMPSCRATCH
+destSEDdir = SCRATCH
 obsHistID = os.getenv('TW_OBSHISTID')
 cacheDir = TW_CACHEDIR
 opssimDir = TW_OPSSIMDIR
@@ -70,31 +61,85 @@ sys.stdout.flush()
 rc = os.system(cmd)
 sys.stdout.flush()
 print 'rc = ',rc
-if rc > 255: rc = 1
+if rc > 255:
+    rc = 1
+    print 'Awkward return code, redefining rc = ',rc
+    pass
+
+
+## tar up the sprinkled SED files
+print 'tar up the sprinkled SED files and store in /lustre'
+workingdir = os.getcwd()
+os.chdir(destSEDdir)       ## Move to directory containing SED dir to feed tar relative paths
+
+seddir = 'spectra_files'   ## This is where the sprinkled SEDs are generated
+tarinput = seddir
+tarname = seddir+'.tar.gz'
+taroutput = os.path.join(PHOSIMPSCRATCH,tarname)  ## output goes into /lustre
+
+tarobj = tarfile.open(name=taroutput,mode='w:gz')
+tarobj.add(tarinput,recursive=True)  ## add entire directory tree of SEDs to tar archive
+tarobj.close()
+
+os.chdir(workingdir)
+
+
 
 ## Protect scratch directory: rwxr-sr-t
-cmd = 'chmod -R 3755 '+PHOSIMSCRATCH
-print 'Protect scratch directory\n',cmd
+cmd = 'chmod -R 3755 '+PHOSIMPSCRATCH
+print 'Protect scratch directory and its contents\n',cmd
 
-rc = os.system(cmd)
-if rc != 0:
+rc2 = os.system(cmd)
+if rc2 != 0:
     print "%ERROR: unable to execute command, ",cmd
     sys.exit(1)
     pass
 pass
 
 
-
-
-## Confirm working directory
-cmd = 'ls -l '+destSEDdir
+## Confirm working directory contents
+cmd = 'ls -l '+PHOSIMPSCRATCH
 print cmd
 os.system(cmd)
+
+
+## Clean up the local scratch space
+scr.cleanScratch()
+scr.statScratch()
 
 ## Run a trial phoSim to ensure all inputs+code respond reasonably?
 ##      (not yet, if ever)
 
 sys.exit(rc)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

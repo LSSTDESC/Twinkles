@@ -21,13 +21,17 @@ if [ $rc1 != 0 ]; then
 fi
 
 echo "Setup Twinkles environment"
-cmd=" $TW_CONFIGDIR/helpers/TWsetup.sh"
-## source /nfs/farm/g/desc/u1/twinkles/setup.sh      ##### PRODUCTION
-##source $TW_ROOT/newICgen/setup.sh                 ##### DEVELOPMENT/TESTING/DEBUGGING
+cmd="/nfs/farm/g/desc/u1/software/redhat6-x86_64-64bit-devtoolset-3/setup.sh"
+##cmd=" $TW_CONFIGDIR/helpers/TWsetup.sh"
+##source /nfs/farm/g/desc/u1/twinkles/setup.sh
 echo "source "$cmd
-source $cmd                 ##### DEVELOPMENT/TESTING/DEBUGGING
-
-echo "Return from setup, rc = " $?
+source $cmd
+rc2=$?
+echo "Return from setup, rc = " $rc2
+if [ $rc2 != 0 ]; then
+    echo "ERROR: failed to setup Twinkles environment"
+    exit $rc2
+fi
 
 ## Redefine $HOME to prevent contention of /u/lt/lsstsim
 cp -prv $HOME/.lsst $PWD
