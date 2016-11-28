@@ -3,10 +3,9 @@
 This describes how to run the LSST Image Processing Stack program on two different Twinkles exposures. 
 
 ## Set up the LSST environment
-The first step required is to set up the `lsst` stack on NERSC or a computer where the data can be accessed. For details on how to set up packages in the `lsst` stack, please go to [page](here). For what we need, we will have to set up both the DM stack and the Twinkles software:
+The first step required is to set up the `lsst` stack on NERSC. While the general instructions for installing and setting up the LSST stack are [here](https://pipelines.lsst.io/install/index.html), for what we need here, we will have to specifically set up the DM stack on `Cori` thsi is best done by:
 ```
-setup lsst_apps
-setup twinkles
+source /global/common/cori/contrib/lsst/lsstDM/setupStack-12_1-Run3.1.sh
 ```
 
 The image differencing task is performed by the [`lsst/pipe_tasks/bin.src/imageDifference.py`](https://github.com/lsst/pipe_tasks/blob/master/bin.src/imageDifference.py) which, in turn, runs the [`ImageDiffferenceTask`](https://github.com/lsst/pipe_tasks/blob/master/python/lsst/pipe/tasks/imageDifference.py#L48). Generally speaking, this is a particular example of a `Pipe_Task` and therefore follows the syntax of the [`pipe-base` documentation](https://lsst-web.ncsa.illinois.edu/doxygen/x_masterDoxyDoc/pipe_base.html). In particular, the script takes as an argument the name of a data repository, obtained as the output of the previous stages of image processing. The data repository on `Cori` is
