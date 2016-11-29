@@ -7,11 +7,9 @@ install:
   - export PATH="$HOME/miniconda/bin:$PATH"
   - source eups-setups.sh
   - pip install coveralls
-  - setup lsst_sims
-  - git clone https://github.com/drphilmarshall/OM10.git ../OM10
-  - export PYTHONPATH=../OM10:${PYTHONPATH}
-  - eups declare -r . Twinkles -t current
-  - setup Twinkles
+  - pip install om10
+  - eups declare -r . twinkles -t current
+  - setup twinkles
 
 cache:
   directories:
