@@ -29,7 +29,7 @@ before_script:
 
 script:
   - nosetests -s --with-coverage --cover-package=desc.twinkles
-  - pylint -r n --py3k `find . -name \*.py -print | grep -v workflows`
+  - pylint -r n --py3k `find . -name \*.py -print | grep -v workflows | grep -v configScripts`
 
 after_success:
   - coveralls
