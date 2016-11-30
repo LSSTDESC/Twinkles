@@ -131,7 +131,10 @@ class OpSimOrdering(object):
     @property
     def filteredOpSim(self):
         """
-        - drop records where the phoSim Runtime estimate exceeds threshold
+        dataframe dropping records from the unique set `self.uniqueOpSimRecords`
+        where the phoSim Runtime estimates exceeds threshold. If 
+        `self.ignorePredictedTimes` is set to `True`, then this simply returns
+        `self.uniqueOpSimRecords`
         """
         thresh = self.timeMax
         if self.ignorePredictedTimes:
@@ -163,7 +166,7 @@ class OpSimOrdering(object):
 
         missing = self.uniqueOpSimRecords.query('obsHistID not in @filteredObsHistID')
         if len(missing) > 0:
-            return missing[['obsHistID', 'predictedPhoSimTimes', 'filter']]
+            return missing[['obsHistID', 'expMJD', 'predictedPhoSimTimes', 'filter', 'propID']]
         else:
             return None
 
@@ -179,38 +182,82 @@ class OpSimOrdering(object):
         idx = gdf.propID.obsHistID.values 
         df = self.filteredOpSim.set_index('obsHistID').ix[idx].sort_values(by='expMJD')
         return df.reset_index()
-     
+    
     @property
     def Twinkles_3p1(self):
         """
-        For visits selected in Twinkles_WFD, pick the visit in each unique
+        for visits selected in Twinkles_WFD, pick the visit in each unique
         combination with the lowest value of the `predictedPhoSimTimes`
         """
         groupDistinct = self.Twinkles_WFD.groupby(self.distinctGroup)
+
+        # The variable we are minimizing by
         discVar = self.minimizeBy
         gdf = groupDistinct[self.opSimCols].agg(dict(discVar=min))
         idx = gdf.discVar.obsHistID.values 
         df = self.filteredOpSim.set_index('obsHistID').ix[idx]
         return df.sort_values(by='expMJD', inplace=False).reset_index()
-    
+
+    @property
+    def Twinkles_3p1b(self):
+        """
+        dataframe containing those WFD visits that are part of `Twinkles_WFD` and not
+        covered in `self.Twinkles_3p1` (for example on nights when there are
+        multiple WFD visits in the same filter)
+        """
+        doneObsHist = tuple(self.Twinkles_3p1.obsHistID.values.tolist())
+        query = 'obsHistID not in @doneObsHist and propID == 54'
+        df = self.filteredOpSim.query(query).sort_values(by='expMJD',
+                                                         inplace=False)
+        return df
+                
     @property
     def Twinkles_3p2(self):
         """
-        dr5 Observations that are in `filteredOpSim` and have not been done in 
+        dr5 Observations that are in `filteredOpSim` and have not been done in
         Twinkles_3p1
         """
-        doneObsHist = tuple(self.Twinkles_3p1.obsHistID.values.tolist())
-        return self.filteredOpSim.query('year == 4 and obsHistID not in @doneObsHist').sort_values(by='expMJD',
-                                                                                                   inplace=False)
+        obs_1 = self.Twinkles_3p1.obsHistID.values.tolist()
+        obs_1b = self.Twinkles_3p1b.obsHistID.values.tolist()
+        doneObsHist = tuple(obs_1 + obs_1b)
+        query = 'year == 4 and obsHistID not in @doneObsHist'
+        return self.filteredOpSim.query(query).sort_values(by='expMJD',
+                                                           inplace=False)
+
     @property
     def Twinkles_3p3(self):
+        """
+        dataFrame of visit obsHistID for Run 3p3. These are DDF visits
+        that have `predictedPhoSimRunTime` smaller than `maxtime`, and
+        were not covered in either the set of unique visits covered in
+        Run 3.1 or the visits in a particular year covered as part of
+        3.2 
+        """
         obs_1 = self.Twinkles_3p1.obsHistID.values.tolist()
+        obs_1b = self.Twinkles_3p1b.obsHistID.values.tolist()
         obs_2 = self.Twinkles_3p2.obsHistID.values.tolist()
-        obs = tuple(obs_1 + obs_2)
-        return self.filteredOpSim.query('obsHistID not in @obs').sort_values(by='expMJD', inplace=False)
-        
+        obs = tuple(obs_1 + obs_1b + obs_1b + obs_2)
+        query = 'obsHistID not in @obs'
+        return self.filteredOpSim.query(query).sort_values(by='expMJD',
+                                                           inplace=False)
+    @property
+    def Twinkles_3p4(self):
+        """
+        tuple of dataFrames for wfd and ddf visits for visits left out
+        of Run 3p1,2,3 due to high predicted phosim times, orderded by
+        predicted phosim run times.
+        """
+        leftovers = self.obsHistIDsPredictedToTakeTooLong
+        wfdvisits = leftovers.query('propID == 54')
+        wfdvisits.sort_values(by='expMJD', inplace=True)
+        ddfvisits = leftovers.query('propID == 56')
+        ddfvisits.sort_values(by='expMJD', inplace=True)
+        return wfdvisits, ddfvisits
+
+
     @staticmethod
-    def fullOpSimDF(opsimdbpath, query="SELECT * FROM Summary WHERE FieldID == 1427 ORDER BY PROPID"):
+    def fullOpSimDF(opsimdbpath,
+                    query="SELECT * FROM Summary WHERE FieldID == 1427 ORDER BY PROPID"):
         engine = create_engine('sqlite:///' + opsimdbpath)
         pts = pd.read_sql_query(query, engine)
         return pts

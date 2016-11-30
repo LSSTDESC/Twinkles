@@ -12,9 +12,10 @@
 
 import os,sys,shutil
 import argparse
+import scratch
 trace = True
 
-class setupPhoSimInput:
+class setupPhoSimInput(object):
     def __init__(self,icFile=None):
         self.debug = True
         self.projectName = 'LSSTSIM'
@@ -29,9 +30,11 @@ class setupPhoSimInput:
         self.specialSEDdir = 'spectra_files'   ## name of directory to contain custom SEDs
         self.locSpecialSEDs = None  ## full path to (unpacked) custom SED files
 
+        self.scratchObj = scratch.scratch()  ## Create a scratch object
         self.scratch = None             ## high-performance I/O scratch space (if possible)
-#        self.scratches = ['/lustre/ki/pfs/fermi_scratch','/scratch','/tmp']  # list of scratch candidates
-        self.scratches = ['/lustre/ki/pfs/fermi_scratch']  # for TW-run3 insist upon semi-persistent only
+        self.scratches = ['/scratch']   ## list of scratch candidates
+#        self.scratches = ['/lustre/ki/pfs/fermi_scratch','/scratch','/tmp']
+
         self.persistentScratch = False  ## Will the scratch area persist after this task step?
         self.cleanupFlag = True         ## True => erase scratch directory at end of task
 
@@ -46,41 +49,24 @@ class setupPhoSimInput:
         self.nextCP = None  ## which checkpoint will be performed
         self.reqCP = None
         self.archiveWorkDir = None    ## location of checkpoint files
-        
         return
+
+
 
     def getScratch(self):
         ## Set up scratch space
-        if trace: print 'Entering getScratch().'
-        if self.scratch == None:
-            scratchRoot = ''
-            for scratch in self.scratches:
-                if os.path.isdir(scratch):
-                    scratchRoot = scratch
-                    break
-                pass
-
-            if scratchRoot == '':
-                print "Unable to find suitable scratch space."
-                print self.scratches
-                sys.exit(1)
-
-            ## Create scratch directory
-            jobid = 'PID-'+str(os.getpid())
-            if os.environ.get('LSB_JOBID') != None: jobid='LSF-'+os.environ['LSB_JOBID']
-            self.scratch = os.path.join(scratchRoot,self.projectName,str(jobid))
-            print 'defined self.scratch = ',self.scratch
-            os.makedirs(self.scratch)
-            pass
-
-        ## Create 'work' directory in scratch area
+        self.scratch = self.scratchObj.getScratch()
+        self.scratchObj.statScratch()
+        
+        ## Create phoSim 'work' directory in scratch area
         self.locWork = os.path.join(self.scratch,'work')
-        if not os.access(self.locWork,os.W_OK):os.makedirs(self.locWork)
+        if not os.access(self.locWork,os.W_OK):os.makedirs(self.locWork,0o3755)
         return
 
 
+
     def protectScratch(self):
-        ## Protect scratch directory: rwxr-sr-t
+        ## Protect scratch directory and everything in it: rwxr-sr-t
         if trace: print 'Entering protectScratch().'
         cmd = 'chmod -R 3755 '+self.scratch
         print 'Protect scratch directory\n',cmd
@@ -203,6 +189,12 @@ class setupPhoSimInput:
         rc = os.system(cmd)
         if rc != 0: sys.exit(1)
 
+        ## Change SEDs directory permissions
+        cmd = 'chmod -R 3755 '+self.locSEDs
+        print 'cmd = ',cmd
+        rc = os.system(cmd)
+        if rc != 0: sys.exit(1)
+
         ## Add link to special SEDs for just this run
         if self.locSpecialSEDs != None and not os.path.islink(self.locSpecialSEDs):
             print 'Create sym link to custom SED file directory'
@@ -296,7 +288,8 @@ class setupPhoSimInput:
         ## Now obliterate the scratch space
         if self.cleanupFlag:
             print "Cleaning up scratch area"
-            shutil.rmtree(self.scratch)
+            self.scratchObj.cleanScratch()
+            #shutil.rmtree(self.scratch)
         else:
             print "Retaining scratch area"
             pass

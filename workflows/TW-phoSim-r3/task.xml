@@ -4,7 +4,7 @@
           xs:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline 
           http://srs.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
 
-<task name="TW-phoSim-r3" version="1.3" type="LSST">
+<task name="TW-phoSim-r3" version="1.4" type="LSST">
 
       <notation>
                Twinkles run3 phoSim generation

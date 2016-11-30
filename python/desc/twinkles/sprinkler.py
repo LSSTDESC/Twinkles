@@ -122,7 +122,7 @@ class sprinkler():
                     # Randomly choose one the lens systems
                     # (can decide with or without replacement)
                     # Sort first to make sure the same choice is made every time
-                    candidates = candidates[np.argsort(candidates['twinklesID'])]
+                    candidates = candidates[np.argsort(candidates['twinklesId'])]
                     newlens = np.random.choice(candidates)
 
                     # Append the lens galaxy

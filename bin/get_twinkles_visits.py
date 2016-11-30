@@ -7,23 +7,23 @@ from __future__ import absolute_import, print_function
 import os
 import argparse
 import pandas as pd
-from desc.twinkles import get_twinkles_visits
+#from desc.twinkles import get_twinkles_visits
 from desc.twinkles import OpSimOrdering
 from lsst.utils import getPackageDir
 
 parser = argparse.ArgumentParser(description="Write an ascii file of visits derived from an OpSim db file given a fieldID")
 parser.add_argument('opsimDB', help='OpSim database sqlite file')
 parser.add_argument('--fieldID', type=int, default=1427,
-                    help='ID number of the desired field')
-parser.add_argument('--outfile', type=str, default=None, help='output file')
+                    help='ID number of the desired field, defaults to 1427')
+parser.add_argument('--outfile', type=str, default=None, help='output file, defaults to twinkes_visits_fieldID_1427.txt')
 parser.add_argument('--orderObsHistID', type=bool, default=True,
-                    help='order obsHistIDs as decided for Twinkles 3')
+                    help='order obsHistIDs as decided for Twinkles 3, defaults to True')
 parser.add_argument('--RF_pickle_file', type=str, default=None,
                     help='absolute path for a pickle of a RandomForest Predictor of PhoSim Run times, defaults to None which effectively sets the variable to Twinkles/data/RF_pickle.p')
 parser.add_argument('--maxPredTime', type=float, default=100.0,
                     help='max predicted phosim run time for the opsim record'
                     ' in hours beyond which the record index obsHistID will '
-                    'not be included')
+                    'not be included, defaults to 100.')
 args = parser.parse_args()
 
 # output filename is common
@@ -45,11 +45,23 @@ if args.orderObsHistID:
         output.write('# Begin Section Twinkles 3.1\n')
     ops.Twinkles_3p1.obsHistID.to_csv(args.outfile, index=False, mode='a')
     with open(args.outfile, 'a') as output:
+        output.write('# Begin Section Twinkles 3.1b\n')
+    ops.Twinkles_3p1b.obsHistID.to_csv(args.outfile, index=False, mode='a')
+    with open(args.outfile, 'a') as output:
         output.write('# Begin Section Twinkles 3.2\n')
     ops.Twinkles_3p2.obsHistID.to_csv(args.outfile, index=False, mode='a')
     with open(args.outfile, 'a') as output:
         output.write('# Begin Section Twinkles 3.3\n')
     ops.Twinkles_3p3.obsHistID.to_csv(args.outfile, index=False, mode='a')
+
+    Obs_3p4a, Obs_3p4b = ops.Twinkles_3p4
+    with open(args.outfile, 'a') as output:
+        output.write('# Begin Section Twinkles 3.4 WFD\n')
+    Obs_3p4a['obsHistID'].to_csv(args.outfile, index=False, mode='a')
+    with open(args.outfile, 'a') as output:
+        output.write('# Begin Section Twinkles 3.4 DDF\n')
+    Obs_3p4b['obsHistID'].to_csv(args.outfile, index=False, mode='a')
+
     print("Left out {0} visits due to"
           "the time limit of {1}".format(len(ops.obsHistIDsPredictedToTakeTooLong),
                                          args.maxPredTime))
