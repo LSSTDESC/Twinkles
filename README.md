@@ -19,7 +19,7 @@ plans and progress to date.
 
 ### Latest News
 
-[![Build Status](https://travis-ci.org/DarkEnergyScienceCollaboration/Twinkles.svg?branch=master)](https://travis-ci.org/DarkEnergyScienceCollaboration/Twinkles) [![Coverage Status](https://coveralls.io/repos/github/DarkEnergyScienceCollaboration/Twinkles/badge.svg?branch=master)](https://coveralls.io/github/DarkEnergyScienceCollaboration/Twinkles?branch=master)
+[![Build Status](https://travis-ci.org/LSSTDESC/Twinkles.svg?branch=master)](https://travis-ci.org/LSSTDESC/Twinkles) [![Coverage Status](https://coveralls.io/repos/github/LSSTDESC/Twinkles/badge.svg?branch=master)](https://coveralls.io/github/LSSTDESC/Twinkles?branch=master)
 
 * We have a [public website](https://darkenergysciencecollaboration.github.io/Twinkles/), whose main function is to host the **["Twinkles Weeklies"](https://darkenergysciencecollaboration.github.io/Twinkles/weekly/index.html)**. These are brief summaries from our weekly meetings, with links to the progress that is reported there.
 * Check out **[our most recently updated GitHub issues](https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)** to see what we're working on at the moment. You can filter our [issue list](https://github.com/DarkEnergyScienceCollaboration/Twinkles) in various ways to see what we're up to more generally.
