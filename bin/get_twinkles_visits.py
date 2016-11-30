@@ -3,7 +3,7 @@
 Command line tool to extract obsHistIDs (visit numbers) from an OpSim db
 file given a fieldID.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import os
 import argparse
 import pandas as pd
