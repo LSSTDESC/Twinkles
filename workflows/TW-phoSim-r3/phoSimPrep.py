@@ -67,43 +67,43 @@ if rc > 255:
     pass
 
 
-## tar up the sprinkled SED files
-print 'tar up the sprinkled SED files and store in /lustre'
-workingdir = os.getcwd()
-os.chdir(destSEDdir)       ## Move to directory containing SED dir to feed tar relative paths
+## tar up the sprinkled SED files for future use
+if rc == 0:
+    print 'tar up the sprinkled SED files and store in /lustre'
+    workingdir = os.getcwd()
+    os.chdir(destSEDdir)       ## Move to directory containing SED dir to feed tar relative paths
 
-seddir = 'spectra_files'   ## This is where the sprinkled SEDs are generated
-tarinput = seddir
-tarname = seddir+'.tar.gz'
-taroutput = os.path.join(PHOSIMPSCRATCH,tarname)  ## output goes into /lustre
+    seddir = 'spectra_files'   ## This is where the sprinkled SEDs are generated
+    tarinput = seddir
+    tarname = seddir+'.tar.gz'
+    taroutput = os.path.join(PHOSIMPSCRATCH,tarname)  ## output goes into /lustre
 
-tarobj = tarfile.open(name=taroutput,mode='w:gz')
-tarobj.add(tarinput,recursive=True)  ## add entire directory tree of SEDs to tar archive
-tarobj.close()
+    tarobj = tarfile.open(name=taroutput,mode='w:gz')
+    tarobj.add(tarinput,recursive=True)  ## add entire directory tree of SEDs to tar archive
+    tarobj.close()
 
-os.chdir(workingdir)
+    os.chdir(workingdir)
 
+    ## Protect scratch directory: rwxr-sr-t
+    cmd = 'chmod -R 3755 '+PHOSIMPSCRATCH
+    print 'Protect scratch directory and its contents\n',cmd
 
+    rc2 = os.system(cmd)
+    if rc2 != 0:
+        print "%ERROR: unable to execute command, ",cmd
+        sys.exit(1)
+        pass
 
-## Protect scratch directory: rwxr-sr-t
-cmd = 'chmod -R 3755 '+PHOSIMPSCRATCH
-print 'Protect scratch directory and its contents\n',cmd
+    ## Confirm working directory contents
+    cmd = 'ls -l '+PHOSIMPSCRATCH
+    print cmd
+    os.system(cmd)
 
-rc2 = os.system(cmd)
-if rc2 != 0:
-    print "%ERROR: unable to execute command, ",cmd
-    sys.exit(1)
     pass
-pass
-
-
-## Confirm working directory contents
-cmd = 'ls -l '+PHOSIMPSCRATCH
-print cmd
-os.system(cmd)
 
 
 ## Clean up the local scratch space
+print 'Clean up local scratch space...'
 scr.cleanScratch()
 scr.statScratch()
 

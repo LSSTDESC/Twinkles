@@ -165,11 +165,12 @@ class stats():
 
 
 class trickle():
+        #self.pipelineCmd        = '/afs/slac.stanford.edu/g/glast/ground/bin/pipeline '
+        #self.pFind              = '/afs/slac.stanford.edu/u/gl/glast/pipeline-II/prod/pipeline '
 
     def __init__(self,trickleParms={}):
-        self.pipelineCmd        = '/afs/slac.stanford.edu/g/glast/ground/bin/pipeline '
-        #        self.pFind              = '/afs/slac.stanford.edu/u/gl/glast/pipeline-II/dev/pipeline '
-        self.pFind              = '/afs/slac.stanford.edu/u/gl/glast/pipeline-II/prod/pipeline '
+        self.pipelineCmd        = '/u/lt/lsstsim/pipeline/prod/pipeline '
+        self.pFind              = '/u/lt/lsstsim/pipeline/prod/pipeline '
         self.chatter            = False
         self.dryRun             = False
         self.maxCycles          = 0  ## max # of cycles; 0 => as many as necessary

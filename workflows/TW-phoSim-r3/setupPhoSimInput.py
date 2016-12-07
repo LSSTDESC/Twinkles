@@ -184,16 +184,34 @@ class setupPhoSimInput(object):
             pass
 
         print 'Create sym links to production SED files'
-        cmd = 'cp -as '+self.SEDlib+' '+self.locSEDs
-        print 'cmd = ',cmd
-        rc = os.system(cmd)
-        if rc != 0: sys.exit(1)
+        ## cmd = 'cp -as '+self.SEDlib+' '+self.locSEDs
+        ## print 'cmd = ',cmd
+        ## rc = os.system(cmd)
+        ## if rc != 0:
+        ##     self.clean()
+        ##     sys.exit(1)
+        ##     pass
+
+        SEDlist = os.listdir(self.SEDlib)
+        if not os.path.exists(self.locSEDs):os.makedirs(self.locSEDs)
+        for SED in SEDlist:
+            src = os.path.join(self.SEDlib,SED)
+            dst = os.path.join(self.locSEDs,SED)
+            print src,' -> ',dst
+            os.symlink(os.path.join(self.SEDlib,SED),os.path.join(self.locSEDs,SED))
+            pass
+
+
+        
 
         ## Change SEDs directory permissions
         cmd = 'chmod -R 3755 '+self.locSEDs
         print 'cmd = ',cmd
         rc = os.system(cmd)
-        if rc != 0: sys.exit(1)
+        if rc != 0:
+            self.clean()
+            sys.exit(1)
+            pass
 
         ## Add link to special SEDs for just this run
         if self.locSpecialSEDs != None and not os.path.islink(self.locSpecialSEDs):

@@ -39,7 +39,7 @@ trickleParms['firstStep'] = 'setupRun'         Name of first process step in tas
 trickleParms['steps'] = [step1,step2]          List of process steps used to limit stream creation, where
   step1 = ['/processRun processClump',300,10]     [name of process step, limit/cycle, multiplier](*)
   step2 = ['mergeClumps',300,1] 
-trickleParms['maxStreamsPerCycle'] = 70        Maximum number of new streams per cycle
+trickleParms['maxStreamsPerCycle'] = 70        Maximum number of new top-level streams per cycle
 trickleParms['timePerCycle'] = 60              Time (seconds) between cycles
 
 The first two items are obvious.
@@ -84,8 +84,8 @@ import subprocess
 
 ## This rarely needs to be updated, but it should be in sync with the
 ## version used by the reprocessing task
-REPcommonToolsDir = '/nfs/farm/g/glast/u38/Reprocess-tasks/commonTools/00-02-01'
-sys.path.insert(0, REPcommonToolsDir)
+## REPcommonToolsDir = '/nfs/farm/g/glast/u38/Reprocess-tasks/commonTools/00-02-01'
+## sys.path.insert(0, REPcommonToolsDir)
 
 from trickle import *       ## classes needed by trickleStream (stats and trickle)
 
@@ -99,42 +99,23 @@ trickleParms = {}
 
 
 ## Task-specific settings.
-trickleParms['task'] = 'P302-FITS'
-#trickleParms['maxRuns'] = 34154             ## Block 1, 1/26/2015
-#trickleParms['maxRuns'] = 36020             ## Block 2, 2/18/2015 & version 2.0 block 1
-#trickleParms['maxRuns'] = 37023             ## Block 2 v2.0, 4/18/2015
-#trickleParms['maxRuns'] = 37888             ## Block 3 v2.0, 6/11/2015
-#trickleParms['maxRuns'] = 38198             ## Block 4 v2.0, -FINAL- 6/27/2015
-trickleParms['maxRuns'] = 38238             ## Block 5 v2.0, emergency 40 runs 8/5/2015
-trickleParms['firstStep'] = 'setupRun'
+trickleParms['task'] = 'TW-phoSim-r3'
+trickleParms['maxRuns'] = 1508                ## Run 3.1
+trickleParms['maxRuns'] += 329                ## Run 3.1b
+trickleParms['maxRuns'] += 2104               ## Run 3.2
+trickleParms['maxRuns'] += 18029              ## Run 3.3
+
+trickleParms['firstStep'] = 'setupVisit'
 
 
-## one config...
-##step1 = ['/mergeRun mergeClumps',2000,1]
-##trickleParms['steps'] = [step1]
-##trickleParms['maxStreamsPerCycle'] = 150
-##trickleParms['timePerCycle'] = 120
+## initial config (11/16/2016)
+step1 = ['/singleSensor phoSimPrep',60,1]
+step2 = ['/singleSensor phoSim',2500,1]
+trickleParms['steps'] = [step1,step2]
+trickleParms['maxStreamsPerCycle'] = 30
+trickleParms['timePerCycle'] = 300
 
 
-## ****** Semi-restrained running ********
-step1 = ['/mergeRun mergeClumps',2500,1]
-trickleParms['steps'] = [step1]
-trickleParms['maxStreamsPerCycle'] = 50
-trickleParms['timePerCycle'] = 60
-
-
-## ## Flat-out running configuration
-## step1 = ['mergeClumps',2500,1]
-## trickleParms['steps'] = [step1]
-## trickleParms['maxStreamsPerCycle'] = 200
-## trickleParms['timePerCycle'] = 180
-
-
-## Restrained running configuration
-## step1 = ['mergeClumps',400,1]
-## trickleParms['steps'] = [step1]
-## trickleParms['maxStreamsPerCycle'] = 100
-## trickleParms['timePerCycle'] = 120
 
 
 ######################
