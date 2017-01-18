@@ -61,7 +61,7 @@ $> assembleCoadd.py $COADDDIR --selectId filter='r' --id filter='r' patch=0,0 tr
 ```
 ## Difference the images
 ```
-#> imageDifference.py $COADDDIR --templateId patch='0,0' tract=0 filter='r' --id filter='r' --output $DIFFDIR
+#> imageDifference.py $COADDDIR --templateId filter='r' --id filter='r' --output $DIFFDIR
 ```
 At this point you will have a diffim and the DIAsources.  Note that each of the images that went into the coadd will have significant
 ringing in the diffim, because in these cases the template will be deconvolved in `ImageDifference.py` to match the science PSF.  The [config](https://github.com/lsst/obs_lsstSim/blob/twinkles_395/config/imageDifference.py) for the ImageDifferenceTask turns on decorrelation of the noise in the difference image.
