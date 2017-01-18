@@ -27,7 +27,7 @@ $> export AND_DIR=/global/homes/d/desc/twinkles/trial/and_files_Phosim_Deep_Prec
 $> source /global/common/cori/contrib/lsst/lsstDM/setupStack-12_1.sh
 $> cd $MYREPODIR
 $> cd obs_lsstSim
-$> git checkout twinkles_395
+$> git checkout twinkles_1
 $> setup -j -m none -r $AND_DIR astrometry_net_data
 $> cd $MYWORKDIR
 ```
