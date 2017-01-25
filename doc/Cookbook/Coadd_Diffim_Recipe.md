@@ -27,7 +27,7 @@ $> export AND_DIR=/global/homes/d/desc/twinkles/trial/and_files_Phosim_Deep_Prec
 $> source /global/common/cori/contrib/lsst/lsstDM/setupStack-12_1.sh
 $> cd $MYREPODIR
 $> cd obs_lsstSim
-$> git checkout twinkles_395
+$> git checkout twinkles_1
 $> setup -j -m none -r $AND_DIR astrometry_net_data
 $> cd $MYWORKDIR
 ```
@@ -61,7 +61,7 @@ $> assembleCoadd.py $COADDDIR --selectId filter='r' --id filter='r' patch=0,0 tr
 ```
 ## Difference the images
 ```
-#> imageDifference.py $COADDDIR --templateId patch='0,0' tract=0 filter='r' --id filter='r' --output $DIFFDIR
+#> imageDifference.py $COADDDIR --templateId filter='r' --id filter='r' --output $DIFFDIR
 ```
 At this point you will have a diffim and the DIAsources.  Note that each of the images that went into the coadd will have significant
 ringing in the diffim, because in these cases the template will be deconvolved in `ImageDifference.py` to match the science PSF.  The [config](https://github.com/lsst/obs_lsstSim/blob/twinkles_395/config/imageDifference.py) for the ImageDifferenceTask turns on decorrelation of the noise in the difference image.
