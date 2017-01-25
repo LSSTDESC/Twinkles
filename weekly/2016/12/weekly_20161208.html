@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: December 8, 2016</h1>
+<h2 id="run-3-dm-level-2-processing"><strong>Run 3 DM Level 2 Processing</strong></h2>
+<p>How are things going at NERSC? Is the image differencing up and running?</p>
+<h2 id="completing-run-3"><strong>Completing Run 3</strong></h2>
+<p>PhoSim v3.6 is out, and promises multi-threading - so ought to be our route to getting the Run 3 “long jobs” completed. How’s this looking so far?</p>
+<h3 id="phosim-v3.6-performance-tests"><strong>PhoSim v3.6 performance tests:</strong></h3>
+<p>Tom’s early results based on Twinkles Run3 (and four threads), <a href="https://github.com/LSSTDESC/Twinkles/issues/420"><em>https://github.com/LSSTDESC/Twinkles/issues/420</em></a></p>
+<p>However, Tony’s tests at NERSC (and using many more threads) show diminishing returns.</p>
+<h3 id="phosim-v3.6-image-validation"><strong>PhoSim v3.6 image validation:</strong></h3>
+<p>Tom: After running a number of single-threaded and multi-threaded phoSim tests, the results are qualitatively similar but not identical. FITS images look about the same although, interestingly, one image has an artifact that may be a reflection or even a meteor. A more quantitative validation is in order, possibly beginning with image subtraction to look at residuals, pushing the test images through DM to see what sources it finds, a look at the background light, etc.</p>
+<h3 id="science-check-in"><strong>Science check-in</strong></h3>
+<p>What’s the conclusion about emulating calibration?</p>
+<p>Updates on error model work:</p>
+<h2 id="twinkles-2-plans"><strong>Twinkles 2 Plans</strong></h2>
+<p>The SL WG want to include lensed supernovae - let’s make that happen.</p>
+</div>
+</div>
+</body>
+</html>
