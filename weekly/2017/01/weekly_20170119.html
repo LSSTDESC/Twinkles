@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: January 19, 2017</h1>
+<p>We are roadblocked by image differencing difficulties, the code crashing due to occasional (possibly) deconvolutions cropping up in the PSF matching. We discussed things to try to diagnose the problem and overcome it, and also looked ahead to the construction of DIAObjects. We’d really like to have these by the time of the collaboration meeting.</p>
+<h2 id="image-differencing"><strong>Image Differencing</strong></h2>
+<p>Tony reported running all images though mktempcoadd and assembletempcoadd. Several hundred images (per filter) passed the 3 pixel PSF FWHM threshold (its a DDF after all). Crashes ensued. u-band worked, none of the others.The basic problem is that some images end up being deconvolved, which causes problems.</p>
+<p>Diagnosis / things to try:</p>
+<ul>
+<li><blockquote>
+<p>It could be a rogue image - the sets that we are combining are very large. Let’s try just making the DR1 template.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Asking for the template image to have exactly the PSF FWHM of the threshold used in selecting images could potentially be problematic. What if we select images with FWHM &lt; 3.0 pixels, but ask for the template to be 3.1 pixels FWHM? Can we choose our thresholds based on the known PSF FWHMs of each visit?</p>
+</blockquote></li>
+</ul>
+<p>Action: Jim to fill the ccdVisit table so we have the PSF FWHM estimates for Run 3</p>
+<p>Planning for success: we talked about making DIASources and DIAObjects soon after finishing the templates. Simon has made DIASources with the u-band template that did complete for him, but has not tried making DIAObjects yet.</p>
+<p>Question: do (or should) reprocessed DIAObjects have one centroid, or one centroid per filter? Phil thinks the former, but we need to check. Michael and Rahul shoudl weigh in as SN measurement experts, but we also need to check the DM docs.</p>
+<p>Action: Simon to issue a simple upgrade of his DIAObjectmaker code (name?), to use all filters at once when assigning centroids. This issue should contain the question about centroids.</p>
+<h2 id="vizic-jupyter-nersc"><strong>Vizic / Jupyter @ NERSC</strong></h2>
+<p>Bryce took a look at Vizic, identifying that it could provide a nice colution to the longstanding Monitor feature request for a postage stamp viewer, possiby animated. It’s python 3, but Jim thinks that shoudl be no problem. Bryce will investigate more.</p>
+<h2 id="desc-meeting"><strong>DESC Meeting</strong></h2>
+<p>We are a month away from the DESC meeting. We have a 90 minute session scheduled, for digestion of Run 3 results and planning for Twinkles 2. We also need to think about and register hacks and sprints - and potentially look for gaps in the schedule when we can continue to work together. We’ll take this to the Slack #twinkles channel for discussion!</p>
+</div>
+</div>
+</body>
+</html>

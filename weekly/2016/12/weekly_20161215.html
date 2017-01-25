@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: December 15, 2016</h1>
+<h2 id="run-3-dm-level-2-processing"><strong>Run 3 DM Level 2 Processing</strong></h2>
+<p>[Tony and Simon talked about some issues that Tony has posted]</p>
+<h2 id="phosim-generation"><strong>PhoSim generation</strong></h2>
+<p>Tony - Tom and Tony ran some multithreaded phosim jobs to see how times scale with number of threads. Tony presented some results at the CI meeting this week. The conclusion right now is that the threading is not tremendously useful. May be worth running a few threads, but not 64. The overhead seems to kill the gain.</p>
+<p>KSK - Does John know about this?</p>
+<p>Tony - Yes, the CPU time goes up by factor of 8 when going to 64 threads. Peter Nugent and John did not seem surprised by that</p>
+<p>Rahul - The CPU time is a problem but in terms of scaling it might help us get through the really long jobs, right?</p>
+<p>Tony - Yes, there’s also some work on checkpointing - that might get us through - so there’s more than one possible solution</p>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: December 1, 2016</h1>
+<p>Twinkles 1 Run 3 PhoSim image production is a few days away from completion, up to a short list of remaining “long jobs” that will need multiprocessing and/or checkpointing. N visit images will have been simulated in a little under 3 weeks. DM Level 2 processing has begun, at NERSC, with some early experiments with PSF-matched coadd template. Bulk production of standard coadds and Object measurements is about to start.</p>
+<h2 id="run-3-phosim-production"><strong>Run 3 PhoSim Production</strong></h2>
+<p>As of 13:29:14 PST on 2016-12-01 only 52 jobs are still running, and should either complete, time-out (or crash) this week. That gives us 21903 completed visits, and 2109 (plus at least 15 but no more than 67 more) to be kept in a “long jobs” list for later. Total wallclock run time will be ~3 weeks, but 90% of the visits completed within one week. A report on the Run 3 PhoSim production should make a nice Glanzman, et al Note.</p>
+<h2 id="dm-level-2-processing"><strong>DM Level 2 Processing</strong></h2>
+<p>Some problems with making coadds, in the maketempcoadd stage. These are the new coadds, for image differencing. The DM default or Run3Test values for the target IQ: we should try using 0.6” instead of 4.85 pixels.</p>
+<p>We’ll then try difference imaging according to the Cookbook, which describes a forked workflow: the first part is the standard coadd plus Object measurement, the second part is the template seeing-matched coadd plus DIASource detection and DIAObject formation and measurement. This will need two configs. Simon will make sure these Cookbook recipes are complete and up to date (eg that part 1 does not contain Forced Photometry any more). This Cookbook should be presented as a Krughoff et al Note, Phil is due to issue that. Tony will remake the standard coadds and do the Object measurement while Simon completes the Cookook.</p>
+<p>We talked about which extended Object measurements we are currently doing: Simon will check whether CModel is turned on or not. The FITS headers do not match the Object table schema, so there is some work to do to upgrade Pserv so that adds the extended object measurements to the Object table (currently they are all null). Jim will dig out a header for us to inspect.</p>
+</div>
+</div>
+</body>
+</html>

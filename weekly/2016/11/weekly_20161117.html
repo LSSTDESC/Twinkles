@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: November 17, 2016</h1>
+<p>We made a lot of progress at the CMU Hack Week and subsequent Twinkles Retreat, primarily on the image differencing and science analysis. Meanwhile, Run 3 production is in full flow, after the Lustre problems were fixed. In today’s meeting we digested all that and made plans for follow-up work.</p>
+<h2 id="notes-update"><strong>Notes Update</strong></h2>
+<p>Phil has re-made the design note folder in its branch using `start_paper`, and written an introduction and outline. The idea is that development of this will proceed in this branch, and we’ll use a PR into master to handle “Task Force / Working Group review” - so that ultimately the master branch only contains finished (or at least, non-confusing) Notes that the collaboration will find useful to read. We’ll discuss this and get some advice from PubMan Seth.</p>
+<p>Phil made the cookie cutter project start_paper, and started writing LaTeX. Had some discussion last week about how to make this work in github, concluding that working in branches with pull requests to enforce some kind of internal review. Merging onto the master branch should be considered the point at which a note is shared with the collaboration - implies that each note should be developed in its own branch - we’ll try out that workflow with the design note. Also will make branches for other notes. Will do that with individual issues defined for each note. The pull request thread can be used or refining the notes. He and Simon made a list of notes that need writing. There was a feeling that the DM level 2 cookbook deserved its own note, separate from the note about how the DM level 2 workflow at NERSC works. Also we said that we’d write a note about phosim CPU time prediction; since that is related to the order-of-visits task - so for Rahul &amp; Seth to write. Phil will make the branches and issue some issues. The idea is to write these while we have them fresh in mind.</p>
+<h2 id="run-3-production-update"><strong>Run 3 Production Update</strong></h2>
+<p>Everything’s going full steam update - but we’ll hear details from the captain of the PhoSim workflow ship, Tom Glanzman. <a href="http://srs.slac.stanford.edu/Pipeline-II/exp/LSST-DESC/task.jsp?task=41927463"><em>LINK</em></a></p>
+<p>Future runs will likely happen at NERSC. Summary of <a href="https://confluence.slac.stanford.edu/display/LSSTDESC/phoSim+at+NERSC"><em>Hack Week activity</em></a>.</p>
+<p>Tom spent a lot more time on Twinkles at Hack Week than he had expected. The problems with Lustre are probably in the solved category now. At the link (above) the column to look at has the green check. The Wrap-up row is the last step. Right now 2411 visits have completed. 2168 are running right now. The batch system seems to be paused right now. Some jobs have been sitting waiting to be dispatched for 45 minutes. Happens from time to time - not a problem unless it extends for hours. The jobs do need to be trickled in at some rate. Takes a shift to get up to 2000 running jobs. It may be that another problem was solved this morning, thanks to Heather, who found a DM parameter that enabled/disabled creating directory locks. One no-no for running many jobs is creating and deleting lots of tiny files. Ganglia had shown huge spikes of system CPU time on the servers where DM resides - that was worrisome and limited the rate of new streams starting. Heather made the change about 2 hours ago and have not seen a failure like this since. One other problem is affecting the phosim job, making symbolic links to the SED libraries. A fix is in place but not yet exercised. This should make the workflow more turn-key soon - I will be heading out for 10 days on the weekend - will not be watching as closely at that time - should finish early in the week after Thanksgiving.</p>
+<p>Phil - Could you set things going and all 21k jobs will trickle through?</p>
+<p>Tom - Yes - a script monitors the situation with the pipeline task and decides what to do - makes an assessment every 5 minutes. If no failures could walk away</p>
+<p>Phil - Now time to write a note about phosim workflow...how it works, problems solved, and so on</p>
+<p>Tom - Can do that - some of the problem solving is specific to SLAC and the software - may not be of interest in the future now that we understand the problem</p>
+<p>Phil - Should follow the guidelines from that experiment</p>
+<p>Tom - Also may be premature - see the workflow here as as stepping stone to having it at NERSC.</p>
+<p>Phil - The fact that you have done this at SLAC deserves recording. At NERSC the DM Level 2 setup and getting to the point of being able to submit jobs at NERSC - Tony &amp; Brian - is also worth writing up. Phosim @ NERSC would deserve its own writeup</p>
+<p>Tom - Seth looked at the first output visit - now over 2400 visits available - now would be a good time to know about the showstoppers - runs 3.1 and 3.1b are fully complete, 3.2 should be done by tomorrow. 3.3 should be another week+ if we are lucky</p>
+<p>Phil - Are the outputs shipped to NERSC?</p>
+<p>Tom - No. In the past Tony has an rsync job as part of the processing task. Maybe he will have spare time this weekend he could start it - but doubtful</p>
+<p>Phil - Bryce is doing some analysis of the databases that you all built last week - it is ok to carry on in development mode until next week</p>
+<p>Seth - question about the long visits - they are missing from Run 3.</p>
+<p>Tom - 2109 visits left out because of predicted CPU time usage</p>
+<p>Phil - We should put those visits in a ‘Run 3.4’ list - so we do not lose track and maybe test cases</p>
+<p>Tom - Will not be able to run them until checkpointing is functional</p>
+<p>Phil - How damaged will the survey be if we leave them out - we’ll see what Bryce has been doing on the error model - would be odd if it did not include the high sky brightness visits</p>
+<h2 id="dm-level-2-pipeline-upgrades-image-differencing-and-diaobject-production"><strong>DM Level 2 Pipeline Upgrades: Image Differencing and DIAObject Production</strong></h2>
+<p>Simon and the others will report on progress on the algorithms side, and we’ll discuss how to get this built into the NERSC DM workflow and tested.</p>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/pull/398"><em>PR for DiffIm cookbook</em></a></p>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/pull/412"><em>PR for DIAObject/reprDIASource cookbook</em></a></p>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/408"><em>Issue for installing production branch of obs_lsstSim</em></a></p>
+<p>Simon - We have a cookbook that fairly completely describes the process for making PSF homogenized co-adds and making difference images - only for r band so far. We do not need to update the stack but do need to update the sims stack [?] - for Heather - next time</p>
+<p>Made a repro-dia-object generator - generating “reproDIAObjects” as if they have been detected - outlined in a cookbook - will make forced photometry measurements at the locations of each of these objects. The problem Michael is having is that if you ask for one of these at a position that is not on an image it throws an exception. Simon will take a crack at the note</p>
+<p>Phil - We have 4-5 markdown files containing the DM L2 cookbook - the least-work approach would be to add a front page with a link to these recipes - the front page would be the DESC note - but this would not make it easy to have portable PDF - maybe PanDoc can do it. A good test use case.</p>
+<p>Make correspondence clear between LSE-163 data products definition and the processing pipeline that we have built. Reprocessing L1 products is not the same as the data release products</p>
+<p>Simon - Sometimes I need to refer to documents that are still on branches - not clear whether the links will break - or how to keep them from breaking - when the PRs are merged</p>
+<p>Phil - Automatic link updating is not available - I usually set the link to be the correct one for after the PR</p>
+<p>Simon - So repair-the-link can happen on the main branch</p>
+<p>Phil - Yes - Phil will start the front page and pass it off to Simon</p>
+<p>Heather - One question - Tony was unclear whether he needed the update to obs LSST sims - sounds like he really does need it before starting L2</p>
+<p>Simon - Yes, need it for co-add based difference imaging - it also includes a ix for a failure mode that he observed while running with the other branch - so it really is an improvement.</p>
+<p>Phil - These reproDIAObjects have associated lists of sources that provide the forced photometry light curves that the SN people want. For strong lenses we are potenitally less interested in this reproDIAObjects because the whole point of lenses is that htey have multiple point-like objects. For strong lenses we’ll need to dig into the original DIA source fluxes - we are more interested in the L1 products then - for each object there could be 3 or 4 or more DIA sources associated</p>
+<p>Phil - We have two cookbooks for calculating difference imaging - one by Simon and one by Phil - which should we use in production?</p>
+<p>Simon - Good question - should do the template version for everything and then image-to-image in a more ad hoc way. There are so many combinations that you could do - could chose the best one of each year…</p>
+<p>Phil - Using the homogenized template and the image-to-image version still have many parameters that could be set/investigated. How should we go about this? Tony will need to put them in a workflow</p>
+<p>Simon - The big processing steps are CALexp generat, co-add temp-ex generation and the force photometry. The coadd generation may not be bad because we have a small subset of the data - no longer co-adding everything because we are looking at image with the best seeing - may want to play with this. I’d suggest that we do calexp generation (once, about half the total processing) then play around with figuring out which parameters to set and to what values.</p>
+<p>Phil - So there’s an exploratory phase before going into full production - will need to investigate the optimum association radius etc</p>
+<p>Simon - Yes I glossed over that - I would like to get all the calexps and then try the second part of the processing for a subset - size of coadd PSF affects best matching radius, numbers of multiple objects…</p>
+<p>Phil - Maybe define some tests varying the parameters and seeing what happens on the WFD subset which would get you 10 years and good sampling of the seeing - could also do it on the Run 3.2 (all of year 5 or 3). We’ll need to communicate this plan to Tony - please start an issue on investigating the image differencing control parameters.</p>
+<h2 id="science-analysis-lensed-quasar-light-curve-extraction"><strong>Science Analysis: Lensed Quasar Light Curve Extraction</strong></h2>
+<p>The Strong Lens light curve extraction will need to process the new DIAObjects (which have variable numbers of DIASources associated with them). The reprocessed DIASources will not be that useful (because they all have the same forced DIAObject sky position), so interpreting the Level 1 DIASources will be required. Phil will comment on this.</p>
+<p>Phil - Current thinking will be we’ll be trying to piece together 4 light curves for four lensed sources - with different DIAsources when seeing is good, fewer when the seeing is bad - best case scenario - the Monitor is going to need to be able to cope with that - thinking aobut using reported fluxes, positions, uncertainties to emulate an image data set and compare with a model - fit positions and fluxes to N components. This would be a bit like multi-fit but not fitting pixels at every visit but catalog items at every visit. Need to chat with Bryce and Rahul whether that makes sense and how to fit into the monitor - a great problem, a general problem.</p>
+<h2 id="science-analysis-the-lsst-light-curve-error-model"><strong>Science Analysis: the LSST Light Curve Error Model</strong></h2>
+<p>Bryce and Phil will explain the thinking they did with Rahul on what we now think of as the primary goal of the Twinkles 1 project: a model sampling distribution that can be used either as 1) the likelihood function for a SALT2 or time delay inference or 2) a route to a much larger volume of catalog-level simulations, taking just an OpSim DB as input.</p>
+<p>Phil - Reporting uncertainties and biases - testing how good the LSST DM stack uncertainties are. He and Bryce wrote down the simplete possible error model relating observed flux to true flux - made plots of the offset vs. depth and seeing, also looked atthe variance o the observed flux relative to true flux as a function of depth of image and seeing</p>
+<p>Bryce will show the group what he’s been doing</p>
+<p>Added depth and seeing light curves to monitor:</p>
+<p><a href="https://gist.github.com/jbkalmbach/15126699465ee2af1e00337273bf6971"><em>https://gist.github.com/jbkalmbach/15126699465ee2af1e00337273bf6971</em></a></p>
+<p>First version of Error Model notebook:</p>
+<p><a href="https://gist.github.com/jbkalmbach/28ef21c9dd1f219d255c6a97ee85ca80"><em>https://gist.github.com/jbkalmbach/28ef21c9dd1f219d255c6a97ee85ca80</em></a></p>
+<p>(This shows the bias maps that we created. We loaded in observed data from Run 1.1 tables in the database and subtracted the flux values form the Catsim for each object and we compared the objects usinga distance match in RA, Dec space to match true and observed sources. The bias in the residuals for each visitare shown. Each point in the plots is one visit; shows flux errors. There was a change for reducing sky noise [?] - see the third link)</p>
+<p>The comparison with Opsim parameters is relevant - Phil - the apparently very good seeing in u-band may be bogus - we should check - in seeing vs depth plots - some discussion of fitting models - with two or more components.</p>
+<p>Phil points out that the colors of the points change across the filters - positive bias in u, negative in y, and a smooth transition between them. Need to be sure to understand the calibration of the fluxes - not something that I am clear about</p>
+<p>Simon what sort of calibration is being carried out?</p>
+<p>Simon - The term is overloaded - strictly speaking we are not calibrating the pixels. We are not doing overscan or flat field calibration. We take our reference catalog, match the catalog to the reference catalog, zero point the frame. Should figure out what we expect to be de-reddened and what not.</p>
+<p>Phil - Is the reference catalog stars?</p>
+<p>Simon - Yes</p>
+<p>Phil - So imagining that we know the true magnitude of each star in each filter</p>
+<p>Simon - Yes, but typically use on the bright stars</p>
+<p>Phil - Surprised by the systematic change in bias from u band to y?</p>
+<p>Simon - Yes</p>
+<p>Phil - Let’s figure out the relation between this analysis and calibration - may need to have a different ‘calibration’ here</p>
+<p>Simon - May need to re-evaluate redding</p>
+<p>Scott - Will look into whether dust is being applied</p>
+<p>Phl - Eli in the office next to mine is the Photometric Calibration lead - will be interesting to get his assessment, guidance about the error model.</p>
+<p>Simon - We we were looking at the blending of strong lenses - we’ll emulate that in Catalog analysis - wonders if a similar study might be more interested in seeing -</p>
+<p>Phil - Figuring out when this becomes important, is important</p>
+<p>5-sigma depth issue with updated plots: <a href="https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/407"><em>https://github.com/DarkEnergyScienceCollaboration/Twinkles/issues/407</em></a></p>
+<p>Relevant Epics:</p>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Monitor/issues/57"><em>https://github.com/DarkEnergyScienceCollaboration/Monitor/issues/57</em></a></p>
+<p><a href="https://github.com/DarkEnergyScienceCollaboration/Monitor/issues/60"><em>https://github.com/DarkEnergyScienceCollaboration/Monitor/issues/60</em></a></p>
+<p>We’ll discuss these ideas and make plans</p>
+</div>
+</div>
+</body>
+</html>
