@@ -35,7 +35,7 @@ processEimage.py $INPUT_REPO --id --output $OUTPUT_REPO
 ## Level 2 processing steps
 ```bash
 makeDiscreteSkyMap.py $OUTPUT_REPO --id --output $OUTPUT_REPO --config $OBS_LSSTSIM_DIR/config/makeDiscreteSkyMap_deep.py
-makeCoaddTempExp.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/makeCoaddTempExp_deep.py --selectId --id ' --output $OUTPUT_REPO
+makeCoaddTempExp.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/makeCoaddTempExp_deep.py --selectId --id --output $OUTPUT_REPO
 assembleCoadd.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/assembleCoadd_deep.py --selectId filter='r' --id filter='r' patch=0,0 tract=0 --output $OUTPUT_REPO #per band
 detectCoaddSources.py $OUTPUT_REPO --id tract=0 patch=0,0 filter=r --output $OUTPUT_REPO #per band
 mergeCoaddDetections.py $OUTPUT_REPO --id tract=0 patch=0,0 --output $OUTPUT_REPO
