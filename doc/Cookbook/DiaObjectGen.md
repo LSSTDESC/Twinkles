@@ -50,5 +50,5 @@ makeDiscreteSkyMap.py $OUTPUT_REPO --id --output $OUTPUT_REPO --config $OBS_LSST
 makeCoaddTempExp.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/makeCoaddTempExp_goodSeeing.py --config modelPsf.defaultFwhm=3.0 select.minPsfFwhm=2.6 select.maxPsfFwhm=3.0 --selectId filter='r' --id filter='r' --output $OUTPUT_REPO #per band
 assembleCoadd.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/assembleCoadd_goodSeeing.py --selectId filter='r' --id filter='r' patch=0,0 tract=0 --output $OUTPUT_REPO #per band
 imageDifference.py $OUTPUT_REPO --templateId filter='r' --id filter='r' --output $OUTPUT_REPO #per band
-makeDiaObjects.py ...?
+diaObjectMaker.py $OUTPUT_REPO --id --output $OUTPUT_REPO
 ```
