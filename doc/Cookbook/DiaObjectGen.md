@@ -6,10 +6,10 @@
 
 ## Setup -- Define a few environment variables to make thes instructions more portable
 ```bash
-export INPUT_REPO = input_data
-export OUTPUT_REPO = output_data
-export RAW_PATH = raw_data
-export PATH_TO_REF = .
+export INPUT_REPO=input_data
+export OUTPUT_REPO=output_data
+export RAW_PATH=raw_data
+export PATH_TO_REF=.
 
 ```
 
@@ -34,14 +34,27 @@ processEimage.py $INPUT_REPO --id --output $OUTPUT_REPO
 
 ## Level 2 processing steps
 ```bash
-makeDiscreteSkyMap.py $OUTPUT_REPO --id --output $OUTPUT_REPO --config $OBS_LSSTSIM_DIR/config/makeDiscreteSkyMap_deep.py
-makeCoaddTempExp.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/makeCoaddTempExp_deep.py --selectId --id --output $OUTPUT_REPO
-assembleCoadd.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/assembleCoadd_deep.py --selectId filter='r' --id filter='r' patch=0,0 tract=0 --output $OUTPUT_REPO #per band
-detectCoaddSources.py $OUTPUT_REPO --id tract=0 patch=0,0 filter=r --output $OUTPUT_REPO #per band
-mergeCoaddDetections.py $OUTPUT_REPO --id tract=0 patch=0,0 --output $OUTPUT_REPO
-measureCoaddSources.py $OUTPUT_REPO --id tract=0 patch=0,0 filter=r --output $OUTPUT_REPO #per band
-mergeCoaddMeasurements.py $OUTPUT_REPO --id tract=0 patch=0,0 --output $OUTPUT_REPO
-forcedPhotCcd.py $OUTPUT_REPO --id tract=0  --output $OUTPUT_REPO
+makeDiscreteSkyMap.py $OUTPUT_REPO --id --output $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/makeDiscreteSkyMap_deep.py
+# The coadd steps *must* be done one band at a time.
+makeCoaddTempExp.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/makeCoaddTempExp_deep.py --selectId filter=u --id filter=u --output $OUTPUT_REPO
+makeCoaddTempExp.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/makeCoaddTempExp_deep.py --selectId filter=g --id filter=g --output $OUTPUT_REPO
+makeCoaddTempExp.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/makeCoaddTempExp_deep.py --selectId filter=r --id filter=r --output $OUTPUT_REPO
+makeCoaddTempExp.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/makeCoaddTempExp_deep.py --selectId filter=i --id filter=i --output $OUTPUT_REPO
+makeCoaddTempExp.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/makeCoaddTempExp_deep.py --selectId filter=z --id filter=z --output $OUTPUT_REPO
+makeCoaddTempExp.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/makeCoaddTempExp_deep.py --selectId filter=y --id filter=y --output $OUTPUT_REPO
+assembleCoadd.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/assembleCoadd_deep.py --selectId filter=u --id filter=u patch=0,0 tract=0 --output $OUTPUT_REPO
+assembleCoadd.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/assembleCoadd_deep.py --selectId filter=g --id filter=g patch=0,0 tract=0 --output $OUTPUT_REPO
+assembleCoadd.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/assembleCoadd_deep.py --selectId filter=r --id filter=r patch=0,0 tract=0 --output $OUTPUT_REPO
+assembleCoadd.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/assembleCoadd_deep.py --selectId filter=i --id filter=i patch=0,0 tract=0 --output $OUTPUT_REPO
+assembleCoadd.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/assembleCoadd_deep.py --selectId filter=z --id filter=z patch=0,0 tract=0 --output $OUTPUT_REPO
+assembleCoadd.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/assembleCoadd_deep.py --selectId filter=y --id filter=y patch=0,0 tract=0 --output $OUTPUT_REPO
+# Detection and measurement can be done per band or all bands in one go (will be done serially if the latter)
+# Merge steps *must* be done on all the bands to me merged at once.
+detectCoaddSources.py $OUTPUT_REPO --id tract=0 patch=0,0 filter=u^g^r^i^z^y --output $OUTPUT_REPO
+mergeCoaddDetections.py $OUTPUT_REPO --id tract=0 patch=0,0 filter=u^g^r^i^z^y--output $OUTPUT_REPO
+measureCoaddSources.py $OUTPUT_REPO --id tract=0 patch=0,0 filter=u^g^r^i^z^y --output $OUTPUT_REPO
+mergeCoaddMeasurements.py $OUTPUT_REPO --id tract=0 patch=0,0 filter=u^g^r^i^z^y --output $OUTPUT_REPO
+forcedPhotCcd.py $OUTPUT_REPO --id tract=0 --output $OUTPUT_REPO
 ```
 
 ## Level 1 processing steps
