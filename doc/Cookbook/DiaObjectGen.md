@@ -59,7 +59,7 @@ assembleCoadd.py $OUTPUT_REPO --configfile $OBS_LSSTSIM_DIR/config/assembleCoadd
 # Detection and measurement can be done per band or all bands in one go (will be done serially if the latter)
 # Merge steps *must* be done on all the bands to me merged at once.
 detectCoaddSources.py $OUTPUT_REPO --id tract=0 patch=0,0 filter=u^g^r^i^z^y --output $OUTPUT_REPO
-mergeCoaddDetections.py $OUTPUT_REPO --id tract=0 patch=0,0 filter=u^g^r^i^z^y--output $OUTPUT_REPO
+mergeCoaddDetections.py $OUTPUT_REPO --id tract=0 patch=0,0 filter=u^g^r^i^z^y --output $OUTPUT_REPO
 measureCoaddSources.py $OUTPUT_REPO --id tract=0 patch=0,0 filter=u^g^r^i^z^y --output $OUTPUT_REPO
 mergeCoaddMeasurements.py $OUTPUT_REPO --id tract=0 patch=0,0 filter=u^g^r^i^z^y --output $OUTPUT_REPO
 forcedPhotCcd.py $OUTPUT_REPO --id tract=0 --output $OUTPUT_REPO
