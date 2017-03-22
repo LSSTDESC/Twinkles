@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: March 22, 2017</h1>
+<p>We’re roadblocked by Cori being down at NERSC, but also by Tony needing to focus on the Camera work right now. We discussed his and Mustapha’s investigation of Shifter at NERSC, and also the possibility of recruiting someone new to help with workflow wrangling at NERSC. Phil got elected to the spokesperson role, so we talked about how this will impact Twinkles 2, and who might take over as leader of a Twinkles DC2 sub-team. Bryce needed a Pserv database of Run2 at the Hack Day, but</p>
+<h2 id="run-3-level-2-processing-update"><strong>Run 3 Level 2 Processing Update</strong></h2>
+<p>Cori is down right now, but how have we been getting on squeezing jobs through?</p>
+<p>Simon has now provided new release of Stack, which is now installed at NERSC. Mustapha built that into a Docker image, Tony tried to run using Shifter. Testing/debugging now stalled because Cori is down. Tony flies to UK on Thursday but will work on Shifter version next week. Shifter should solve 2% efficiency problem, because all python functions are cached - we’ll see how this scales. (Speculative explanation is that DM start-up involves lots of small reads of python files. Interactive start-up is fast, batch start-up is slow. Shifter seems to be even faster than interactive.) This is why Tony is prioritizing Shifter.</p>
+<p>For fun, Anders asked LCLS-II computing about their experience with NERSC and startup times. Here’s the answer: <em>“Yes, we have found that Shifter does help. Our start up also involved many, many, many nodes all accessing the same python library files at the same time. It took MINUTES to start up. Unacceptable. Shifter helps, but we have the trouble that we have user-developed code that needs to be loaded at NERSC. We are not always running the same code in our pipeline - it changes frequently. Shifter is less good at dealing with dynamic code than it is with a single, static program that just, say, reads in some parameters before running.”</em> We’ll watch out for this problem.</p>
+<p>Are we sure that the version of the Stack that Heather installed is the correct one? Yes - it’s the tip of the branch we should be using.</p>
+<p>Mustapha has been very helpful in getting things running at NERSC, but is better positioned as point person assisting the pipeline infrastructure engineers than actually learning and running the pipeline. We discussed attempting to recruit someone new from around the collaboration to be trained by Tony to operate the pipeline at NERSC - we’ll think about who might be interested, and prepare to put out a “job advert.”</p>
+<h2 id="twinkles-2"><strong>Twinkles 2</strong></h2>
+<p>We discussed the future of the Twinkles project, in the light of Phil’s election to Spokesperson. For technical reasons it probably makes sense for Twinkles 2 to be the Deep Drilling Field portion of the DC2 Mock Lightcone survey: there’ll be dithering, and it’ll be more or less the same pipeline infrastructure needed for image generation and DM processing. However, the time domain science probably needs a dedicated sub-team, parallel to a science team concerned with the wide field part of the survey. We could think of joining the DC2 Mock Lightcone weekly telecons, but then having occasional pop-ups as a Twinkles team, as well as keeping the slack channel going. We’d just need a new leader for the Twinkles sub-team - we’ll think about volunteers, nominations etc. We’ll also spend a couple of days thinking about this new plan, before writing to Chris Walter at SSim to propose something.</p>
+<h2 id="slrealizer-pserv"><strong>SLRealizer, Pserv</strong></h2>
+<p>Spinning out of Bryce’s Hack Day project, Phil’s student Jenny Kim has started looking at realizing OM10 lenses as single sources and objects, with analytic approximations for the 0th, 1st and 2nd moments. Phil and Bryce will work on preparing for a comparison with Twinkles, starting with assessing which columns these moments are stored in in the DM-produced tables.</p>
+<p>Relatedly, Bryce needed a Pserv instance to house the Run 3 test data locally - he will try and make one, and document his success in an example section in the nascent Pserv DESC Note. This will be an ipython notebook, although not necessarily under continuous integration at Travis (since the Run 3 test data repository is ~tens of Gb in size).</p>
+</div>
+</div>
+</body>
+</html>
