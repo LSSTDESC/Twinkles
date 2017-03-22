@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: March 1, 2017</h1>
+<p>We caught up on the SL analysis work, investigating the Twinkles lens measurements and starting to think about how to interpret them. We then discussed Twinkles 2, identifying some questions (about dithering, and our place in the DC2 simulation suite) and agreeing to try to write rough abstracts for interesting science papers that we want Twinkles 2 to enable. Then, we finalized the DM pipeline design for Run 1.3, where we’d like SN host galaxy “Cmodel” size and shape measurements, and SL feature HSM moments to be measured (in both the visit and DIA images).</p>
+<h2 id="updates"><strong>Updates</strong></h2>
+<h3 id="slrealizer"><strong>SLRealizer</strong></h3>
+<p>Phil is advising an undergrad researcher, Jenny Kim, on a small project to enable DM catalogs to be realized as Gaussian Mixture Models, so that they can be compared with strong lens models realized in the same way. This is an attempt to solve the (anticipated) problem that blended objects appear as variable multiplicity source aggregations. Basic start-up repo is <a href="https://github.com/LSSTDESC/SLRealizer"><em>here</em></a>, comments/issues/pull requests welcome!</p>
+<h3 id="lenses-in-the-difference-imaging-analysis"><strong>Lenses in the Difference Imaging Analysis</strong></h3>
+<p>Following on from the Hack Day, Bryce identified a useful quad system to give us a better idea of what is going on with the lensed quasar DIA measurements. See the images in issue thread <a href="https://github.com/LSSTDESC/Twinkles/issues/424"><em>#424 here</em></a>, reproduced below.</p>
+<p><img src="images/media/image05.png" width="624" height="417" /></p>
+<p><img src="images/media/image03.png" width="624" height="417" /></p>
+<p>Two problems:</p>
+<ul>
+<li><blockquote>
+<p>Top: the “truth” features (colored crosses) don’t line up with the coadd image (grayscale). Bryce will investigate PhoSim vs ICRS coordinate systems with Scott.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Bottom: the DIASources all land in one place, apparently where image B should be. This could be a feature not a bug: it’s possible that only image B was varying!</p>
+</blockquote></li>
+</ul>
+<p>Bryce will investigate the Objects and ForcedSources (from the Level 2 pipeline) as well, to see what this informative quad looks like there.</p>
+<p>Bryce will also look at the DIAimages too, to see whether it’s really the case that only image B is detectable.</p>
+<h3 id="research-notes"><strong>Research Notes</strong></h3>
+<p>The `start_paper` Makefile now enables author contribution statements, so is in better shape to hand Note creation. For the DM Pipeline Note, we’re leaning towards a top level description in Note form that introduces, explains and then links to the various Cookbook pieces. With all the linking we’ll need to do (to living files hosted on GitHub), choosing ipynb/md/rst makes most sense. Some work on the `start_paper` Makefile will be needed to do the conversions to PDF for archiving purposes (issued at <a href="https://github.com/LSSTDESC/start_paper/issues/48"><em>start_paper/#48</em></a>).</p>
+<p>LSST DESC Notes that we have on our planning radar (titles to be edited later):</p>
+<ul>
+<li><blockquote>
+<p>Monitor concept, design, demo? (ipynb?) - Bryce</p>
+</blockquote></li>
+<li><blockquote>
+<p>Pserv concept, design, demo? (ipynb?) - Jim, but with Bryce &amp; Heather documenting how to set up and use… + jupyter dev</p>
+</blockquote></li>
+<li><blockquote>
+<p>*Twinkles 1 Overview (rst, w/ hyperlinks to other Notes) - Phil, Michael</p>
+</blockquote></li>
+<li><blockquote>
+<p>*Twinkles 1 PhoSim Pipeline and Results (rst) - Tom</p>
+</blockquote></li>
+<li><blockquote>
+<p>*Predicting PhoSim CPU Time (?) - Seth</p>
+</blockquote></li>
+<li><blockquote>
+<p>*Twinkles 1 DM Pipeline and Results (rst) - Simon, Tony</p>
+</blockquote></li>
+<li><blockquote>
+<p>*The Twinkles 1 Sky (opsim, catsim, sprinkler concept, link to sims cookbook) - Scott</p>
+</blockquote></li>
+<li><blockquote>
+<p>*The Twinkles 1 Supernova Population (incl science motivation, ipynb) - Rahul</p>
+</blockquote></li>
+<li><blockquote>
+<p>*The Twinkles 1 Strong Lens Population (incl science motivation, ipynb) - Bryce, Phil</p>
+</blockquote></li>
+</ul>
+<p>To be started later (but not much later!)):</p>
+<ul>
+<li><blockquote>
+<p>Twinkles 1 Error Model (possibly two notes, SN and SL, ipynb?) - Rahul, Bryce, Phil</p>
+</blockquote></li>
+</ul>
+<p>Action: Phil to set up folders and branches, everyone to jump in and write...</p>
+<h2 id="twinkles-2-planning"><strong>Twinkles 2 Planning</strong></h2>
+<p>Call for science paper “abstracts” to drive details of design. We discussed this radical concept: the idea is to try and define interesting AJ papers in advance, and then carry out the simulation that enables those papers to be written. Rahul and Phil will start a md doc to host these abstracts, which will need input from the SN and SL working groups.</p>
+<h3 id="questions-about-twinkles-2"><strong>Questions about Twinkles 2:</strong></h3>
+<p>Will we include realistic dithers? Aspiration shoudl be “yes”, to be consistent with our push for all-round greater realism. DC1 development means that this should be straightforward to do now. Two major consequences are:</p>
+<ol style="list-style-type: decimal">
+<li><blockquote>
+<p>The field will land on different chips, and usually be spread over 4 chips, in different orientations. This means we’ll be sampling the focal plane.</p>
+</blockquote></li>
+<li><blockquote>
+<p>We’ll need to populate a larger area of sky with stars, to make sure that all the chips the field lands on will be DM-measurable.</p>
+</blockquote></li>
+</ol>
+<p>Will we need more than one Twinkles field? Could be: especially if we need more sky area at WFD cadence. This points towards the general conversation that needs to be started, which is about how Twinkles 2 can best fit in with the rest of DC2. Should Twinkles 2 just be a small patch of sky within DC2?</p>
+<h3 id="notes-on-dithering"><strong>Notes on Dithering:</strong></h3>
+<p>Below is an illustration of the dithers that Humna defined for DC1 PhoSim Deep. The dithered pointing directions are shown connected to their nominal, non-dithered pointings. This is from the discussion in <a href="https://github.com/LSSTDESC/SSim_DC1/issues/27"><em>SSim issue #27</em></a>. The magnitude of the dithers ranges up to half the distance between nominal pointings (i.e. 0.5 field widths, or about 1.8 degrees). The directions and magnitudes of the dithers were random (per unit solid angle) and the pointings selected from minion_1016 were only those that had at least one CCD overlap with the fields covered by the four central pointings after the dithering. That is why the displacements look smaller around the edges.</p>
+<p><img src="images/media/image01.png" width="624" height="530" /></p>
+<h2 id="run-3-dm-processing-progress-report"><strong>Run 3 DM Processing Progress Report</strong></h2>
+<p>Rahul provided the Year 1 and Years 2-10 visit lists, to enable the templates and difference images to be made. Tony has been busy with other things but the pipelines are basically ready to go, except for:</p>
+<p>Simon will push his final changes to pipeline to include Cmodel and HSM size and shape measurements. We agreed that we’d like Cmodel and HSM run on the coaddimages, and HSM on the visit images and DIAimages. These moments will give the SLRealizer something to interpret in itis GMM, and the Cmodel measurements will provide valuable SN host galaxy information.</p>
+</div>
+</div>
+</body>
+</html>

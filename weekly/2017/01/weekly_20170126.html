@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: January 26th, 2017</h1>
+<p>The image differencing problem seems to have been traced to the template coaddition failing due to undersampled images - we’ll try restricting ourselves to images with IQ better than 2.5 pixels (0.5”). Bryce and Rahul are making progress on the error model, training it on Run 1.1 for application to Run 3, and have the upcoming meeting in mind. We resolved some small issues too.</p>
+<h2 id="minor-issues"><strong>Minor Issues</strong></h2>
+<ul>
+<li><blockquote>
+<p>Using notebooks as tests <a href="https://github.com/LSSTDESC/Twinkles/issues/433"><em>#433</em></a> Rahul will experiment woith “nbval”</p>
+</blockquote></li>
+<li><blockquote>
+<p>Migration from astrometry.net <a href="https://github.com/LSSTDESC/Twinkles/issues/432"><em>#432</em></a> Simon will work to get us the files we need.</p>
+</blockquote></li>
+<li><blockquote>
+<p>CIT reliability (travis disk space) <a href="https://github.com/LSSTDESC/Twinkles/issues/426"><em>#426</em></a> (Jim, Heather, Rahul): delete all branches not in use. Brian can help set up jenkins for us: to run master and pull requests. Jenkins can use pre-installed code and will have access data. Unit tests will need to be different. Action: Brian to start on Jenkins setup</p>
+</blockquote></li>
+<li><blockquote>
+<p>PhoSim Run 3 “long jobs” - update? <a href="https://github.com/LSSTDESC/Twinkles/issues/420"><em>#420</em></a> (Tom) Technology is now in hand to run the long jobs! Tom is implementing these things for DC1 PhoSim Deep, and will then be able to run the Twinkles. We will wait to hear back from DC1!</p>
+</blockquote></li>
+<li><blockquote>
+<p>Issue purging - we decided to aggressivley close issues, opening new ones if necessary but in general trying to make issues list more useable and accurate. Action: Everyone!</p>
+</blockquote></li>
+</ul>
+<h2 id="image-differencing-update"><strong>Image Differencing Update</strong></h2>
+<p>We heard from Simon about the image differencing work <a href="https://github.com/LSSTDESC/Twinkles/issues/421"><em>#421</em></a>, to see if we can help with any roadblocks.</p>
+<p>When a visit image is close to undersampled the template coadd is corrupted; u-band is OK but the others are not. Simon suspects a bug, surprised that this is unstable. Short term fix is to select images for template coadd using both a minimum and maximum image quality. Lower bound seems to be (anecdotally) 2.5 pixels or so. Bryce has showed that DM measured seeing is systematically lower than opsim seeing in Run 1.1: we need to plot this for Run 3, which means we need an Object table, and this needs a new config.</p>
+<p>Action: Simon to provide config from master ( <a href="https://github.com/LSSTDESC/Twinkles/issues/422"><em>#422</em></a> )</p>
+<p>Workflow will need to be updated to include command line call that includes new command line config file. Related to this is the top level cookbook, which is our planned Note.</p>
+<p>Action: Phil to start that note and get this moving.</p>
+<p>NB the #421 issue thread is not being used to track progress… Could it be? We decided to try.</p>
+<h2 id="error-model-analysis-update"><strong>Error Model Analysis Update</strong></h2>
+<p>We’ll check in on the development of the Twinkles error model against the Run 1.1 or Run 3 test data. There are no open issues except for a discussion of emulating calibration (<a href="https://github.com/LSSTDESC/Twinkles/issues/415"><em>#415</em></a>) but there should be!</p>
+<p>Action: Bryce: to “import” discussion issues from Monitor</p>
+<p>Rahul and Bryce are working on getting Monitor fully merged and then implementing the error model plan. Both think thatr they have enough information from Run 1.1 to design and test a first go model and its code.</p>
+<h2 id="live-desc-meeting-schedule-perusal"><strong>Live DESC Meeting Schedule Perusal</strong></h2>
+<p>We looked at the upcoming <a href="https://confluence.slac.stanford.edu/display/LSSTDESC/February+13-17%2C+2017+Collaboration+Meeting+-+SLAC"><em>meeting schedule</em></a> together and decide in real time our plan of action. Thoughts:</p>
+<ul>
+<li><blockquote>
+<p>Should we take some posters? Bryce is considering, the CI group could too.</p>
+</blockquote></li>
+<li><blockquote>
+<p>We don’t meet until Thursday, so will think about when we could get together to start sprinting on Tuesday and Wednesday.</p>
+</blockquote></li>
+</ul>
+</div>
+</div>
+</body>
+</html>
