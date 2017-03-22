@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: February 1, 2017</h1>
+<p>Simon is confident that he has cracked the image difference template generation, and expecting the new DIAimages to come out well, is setting up a new two-part pipeline for Tony to engineer into the workflow. At the DESC meeting, we’ll divide our 90 minute session into two parts, and spend half the time bringing the collaboration up to date on Twinkles 1 (and discussing our outstanding issues), and the other half dissecting and tasking our initial plan for Twinkles 2.</p>
+<h2 id="run-3-dm-processing-update">Run 3 DM Processing Update</h2>
+<p>How do the image differences look with the new 2.6 &lt; IQ &lt; 3.0 templates?</p>
+<ul>
+<li><blockquote>
+<p>Simon has a workflow is set up up to AssembleCoadd, both for “global” coadd (for Object creation) and “template” coadd (for DIAObject creation). Configs had to be set up carefully.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Action: Get Tony making template from Year 5 visits, and then differencing the year 5 visit images using that template. This experiment follows a “treat year 5 like it was year 1” philosophy, and will give us a Run 3.1 dataset to work with. He’ll need a year 5 visit list of obsHistIds, to be provided by Rahul (Action!).</p>
+</blockquote></li>
+</ul>
+<p>At the DESC meeting we’ll finalize our route to a complete set of Run 3 object and source tables.</p>
+<h2 id="desc-meeting-session-plan">DESC Meeting Session Plan</h2>
+<p>For our <a href="https://confluence.slac.stanford.edu/display/LSSTDESC/SLAC+2017+-+Twinkles"><em>90-minute Thursday 11am-12:30pm session</em></a> we decided to make two slide sets:</p>
+<ol style="list-style-type: decimal">
+<li><blockquote>
+<p>Twinkles 1 Results - where we show summaries (with figures) of various parts of the project. These will include:</p>
+</blockquote>
+<ul>
+<li><blockquote>
+<p>Quick introduction to design, scope: Phil</p>
+</blockquote></li>
+<li><blockquote>
+<p>PhoSim image creation: Tom (2 slides)</p>
+</blockquote></li>
+<li><blockquote>
+<p>DM processing algorithm improvements: Simon</p>
+</blockquote></li>
+<li><blockquote>
+<p>DM L2 processing at NERSC: Tony</p>
+</blockquote></li>
+<li><blockquote>
+<p>Run 3 Production Status and Outlook: Phil</p>
+</blockquote></li>
+<li><blockquote>
+<p>Data Access: Tables at NERSC, (which tables), access via Jupyter-dev: Bryce</p>
+</blockquote></li>
+<li><blockquote>
+<p>Prospects for jupyter at NERSC (Mustafa?)</p>
+</blockquote></li>
+<li><blockquote>
+<p>Descriptive statistics of the Run 3 / Run 1.1 images and catalogs: Bryce</p>
+</blockquote></li>
+<li><blockquote>
+<p>Error model design, implementation and testing for Run 1.1: Rahul</p>
+</blockquote></li>
+</ul></li>
+<li><blockquote>
+<p>Twinkles 2 Plans - where we define an initial working design and identify work that needs to be done in various areas. The slides will include:</p>
+</blockquote>
+<ul>
+<li><blockquote>
+<p>Overall concept, relative to Twinkles 1, connection to the rest of DC2, timeline: Phil</p>
+</blockquote></li>
+<li><blockquote>
+<p>New cosmology inputs: lensed supernovae, microlensing, non-Ia SNe, hosts/arcs… Phil, Rahul</p>
+</blockquote></li>
+<li><blockquote>
+<p>Non-cosmology inputs: other transients from LSST TVSC, realistic galaxies…: Scott</p>
+</blockquote></li>
+<li><blockquote>
+<p>CI upgrades: PhoSim at NERSC following DC1 PhoSim Deep, others? : Richard</p>
+</blockquote></li>
+<li><blockquote>
+<p>DM processing upgrades: Alerts, Brokered, enhanced templates, objects, MultIfit … : Phil, Simon, Michael</p>
+</blockquote></li>
+<li><blockquote>
+<p>New science projects: SN classification systematics (Rahul), Host-dependent classification (Rahul), lens finding strategy and systematics (Phil), scene modeling tests (Michael and Phil)</p>
+</blockquote></li>
+</ul></li>
+</ol>
+<p>Notes:</p>
+<ul>
+<li><blockquote>
+<p>Jupyter-dev stability, bandwidth: let’s ask Mustafa Mustafa to join us for this session so he can see what we are trying to do. Tom sent an invitation, and Mustafa has accepted! :-)</p>
+</blockquote></li>
+</ul>
+<p>Action: Phil: start slides, partition into sections with names</p>
+<p>Action: Michael start following slides and think of questions about gaps in the program</p>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: February 22, 2017</h1>
+<p>We caught up briefly after last week’s DESC meeting to regroup, and push on. Mostly we identified issues that need, well, issuing, and then working on.</p>
+<h2 id="phosim-object-indexing"><strong>PhoSim Object Indexing</strong></h2>
+<p>We had a reply from John Peterson on our phosim ticket.</p>
+<p>Rahul noted that for larger runs we still need help from PhoSim on object IDs, currently encoded as floats. John says it could be done as a string but asks why we would need to, not understanding why we need so many objects. Double precision should allow us to index everything in the galaxy, but as Scott points out we need to explain to him that we want to add SN to galaxies, etc. and why we want more flexibility in assigning object IDs. Basically we need to convince them that it is useful to do this work before the PhoSim team invests time in it. Jim reported that John says that there’s something in the code that assumes the ID is a float, and so this would be a somewhat significant structural change.</p>
+<h2 id="updates-from-the-slac-2017-desc-meeting"><strong>Updates from the SLAC 2017 DESC Meeting</strong></h2>
+<h3 id="lensed-quasars-in-the-dia-catalogs"><strong>Lensed Quasars in the DIA Catalogs</strong></h3>
+<p>Bryce and Phil worked on a Twinkles hack at the Hack Day, looking at DIAObjects and DIASources. We got one extracted and visualized, but it seemed to be rotated. MWV speculated that there’s something missing in how the information is being passed around (RA, Dec). Maybe there are other objects in the difference image that mess up the measurement?</p>
+<p>MWV - In the non-difference image what do you conclude?</p>
+<p>BK - We did not look at this one in particular, but previously in working on other images we have found the lensed images in the right place. So we need to try some more objects to see what is going on.</p>
+<h3 id="minimal-viable-schema"><strong>Minimal Viable Schema</strong></h3>
+<p>MWV - Jim B. and Brian I put as a note to tackle in the JTM the minimal viable schema. Jim has solved this for Twinkles - taking the output information and saving it a database.</p>
+<p>JC - What is the schedule? The JTM schedule online has only block schedules.</p>
+<p>MWV - The DM hack session runs in parallel with other sessions, on the Tuesday.</p>
+<p>BVK - I have an RFD from DM to make sure we can get stuff out of the database generically and store things in it - will help DESC and other projects.</p>
+<p>JC - This is in Community, right? Can you post the link?</p>
+<p>BVK - Yes, will do. Probably was not visible to people not in DM</p>
+<h3 id="no-u-band-in-year-1"><strong>No u-band in Year 1?</strong></h3>
+<p>In our notes from last week we have written that there seem to be no u-band images in year 1 of Twinkles run 3. Does anyone know why? If we do not have a u-band template we will not have any u-band DIASources.</p>
+<p>Rahul looked it up, and found that it’s not true that in minion_1016 there are no u-band images in year 1 - so we are confused as to whywe would not see u-band images and objects appearing from the pipeline. Could be that these observations are part of the long job set, but that does not make complete sense.</p>
+<p>Rahul will start an issue on this, but MWV is right that we should not let this be a blocker.</p>
+<p>Relatedly, Phil will ask for a short report from Tony and Simon about the steps they are taking to do the Run 3 L2 processing, following their conversations last week.</p>
+<h2 id="general-to-dos"><strong>General To-do’s</strong></h2>
+<p>Phil wants to clean up our issues and organize our plans for Notes. Also we talked some about Twinkles 2 last week but we need to firm up the plans for that - next week, perhaps</p>
+<p>having started some sort of planning document.</p>
+</div>
+</div>
+</body>
+</html>

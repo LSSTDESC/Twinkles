@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1>Twinkles Weekly: February 16, 2017</h1>
+<p>We digested our Twinkles 1 results and identified some action items. Then we looked at our Twinkles 2 Plans, and identified issues to resolve and features to add.</p>
+<h2 id="twinkles-1-results"><a href="https://docs.google.com/presentation/d/1yIKGfGDaX50rszZrudDTA78nV27fxhcvb9NGc-W_uIw/edit#slide=id.p"><strong><em>Twinkles 1 Results</em></strong></a></h2>
+<p>Discussions:</p>
+<p>Phil:</p>
+<ul>
+<li><blockquote>
+<p>Center of field …not exposed to flat fielding problems</p>
+</blockquote></li>
+<li><blockquote>
+<p>Big Dithers ?</p>
+</blockquote></li>
+<li><blockquote>
+<p>Should DC2 be combined Twinkles for PhoSim Deep analogs ?</p>
+</blockquote>
+<ul>
+<li><blockquote>
+<p>Things like flat fielding will be done in PhoSim Deep. So focussing on a chip without these problems is important</p>
+</blockquote></li>
+</ul></li>
+</ul>
+<p>Tom :</p>
+<p>Why did we turn off Clouds? : not turned on because the variation seemed large and wanted to start simple. A Also at that point we were not doing spatially varying zeropoints which is being worked on now.</p>
+<p>Long jobs: (these were 2109 jobs that were predicted to take too long to run based on a model of Run 1.1.)</p>
+<p>Is it ok to not have these nights in the analysis? Probably … will say that we have explored parameter regions.</p>
+<p>Twinkles Metadata:</p>
+<p>We should produce a catalog/database of all of the single-number parameters characterizing PhoSim runs so that we can diagnose why long runs fail.</p>
+<p>Use cases:</p>
+<p>Correlate execution time with moon parameters</p>
+<p>Correlate processCCD execution time with PhoSim execution time.</p>
+<p>Correlate processCCD execution time with number of input sources</p>
+<p>Correlate processCCD execution time with PhoSim seeing and DM measured seeing</p>
+<p>Correlate DM failures with properties of PhoSim runs</p>
+<p>What are the last 10 lines of the failure. What’s the link to the full output.</p>
+<p>How many</p>
+<p>These all should be accessible with a simple “one-line” query call suitable for implementation by a variety of quick scripts. This information should be easily available to DESC members with no more than 2 minutes required to look up the information and no external help or additional authorization required beyond having a NERSC account.</p>
+<p>Parameters to track:</p>
+<p>Number of sources in InstanceCatalog</p>
+<p>PhoSim header entries</p>
+<p>brightest source(?)</p>
+<p>Should we have this for other projects too? Probably yes</p>
+<p>CModel fluxes is on the basis of bulge or disk (using best fit)</p>
+<p>Action Item: Turn on moments</p>
+<p>Visit images : the images thrown out are less than 1 percent of the images. &lt; 0.6 seeing. What is the median ?</p>
+<p>How can we get the workflow tool on a local machine? Why ? For example there are loops in the DM functions that won’t be available to a workflow…</p>
+<p>Decision: difference images against DR1 templates only.</p>
+<p>Possible problem: there do not appear to be u-band images in year 1</p>
+<p><a href="http://jupyter-dev.nersc.gov"><em>http://jupyter-dev.nersc.gov</em></a></p>
+<h2 id="twinkles-2-plans"><a href="https://docs.google.com/presentation/d/1bMR96VNwvJdZys48FgkQZBzahcJWl4SNOJtBTM1EuF4/edit#slide=id.p"><strong><em>Twinkles 2 Plans</em></strong></a></h2>
+<p>Issues:</p>
+<p>Features:</p>
+<p>Actions:</p>
+</div>
+</div>
+</body>
+</html>
