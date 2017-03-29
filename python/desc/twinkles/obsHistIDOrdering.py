@@ -166,7 +166,7 @@ class OpSimOrdering(object):
 
         missing = self.uniqueOpSimRecords.query('obsHistID not in @filteredObsHistID')
         if len(missing) > 0:
-            return missing[['obsHistID', 'predictedPhoSimTimes', 'filter', 'propID']]
+            return missing[['obsHistID', 'expMJD', 'predictedPhoSimTimes', 'filter', 'propID']]
         else:
             return None
 
@@ -226,6 +226,13 @@ class OpSimOrdering(object):
 
     @property
     def Twinkles_3p3(self):
+        """
+        dataFrame of visit obsHistID for Run 3p3. These are DDF visits
+        that have `predictedPhoSimRunTime` smaller than `maxtime`, and
+        were not covered in either the set of unique visits covered in
+        Run 3.1 or the visits in a particular year covered as part of
+        3.2 
+        """
         obs_1 = self.Twinkles_3p1.obsHistID.values.tolist()
         obs_1b = self.Twinkles_3p1b.obsHistID.values.tolist()
         obs_2 = self.Twinkles_3p2.obsHistID.values.tolist()
@@ -233,7 +240,21 @@ class OpSimOrdering(object):
         query = 'obsHistID not in @obs'
         return self.filteredOpSim.query(query).sort_values(by='expMJD',
                                                            inplace=False)
-        
+    @property
+    def Twinkles_3p4(self):
+        """
+        tuple of dataFrames for wfd and ddf visits for visits left out
+        of Run 3p1,2,3 due to high predicted phosim times, orderded by
+        predicted phosim run times.
+        """
+        leftovers = self.obsHistIDsPredictedToTakeTooLong
+        wfdvisits = leftovers.query('propID == 54')
+        wfdvisits.sort_values(by='expMJD', inplace=True)
+        ddfvisits = leftovers.query('propID == 56')
+        ddfvisits.sort_values(by='expMJD', inplace=True)
+        return wfdvisits, ddfvisits
+
+
     @staticmethod
     def fullOpSimDF(opsimdbpath,
                     query="SELECT * FROM Summary WHERE FieldID == 1427 ORDER BY PROPID"):

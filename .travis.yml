@@ -1,23 +1,25 @@
 language: C
 
 install:
-  - travis_wait 25 ./setup/travis_install.sh lsst-sims nose pandas pylint
+  - travis_wait 30 ./setup/travis_install.sh lsst-sims nose pandas pylint future scikit-learn
   - ln -sf /home/travis/miniconda/lib/libssl.so.1.0.0 /home/travis/miniconda/lib/libssl.so.10
   - ln -sf /home/travis/miniconda/lib/libcrypto.so.1.0.0 /home/travis/miniconda/lib/libcrypto.so.10
   - export PATH="$HOME/miniconda/bin:$PATH"
   - source eups-setups.sh
   - pip install coveralls
-  - setup lsst_sims
-  - eups declare -r . Twinkles -t current
-  - setup Twinkles
+  - pip install om10
+  - eups declare -r . twinkles -t current
+  - setup twinkles
 
 cache:
   directories:
   - $HOME/miniconda.tarball
   timeout: 600
+
 before_cache:
   - du -h $HOME/miniconda.tarball
   - ls -l $HOME/miniconda.tarball
+
 services:
   - mysql
 
@@ -27,7 +29,7 @@ before_script:
 
 script:
   - nosetests -s --with-coverage --cover-package=desc.twinkles
-  - pylint --py3k `find . -name \*.py -print | grep -v workflows`
+  - pylint -r n --py3k `find . -name \*.py -print | grep -v workflows | grep -v configScripts`
 
 after_success:
   - coveralls

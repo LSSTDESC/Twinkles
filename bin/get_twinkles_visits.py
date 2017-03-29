@@ -3,7 +3,7 @@
 Command line tool to extract obsHistIDs (visit numbers) from an OpSim db
 file given a fieldID.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import os
 import argparse
 import pandas as pd
@@ -53,6 +53,15 @@ if args.orderObsHistID:
     with open(args.outfile, 'a') as output:
         output.write('# Begin Section Twinkles 3.3\n')
     ops.Twinkles_3p3.obsHistID.to_csv(args.outfile, index=False, mode='a')
+
+    Obs_3p4a, Obs_3p4b = ops.Twinkles_3p4
+    with open(args.outfile, 'a') as output:
+        output.write('# Begin Section Twinkles 3.4 WFD\n')
+    Obs_3p4a['obsHistID'].to_csv(args.outfile, index=False, mode='a')
+    with open(args.outfile, 'a') as output:
+        output.write('# Begin Section Twinkles 3.4 DDF\n')
+    Obs_3p4b['obsHistID'].to_csv(args.outfile, index=False, mode='a')
+
     print("Left out {0} visits due to"
           "the time limit of {1}".format(len(ops.obsHistIDsPredictedToTakeTooLong),
                                          args.maxPredTime))

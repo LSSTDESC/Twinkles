@@ -1,4 +1,4 @@
-from __future__ import with_statement
+from __future__ import with_statement, absolute_import
 import numpy as np
 import os
 from lsst.utils import getPackageDir
@@ -30,7 +30,7 @@ def create_star_cache(db=None):
                            ('mura', float), ('mudecl', float),
                            ('parallax', float), ('ebv', float),
                            ('vrad', float), ('varParamStr', str, 256),
-                           ('sedfilename', unicode, 40),
+                           ('sedfilename', str, 40),
                            ('gmag', float)])
 
     col_names = list(star_dtype.names)
