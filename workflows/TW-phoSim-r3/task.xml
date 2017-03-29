@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline xmlns="http://glast-ground.slac.stanford.edu/pipeline" 
+          xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" 
+          xs:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline 
+          http://srs.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
+
+<task name="TW-phoSim-r3" version="1.4" type="LSST">
+
+      <notation>
+               Twinkles run3 phoSim generation
+      </notation>
+
+      <variables>  <!-- Task-level -->
+            <var name="DESC_ROOT">/nfs/farm/g/desc</var>
+
+<!-- Job control variables -->
+            <var name="TW_ROOT">${DESC_ROOT}/u1/Pipeline-tasks/TW-phoSim-r3</var>
+            <var name="TW_CONFIGDIR">${TW_ROOT}/config</var>
+            <var name="TW_SIXDIGSTREAM">${format(pipeline.stream,&quot;%06d&quot;)}</var>
+   <!-- Tell pipeline where to store log files -->
+            <var name="logRoot">${TW_ROOT}/logs</var>
+
+            <var name="TW_BATCHOPTIONS"> -sp 50 </var>       <!-- batch priority -->
+            <var name="TW_BATCHRESOURCES"> maxmem&gt;2500 </var> <!-- at least 2.5GB system memory -->
+	    <var name="TW_TEMPLATE">select[(scratch&gt;20 || bullet) &amp;&amp; maxmem&gt;2500]</var><!-- template only, not used -->
+
+            <var name="TW_XTRABATCHOPTIONS"></var>           <!-- intentionally left EMPTY - for rollback -->
+            <var name="TW_XTRABATCHRESOURCES"></var>         <!-- intentionally left EMPTY - for rollback -->
+
+   <!-- RunTime: SLAC batch estimated (We) and absolute (W) run time limits (in wall-clock minutes) -->
+ 	    <var name="setupObsRT"> -We 3 -W 30 </var>  
+ 	    <var name="phoSimPrepRT"> -We 60 -W 240 </var>  
+ 	    <var name="phoSimRT"> -We 3000 -W 7200 </var>  
+ 	    <var name="phoSimRegRT"> -We 5 -W 30 </var>  
+ 	    <var name="wrapUpRT"> -We 3 -W 30 </var>  
+
+   </variables>
+
+
+<!--========================================================================================-->
+
+<!-- Set up and dispatch some number of phoSim instances -->
+
+     <process name="setupVisit">
+       <job
+	  executable="${TW_CONFIGDIR}/setupVisit.py"
+	  batchOptions="${setupObsRT} ${TW_BATCHOPTIONS} ${TW_XTRABATCHOPTIONS} -R  &quot;${TW_XTRABATCHRESOURCES}&quot;"
+       />
+     </process>
+
+
+
+      <process name="setupPhoSim-jy">
+         <script><![CDATA[ 
+
+execfile(TW_CONFIGDIR+"/setupPhoSim.jy")
+
+           ]]>
+         </script>
+	 <depends>
+	   <after process="setupVisit" status="SUCCESS"></after>
+	 </depends>
+         <createsSubtasks>
+           <subtask>singleSensor</subtask>
+         </createsSubtasks>
+      </process>
+
+
+<!-- Wrap-up, registration, bookkeeping, reports, etc. -->
+
+     <process name="wrapUp-jy">
+         <script><![CDATA[ 
+
+execfile(TW_CONFIGDIR+"/wrapUp.jy")
+
+           ]]>
+         </script>
+       <depends>
+	 <after process="singleSensor.phoSimFinalize-jy" status="SUCCESS"></after>
+       </depends>
+     </process>
+
+
+     <process name="wrapUp">
+       <job
+	  executable="${TW_CONFIGDIR}/wrapUp.py"
+	  batchOptions="${wrapUpRT} ${TW_BATCHOPTIONS} ${TW_XTRABATCHOPTIONS} -R  &quot;${TW_XTRABATCHRESOURCES}&quot;"
+       />
+       <depends>
+	 <after process="wrapUp-jy" status="SUCCESS"></after>
+       </depends>
+     </process>
+
+
+<!-- ======================================================================================= -->
+<!-- ======================================================================================= -->
+
+
+<!-- SUBTASK for parallelized phoSim processing -->
+     <task name="singleSensor" version="1.0" type="LSST">
+
+<!--  Run phoSim for a specific observation -->
+      <process name="phoSimPrep">                                                                                                                      
+         <job
+              executable="${TW_CONFIGDIR}/phoSimPrep.sh"
+              batchOptions="${phoSimPrepRT} ${TW_BATCHOPTIONS} ${TW_XTRABATCHOPTIONS} -R  &quot;${TW_XTRABATCHRESOURCES}&quot;"
+         />
+      </process>
+
+<!--  Run phoSim for a specific observation -->
+      <process name="phoSim">                                                                                                                      
+         <job
+              executable="${TW_CONFIGDIR}/runPhoSim.py"
+              batchOptions="${phoSimRT} ${TW_BATCHOPTIONS} ${TW_XTRABATCHOPTIONS} -R  &quot;${TW_BATCHRESOURCES} ${TW_XTRABATCHRESOURCES}&quot;"
+         />
+       <depends>
+	 <after process="phoSimPrep" status="SUCCESS"></after>
+       </depends>
+      </process>
+
+
+<!--  Register phoSim output data products in dataCatalog (python api) -->
+      <process name="phoSimReg">                                                                                                                      
+         <job
+              executable="${TW_CONFIGDIR}/phoSimReg.py"
+              batchOptions="${phoSimRegRT} ${TW_BATCHOPTIONS} ${TW_XTRABATCHOPTIONS} -R  &quot;${TW_XTRABATCHRESOURCES}&quot;"
+         />
+       <depends>
+	 <after process="phoSim" status="SUCCESS"></after>
+       </depends>
+      </process>
+
+
+<!-- Perform any final scriptlet actions -->
+     <process name="phoSimFinalize-jy">
+         <script><![CDATA[ 
+
+execfile(TW_CONFIGDIR+"/phoSimFinalize.jy")
+
+           ]]>
+         </script>
+       <depends>
+	 <after process="phoSimReg" status="SUCCESS"></after>
+       </depends>
+     </process>
+
+   </task>  <!-- singleSensor -->
+
+<!-- ======================================================================================= -->
+<!-- ======================================================================================= -->
+
+   </task> <!-- end of Twinkles-phoSim top-level task definition -->
+
+</pipeline>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,26 @@
+# Turn on debugging file
+centroidfile 1
+
+# Does this turn off treerings too?
+cleardefects
+
+# Also turn off clouds and airglow variation
+clearclouds
+airglowvariation 0
+
+# Set the nominal dark sky brightness
+zenith_v 21.8
+
+# Leave on CRs but turn off fringing.  ISR will take care of fringing, # but CRs are currently taken out in
+# image characterization.
+fringing 0
+
+# Activate internal checkpointing
+#   Initial conditions should be:
+#   checkpointtotal = total number of desired checkpoints - 1
+#   checkpointcount = 0  (but set to "%" for automated management of that value)
+#checkpointtotal 8
+#checkpointcount %
+
+# Disable optics contamination
+contaminationmode 0
