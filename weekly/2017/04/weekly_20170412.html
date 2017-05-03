@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1><strong>Twinkles Weekly: April 12, 2017</strong></h1>
+<p>We discussed progress in Run 3 at NERSC on making coadd images - bugs are still being found and dealt with. To prepare for the final production run, we talked about how to emulate the DR processing we need for the error model analysis. Then, we collected some lessons learned from DC1 prior to the upcoming DC2 discussion.</p>
+<h2 id="run-3-progress">Run 3 Progress</h2>
+<p>News from NERSC, Tony and Simon:</p>
+<p>Tony will try to rerun again after randomly sorting on the filters. Simon offered an updated release which will require Mustafa to create a fresh Docker image. Tony also mentioned a new failure concerning one of the co-adds - he will send the details to Simon.</p>
+<p>Looking more closely at the run on the <a href="http://srs.slac.stanford.edu/Pipeline-II/exp/SRS/si.jsp?stream=44405098&amp;d-4021922-p=2"><em>full twinkles run3 processing</em></a>, 4 jobs failed at “level2AssembleCoadd” aka assembleCoadd_deep.py. The log files are <a href="http://srs.slac.stanford.edu/Pipeline-II/exp/SRS/process.jsp?process=43430056&amp;status=0&amp;pstream=44405098"><em>here</em></a>. They all core dumped. After discussion we will try re-running these jobs, perhaps after having asked Mustafa if he has any ideas about how to instrument the jobs. Simon suggests looking at <a href="https://collectd.org/"><em>collectd</em></a>.</p>
+<p>Simon suggests that we might want to cut off the coadds after perhaps a one year period, since the value of adding one more visit goes down as sqrt(n). This led to a discussion of which visits should actually go in each coadd image. Emulating the DR processing is our guide: Rahul will suggest a scheme to do this, so that when we are done experimenting we can move to production.</p>
+<h2 id="lsst-desc-note-progress">LSST DESC Note Progress</h2>
+<p>Rahul has been working on using the infrastructure to write a note for the supernova project. He asked, where should his Note’s data products go, and the associated scripts used to create the note? The data products are about 4 GB. We agreed that storing the data products elsewhere, but providing a link to them, allows a notebook to be made that can be run by anyone (but perhaps not Travis or Jenkins) after they have downloaded the data. The scripts shoudl live in the Note’s own folder (perhaps in a “code” or “scripts” folder).</p>
+<h2 id="section"></h2>
+<h2 id="feedback-to-leadership-for-dc2-planning">Feedback to Leadership for DC2 Planning</h2>
+<p>The DESC mgmt and WG conveners will be using their next 3 upcoming telecons before the BNL meeting to allow each working group to provide a brief, ~10 minute, update. These updates should include</p>
+<blockquote>
+<p><em>1) DC1 activities: What are the main deliverables? What’s on track/ delayed?</em></p>
+<p><em>2) DC2 plans: What are the highest priority deliverables? Any significant deviations from SRM?</em></p>
+<p><em>3) Any requests/highlights/concerns for other WGs as we plan for the BNL meeting?</em></p>
+<p><em>With the conclusion of DC1 and the start of preparing for DC2, the summer will be an appropriate time to make revisions to the SRM, so these telecon updates will help set the context.</em></p>
+</blockquote>
+<p>SN, SL and SSim are due to present on Tuesday April 18th (next week) - we’ll discuss the Twinkles contribution for each of these groups.</p>
+<p>Notes from discussion:</p>
+<p>In DC2 we’ll need more people involved in running jobs at NERSC, and developing pipelines against DM. Single point (person) failures will need to be avoided! This means we need more experts in DM and NERSC. The Hack Weeks so far did well at bringing science and infrastructure teams together, but we need more people with infrastructure knowledge. This could be addressed via hack week design: eg a Twinkles-specific week could be shaped to do better at getting non-CI people up to required level in DM development or NERSC useage. Our sense is that knowledge transfer can work well in groups like Twinkles but still needs conscious effort on both the master and apprentice side.</p>
+<p>DC2 could improve engagement by having the final challenge datasets being presented to the collaboration at a single point in time. To help with dataset generation we could engage “Evil Teams” from within separate WGs early, to work on the inputs to the challenge.</p>
+<p>On the analysis side, we should not repeat the DC1 mistake of not defining science analyses (via paper abstracts) in advance. Science analyses need registering early, preferably by planning papers.</p>
+<p>DC2 schedule: at some level it’s astonishing to be talking about generating DC2 while we are still learning from DC1! Something will have to give. One possibility could be to curtailing DC1 in order to start on DC2. Downscoping DC2, DC3 in order to stay on track also sound appealing. (DC1 Phosim Deep is looking less and less practical given the timeline, and our current tools and resources: we are still only 45% way through).</p>
+<p>Fermi-LAT DCs were helped by having firm dates for delivery of datasets to the collaboration. (Some re-scoping was done on the fly to meet these deadlines). Data release dates were well before collaboration meetings, to give time for analysis to be shown at meetings. Science analyses had deliverables that were then spoken to at meetings. This worked well!</p>
+</div>
+</div>
+</body>
+</html>
