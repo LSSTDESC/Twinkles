@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+   <style type="text/css">code{white-space: pre;}</style>
+   <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/stylesheet.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/github-dark.css" media="screen">
+   <link rel="stylesheet" type="text/css" href="../../../stylesheets/print.css" media="print">
+
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../../../stylesheets/pandoc.css" type="text/css" />
+</head>
+<body>
+   <div id="container">
+   <div class="inner">
+
+<h1><strong>Twinkles Weekly: March 29, 2017</strong></h1>
+<p>Cori is still having a lot of outages at NERSC (most of them scheduled), but Tom reported on some promising news from a short window when demand was low: the DC1 PhoSim Deep image simulation jobs were able to be executed pretty efficiently, which bodes well. Tony reported that we are now over halfway through the `processEimage` phase of the Level 2 processing - coadd creation and image differencing will follow this. We then turned to our DESC Note setup, making a Note from scratch live on the call, so that people see how to use `start_paper`.</p>
+<h2 id="twinkles-2-organization">Twinkles 2 Organization</h2>
+<p>We’ll go ahead with our plan following no dissent on Slack! The Twinkles team leader position remains open.</p>
+<h2 id="run-3-level-2-processing-update">Run 3 Level 2 Processing Update</h2>
+<p>News from NERSC? Several shutdowns over the last week or two. Recovery capability from shutdown seems to be under development. Part of this is on us: we rely on some cron jobs, which may go down with the hardware. Other problems include: lack of login, disappearance of file system. Tom thinks that we are helping them somewhat in identifying necessary recovery steps, which is cool.</p>
+<p>Some success on Monday before outage: DESC CI managed to get hold of 170 cores, to make 1700 simultaneous DC1 PhoSim jobs. Unusual situation, in window right before scheduled shutdown… but our ability to scale up PhoSim was demonstrated.</p>
+<p>Tony reported that 13000 out of 21000 processEimage jobs are now complete, which is great. He will keep pushing on these; the next step will be coadd creation and then image differencing. Simon suggested doing some tests on a small multi-filter subset while we wait, Tony will produce one.</p>
+<h2 id="research-notes-update">Research Notes Update</h2>
+<p>Phil has been swamped, and still has not set up branches with `start_paper` notes in them. We made the Pserv note live, so that everyone could see how to make their own.</p>
+<ul>
+<li><blockquote>
+<p>The Twinkles Notes folder contains a <a href="https://github.com/LSSTDESC/Twinkles/blob/master/doc/LSST_DESC_Notes/README.md"><em>README</em></a>, to be kept up to date with the locations of the Notes and their various states.</p>
+</blockquote></li>
+</ul>
+<ul>
+<li><blockquote>
+<p>The Epic on Twinkles 1 LSST DESC Notes (<a href="https://github.com/LSSTDESC/Twinkles/issues/284"><em>#284</em></a>) contains our list of Notes. Find your note in the list.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Issue yourself with the making of the note (search issues first to avoid dup issues).</p>
+</blockquote></li>
+<li><blockquote>
+<p>In the Twinkles repo (or wherever your note should live) make a branch like: issue/issuenumber/note_name</p>
+</blockquote></li>
+<li><blockquote>
+<p>Go to Twinkles/docs (or wherever your note should live) -- the `start_paper` cookiecutter will put a folder in this directory.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Follow directions at <a href="https://github.com/LSSTDESC/start_paper"><em>https://github.com/LSSTDESC/start_paper</em></a></p>
+</blockquote></li>
+<li><blockquote>
+<p>The cookiecutter command leads to a set of questions you should answer. Answer them as best you can.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Note: serial number is not set initially. The pub board will give you one at some point. Just accept 0000.</p>
+</blockquote></li>
+<li><blockquote>
+<p>You can choose the format, but it will produce the supporting material for all the possible formats. The possible formats currently are: tex, apj, mnras, prl, prd, ipynb, md, rst.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Edit the `authors.csv` file, following the directions in the header.</p>
+</blockquote>
+<ul>
+<li><blockquote>
+<p>NB. Contributions are not timecard, but instead a summary of your most important contributions.</p>
+</blockquote></li>
+</ul></li>
+<li><blockquote>
+<p>Open editor or notebook (depending on your chosen format), start editing the appropriate `main.*` file.</p>
+</blockquote>
+<ul>
+<li><blockquote>
+<p>Note authors are not currently read from authors.csv in ipynb, rst, md formats, so author lists need to be maintained by hand… This is a start_paper bug.</p>
+</blockquote></li>
+<li><blockquote>
+<p>You can leave the other format files lying around, in case you decide to switch formats.</p>
+</blockquote></li>
+</ul></li>
+<li><blockquote>
+<p>When you are ready, `git add` all the files you just created. Don’t forget to `git add .*` as well, to catch the .files.</p>
+</blockquote></li>
+<li><blockquote>
+<p>`git commit` and `push` to a new remote branch of the same name.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Open the pull request, so conversation can commence.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Don’t assign reviewers until the Note is “finished” and ready to be merged to `master`.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Don’t forget to refer to the issue, so that the PR and issue are correctly hyperlinked together. You might also refer to #284 (the notes epic)</p>
+</blockquote></li>
+</ul>
+</div>
+</div>
+</body>
+</html>
