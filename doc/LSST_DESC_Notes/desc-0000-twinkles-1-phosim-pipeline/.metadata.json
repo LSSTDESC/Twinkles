@@ -1,0 +1,12 @@
+{
+    "author": "Tom Glanzman",
+    "affiliation": "SLAC",
+    "email": "dragon@slac.stanford.edu",
+    "title": "Twinkles 1 PhoSim Pipeline and Results",
+    "description": "We describe the implementation of the Twinkles 1 PhoSim pipeline, taking pre-made instance catalogs and processing them into e-images. The SLAC workflow engine `pipeline-II` is used to handle the processing, which was performed on the batch system at SLAC. XXX images were generated in a wallclcok time of XXX days, at an efficiency of XX%",
+    "repo_name": "Twinkles",
+    "serial_number": "0000",
+    "short_title": "1-phosim-pipeline",
+    "folder_name": "desc-0000-twinkles-1-phosim-pipeline",
+    "default_format": "rst"
+}
