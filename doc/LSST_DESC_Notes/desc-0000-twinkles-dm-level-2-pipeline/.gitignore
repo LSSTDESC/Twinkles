@@ -1,0 +1,24 @@
+### Emacs
+\#*#
+\.#*
+*~
+
+### Latex
+*.fls
+*.aux
+*.log
+*.fdb_*
+*.out
+*.blg
+*.bbl
+*Notes.bib
+main.pdf
+main.tar.gz
+
+### other files produced during compilation
+authors.tex
+contributions.tex
+
+### cookiecutter files
+desc-0000-twinkles-dm-level-2-pipeline.pdf
+desc-0000-twinkles-dm-level-2-pipeline.tar.gz
