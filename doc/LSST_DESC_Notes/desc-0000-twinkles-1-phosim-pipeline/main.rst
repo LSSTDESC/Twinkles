@@ -4,12 +4,12 @@
   :align: center
 
 ========================================================================
-Twinkles 1 PhoSim Pipeline and Results
+The Twinkles 1 ``PhoSim`` Pipeline and Results
 ========================================================================
 
-*Tom Glanzman*
+*Tom Glanzman and others*
 
-We describe the implementation of the Twinkles 1 PhoSim pipeline, taking pre-made instance catalogs and processing them into e-images. The SLAC workflow engine `pipeline-II` is used to handle the processing, which was performed on the batch system at SLAC. XXX images were generated in a wallclcok time of XXX days, at an efficiency of XX%
+We describe the implementation of the Twinkles 1 ``PhoSim`` pipeline, taking pre-made instance catalogs and processing them into e-images. The SLAC workflow engine ``pipeline-II`` is used to handle the processing, which was performed on the batch system at SLAC. XXX images were generated in a wallclock time of XXX days, at an efficiency of XX%
 
 .. |date| date::
 This Note was generated on: |date|

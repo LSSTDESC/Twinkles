@@ -29,4 +29,4 @@
 #
 # ======================================================================
 Lastname,Firstname,Authorname,AuthorType,Affiliation,Contribution,Email
-"Lastname", "Firstname","Tom Glanzman",Contact,"SLAC","Initiated project, led development work.","dragon@slac.stanford.edu"
+"Glanzman", "Tom","Tom Glanzman",Contact,"SLAC","Led pipeline development work, operated pipeline.","dragon@slac.stanford.edu"
