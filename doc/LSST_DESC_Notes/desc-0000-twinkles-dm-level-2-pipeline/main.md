@@ -11,11 +11,17 @@ This Note was generated on: |date|
 
 ## Introduction
 
-Phil & Simon: Overall Twinkles philosophy. Goals of Twinkles 1, implications for DM processing. Which measurements and why?
+Twinkles is a pathfinder project, to carry out a small end-to-end test of a DESC analysis of LSST data. During LSST operations, we expect to use LSST data catalog products to do cosmology, investigating the systematic errors present in those data using our own simulated images. These images will need to be processed in exactly the same way as the LSST images were, in order for us to be able to interpret the catalogs accurately, which means that the DESC will need to maintain and operate its own emulation of the LSST DM pipeline. In this Note we describe the first version of this emulated pipeline, assembled for the Twinkles 1 project, and investigate its performance at NERSC on the Twinkles 1 images.
 
-Phil & Simon: Annual release emulation. Level 1 vs Level 2, (prompt, DRP), "reprocessing." 
+The science goals of Twinkles 1 are to understand the error properties of the LSST-measured light curves of type Ia supernovae and strongly lensed quasars, such that they can be simulated at much larger scale using simple catalog-level approximations. These larger simulations will be used for sensitive tests of detection, classification and light curve measurement. The multi-purpose nature of the intended application of the Twinkles results means that we need the DM pipeline to return a realistically wide variety of measurements. For light curve measurement we require forced photometry of DIAObjects; for the blended lensed quasars, we are also interested in the measurements of flux, position and second moments of the DIASources. Detection and classification of both supernovae and lensed quasars is likely to be enhanced by the measurements of Objects ad Sources characterized during the static sky analysis; forced photometry on the Objects is also of interest. 
 
-Phil & Simon: Approach to calculation: workflow engine, caveats; NERSC operation. Twinkles as pathfinder.
+The above considerations lead us to focus on emulation of the Annual Data Release Processing (DRP), including re-processing of the prompt difference imaging analysis images to make refined DIAObject light curves. Since detection and classification is only a secondary goal in Twinkles 1, we do not emulate the prompt, "Level 1" processing; in Twinkles 1 and in this Note we focus on the "Level 2" DRP, including DIA image re-processing. This gives rise to a pipeline with two parallel branches, which can be used to produce a "data release" set of catalogs:
+
+1. **Image Coaddition and Object Characterization**. Visit images from years 1 through K are combined to make a Coadd image, and CoaddSources detected. These are used to build an Object table. ForcedSources are then measured in every visit image at the Object positions.
+
+2. **Image Differencing and DIA Source/Object Characterization**. Visit images from years 1 through (K-1) are combined to make a good seeing template image. Visit images from year K are then difference with that template, and DIASources detected. These are associated (clustered) into DIAObjects. ForcedDIASources are then measured in every visit difference image at the DIAObject positions.
+
+The LSST DM Stack tasks used in this branched pipeline are described in the Twinkles "cookbook", introduced in Section 2 below. The tasks themselves are run by a workflow engine, introduced in Section 3. Results from processing the Twinkles 1 images at NERSC are presented in Section 4. We provide some discussion of these results in Section 5 before concluding.
 
 
 ## The Twinkles DM Cookbook
