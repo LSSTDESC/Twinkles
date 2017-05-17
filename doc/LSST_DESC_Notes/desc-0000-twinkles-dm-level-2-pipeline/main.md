@@ -2,7 +2,7 @@
 
 # The Twinkles Emulated DM Level 2 Pipeline and Results
 
-*Simon Krughoff, Tony Johnson, Brian Van Klaveren and others*
+*Simon Krughoff, Tony Johnson, Brian Van Klaveren, Phil Marshall and others*
 
 We describe the Twinkles emulation of the expected LSST Data Management Level 2 image processing pipeline. The workflow has two branches, for image coaddition, Source characterization and ForcedSource measurement, and in parallel, for template image generation, image differencing, DIASource characterization and DIAObject measurement. We introduce our 'cookbook' of markdown format 'recipes' for each stage in this pipeline, and describe our implementation of it using the SLAC Workflow Engine at NERSC. On the Cori Haswell partition we were able to process XX images in XXX CPU hours at XX% efficiciency, and discuss prospects for future data challenges.
 
