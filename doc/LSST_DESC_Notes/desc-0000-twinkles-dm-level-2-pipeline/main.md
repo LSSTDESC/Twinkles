@@ -11,25 +11,53 @@ This Note was generated on: |date|
 
 ## Introduction
 
-Write your introduction here!
+Phil & Simon: Overall Twinkles philosophy. Goals of Twinkles 1, implications for DM processing. Which measurements and why?
 
-## Method
+Phil & Simon: Annual release emulation. Level 1 vs Level 2, (prompt, DRP), "reprocessing." 
 
-Write about your methods here! Or change the sections to whatever you want!
+Phil & Simon: Approach to calculation: workflow engine, caveats; NERSC operation. Twinkles as pathfinder.
+
+
+## The Twinkles DM Cookbook
+
+The details of the DM stack processing steps are contained in a set of markdown-format "cookbook recipes," as follows:
+
+### [Static Sky Analysis](https://github.com/LSSTDESC/Twinkles/blob/master/doc/Cookbook/DM_Level2_Recipe.md)
+
+### [Level 1 Difference Imaging Analysis](https://github.com/LSSTDESC/Twinkles/blob/master/doc/Cookbook/Coadd_Diffim_Recipe.md)
+
+### [Level 2 DIA Reprocessing](https://github.com/LSSTDESC/Twinkles/blob/master/doc/Cookbook/Reprocessed_DIAObjects_Recipe.md)
+
+
+## DM Level 2 Processing with the SLAC Workflow Engine
+
+Tony: Brief notes on SLAC workflow engine, w/references. Basics of implementation. Flow diagram. Internal methodology: Simon wrote cookbook recipes, Tony translated their steps into workflow engine scripts.
+
+Brian: Operating at NERSC, what did it take?
 
 ## Results
 
-Write about your results here! Or don't!
+Tony: Throughput. Success rate. Remaining bugs.
 
-## Conclusions
+Tony: Efficiency: wallclock vs CPU time.
 
-Write about your conclusions here. You have drawn some, right?
-
-
+Tony: Plots!
 
 
+## Discussion and Conclusions
 
-# Appendix: LSST DESC Notes `Markdown` Reference
+Simon: Overall success of pipeline as implemented.
+
+Simon: Deficiencies of pipeline - what's missing? Amp images (Twinkles 2), full focal plane. Additional measurements?
+
+Tony: Memory useage. Implications for KNL.
+
+
+
+-----
+
+
+## Appendix: LSST DESC Notes `Markdown` Reference
 
 You can delete all of this whenever you're ready.
 
