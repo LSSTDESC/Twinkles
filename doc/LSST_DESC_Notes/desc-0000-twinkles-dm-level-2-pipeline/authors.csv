@@ -32,3 +32,4 @@ Lastname,Firstname,Authorname,AuthorType,Affiliation,Contribution,Email
 "Krughoff", "Simon","Simon Krughoff",Contact,"University of Washington","Wrote the DM Level 2 cookbook recipes., ","ksk@astro.uw.edu"
 "Johnson","Tony","Tony~Johnson",Contributor,"SLAC National Accelerator Laboratory, Menlo Park, CA 94025, USA","Implemented cookbook in SLAC workflow engine, oversaw its operation at NERSC.",tony-johnson@slac.stanford.edu
 "Van Klaveren","Brian","Brian Van Klaveren",Contributor,"SLAC National Accelerator Laboratory, Menlo Park, CA 94025, USA","Adapted workflow engine to enable operation at NERSC.",tony-johnson@slac.stanford.edu
+"Marshall","Phil","Phil Marshall",Contributor,"SLAC National Accelerator Laboratory, Menlo Park, CA 94025, USA","Advised on details of annual DRP implementation and pipeline emulation.",dr.phil.marshall@gmail.com
