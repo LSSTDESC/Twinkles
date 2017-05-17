@@ -1,0 +1,12 @@
+{
+    "author": "Bryce Kalmbach",
+    "affiliation": "University of Washington",
+    "email": "jbkalmbach@uw.edu",
+    "title": "The Twinkles 1 Strong Lens Population",
+    "description": "The Twinkles 1 field is overloaded with supernovae and strongly lensed quasars. In this Note we describe the input lens population, and how the lens systems are "sprinkled" into the PhoSim instance catalogs, having been matched by redshift and stellar mass.",
+    "repo_name": "Twinkles",
+    "serial_number": "0000",
+    "short_title": "1-sl-pop",
+    "folder_name": "desc-0000-twinkles-1-sl-pop",
+    "default_format": "ipynb"
+}
