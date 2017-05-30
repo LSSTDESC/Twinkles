@@ -19,6 +19,9 @@ args = parser.parse_args()
 
 df = OpSimOrdering.fullOpSimDF(opsimdbpath=args.opsimDB)
 
+# Do what is done in uniqueOpSimRecords
+df.drop_duplicates(keep='first', subset='obsHistID', inplace=True)
+
 df['year'] = df.night // 365
 df['year'] = df.year.astype(np.int)
 
