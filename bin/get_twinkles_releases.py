@@ -28,13 +28,16 @@ df['year'] = df.year.astype(np.int)
 
 print(' Will write out obsHistIDs\n')
 release_type = args.release_type
+if release_type == "WFD":
+    df = df.query('propID == 54')
+
 for year in np.sort(df.year.unique()):
     release_name = os.path.join(args.outputDir, 
                                 'year_{0:02d}_Release_{1}.csv'.format(year + 1, release_type))
     coadd_name  = os.path.join(args.outputDir,
                                'year_{0:02d}_Coadds_{1}.csv'.format(year + 1, release_type ))
     templates_name  = os.path.join(args.outputDir,
-                                  'year_{0:02d}_DIAvisits.csv'.format(year + 1 ))
+                                  'year_{0:02d}_DIAvisits_{1}.csv'.format(year + 1, release_type))
     df.query('year == @year').obsHistID.to_csv(release_name, index=False)
     df.query('year <= @year').obsHistID.to_csv(coadd_name, index=False)
     df.query('year < @year').obsHistID.to_csv(templates_name, index=False)
