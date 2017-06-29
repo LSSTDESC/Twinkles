@@ -1,0 +1,12 @@
+{
+    "author": "Scott Daniel",
+    "affiliation": "University of Washington",
+    "email": "scottvalscott@gmail.com",
+    "title": "Static Sky Simulations in Twinkles",
+    "description": "A description of the simulations used to generate the static sky in the Twinkles images.",
+    "repo_name": "ProjectName",
+    "serial_number": "0000",
+    "short_title": "twinkles_simulations",
+    "folder_name": "desc-0000-twinkles_simulations",
+    "default_format": "tex"
+}
