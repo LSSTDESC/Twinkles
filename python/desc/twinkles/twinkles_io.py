@@ -19,7 +19,7 @@ def read_catsimInstCat(filename):
     df = pd.read_csv(filename)
     mydict = dict()
     for col in df.columns:
-	mydict[col]=col[1:]
+        mydict[col]=col[1:]
     df.rename(columns=mydict, inplace=True)
     return df
 
