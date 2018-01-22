@@ -1,28 +1,47 @@
 from __future__ import absolute_import, division, print_function
 import numpy
 import math
+import json
+import ast
 from scipy.interpolate import interp1d
 from lsst.sims.catalogs.decorators import register_class, register_method, compound
-from lsst.sims.catUtils.mixins import Variability
+from lsst.sims.catUtils.mixins import Variability, ExtraGalacticVariabilityModels, VariabilityAGN
+from lsst.sims.catUtils.mixins.VariabilityMixin import _VariabilityPointSources
 
-__all__ = ['TimeDelayVariability', 'VariabilityTwinkles']
+__all__ = ["TimeDelayVariability", "VariabilityTwinkles"]
 @register_class
-class TimeDelayVariability(Variability):
+#class TimeDelayVariability(Variability):
+class TimeDelayVariability(ExtraGalacticVariabilityModels):
 
-    @register_method('applyAgnTimeDelay')
-    def applyAgnTimeDelay(self, params, expmjd_in):
-        dMags = {}
-        expmjd = numpy.asarray(expmjd_in,dtype=float)
-        toff = numpy.float(params['t0_mjd']+params['t0Delay'])
-        seed = int(params['seed'])
+    @register_method("applyAgnTimeDelay")
+#    @register_method("applyAgn")
+    def applyAgnTimeDelay(self, valid_dexes, params, expmjd):
+
+        global _AGN_LC_CACHE
+
+        if len(params) == 0:
+            return np.array([[],[],[],[],[],[]])
+
+        if isinstance(expmjd, numbers.Number):
+            dMags = np.zeros((6, self.num_variable_obj(params)))
+            expmjd_arr = [expmjd]
+        else:
+            dMags = np.zeros((6, self.num_variable_obj(params), len(expmjd)))
+            expmjd_arr = expmjd
+
+#        dMags = {}
+#        expmjd = numpy.asarray(expmjd_in,dtype=float)
+        print(params)
+        toff = numpy.float(params["t0_mjd"]+params["t0Delay"])
+        seed = int(params["seed"])
         sfint = {}
-        sfint['u'] = params['agn_sfu']
-        sfint['g'] = params['agn_sfg']
-        sfint['r'] = params['agn_sfr']
-        sfint['i'] = params['agn_sfi']
-        sfint['z'] = params['agn_sfz']
-        sfint['y'] = params['agn_sfy']
-        tau = params['agn_tau']
+        sfint["u"] = params["agn_sfu"]
+        sfint["g"] = params["agn_sfg"]
+        sfint["r"] = params["agn_sfr"]
+        sfint["i"] = params["agn_sfi"]
+        sfint["z"] = params["agn_sfz"]
+        sfint["y"] = params["agn_sfy"]
+        tau = params["agn_tau"]
         epochs = expmjd - toff
         if epochs.min() < 0:
             raise RuntimeError("WARNING: Time offset greater than minimum epoch.  " +
@@ -52,6 +71,7 @@ class TimeDelayVariability(Variability):
         return dMags
 
 class VariabilityTwinkles(TimeDelayVariability):
+
     """
     This is a mixin which wraps the methods from the class Variability
     into getters for InstanceCatalogs (specifically, InstanceCatalogs
@@ -66,38 +86,50 @@ class VariabilityTwinkles(TimeDelayVariability):
     for which delta_columnName is defined.
     """
 
-    @compound('delta_lsst_u', 'delta_lsst_g', 'delta_lsst_r',
-             'delta_lsst_i', 'delta_lsst_z', 'delta_lsst_y')
-    def get_agn_variability(self):
-        """
-        Getter for the change in magnitudes due to agn
-        variability.  The PhotometryTwinkles mixin is clever enough
-        to automatically add this to the baseline magnitude.
-        """
+#    @compound("delta_lsst_u", "delta_lsst_g", "delta_lsst_r",
+#             "delta_lsst_i", "delta_lsst_z", "delta_lsst_y")
+#    def get_agn_variability(self):
+#        """
+#        Getter for the change in magnitudes due to agn
+#        variability.  The PhotometryTwinkles mixin is clever enough
+#        to automatically add this to the baseline magnitude.
+#        """
 
-        varParams = self.column_by_name('varParamStr')
+#        varParams = self.column_by_name("varParamStr")
 
-        output = numpy.empty((6,len(varParams)))
+#        output = numpy.empty((6,len(varParams)))
 
-        for ii, vv in enumerate(varParams):
-            if vv != numpy.unicode_("None") and \
-               self.obs_metadata is not None and \
-               self.obs_metadata.mjd is not None:
+#        print(varParams)
+#        print(output)
 
-                deltaMag = self.applyVariability(vv)
+#        if len(varParams) > 0:
+#            print('here_before')
+#            deltaMag = self.applyVariability(varParams)
+#            print('here')
+#            output = deltaMag
 
-                output[0][ii] = deltaMag['u']
-                output[1][ii] = deltaMag['g']
-                output[2][ii] = deltaMag['r']
-                output[3][ii] = deltaMag['i']
-                output[4][ii] = deltaMag['z']
-                output[5][ii] = deltaMag['y']
-            else:
-                output[0][ii] = 0.0
-                output[1][ii] = 0.0
-                output[2][ii] = 0.0
-                output[3][ii] = 0.0
-                output[4][ii] = 0.0
-                output[5][ii] = 0.0
+#        for ii, vv in enumerate(varParams):
+#            print(vv, type(vv))
+#            if vv != numpy.unicode_("None") and \
+#               self.obs_metadata is not None and \
+#               self.obs_metadata.mjd is not None:
 
-        return output
+#                deltaMag = self.applyVariability(vv)
+
+#                output[0][ii] = deltaMag["u"]
+#                output[1][ii] = deltaMag["g"]
+#                output[2][ii] = deltaMag["r"]
+#                output[3][ii] = deltaMag["i"]
+#                output[4][ii] = deltaMag["z"]
+#                output[5][ii] = deltaMag["y"]
+#            else:
+#                output[0][ii] = 0.0
+#                output[1][ii] = 0.0
+#                output[2][ii] = 0.0
+#                output[3][ii] = 0.0
+#                output[4][ii] = 0.0
+#                output[5][ii] = 0.0
+
+#        return output
+    pass
+
