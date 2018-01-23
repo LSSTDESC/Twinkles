@@ -30,7 +30,7 @@ class TwinklesCatalogSersic2D(PhoSimCatalogSersic2D):
                       'internalExtinctionModel', 'internalAv', 'internalRv',
                       'galacticExtinctionModel', 'galacticAv', 'galacticRv']
 
-class TwinklesCatalogZPoint(PhoSimCatalogZPoint, VariabilityTwinkles):
+class TwinklesCatalogZPoint(PhoSimCatalogZPoint, VariabilityTwinkles, VariabilityAGN):
     """
     PhoSim Instance Catalog Class for strongly lensed (and therefore time-delayed)
     AGN

@@ -1,10 +1,11 @@
 from __future__ import absolute_import
+import numpy
 import os
 from lsst.utils import getPackageDir
 from lsst.sims.catalogs.db import CatalogDBObject
-from lsst.sims.catUtils.baseCatalogModels import SNDBObj
+from lsst.sims.catUtils.baseCatalogModels import SNDBObj, GalaxyBulgeObj, GalaxyDiskObj, GalaxyAgnObj
 
-__all__ = ["StarCacheDBObj"]
+__all__ = ["StarCacheDBObj", "TwinklesBulgeObj", "TwinklesDiskObj", "TwinklesAgnObj"]
 
 class StarCacheDBObj(CatalogDBObject):
     tableid = 'star_cache_table'
@@ -38,3 +39,52 @@ class SNCacheDBObj(SNDBObj, CatalogDBObject):
 
     def query_columns(self, *args, **kwargs):
         return CatalogDBObject.query_columns(self, *args, **kwargs)
+
+class TwinklesBulgeObj(GalaxyBulgeObj):
+
+    database = 'LSSTCATSIM'
+    port = 1433
+    host = 'fatboy.phys.washington.edu'
+    driver = 'mssql+pymssql'
+
+    objid = 'galaxyBulge'
+
+class TwinklesDiskObj(GalaxyDiskObj):
+
+    database = 'LSSTCATSIM'
+    port = 1433
+    host = 'fatboy.phys.washington.edu'
+    driver = 'mssql+pymssql'
+
+    objid = 'galaxyDisk'
+
+class TwinklesAgnObj(GalaxyAgnObj):
+
+    database = 'LSSTCATSIM'
+    port = 1433
+    host = 'fatboy.phys.washington.edu'
+    driver = 'mssql+pymssql'
+
+    objid = 'galaxyAgn'
+
+    columns = [('galtileid', None, numpy.int64),
+               ('galid', None, str, 30),
+               ('componentra', 'agnra*PI()/180.'),
+               ('componentdec', 'agndec*PI()/180.'),
+               #: This is actually a problem with the stored procedure.
+               #: We need to be able to map columns other than
+               #: just ra/dec to raJ2000/decJ2000.  This gets
+               #: important when we start perturbing the three galaxy components
+               ('raJ2000', 'ra'),
+               ('decJ2000', 'dec'),
+               ('magNorm', 'magnorm_agn'),
+               ('magNormAgn', 'magnorm_agn'),
+               ('sedFilename', 'sedname_agn', str, 40),
+               ('sedFilenameAgn', 'sedname_agn', str, 40),
+               ('variabilityParameters', 'varParamStr', str, 256),
+               ('lsst_u', 'u_ab'),
+               ('lsst_g', 'g_ab'),
+               ('lsst_r', 'r_ab'),
+               ('lsst_i', 'i_ab'),
+               ('lsst_z', 'z_ab'),
+               ('lsst_y', 'y_ab')]

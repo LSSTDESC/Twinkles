@@ -1,5 +1,5 @@
 from __future__ import absolute_import, division, print_function
-import numpy
+import numpy as np
 import math
 import json
 import ast
@@ -10,14 +10,14 @@ from lsst.sims.catUtils.mixins.VariabilityMixin import _VariabilityPointSources
 
 __all__ = ["TimeDelayVariability", "VariabilityTwinkles"]
 @register_class
-#class TimeDelayVariability(Variability):
-class TimeDelayVariability(ExtraGalacticVariabilityModels):
+class TimeDelayVariability(Variability):
 
     @register_method("applyAgnTimeDelay")
-#    @register_method("applyAgn")
-    def applyAgnTimeDelay(self, valid_dexes, params, expmjd):
+    def applyAgnTimeDelay(valid_dexes, params, expmjd):
 
         global _AGN_LC_CACHE
+
+        print(valid_dexes, params, expmjd)
 
         if len(params) == 0:
             return np.array([[],[],[],[],[],[]])
@@ -32,7 +32,7 @@ class TimeDelayVariability(ExtraGalacticVariabilityModels):
 #        dMags = {}
 #        expmjd = numpy.asarray(expmjd_in,dtype=float)
         print(params)
-        toff = numpy.float(params["t0_mjd"]+params["t0Delay"])
+        toff = np.float(params["t0_mjd"]+params["t0Delay"])
         seed = int(params["seed"])
         sfint = {}
         sfint["u"] = params["agn_sfu"]
@@ -55,22 +55,22 @@ class TimeDelayVariability(ExtraGalacticVariabilityModels):
         nbins = int(math.ceil(endepoch/dt))
         dt = (endepoch/nbins)/tau
         sdt = math.sqrt(dt)
-        numpy.random.seed(seed=seed)
+        np.random.seed(seed=seed)
         es = numpy.random.normal(0., 1., nbins)
         for k in sfint.keys():
-            dx = numpy.zeros(nbins+1)
+            dx = np.zeros(nbins+1)
             dx[0] = 0.
             for i in range(nbins):
                 #The second term differs from Zeljko's equation by sqrt(2.)
                 #because he assumes stdev = sfint/sqrt(2)
                 dx[i+1] = -dx[i]*dt + sfint[k]*es[i]*sdt + dx[i]
-            x = numpy.linspace(0, endepoch, nbins+1)
+            x = np.linspace(0, endepoch, nbins+1)
             intdx = interp1d(x, dx)
             magoff = intdx(epochs)
             dMags[k] = magoff
         return dMags
 
-class VariabilityTwinkles(TimeDelayVariability):
+class VariabilityTwinkles(_VariabilityPointSources, TimeDelayVariability):
 
     """
     This is a mixin which wraps the methods from the class Variability
@@ -132,4 +132,3 @@ class VariabilityTwinkles(TimeDelayVariability):
 
 #        return output
     pass
-
