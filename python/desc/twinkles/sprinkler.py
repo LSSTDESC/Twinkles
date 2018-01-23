@@ -10,6 +10,7 @@ import numpy as np
 import re
 import json
 import os
+import pandas as pd
 from lsst.utils import getPackageDir
 from lsst.sims.utils import SpecMap
 from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
@@ -38,7 +39,7 @@ class sprinklerCompound(GalaxyTileCompoundObj):
         # Twinkles InstanceCatalogs are too large for PhoSim to handle.
         # Since Twinkles is only focused on one tile on the sky, we will remove
         # the factor of 10^8, making the uniqueIDs a more manageable size
-        results['galtileid'] = results['galtileid']%100000000
+        results['galtileid'] = results['galtileid']#%100000000
 
         #Use Sprinkler now
         sp = sprinkler(results, density_param = 1.0)
@@ -48,14 +49,15 @@ class sprinklerCompound(GalaxyTileCompoundObj):
 
 class sprinkler():
     def __init__(self, catsim_cat, om10_cat='twinkles_lenses_v2.fits',
-                 density_param=1.):
+                 sne_cat = 'dc2_sne_cat.csv', density_param=1.):
         """
         Parameters
         ----------
         catsim_cat: catsim catalog
             The results array from an instance catalog.
-        om10_cat: optional, defaults to 'twinkles_tdc_rung4.fits
+        om10_cat: optional, defaults to 'twinkles_lenses_v2.fits
             fits file with OM10 catalog
+        sne_cat: optional, defaults to 'dc2_sne_cat.csv'
         density_param: `np.float`, optioanl, defaults to 1.0
             the fraction of eligible agn objects that become lensed and should
             be between 0.0 and 1.0.
@@ -74,6 +76,10 @@ class sprinkler():
         self.lenscat = lensdb.lenses.copy()
         self.density_param = density_param
         self.bandpassDict = BandpassDict.loadTotalBandpassesFromFiles(bandpassNames=['i'])
+
+        self.sne_catalog = pd.read_csv(os.path.join(twinklesDir, 'data', sne_cat))
+        self.sne_catalog = self.sne_catalog.iloc[:101] ### Remove this after testing
+        self.used_systems = []
 
         specFileStart = 'Burst'
         for key, val in sorted(iteritems(SpecMap.subdir_map)):
@@ -169,6 +175,8 @@ class sprinkler():
 
                         updated_catalog = np.append(updated_catalog, lensrow)
 
+#                        print(updated_catalog[-1])
+
                     #Now manipulate original entry to be the lens galaxy with desired properties
                     #Start by deleting Disk and AGN properties
                     if not np.isnan(row['galaxyDisk_magNorm']):
@@ -192,7 +200,60 @@ class sprinkler():
                     row['galaxyBulge_positionAngle'] = newlens['PHIE']*(-1.0)*np.pi/180.0
                     #Replace original entry with new entry
                     updated_catalog[rowNum] = row
-
+            else:
+                lens_sne_candidates = self.find_sne_lens_candidates(row['galaxyDisk_redshift'])
+                candidate_sysno = np.unique(lens_sne_candidates['twinkles_sysno'])
+                num_candidates = len(candidate_sysno)
+                if num_candidates == 0:
+                    continue
+                used_already = np.array([sys_num in self.used_systems for sys_num in candidate_sysno])
+                unused_sysno = candidate_sysno[~used_already]
+                if len(unused_sysno) == 0:
+                    continue
+                use_system = np.random.choice(unused_sysno)
+                use_df = self.sne_catalog.query('twinkles_sysno == %i' % use_system)
+                self.used_systems.append(use_system)
+                print(use_system)
+                
+                for i in range(len(use_df)):
+                    lensrow = row.copy()
+                    for lensPart in ['galaxyBulge', 'galaxyDisk', 'galaxyAgn']:
+                        lens_ra = lensrow[str(lensPart+'_raJ2000')]
+                        lens_dec = lensrow[str(lensPart+'_decJ2000')]
+                        delta_ra = np.radians(use_df['x'].iloc[i] / 3600.0) / np.cos(lens_dec)
+                        delta_dec = np.radians(use_df['y'].iloc[i] / 3600.0)
+                        lensrow[str(lensPart + '_raJ2000')] = lens_ra + delta_ra
+                        lensrow[str(lensPart + '_decJ2000')] = lens_dec + delta_dec
+                    lensrow['galaxyAgn_magNorm'] = use_df['mag'].iloc[i] #This will need to be adjusted to proper band
+                    # varString = json.loads(lensrow['galaxyAgn_varParamStr'])
+                    varString = 'None'
+                    lensrow['galaxyAgn_varParamStr'] = varString
+                    lensrow['galaxyDisk_majorAxis'] = 0.0
+                    lensrow['galaxyDisk_minorAxis'] = 0.0
+                    lensrow['galaxyDisk_positionAngle'] = 0.0
+                    lensrow['galaxyDisk_internalAv'] = 0.0
+                    lensrow['galaxyDisk_magNorm'] = np.nan
+                    lensrow['galaxyDisk_sedFilename'] = None
+                    lensrow['galaxyBulge_majorAxis'] = 0.0
+                    lensrow['galaxyBulge_minorAxis'] = 0.0
+                    lensrow['galaxyBulge_positionAngle'] = 0.0
+                    lensrow['galaxyBulge_internalAv'] = 0.0
+                    lensrow['galaxyBulge_magNorm'] = np.nan
+                    lensrow['galaxyBulge_sedFilename'] = None
+                    z_s = use_df['zs'].iloc[i]
+                    lensrow['galaxyBulge_redshift'] = z_s
+                    lensrow['galaxyDisk_redshift'] = z_s
+                    lensrow['galaxyAgn_redshift'] = z_s
+                    #To get back twinklesID in lens catalog from phosim catalog id number
+                    #just use np.right_shift(phosimID-28, 10). Take the floor of the last
+                    #3 numbers to get twinklesID in the twinkles lens catalog and the remainder is
+                    #the image number minus 1.
+                    lensrow['galtileid'] = (lensrow['galtileid']*10000 +
+                                            use_system*4 + i + 100000)
+                    lensrow['galaxyAgn_sedFilename'] = 'specFile_test.txt'
+                    
+                    updated_catalog = np.append(updated_catalog, lensrow)
+                    
         return updated_catalog
 
     def find_lens_candidates(self, galz, gal_mag):
@@ -201,6 +262,13 @@ class sprinkler():
         w = np.where((np.abs(np.log10(self.lenscat['ZSRC']) - np.log10(galz)) <= 0.1) &
                      (np.abs(self.src_mag_norm - gal_mag) <= .25))[0]
         lens_candidates = self.lenscat[w]
+
+        return lens_candidates
+
+    def find_sne_lens_candidates(self, galz):
+        
+        w = np.where((np.abs(np.log10(self.sne_catalog['zs']) - np.log10(galz)) <= 0.1))
+        lens_candidates = self.sne_catalog.iloc[w]
 
         return lens_candidates
 
