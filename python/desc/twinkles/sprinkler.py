@@ -88,7 +88,7 @@ class sprinkler():
         self.bandpassDict = BandpassDict.loadTotalBandpassesFromFiles(bandpassNames=['i'])
 
         self.sne_catalog = pd.read_csv(os.path.join(twinklesDir, 'data', sne_cat))
-        self.sne_catalog = self.sne_catalog.iloc[:101] ### Remove this after testing
+        #self.sne_catalog = self.sne_catalog.iloc[:101] ### Remove this after testing
         self.used_systems = []
         self.visit_mjd = visit_mjd
         self.sn_obj = SNObject(0., 0.)
@@ -287,7 +287,6 @@ class sprinkler():
                     #just use np.right_shift(phosimID-28, 10). Take the floor of the last
                     #3 numbers to get twinklesID in the twinkles lens catalog and the remainder is
                     #the image number minus 1.
-                    print(lensrow['galtileid'])
                     lensrow['galtileid'] = (lensrow['galtileid']*10000 +
                                             use_system*4 + i)
 
@@ -353,7 +352,7 @@ class sprinkler():
         sn_param_dict['c'] = system_df['c']
         sn_param_dict['x0'] = system_df['x0']
         sn_param_dict['x1'] = system_df['x1']
-        sn_param_dict['t0'] = system_df['t_start']+1500.
+        sn_param_dict['t0'] = system_df['t_start'] # +1500. ### For testing only
         
         current_sn_obj = self.sn_obj.fromSNState(sn_param_dict)
         sn_sed_obj = current_sn_obj.SNObjectSED(time=sed_mjd, 
