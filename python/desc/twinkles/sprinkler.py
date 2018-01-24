@@ -11,6 +11,7 @@ import re
 import json
 import os
 import pandas as pd
+import copy
 from lsst.utils import getPackageDir
 from lsst.sims.utils import SpecMap
 from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
@@ -252,10 +253,11 @@ class sprinkler():
                     #just use np.right_shift(phosimID-28, 10). Take the floor of the last
                     #3 numbers to get twinklesID in the twinkles lens catalog and the remainder is
                     #the image number minus 1.
-                    lensrow['galtileid'] = (lensrow['galtileid']*10000 +
-                                            use_system*4 + i + 100000)
+                    lensrow['galtileid'] = (lensrow['galtileid']*100000 +
+                                            use_system*4 + i)
 
-                    self.create_sn_sed(use_df.iloc[i], self.visit_mjd)
+                    self.create_sn_sed(use_df.iloc[i], lensrow['galaxyAgn_raJ2000'],
+                                       lensrow['galaxyAgn_decJ2000'], self.visit_mjd)
                     lensrow['galaxyAgn_sedFilename'] = 'specFile_twinkles_%i_%i_%f.txt' % (use_system, use_df['imno'].iloc[i],
                                                                                            self.visit_mjd)
                     
@@ -279,12 +281,22 @@ class sprinkler():
 
         return lens_candidates
 
-    def create_sn_sed(self, system_df, sed_mjd):
+    def create_sn_sed(self, system_df, sn_ra, sn_dec, sed_mjd):
 
-        spectrum_file = np.zeros((30, 2))
-        np.savetxt('specFile_twinkles_%i_%i_%f.txt' % (system_df['twinkles_sysno'], 
-                                                       system_df['imno'], sed_mjd),
-                   spectrum_file)
+        sn_param_dict = copy.deepcopy(self.sn_obj.SNstate)
+        sn_param_dict['_ra'] = sn_ra
+        sn_param_dict['_dec'] = sn_dec
+        sn_param_dict['z'] = system_df['zs']
+        sn_param_dict['c'] = system_df['c']
+        sn_param_dict['x0'] = system_df['x0']
+        sn_param_dict['x1'] = system_df['x1']
+        sn_param_dict['t0'] = system_df['t0']# + 61681.0
+        
+        current_sn_obj = self.sn_obj.fromSNState(sn_param_dict)
+        sn_sed_obj = current_sn_obj.SNObjectSED(time=sed_mjd, 
+                                                wavelen=self.bandpassDict['i'].wavelen)
+        sn_sed_obj.writeSED('spectra_files/specFile_twinkles_%i_%i_%f.txt' % (system_df['twinkles_sysno'], 
+                                                       system_df['imno'], sed_mjd))
         return
 
     def update_catsim(self):
