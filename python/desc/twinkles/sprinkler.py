@@ -41,16 +41,16 @@ class sprinklerCompound(GalaxyTileCompoundObj):
         # Twinkles InstanceCatalogs are too large for PhoSim to handle.
         # Since Twinkles is only focused on one tile on the sky, we will remove
         # the factor of 10^8, making the uniqueIDs a more manageable size
-        results['galtileid'] = results['galtileid']#%100000000
+        # results['galtileid'] = results['galtileid']#%100000000
 
         #Use Sprinkler now
-        sp = sprinkler(results, self.mjd, density_param=1.0)
+        sp = sprinkler(results, self.mjd, self.specFileMap, density_param=1.0)
         results = sp.sprinkle()
 
         return results
 
 class sprinkler():
-    def __init__(self, catsim_cat, visit_mjd, om10_cat='twinkles_lenses_v2.fits',
+    def __init__(self, catsim_cat, visit_mjd, specFileMap, om10_cat='twinkles_lenses_v2.fits',
                  sne_cat = 'dc2_sne_cat.csv', density_param=1.):
         """
         Parameters
@@ -59,6 +59,8 @@ class sprinkler():
             The results array from an instance catalog.
         visit_mjd: float
             The mjd of the visit
+        specFileMap: 
+            This will tell the instance catalog where to write the files
         om10_cat: optional, defaults to 'twinkles_lenses_v2.fits
             fits file with OM10 catalog
         sne_cat: optional, defaults to 'dc2_sne_cat.csv'
@@ -86,6 +88,7 @@ class sprinkler():
         self.used_systems = []
         self.visit_mjd = visit_mjd
         self.sn_obj = SNObject(0., 0.)
+        self.write_dir = specFileMap.subdir_map['(^specFile_)']
 
         specFileStart = 'Burst'
         for key, val in sorted(iteritems(SpecMap.subdir_map)):
@@ -334,8 +337,8 @@ class sprinkler():
 
         if flux_500 > 0.:
             add_to_cat = True
-            sn_sed_obj.writeSED('spectra_files/specFile_twinkles_%i_%i_%f.txt' % (system_df['twinkles_sysno'], 
-                                                                                  system_df['imno'], sed_mjd))
+            sn_sed_obj.writeSED('%s/specFile_twinkles_%i_%i_%f.txt' % (self.write_dir, system_df['twinkles_sysno'], 
+                                                                       system_df['imno'], sed_mjd))
         else:
             add_to_cat = False
 
