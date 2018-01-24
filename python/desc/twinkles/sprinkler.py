@@ -18,6 +18,7 @@ from lsst.sims.photUtils.matchUtils import matchBase
 from lsst.sims.photUtils.BandpassDict import BandpassDict
 from lsst.sims.photUtils.Sed import Sed
 from lsst.sims.utils import radiansFromArcsec
+from lsst.sims.catUtils.supernovae import SNObject
 
 __all__ = ['sprinklerCompound', 'sprinkler']
 class sprinklerCompound(GalaxyTileCompoundObj):
@@ -42,19 +43,21 @@ class sprinklerCompound(GalaxyTileCompoundObj):
         results['galtileid'] = results['galtileid']#%100000000
 
         #Use Sprinkler now
-        sp = sprinkler(results, density_param = 1.0)
+        sp = sprinkler(results, self.mjd, density_param=1.0)
         results = sp.sprinkle()
 
         return results
 
 class sprinkler():
-    def __init__(self, catsim_cat, om10_cat='twinkles_lenses_v2.fits',
+    def __init__(self, catsim_cat, visit_mjd, om10_cat='twinkles_lenses_v2.fits',
                  sne_cat = 'dc2_sne_cat.csv', density_param=1.):
         """
         Parameters
         ----------
         catsim_cat: catsim catalog
             The results array from an instance catalog.
+        visit_mjd: float
+            The mjd of the visit
         om10_cat: optional, defaults to 'twinkles_lenses_v2.fits
             fits file with OM10 catalog
         sne_cat: optional, defaults to 'dc2_sne_cat.csv'
@@ -80,6 +83,8 @@ class sprinkler():
         self.sne_catalog = pd.read_csv(os.path.join(twinklesDir, 'data', sne_cat))
         self.sne_catalog = self.sne_catalog.iloc[:101] ### Remove this after testing
         self.used_systems = []
+        self.visit_mjd = visit_mjd
+        self.sn_obj = SNObject(0., 0.)
 
         specFileStart = 'Burst'
         for key, val in sorted(iteritems(SpecMap.subdir_map)):
@@ -175,8 +180,6 @@ class sprinkler():
 
                         updated_catalog = np.append(updated_catalog, lensrow)
 
-#                        print(updated_catalog[-1])
-
                     #Now manipulate original entry to be the lens galaxy with desired properties
                     #Start by deleting Disk and AGN properties
                     if not np.isnan(row['galaxyDisk_magNorm']):
@@ -210,6 +213,7 @@ class sprinkler():
                 unused_sysno = candidate_sysno[~used_already]
                 if len(unused_sysno) == 0:
                     continue
+                np.random.seed(row['galtileid'] % (2^32 -1))
                 use_system = np.random.choice(unused_sysno)
                 use_df = self.sne_catalog.query('twinkles_sysno == %i' % use_system)
                 self.used_systems.append(use_system)
@@ -250,7 +254,10 @@ class sprinkler():
                     #the image number minus 1.
                     lensrow['galtileid'] = (lensrow['galtileid']*10000 +
                                             use_system*4 + i + 100000)
-                    lensrow['galaxyAgn_sedFilename'] = 'specFile_test.txt'
+
+                    self.create_sn_sed(use_df.iloc[i], self.visit_mjd)
+                    lensrow['galaxyAgn_sedFilename'] = 'specFile_twinkles_%i_%i_%f.txt' % (use_system, use_df['imno'].iloc[i],
+                                                                                           self.visit_mjd)
                     
                     updated_catalog = np.append(updated_catalog, lensrow)
                     
@@ -271,6 +278,14 @@ class sprinkler():
         lens_candidates = self.sne_catalog.iloc[w]
 
         return lens_candidates
+
+    def create_sn_sed(self, system_df, sed_mjd):
+
+        spectrum_file = np.zeros((30, 2))
+        np.savetxt('specFile_twinkles_%i_%i_%f.txt' % (system_df['twinkles_sysno'], 
+                                                       system_df['imno'], sed_mjd),
+                   spectrum_file)
+        return
 
     def update_catsim(self):
         # Remove the catsim object
