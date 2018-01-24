@@ -12,6 +12,8 @@ import json
 import os
 import pandas as pd
 import copy
+import gzip
+import shutil
 from lsst.utils import getPackageDir
 from lsst.sims.utils import SpecMap
 from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
@@ -51,7 +53,7 @@ class sprinklerCompound(GalaxyTileCompoundObj):
 
 class sprinkler():
     def __init__(self, catsim_cat, visit_mjd, specFileMap, om10_cat='twinkles_lenses_v2.fits',
-                 sne_cat = 'dc2_sne_cat.csv', density_param=1.):
+                 sne_cat = 'dc2_sne_cat.csv', density_param=1., cached_sprinkling=True):
         """
         Parameters
         ----------
@@ -67,6 +69,8 @@ class sprinkler():
         density_param: `np.float`, optioanl, defaults to 1.0
             the fraction of eligible agn objects that become lensed and should
             be between 0.0 and 1.0.
+        cached_sprinkling: boolean
+            If true then pick from a preselected list of galtileids
 
         Returns
         -------
@@ -89,6 +93,16 @@ class sprinkler():
         self.visit_mjd = visit_mjd
         self.sn_obj = SNObject(0., 0.)
         self.write_dir = specFileMap.subdir_map['(^specFile_)']
+
+        self.cached_sprinkling = cached_sprinkling
+        if self.cached_sprinkling is True:
+            agn_cache_file = os.path.join(twinklesDir, 'data', 'test_agn_galtile_cache.csv')
+            self.agn_cache = pd.read_csv(agn_cache_file)
+            sne_cache_file = os.path.join(twinklesDir, 'data', 'test_sne_galtile_cache.csv')
+            self.sne_cache = pd.read_csv(sne_cache_file)
+        else:
+            self.agn_cache = None
+            self.sne_cache = None
 
         specFileStart = 'Burst'
         for key, val in sorted(iteritems(SpecMap.subdir_map)):
@@ -136,13 +150,17 @@ class sprinkler():
                 np.random.seed(row['galtileid'] % (2^32 -1))
                 pick_value = np.random.uniform()
             # If there aren't any lensed sources at this redshift from OM10 move on the next object
-                if ((len(candidates) > 0) and (pick_value <= self.density_param)):
+                if (((len(candidates) > 0) and (pick_value <= self.density_param) and (self.cached_sprinkling is False)) | 
+                    ((self.cached_sprinkling is True) and (row['galtileid'] in self.agn_cache['galtileid'].values))):
                     # Randomly choose one the lens systems
                     # (can decide with or without replacement)
                     # Sort first to make sure the same choice is made every time
-                    candidates = candidates[np.argsort(candidates['twinklesId'])]
-                    newlens = np.random.choice(candidates)
-
+                    if self.cached_sprinkling is True:
+                        twinkles_sys_cache = self.agn_cache.query('galtileid == %i' % row['galtileid'])['twinkles_system'].values[0]
+                        newlens = self.lenscat[np.where(self.lenscat['twinklesId'] == twinkles_sys_cache)[0]][0]
+                    else:
+                        candidates = candidates[np.argsort(candidates['twinklesId'])]
+                        newlens = np.random.choice(candidates)
                     # Append the lens galaxy
                     # For each image, append the lens images
                     for i in range(newlens['NIMG']):
@@ -215,20 +233,26 @@ class sprinkler():
                     #Replace original entry with new entry
                     updated_catalog[rowNum] = row
             else:
-                lens_sne_candidates = self.find_sne_lens_candidates(row['galaxyDisk_redshift'])
-                candidate_sysno = np.unique(lens_sne_candidates['twinkles_sysno'])
-                num_candidates = len(candidate_sysno)
-                if num_candidates == 0:
-                    continue
-                used_already = np.array([sys_num in self.used_systems for sys_num in candidate_sysno])
-                unused_sysno = candidate_sysno[~used_already]
-                if len(unused_sysno) == 0:
-                    continue
-                np.random.seed(row['galtileid'] % (2^32 -1))
-                use_system = np.random.choice(unused_sysno)
-                use_df = self.sne_catalog.query('twinkles_sysno == %i' % use_system)
-                self.used_systems.append(use_system)
-                print(use_system)
+                if self.cached_sprinkling is True:
+                    if row['galtileid'] in self.sne_cache['galtileid'].values:
+                        use_system = self.sne_cache.query('galtileid == %i' % row['galtileid'])['twinkles_system'].values
+                        use_df = self.sne_catalog.query('twinkles_sysno == %i' % use_system)
+                        self.used_systems.append(use_system)
+                    else:
+                        continue
+                else:
+                    lens_sne_candidates = self.find_sne_lens_candidates(row['galaxyDisk_redshift'])
+                    candidate_sysno = np.unique(lens_sne_candidates['twinkles_sysno'])
+                    num_candidates = len(candidate_sysno)
+                    if num_candidates == 0:
+                        continue
+                    used_already = np.array([sys_num in self.used_systems for sys_num in candidate_sysno])
+                    unused_sysno = candidate_sysno[~used_already]
+                    if len(unused_sysno) == 0:
+                        continue
+                    np.random.seed(row['galtileid'] % (2^32 -1))
+                    use_system = np.random.choice(unused_sysno)
+                    use_df = self.sne_catalog.query('twinkles_sysno == %i' % use_system)
                 
                 for i in range(len(use_df)):
                     lensrow = row.copy()
@@ -263,12 +287,13 @@ class sprinkler():
                     #just use np.right_shift(phosimID-28, 10). Take the floor of the last
                     #3 numbers to get twinklesID in the twinkles lens catalog and the remainder is
                     #the image number minus 1.
+                    print(lensrow['galtileid'])
                     lensrow['galtileid'] = (lensrow['galtileid']*10000 +
                                             use_system*4 + i)
 
                     add_to_cat = self.create_sn_sed(use_df.iloc[i], lensrow['galaxyAgn_raJ2000'],
                                                     lensrow['galaxyAgn_decJ2000'], self.visit_mjd)
-                    lensrow['galaxyAgn_sedFilename'] = 'specFile_twinkles_%i_%i_%f.txt' % (use_system, use_df['imno'].iloc[i],
+                    lensrow['galaxyAgn_sedFilename'] = 'specFile_tsn_%i_%i_%f.txt' % (use_system, use_df['imno'].iloc[i],
                                                                                            self.visit_mjd)
                     
                     if add_to_cat is True:
@@ -337,8 +362,12 @@ class sprinkler():
 
         if flux_500 > 0.:
             add_to_cat = True
-            sn_sed_obj.writeSED('%s/specFile_twinkles_%i_%i_%f.txt' % (self.write_dir, system_df['twinkles_sysno'], 
-                                                                       system_df['imno'], sed_mjd))
+            sed_filename = '%s/specFile_tsn_%i_%i_%f.txt' % (self.write_dir, system_df['twinkles_sysno'], 
+                                                                       system_df['imno'], sed_mjd)
+            sn_sed_obj.writeSED(sed_filename)
+            with open(sed_filename, 'rb') as f_in, gzip.open(str(sed_filename + '.gz'), 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
+            os.remove(sed_filename)
         else:
             add_to_cat = False
 
