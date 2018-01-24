@@ -91,19 +91,22 @@ class sprinkler():
         for key, val in sorted(iteritems(SpecMap.subdir_map)):
             if re.match(key, specFileStart):
                 galSpecDir = str(val)
-        galDir = str(getPackageDir('sims_sed_library') + '/' + galSpecDir + '/')
-        self.LRG_name = 'Burst.25E09.1Z.spec'
-        self.LRG = Sed()
-        self.LRG.readSED_flambda(str(galDir + self.LRG_name))
+        self.galDir = str(getPackageDir('sims_sed_library') + '/' + galSpecDir + '/')
+        #self.LRG_name = 'Burst.25E09.1Z.spec'
+        #self.LRG = Sed()
+        #self.LRG.readSED_flambda(str(galDir + self.LRG_name))
         #return
 
         #Calculate imsimband magnitudes of source galaxies for matching
-        agn_sed = Sed()
+
         agn_fname = str(getPackageDir('sims_sed_library') + '/agnSED/agn.spec.gz')
-        agn_sed.readSED_flambda(agn_fname)
         src_iband = self.lenscat['MAGI_IN']
+        src_z = self.lenscat['ZSRC']
         self.src_mag_norm = []
-        for src in src_iband:
+        for src, s_z in zip(src_iband, src_z):
+            agn_sed = Sed()
+            agn_sed.readSED_flambda(agn_fname)
+            agn_sed.redshiftSED(s_z, dimming=True)
             self.src_mag_norm.append(matchBase().calcMagNorm([src],
                                                              agn_sed,
                                                              self.bandpassDict))
@@ -197,7 +200,11 @@ class sprinkler():
                     row['galaxyBulge_redshift'] = newlens['ZLENS']
                     row['galaxyDisk_redshift'] = newlens['ZLENS']
                     row['galaxyAgn_redshift'] = newlens['ZLENS']
-                    row['galaxyBulge_magNorm'] = matchBase().calcMagNorm([newlens['APMAG_I']], self.LRG, self.bandpassDict) #Changed from i band to imsimband
+                    row_lens_sed = Sed()
+                    row_lens_sed.readSED_flambda(str(self.galDir + newlens['lens_sed']))
+                    row_lens_sed.redshiftSED(newlens['ZLENS'], dimming=True)
+                    row['galaxyBulge_magNorm'] = matchBase().calcMagNorm([newlens['APMAG_I']], row_lens_sed, 
+                                                                         self.bandpassDict) #Changed from i band to imsimband
                     row['galaxyBulge_majorAxis'] = radiansFromArcsec(newlens['REFF'] / np.sqrt(1 - newlens['ELLIP']))
                     row['galaxyBulge_minorAxis'] = radiansFromArcsec(newlens['REFF'] * np.sqrt(1 - newlens['ELLIP']))
                     #Convert orientation angle to west of north from east of north by *-1.0 and convert to radians
@@ -253,15 +260,43 @@ class sprinkler():
                     #just use np.right_shift(phosimID-28, 10). Take the floor of the last
                     #3 numbers to get twinklesID in the twinkles lens catalog and the remainder is
                     #the image number minus 1.
-                    lensrow['galtileid'] = (lensrow['galtileid']*100000 +
+                    lensrow['galtileid'] = (lensrow['galtileid']*10000 +
                                             use_system*4 + i)
 
-                    self.create_sn_sed(use_df.iloc[i], lensrow['galaxyAgn_raJ2000'],
-                                       lensrow['galaxyAgn_decJ2000'], self.visit_mjd)
+                    add_to_cat = self.create_sn_sed(use_df.iloc[i], lensrow['galaxyAgn_raJ2000'],
+                                                    lensrow['galaxyAgn_decJ2000'], self.visit_mjd)
                     lensrow['galaxyAgn_sedFilename'] = 'specFile_twinkles_%i_%i_%f.txt' % (use_system, use_df['imno'].iloc[i],
                                                                                            self.visit_mjd)
                     
-                    updated_catalog = np.append(updated_catalog, lensrow)
+                    if add_to_cat is True:
+                        updated_catalog = np.append(updated_catalog, lensrow)
+                    else:
+                        continue
+                    #Now manipulate original entry to be the lens galaxy with desired properties
+                    #Start by deleting Disk and AGN properties
+                if not np.isnan(row['galaxyDisk_magNorm']):
+                    row['galaxyDisk_majorAxis'] = 0.0
+                    row['galaxyDisk_minorAxis'] = 0.0
+                    row['galaxyDisk_positionAngle'] = 0.0
+                    row['galaxyDisk_internalAv'] = 0.0
+                    row['galaxyDisk_magNorm'] = np.nan
+                    row['galaxyDisk_sedFilename'] = None
+                row['galaxyAgn_magNorm'] = np.nan
+                row['galaxyAgn_sedFilename'] = None
+                #Now insert desired Bulge properties
+                row['galaxyBulge_sedFilename'] = use_df['lens_sed'].iloc[0]
+                row['galaxyBulge_redshift'] = use_df['zl'].iloc[0]
+                row['galaxyDisk_redshift'] = use_df['zl'].iloc[0]
+                row['galaxyAgn_redshift'] = use_df['zl'].iloc[0]
+                row['galaxyBulge_magNorm'] = use_df['bulge_magnorm'].iloc[0]
+                # row['galaxyBulge_magNorm'] = matchBase().calcMagNorm([newlens['APMAG_I']], self.LRG, self.bandpassDict) #Changed from i band to imsimband
+                row['galaxyBulge_majorAxis'] = radiansFromArcsec(use_df['r_eff'].iloc[0] / np.sqrt(1 - use_df['e'].iloc[0]))
+                row['galaxyBulge_minorAxis'] = radiansFromArcsec(use_df['r_eff'].iloc[0] * np.sqrt(1 - use_df['e'].iloc[0]))
+                #Convert orientation angle to west of north from east of north by *-1.0 and convert to radians
+                row['galaxyBulge_positionAngle'] = use_df['theta_e'].iloc[0]*(-1.0)*np.pi/180.0
+                #Replace original entry with new entry
+                updated_catalog[rowNum] = row
+
                     
         return updated_catalog
 
@@ -290,14 +325,22 @@ class sprinkler():
         sn_param_dict['c'] = system_df['c']
         sn_param_dict['x0'] = system_df['x0']
         sn_param_dict['x1'] = system_df['x1']
-        sn_param_dict['t0'] = system_df['t0']# + 61681.0
+        sn_param_dict['t0'] = system_df['t_start']+1500.
         
         current_sn_obj = self.sn_obj.fromSNState(sn_param_dict)
         sn_sed_obj = current_sn_obj.SNObjectSED(time=sed_mjd, 
                                                 wavelen=self.bandpassDict['i'].wavelen)
-        sn_sed_obj.writeSED('spectra_files/specFile_twinkles_%i_%i_%f.txt' % (system_df['twinkles_sysno'], 
-                                                       system_df['imno'], sed_mjd))
-        return
+        flux_500 = sn_sed_obj.flambda[np.where(sn_sed_obj.wavelen >= 499.99)][0]
+
+        if flux_500 > 0.:
+            add_to_cat = True
+            sn_sed_obj.writeSED('spectra_files/specFile_twinkles_%i_%i_%f.txt' % (system_df['twinkles_sysno'], 
+                                                                                  system_df['imno'], sed_mjd))
+        else:
+            add_to_cat = False
+
+
+        return add_to_cat
 
     def update_catsim(self):
         # Remove the catsim object
