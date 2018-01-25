@@ -12,7 +12,6 @@ from lsst.sims.catUtils.mixins.VariabilityMixin import _VariabilityPointSources
 
 __all__ = ["TimeDelayVariability", "VariabilityTwinkles"]
 
-_AGN_LC_CACHE = {}
 
 class TimeDelayVariability(Variability):
 
@@ -131,49 +130,4 @@ class VariabilityTwinkles(_VariabilityPointSources, TimeDelayVariability):
     for which delta_columnName is defined.
     """
 
-#    @compound("delta_lsst_u", "delta_lsst_g", "delta_lsst_r",
-#             "delta_lsst_i", "delta_lsst_z", "delta_lsst_y")
-#    def get_agn_variability(self):
-#        """
-#        Getter for the change in magnitudes due to agn
-#        variability.  The PhotometryTwinkles mixin is clever enough
-#        to automatically add this to the baseline magnitude.
-#        """
-
-#        varParams = self.column_by_name("varParamStr")
-
-#        output = numpy.empty((6,len(varParams)))
-
-#        print(varParams)
-#        print(output)
-
-#        if len(varParams) > 0:
-#            print('here_before')
-#            deltaMag = self.applyVariability(varParams)
-#            print('here')
-#            output = deltaMag
-
-#        for ii, vv in enumerate(varParams):
-#            print(vv, type(vv))
-#            if vv != numpy.unicode_("None") and \
-#               self.obs_metadata is not None and \
-#               self.obs_metadata.mjd is not None:
-
-#                deltaMag = self.applyVariability(vv)
-
-#                output[0][ii] = deltaMag["u"]
-#                output[1][ii] = deltaMag["g"]
-#                output[2][ii] = deltaMag["r"]
-#                output[3][ii] = deltaMag["i"]
-#                output[4][ii] = deltaMag["z"]
-#                output[5][ii] = deltaMag["y"]
-#            else:
-#                output[0][ii] = 0.0
-#                output[1][ii] = 0.0
-#                output[2][ii] = 0.0
-#                output[3][ii] = 0.0
-#                output[4][ii] = 0.0
-#                output[5][ii] = 0.0
-
-#        return output
     pass
