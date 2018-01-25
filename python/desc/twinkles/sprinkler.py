@@ -18,8 +18,7 @@ from lsst.utils import getPackageDir
 from lsst.sims.utils import SpecMap
 from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
 from lsst.sims.photUtils.matchUtils import matchBase
-from lsst.sims.photUtils.BandpassDict import BandpassDict
-from lsst.sims.photUtils.Sed import Sed
+from lsst.sims.photUtils import Bandpass, BandpassDict, Sed
 from lsst.sims.utils import radiansFromArcsec
 from lsst.sims.catUtils.supernovae import SNObject
 
@@ -109,6 +108,9 @@ class sprinkler():
             if re.match(key, specFileStart):
                 galSpecDir = str(val)
         self.galDir = str(getPackageDir('sims_sed_library') + '/' + galSpecDir + '/')
+        
+        self.imSimBand = Bandpass()
+        self.imSimBand.imsimBandpass()
         #self.LRG_name = 'Burst.25E09.1Z.spec'
         #self.LRG = Sed()
         #self.LRG.readSED_flambda(str(galDir + self.LRG_name))
@@ -263,7 +265,6 @@ class sprinkler():
                         delta_dec = np.radians(use_df['y'].iloc[i] / 3600.0)
                         lensrow[str(lensPart + '_raJ2000')] = lens_ra + delta_ra
                         lensrow[str(lensPart + '_decJ2000')] = lens_dec + delta_dec
-                    lensrow['galaxyAgn_magNorm'] = use_df['mag'].iloc[i] #This will need to be adjusted to proper band
                     # varString = json.loads(lensrow['galaxyAgn_varParamStr'])
                     varString = 'None'
                     lensrow['galaxyAgn_varParamStr'] = varString
@@ -290,10 +291,13 @@ class sprinkler():
                     lensrow['galtileid'] = (lensrow['galtileid']*10000 +
                                             use_system*4 + i)
 
-                    add_to_cat = self.create_sn_sed(use_df.iloc[i], lensrow['galaxyAgn_raJ2000'],
-                                                    lensrow['galaxyAgn_decJ2000'], self.visit_mjd)
+                    add_to_cat, sn_magnorm = self.create_sn_sed(use_df.iloc[i], lensrow['galaxyAgn_raJ2000'],
+                                                                lensrow['galaxyAgn_decJ2000'], self.visit_mjd)
                     lensrow['galaxyAgn_sedFilename'] = 'specFile_tsn_%i_%i_%f.txt' % (use_system, use_df['imno'].iloc[i],
                                                                                            self.visit_mjd)
+                    lensrow['galaxyAgn_magNorm'] = sn_magnorm #This will need to be adjusted to proper band
+                    mag_adjust = 2.5*np.log10(np.abs(use_df['mu'].iloc[i]))
+                    lensrow['galaxyAgn_magNorm'] -= mag_adjust
                     
                     if add_to_cat is True:
                         updated_catalog = np.append(updated_catalog, lensrow)
@@ -352,7 +356,8 @@ class sprinkler():
         sn_param_dict['c'] = system_df['c']
         sn_param_dict['x0'] = system_df['x0']
         sn_param_dict['x1'] = system_df['x1']
-        sn_param_dict['t0'] = system_df['t_start'] # +1500. ### For testing only
+        sn_param_dict['t0'] = system_df['t_start'] 
+        # sn_param_dict['t0'] = 61681.083859  #+1500. ### For testing only
         
         current_sn_obj = self.sn_obj.fromSNState(sn_param_dict)
         sn_sed_obj = current_sn_obj.SNObjectSED(time=sed_mjd, 
@@ -361,6 +366,7 @@ class sprinkler():
 
         if flux_500 > 0.:
             add_to_cat = True
+            sn_magnorm = current_sn_obj.catsimBandMag(self.imSimBand, sed_mjd)
             sed_filename = '%s/specFile_tsn_%i_%i_%f.txt' % (self.write_dir, system_df['twinkles_sysno'], 
                                                                        system_df['imno'], sed_mjd)
             sn_sed_obj.writeSED(sed_filename)
@@ -369,9 +375,10 @@ class sprinkler():
             os.remove(sed_filename)
         else:
             add_to_cat = False
+            sn_magnorm = np.nan
 
 
-        return add_to_cat
+        return add_to_cat, sn_magnorm
 
     def update_catsim(self):
         # Remove the catsim object
