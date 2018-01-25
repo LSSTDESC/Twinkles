@@ -177,6 +177,7 @@ class TwinklesCompoundInstanceCatalog(CompoundInstanceCatalog):
                         compound_dbo = default_compound_dbo(dbObjClassList)
 
                 compound_dbo.mjd = self._obs_metadata.mjd.TAI
+                compound_dbo.specFileMap = twinkles_spec_map
 
                 self._write_compound(catList, compound_dbo, filename,
                                      chunk_size=chunk_size, write_header=write_header,
