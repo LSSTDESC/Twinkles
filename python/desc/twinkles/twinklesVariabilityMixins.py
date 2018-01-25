@@ -7,7 +7,7 @@ import ast
 import copy
 from scipy.interpolate import interp1d
 from lsst.sims.catalogs.decorators import register_class, register_method, compound
-from lsst.sims.catUtils.mixins import Variability, ExtraGalacticVariabilityModels, reset_agn_lc_cache
+from lsst.sims.catUtils.mixins import Variability, ExtraGalacticVariabilityModels
 from lsst.sims.catUtils.mixins.VariabilityMixin import _VariabilityPointSources
 
 __all__ = ["TimeDelayVariability", "VariabilityTwinkles"]
@@ -17,25 +17,26 @@ _AGN_LC_CACHE = {}
 class TimeDelayVariability(Variability):
 
     @register_method("applyAgnTimeDelay")
-    def applyAgnTimeDelay(self, valid_dexes, params, expmjd):
+    def applyAgnTimeDelay(self, valid_dexes, params, expmjd,
+                          variability_cache=None, redshift=None):
 
-        global _AGN_LC_CACHE
-
-        reset_agn_lc_cache()
+        if redshift is None:
+            redshift_arr = self.column_by_name('redshift')
+        else:
+            redshift_arr = redshift
 
         if len(params) == 0:
             return np.array([[],[],[],[],[],[]])
 
         if isinstance(expmjd, numbers.Number):
             dMags = np.zeros((6, self.num_variable_obj(params)))
-            expmjd_arr = [expmjd]
+            expmjd_arr = np.array([expmjd])
         else:
             dMags = np.zeros((6, self.num_variable_obj(params), len(expmjd)))
             expmjd_arr = expmjd
 
-        t0_arr = params['t0_mjd'].astype(float)
-        tDelay_arr = params['t0Delay'].astype(float)
         seed_arr = params['seed']
+        t_delay_arr = params['t0Delay'].astype(float)
         tau_arr = params['agn_tau'].astype(float)
         sfu_arr = params['agn_sfu'].astype(float)
         sfg_arr = params['agn_sfg'].astype(float)
@@ -44,97 +45,75 @@ class TimeDelayVariability(Variability):
         sfz_arr = params['agn_sfz'].astype(float)
         sfy_arr = params['agn_sfy'].astype(float)
 
-        for i_time, expmjd_val in enumerate(expmjd_arr):
-            for ix in valid_dexes[0]:
-                toff = t0_arr[ix] + tDelay_arr[ix]
-                seed = seed_arr[ix]
-                tau = tau_arr[ix]
+        start_date = 58580.0
+        duration_observer_frame = expmjd_arr.max() - start_date
 
-                sfint = {}
-                sfint['u'] = sfu_arr[ix]
-                sfint['g'] = sfg_arr[ix]
-                sfint['r'] = sfr_arr[ix]
-                sfint['i'] = sfi_arr[ix]
-                sfint['z'] = sfz_arr[ix]
-                sfint['y'] = sfy_arr[ix]
+        if duration_observer_frame < 0 or expmjd_arr.min() < start_date:
+            raise RuntimeError("WARNING: Time offset greater than minimum epoch.  " +
+                               "Not applying variability. "+
+                               "expmjd: %e should be > start_date: %e  " % (expmjd.min(), start_date) +
+                               "in applyAgn variability method")
 
-                # A string made up of this AGNs variability parameters that ought
-                # to uniquely identify it.
-                #
-                agn_ID = '%d_%.12f_%.12f_%.12f_%.12f_%.12f_%.12f_%.12f_%.12f' \
-                %(seed, sfint['u'], sfint['g'], sfint['r'], sfint['i'], sfint['z'],
-                  sfint['y'], tau, toff)
+        for i_obj in valid_dexes[0]:
 
-                resumption = False
+            seed = seed_arr[i_obj]
+            tau = tau_arr[i_obj]
+            time_dilation = 1.0+redshift_arr[i_obj]
+            t_delay = t_delay_arr[i_obj]
 
-                # Check to see if this AGN has already been simulated.
-                # If it has, see if the previously simulated MJD is
-                # earlier than the first requested MJD.  If so,
-                # use that previous simulation as the starting point.
-                #
-                if agn_ID in _AGN_LC_CACHE:
-                    if _AGN_LC_CACHE[agn_ID]['mjd'] <expmjd_val:
-                        resumption = True
+            sfint = {}
+            sfint['u'] = sfu_arr[i_obj]
+            sfint['g'] = sfg_arr[i_obj]
+            sfint['r'] = sfr_arr[i_obj]
+            sfint['i'] = sfi_arr[i_obj]
+            sfint['z'] = sfz_arr[i_obj]
+            sfint['y'] = sfy_arr[i_obj]
 
-                if resumption:
-                    rng = copy.deepcopy(_AGN_LC_CACHE[agn_ID]['rng'])
-                    start_date = _AGN_LC_CACHE[agn_ID]['mjd']
-                    dx_0 = _AGN_LC_CACHE[agn_ID]['dx']
+            rng = np.random.RandomState(seed)
+
+            dt = tau/100.
+            duration_rest_frame = duration_observer_frame/time_dilation
+            nbins = int(math.ceil(duration_rest_frame/dt))+1
+
+            time_dexes = np.round((expmjd_arr-start_date-t_delay)/(time_dilation*dt)).astype(int)
+            time_dex_map = {}
+            ct_dex = 0
+            for i_t_dex, t_dex in enumerate(time_dexes):
+                if t_dex in time_dex_map:
+                    time_dex_map[t_dex].append(i_t_dex)
                 else:
-                    start_date = toff
-                    rng = np.random.RandomState(seed)
-                    dx_0 = {}
-                    for k in sfint:
-                        dx_0[k]=0.0
+                    time_dex_map[t_dex] = [i_t_dex]
+            time_dexes = set(time_dexes)
 
-                endepoch = expmjd_val - start_date
+            dx2 = 0.0
+            x1 = 0.0
+            x2 = 0.0
 
-                if endepoch < 0:
-                    raise RuntimeError("WARNING: Time offset greater than minimum epoch.  " +
-                                       "Not applying variability. "+
-                                       "expmjd: %e should be > toff: %e  " % (expmjd, toff) +
-                                       "in applyAgn variability method")
+            dt_over_tau = dt/tau
+            es = rng.normal(0., 1., nbins)*math.sqrt(dt_over_tau)
+            for i_time in range(nbins):
+                #The second term differs from Zeljko's equation by sqrt(2.)
+                #because he assumes stdev = sfint/sqrt(2)
+                dx1 = dx2
+                dx2 = -dx1*dt_over_tau + sfint['u']*es[i_time] + dx1
+                x1 = x2
+                x2 += dt
 
-                dt = tau/100.
-                nbins = int(math.ceil(endepoch/dt))
-
-                x1 = (nbins-1)*dt
-                x2 = (nbins)*dt
-
-                dt = dt/tau
-                es = rng.normal(0., 1., nbins)*math.sqrt(dt)
-                dx_cached = {}
-
-                for k, ik in zip(('u', 'g', 'r', 'i', 'z', 'y'), range(6)):
-                    dx2 = dx_0[k]
-                    for i in range(nbins):
-                        #The second term differs from Zeljko's equation by sqrt(2.)
-                        #because he assumes stdev = sfint/sqrt(2)
-                        dx1 = dx2
-                        dx2 = -dx1*dt + sfint[k]*es[i] + dx1
-
-                    dx_cached[k] = dx2
-                    dm_val = (endepoch*(dx1-dx2)+dx2*x1-dx1*x2)/(x1-x2)
+                if i_time in time_dexes:
                     if isinstance(expmjd, numbers.Number):
-                        dMags[ik][ix] = dm_val
+                        dm_val = ((expmjd-start_date)*(dx1-dx2)/time_dilation+dx2*x1-dx1*x2)/(x1-x2)
+                        dMags[0][i_obj] = dm_val
                     else:
-                        dMags[ik][ix][i_time] = dm_val
+                        for i_time_out in time_dex_map[i_time]:
+                            local_end = (expmjd_arr[i_time_out]-start_date)/time_dilation
+                            dm_val = (local_end*(dx1-dx2)+dx2*x1-dx1*x2)/(x1-x2)
+                            dMags[0][i_obj][i_time_out] = dm_val
 
-                # Reset that AGN light curve cache once it contains
-                # one million objects (to prevent it from taking up
-                # too much memory).
-                if len(_AGN_LC_CACHE)>1000000:
-                    reset_agn_lc_cache()
-
-                if agn_ID not in _AGN_LC_CACHE:
-                    _AGN_LC_CACHE[agn_ID] = {}
-
-                _AGN_LC_CACHE[agn_ID]['mjd'] = start_date+x2
-                _AGN_LC_CACHE[agn_ID]['rng'] = copy.deepcopy(rng)
-                _AGN_LC_CACHE[agn_ID]['dx'] = dx_cached
+        for i_filter, filter_name in enumerate(('g', 'r', 'i', 'z', 'y')):
+            for i_obj in valid_dexes[0]:
+                dMags[i_filter+1][i_obj] = dMags[0][i_obj]*params['agn_sf%s' % filter_name][i_obj]/params['agn_sfu'][i_obj]
 
         return dMags
-
 
 class VariabilityTwinkles(_VariabilityPointSources, TimeDelayVariability):
 
