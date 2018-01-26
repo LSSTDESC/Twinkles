@@ -85,6 +85,8 @@ class TwinklesCatalogSN(PhoSimCatalogSN):
 
 class TwinklesCompoundInstanceCatalog(CompoundInstanceCatalog):
 
+    use_spec_map = twinkles_spec_map
+
     def write_catalog(self, filename, chunk_size=None, write_header=True, write_mode='w'):
         """
         Write the stored list of InstanceCatalogs to a single ASCII output catalog.
@@ -177,7 +179,7 @@ class TwinklesCompoundInstanceCatalog(CompoundInstanceCatalog):
                         compound_dbo = default_compound_dbo(dbObjClassList)
 
                 compound_dbo.mjd = self._obs_metadata.mjd.TAI
-                compound_dbo.specFileMap = twinkles_spec_map
+                compound_dbo.specFileMap = self.use_spec_map
 
                 self._write_compound(catList, compound_dbo, filename,
                                      chunk_size=chunk_size, write_header=write_header,
