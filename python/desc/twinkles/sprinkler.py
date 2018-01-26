@@ -26,6 +26,9 @@ __all__ = ['sprinklerCompound', 'sprinkler']
 class sprinklerCompound(GalaxyTileCompoundObj):
     objid = 'sprinklerCompound'
     objectTypeId = 66
+    cached_sprinkling = False
+    agn_cache_file = None
+    sne_cache_file = None
 
     def _final_pass(self, results):
         #From the original GalaxyTileCompoundObj final pass method
@@ -45,14 +48,18 @@ class sprinklerCompound(GalaxyTileCompoundObj):
         # results['galtileid'] = results['galtileid']#%100000000
 
         #Use Sprinkler now
-        sp = sprinkler(results, self.mjd, self.specFileMap, density_param=1.0)
+        sp = sprinkler(results, self.mjd, self.specFileMap, density_param=1.0,
+                       cached_sprinkling=self.cached_sprinkling,
+                       agn_cache_file=self.agn_cache_file,
+                       sne_cache_file=self.sne_cache_file)
         results = sp.sprinkle()
 
         return results
 
 class sprinkler():
     def __init__(self, catsim_cat, visit_mjd, specFileMap, om10_cat='twinkles_lenses_v2.fits',
-                 sne_cat = 'dc2_sne_cat.csv', density_param=1., cached_sprinkling=True):
+                 sne_cat = 'dc2_sne_cat.csv', density_param=1., cached_sprinkling=False,
+                 agn_cache_file=None, sne_cache_file=None):
         """
         Parameters
         ----------
@@ -95,9 +102,11 @@ class sprinkler():
 
         self.cached_sprinkling = cached_sprinkling
         if self.cached_sprinkling is True:
-            agn_cache_file = os.path.join(twinklesDir, 'data', 'test_agn_galtile_cache.csv')
+            if ((agn_cache_file is None) | (sne_cache_file is None)):
+                raise AttributeError('Must specify cache files if using cached_sprinkling.')
+            #agn_cache_file = os.path.join(twinklesDir, 'data', 'test_agn_galtile_cache.csv')
             self.agn_cache = pd.read_csv(agn_cache_file)
-            sne_cache_file = os.path.join(twinklesDir, 'data', 'test_sne_galtile_cache.csv')
+            #sne_cache_file = os.path.join(twinklesDir, 'data', 'test_sne_galtile_cache.csv')
             self.sne_cache = pd.read_csv(sne_cache_file)
         else:
             self.agn_cache = None
