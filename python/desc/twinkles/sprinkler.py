@@ -167,7 +167,6 @@ class sprinkler():
         # For each galaxy in the catsim catalog
         updated_catalog = self.catalog.copy()
         print("Running sprinkler. Catalog Length: ", len(self.catalog))
-        print(self.catalog.dtype.names)
         for rowNum, row in enumerate(self.catalog):
             if rowNum == 100 or rowNum % 100000==0:
                 print("Gone through ", rowNum, " lines of catalog.")
@@ -215,13 +214,13 @@ class sprinkler():
                         lensrow[self.defs_dict['galaxyDisk_minorAxis']] = 0.0
                         lensrow[self.defs_dict['galaxyDisk_positionAngle']] = 0.0
                         lensrow[self.defs_dict['galaxyDisk_internalAv']] = 0.0
-                        lensrow[self.defs_dict['galaxyDisk_magNorm']] = np.nan
+                        lensrow[self.defs_dict['galaxyDisk_magNorm']] = 999. #np.nan To be fixed post run1.1
                         lensrow[self.defs_dict['galaxyDisk_sedFilename']] = None
                         lensrow[self.defs_dict['galaxyBulge_majorAxis']] = 0.0
                         lensrow[self.defs_dict['galaxyBulge_minorAxis']] = 0.0
                         lensrow[self.defs_dict['galaxyBulge_positionAngle']] = 0.0
                         lensrow[self.defs_dict['galaxyBulge_internalAv']] = 0.0
-                        lensrow[self.defs_dict['galaxyBulge_magNorm']] = np.nan
+                        lensrow[self.defs_dict['galaxyBulge_magNorm']] = 999. #np.nan To be fixed post run1.1
                         lensrow[self.defs_dict['galaxyBulge_sedFilename']] = None
                         lensrow[self.defs_dict['galaxyBulge_redshift']] = newlens['ZSRC']
                         lensrow[self.defs_dict['galaxyDisk_redshift']] = newlens['ZSRC']
@@ -242,9 +241,10 @@ class sprinkler():
                         row[self.defs_dict['galaxyDisk_minorAxis']] = 0.0
                         row[self.defs_dict['galaxyDisk_positionAngle']] = 0.0
                         row[self.defs_dict['galaxyDisk_internalAv']] = 0.0
-                        row[self.defs_dict['galaxyDisk_magNorm']] = np.nan
+                        row[self.defs_dict['galaxyDisk_magNorm']] = 999. #np.nan To be fixed post run1.1
                         row[self.defs_dict['galaxyDisk_sedFilename']] = None
-                    row[self.defs_dict['galaxyAgn_magNorm']] = np.nan
+                    row[self.defs_dict['galaxyAgn_magNorm']] = None #np.nan To be fixed post run1.1
+                    row[self.defs_dict['galaxyDisk_magNorm']] = 999. # To be fixed in run1.1
                     row[self.defs_dict['galaxyAgn_sedFilename']] = None
                     #Now insert desired Bulge properties
                     row[self.defs_dict['galaxyBulge_sedFilename']] = newlens['lens_sed']
@@ -300,13 +300,13 @@ class sprinkler():
                     lensrow[self.defs_dict['galaxyDisk_minorAxis']] = 0.0
                     lensrow[self.defs_dict['galaxyDisk_positionAngle']] = 0.0
                     lensrow[self.defs_dict['galaxyDisk_internalAv']] = 0.0
-                    lensrow[self.defs_dict['galaxyDisk_magNorm']] = np.nan
+                    lensrow[self.defs_dict['galaxyDisk_magNorm']] = 999. #np.nan To be fixed post run1.1
                     lensrow[self.defs_dict['galaxyDisk_sedFilename']] = None
                     lensrow[self.defs_dict['galaxyBulge_majorAxis']] = 0.0
                     lensrow[self.defs_dict['galaxyBulge_minorAxis']] = 0.0
                     lensrow[self.defs_dict['galaxyBulge_positionAngle']] = 0.0
                     lensrow[self.defs_dict['galaxyBulge_internalAv']] = 0.0
-                    lensrow[self.defs_dict['galaxyBulge_magNorm']] = np.nan
+                    lensrow[self.defs_dict['galaxyBulge_magNorm']] = 999. #np.nan To be fixed post run1.1
                     lensrow[self.defs_dict['galaxyBulge_sedFilename']] = None
                     z_s = use_df['zs'].iloc[i]
                     lensrow[self.defs_dict['galaxyBulge_redshift']] = z_s
@@ -338,9 +338,10 @@ class sprinkler():
                     row[self.defs_dict['galaxyDisk_minorAxis']] = 0.0
                     row[self.defs_dict['galaxyDisk_positionAngle']] = 0.0
                     row[self.defs_dict['galaxyDisk_internalAv']] = 0.0
-                    row[self.defs_dict['galaxyDisk_magNorm']] = np.nan
+                    row[self.defs_dict['galaxyDisk_magNorm']] = 999. #np.nan To be fixed post run1.1
                     row[self.defs_dict['galaxyDisk_sedFilename']] = None
-                row[self.defs_dict['galaxyAgn_magNorm']] = np.nan
+                row[self.defs_dict['galaxyAgn_magNorm']] = None #np.nan To be fixed post run1.1
+                row[self.defs_dict['galaxyDisk_magNorm']] = 999. #To be fixed post run1.1
                 row[self.defs_dict['galaxyAgn_sedFilename']] = None
                 #Now insert desired Bulge properties
                 row[self.defs_dict['galaxyBulge_sedFilename']] = use_df['lens_sed'].iloc[0]
@@ -388,6 +389,7 @@ class sprinkler():
         # sn_param_dict['t0'] = 61681.083859  #+1500. ### For testing only
         
         current_sn_obj = self.sn_obj.fromSNState(sn_param_dict)
+        current_sn_obj.mwEBVfromMaps()
         sn_sed_obj = current_sn_obj.SNObjectSED(time=sed_mjd, 
                                                 wavelen=self.bandpassDict['i'].wavelen)
         flux_500 = sn_sed_obj.flambda[np.where(sn_sed_obj.wavelen >= 499.99)][0]
