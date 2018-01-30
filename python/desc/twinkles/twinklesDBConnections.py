@@ -1,10 +1,11 @@
 from __future__ import absolute_import
+import numpy
 import os
 from lsst.utils import getPackageDir
 from lsst.sims.catalogs.db import CatalogDBObject
-from lsst.sims.catUtils.baseCatalogModels import SNDBObj
+from lsst.sims.catUtils.baseCatalogModels import SNDBObj, GalaxyBulgeObj, GalaxyDiskObj, GalaxyAgnObj
 
-__all__ = ["StarCacheDBObj"]
+__all__ = ["StarCacheDBObj", "TwinklesBulgeObj", "TwinklesDiskObj", "TwinklesAgnObj"]
 
 class StarCacheDBObj(CatalogDBObject):
     tableid = 'star_cache_table'
@@ -38,3 +39,30 @@ class SNCacheDBObj(SNDBObj, CatalogDBObject):
 
     def query_columns(self, *args, **kwargs):
         return CatalogDBObject.query_columns(self, *args, **kwargs)
+
+class TwinklesBulgeObj(GalaxyBulgeObj):
+
+    database = 'LSSTCATSIM'
+    port = 1433
+    host = 'fatboy.phys.washington.edu'
+    driver = 'mssql+pymssql'
+
+    objid = 'galaxyBulge'
+
+class TwinklesDiskObj(GalaxyDiskObj):
+
+    database = 'LSSTCATSIM'
+    port = 1433
+    host = 'fatboy.phys.washington.edu'
+    driver = 'mssql+pymssql'
+
+    objid = 'galaxyDisk'
+
+class TwinklesAgnObj(GalaxyAgnObj):
+
+    database = 'LSSTCATSIM'
+    port = 1433
+    host = 'fatboy.phys.washington.edu'
+    driver = 'mssql+pymssql'
+
+    objid = 'galaxyAgn'
