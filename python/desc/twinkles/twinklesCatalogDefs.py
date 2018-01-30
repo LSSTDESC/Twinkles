@@ -26,20 +26,9 @@ class TwinklesCatalogPoint(PhoSimCatalogPoint):
 
     specFileMap = twinkles_spec_map
 
-    column_outputs = ['prefix', 'uniqueId', 'raPhoSim', 'decPhoSim', 'phoSimMagNorm', 'sedFilepath',
-                      'redshift', 'gamma1', 'gamma2', 'kappa', 'raOffset', 'decOffset',
-                      'spatialmodel', 'internalExtinctionModel',
-                      'galacticExtinctionModel', 'galacticAv', 'galacticRv']
-
 class TwinklesCatalogSersic2D(PhoSimCatalogSersic2D):
 
     specFileMap = twinkles_spec_map
-
-    column_outputs = ['prefix', 'uniqueId', 'raPhoSim', 'decPhoSim', 'phoSimMagNorm', 'sedFilepath',
-                      'redshift', 'gamma1', 'gamma2', 'kappa', 'raOffset', 'decOffset',
-                      'spatialmodel', 'majorAxis', 'minorAxis', 'positionAngle', 'sindex',
-                      'internalExtinctionModel', 'internalAv', 'internalRv',
-                      'galacticExtinctionModel', 'galacticAv', 'galacticRv']
 
 class TwinklesCatalogZPoint(PhoSimCatalogZPoint, VariabilityTwinkles, VariabilityAGN):
     """
@@ -50,11 +39,6 @@ class TwinklesCatalogZPoint(PhoSimCatalogZPoint, VariabilityTwinkles, Variabilit
     specFileMap = twinkles_spec_map
 
     catalog_type = 'twinkles_catalog_ZPOINT'
-
-    column_outputs = ['prefix', 'uniqueId', 'raPhoSim', 'decPhoSim', 'phoSimMagNorm', 'sedFilepath',
-                      'redshift', 'gamma1', 'gamma2', 'kappa', 'raOffset', 'decOffset',
-                      'spatialmodel', 'internalExtinctionModel',
-                      'galacticExtinctionModel', 'galacticAv', 'galacticRv']
 
 class TwinklesCatalogSN(PhoSimCatalogSN):
     """
