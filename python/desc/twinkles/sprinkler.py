@@ -321,7 +321,7 @@ class sprinkler():
 
                     add_to_cat, sn_magnorm = self.create_sn_sed(use_df.iloc[i], lensrow[self.defs_dict['galaxyAgn_raJ2000']],
                                                                 lensrow[self.defs_dict['galaxyAgn_decJ2000']], self.visit_mjd)
-                    lensrow[self.defs_dict['galaxyAgn_sedFilename']] = 'specFile_tsn_%i_%i_%f.txt' % (use_system, use_df['imno'].iloc[i],
+                    lensrow[self.defs_dict['galaxyAgn_sedFilename']] = 'specFileGLSN_%i_%i_%.4f.txt' % (use_system, use_df['imno'].iloc[i],
                                                                                            self.visit_mjd)
                     lensrow[self.defs_dict['galaxyAgn_magNorm']] = sn_magnorm #This will need to be adjusted to proper band
                     mag_adjust = 2.5*np.log10(np.abs(use_df['mu'].iloc[i]))
