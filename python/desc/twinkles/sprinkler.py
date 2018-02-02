@@ -397,7 +397,7 @@ class sprinkler():
         if flux_500 > 0.:
             add_to_cat = True
             sn_magnorm = current_sn_obj.catsimBandMag(self.imSimBand, sed_mjd)
-            sed_filename = '%s/specFile_tsn_%i_%i_%f.txt' % (self.write_dir, system_df['twinkles_sysno'], 
+            sed_filename = '%s/specFileGLSN_%i_%i_%.4f.txt' % (self.write_dir, system_df['twinkles_sysno'], 
                                                                        system_df['imno'], sed_mjd)
             sn_sed_obj.writeSED(sed_filename)
             with open(sed_filename, 'rb') as f_in, gzip.open(str(sed_filename + '.gz'), 'wb') as f_out:
