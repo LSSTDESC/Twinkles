@@ -319,10 +319,9 @@ class sprinkler():
                     lensrow[self.defs_dict['galtileid']] = (lensrow[self.defs_dict['galtileid']]*10000 +
                                             use_system*4 + i)
 
-                    add_to_cat, sn_magnorm = self.create_sn_sed(use_df.iloc[i], lensrow[self.defs_dict['galaxyAgn_raJ2000']],
+                    add_to_cat, sn_magnorm, sn_fname = self.create_sn_sed(use_df.iloc[i], lensrow[self.defs_dict['galaxyAgn_raJ2000']],
                                                                 lensrow[self.defs_dict['galaxyAgn_decJ2000']], self.visit_mjd)
-                    lensrow[self.defs_dict['galaxyAgn_sedFilename']] = 'specFileGLSN_%i_%i_%.4f.txt' % (use_system, use_df['imno'].iloc[i],
-                                                                                           self.visit_mjd)
+                    lensrow[self.defs_dict['galaxyAgn_sedFilename']] = sn_fname
                     lensrow[self.defs_dict['galaxyAgn_magNorm']] = sn_magnorm #This will need to be adjusted to proper band
                     mag_adjust = 2.5*np.log10(np.abs(use_df['mu'].iloc[i]))
                     lensrow[self.defs_dict['galaxyAgn_magNorm']] -= mag_adjust
@@ -397,8 +396,9 @@ class sprinkler():
         if flux_500 > 0.:
             add_to_cat = True
             sn_magnorm = current_sn_obj.catsimBandMag(self.imSimBand, sed_mjd)
-            sed_filename = '%s/specFileGLSN_%i_%i_%.4f.txt' % (self.write_dir, system_df['twinkles_sysno'], 
+            sn_name = 'specFileGLSN_%i_%i_%.4f.txt' % (system_df['twinkles_sysno'], 
                                                                        system_df['imno'], sed_mjd)
+            sed_filename = '%s/%s' % (self.write_dir, sn_name)
             sn_sed_obj.writeSED(sed_filename)
             with open(sed_filename, 'rb') as f_in, gzip.open(str(sed_filename + '.gz'), 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
@@ -408,7 +408,7 @@ class sprinkler():
             sn_magnorm = np.nan
 
 
-        return add_to_cat, sn_magnorm
+        return add_to_cat, sn_magnorm, sn_name
 
     def update_catsim(self):
         # Remove the catsim object
