@@ -103,7 +103,7 @@ class sprinkler():
         self.used_systems = []
         self.visit_mjd = visit_mjd
         self.sn_obj = SNObject(0., 0.)
-        self.write_dir = specFileMap.subdir_map['(^specFile_)']
+        self.write_dir = specFileMap.subdir_map['(^specFileGLSN)']
 
         self.cached_sprinkling = cached_sprinkling
         if self.cached_sprinkling is True:
