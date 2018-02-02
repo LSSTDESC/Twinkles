@@ -30,6 +30,7 @@ class sprinklerCompound(GalaxyTileCompoundObj):
     agn_cache_file = None
     sne_cache_file = None
     defs_file = None
+    sed_path = None
 
     def _final_pass(self, results):
         #From the original GalaxyTileCompoundObj final pass method
@@ -49,7 +50,8 @@ class sprinklerCompound(GalaxyTileCompoundObj):
         # results['galtileid'] = results['galtileid']#%100000000
 
         #Use Sprinkler now
-        sp = sprinkler(results, self.mjd, self.specFileMap, density_param=1.0,
+        sp = sprinkler(results, self.mjd, self.specFileMap, self.sed_path,
+                       density_param=1.0,
                        cached_sprinkling=self.cached_sprinkling,
                        agn_cache_file=self.agn_cache_file,
                        sne_cache_file=self.sne_cache_file,
@@ -59,7 +61,8 @@ class sprinklerCompound(GalaxyTileCompoundObj):
         return results
 
 class sprinkler():
-    def __init__(self, catsim_cat, visit_mjd, specFileMap, om10_cat='twinkles_lenses_v2.fits',
+    def __init__(self, catsim_cat, visit_mjd, specFileMap, sed_path,
+                 om10_cat='twinkles_lenses_v2.fits',
                  sne_cat = 'dc2_sne_cat.csv', density_param=1., cached_sprinkling=False,
                  agn_cache_file=None, sne_cache_file=None, defs_file=None):
         """
@@ -104,6 +107,7 @@ class sprinkler():
         self.visit_mjd = visit_mjd
         self.sn_obj = SNObject(0., 0.)
         self.write_dir = specFileMap.subdir_map['(^specFileGLSN)']
+        self.sed_path = sed_path
 
         self.cached_sprinkling = cached_sprinkling
         if self.cached_sprinkling is True:
@@ -398,7 +402,7 @@ class sprinkler():
             sn_magnorm = current_sn_obj.catsimBandMag(self.imSimBand, sed_mjd)
             sn_name = 'specFileGLSN_%i_%i_%.4f.txt' % (system_df['twinkles_sysno'], 
                                                                        system_df['imno'], sed_mjd)
-            sed_filename = '%s/%s' % (self.write_dir, sn_name)
+            sed_filename = '%s/%s' % (self.sed_path, sn_name)
             sn_sed_obj.writeSED(sed_filename)
             with open(sed_filename, 'rb') as f_in, gzip.open(str(sed_filename + '.gz'), 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
