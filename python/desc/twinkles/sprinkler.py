@@ -406,6 +406,7 @@ class sprinkler():
         else:
             add_to_cat = False
             sn_magnorm = np.nan
+            sn_name = None
 
 
         return add_to_cat, sn_magnorm, sn_name
