@@ -30,6 +30,7 @@ class sprinklerCompound(GalaxyTileCompoundObj):
     agn_cache_file = None
     sne_cache_file = None
     defs_file = None
+    sed_path = None
 
     def _final_pass(self, results):
         #From the original GalaxyTileCompoundObj final pass method
@@ -49,7 +50,8 @@ class sprinklerCompound(GalaxyTileCompoundObj):
         # results['galtileid'] = results['galtileid']#%100000000
 
         #Use Sprinkler now
-        sp = sprinkler(results, self.mjd, self.specFileMap, density_param=1.0,
+        sp = sprinkler(results, self.mjd, self.specFileMap, self.sed_path,
+                       density_param=1.0,
                        cached_sprinkling=self.cached_sprinkling,
                        agn_cache_file=self.agn_cache_file,
                        sne_cache_file=self.sne_cache_file,
@@ -59,7 +61,8 @@ class sprinklerCompound(GalaxyTileCompoundObj):
         return results
 
 class sprinkler():
-    def __init__(self, catsim_cat, visit_mjd, specFileMap, om10_cat='twinkles_lenses_v2.fits',
+    def __init__(self, catsim_cat, visit_mjd, specFileMap, sed_path,
+                 om10_cat='twinkles_lenses_v2.fits',
                  sne_cat = 'dc2_sne_cat.csv', density_param=1., cached_sprinkling=False,
                  agn_cache_file=None, sne_cache_file=None, defs_file=None):
         """
@@ -103,7 +106,8 @@ class sprinkler():
         self.used_systems = []
         self.visit_mjd = visit_mjd
         self.sn_obj = SNObject(0., 0.)
-        self.write_dir = specFileMap.subdir_map['(^specFile_)']
+        self.write_dir = specFileMap.subdir_map['(^specFileGLSN)']
+        self.sed_path = sed_path
 
         self.cached_sprinkling = cached_sprinkling
         if self.cached_sprinkling is True:
@@ -319,10 +323,9 @@ class sprinkler():
                     lensrow[self.defs_dict['galtileid']] = (lensrow[self.defs_dict['galtileid']]*10000 +
                                             use_system*4 + i)
 
-                    add_to_cat, sn_magnorm = self.create_sn_sed(use_df.iloc[i], lensrow[self.defs_dict['galaxyAgn_raJ2000']],
+                    add_to_cat, sn_magnorm, sn_fname = self.create_sn_sed(use_df.iloc[i], lensrow[self.defs_dict['galaxyAgn_raJ2000']],
                                                                 lensrow[self.defs_dict['galaxyAgn_decJ2000']], self.visit_mjd)
-                    lensrow[self.defs_dict['galaxyAgn_sedFilename']] = 'specFile_tsn_%i_%i_%f.txt' % (use_system, use_df['imno'].iloc[i],
-                                                                                           self.visit_mjd)
+                    lensrow[self.defs_dict['galaxyAgn_sedFilename']] = sn_fname
                     lensrow[self.defs_dict['galaxyAgn_magNorm']] = sn_magnorm #This will need to be adjusted to proper band
                     mag_adjust = 2.5*np.log10(np.abs(use_df['mu'].iloc[i]))
                     lensrow[self.defs_dict['galaxyAgn_magNorm']] -= mag_adjust
@@ -397,8 +400,9 @@ class sprinkler():
         if flux_500 > 0.:
             add_to_cat = True
             sn_magnorm = current_sn_obj.catsimBandMag(self.imSimBand, sed_mjd)
-            sed_filename = '%s/specFile_tsn_%i_%i_%f.txt' % (self.write_dir, system_df['twinkles_sysno'], 
+            sn_name = 'specFileGLSN_%i_%i_%.4f.txt' % (system_df['twinkles_sysno'], 
                                                                        system_df['imno'], sed_mjd)
+            sed_filename = '%s/%s' % (self.sed_path, sn_name)
             sn_sed_obj.writeSED(sed_filename)
             with open(sed_filename, 'rb') as f_in, gzip.open(str(sed_filename + '.gz'), 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
@@ -406,9 +410,10 @@ class sprinkler():
         else:
             add_to_cat = False
             sn_magnorm = np.nan
+            sn_name = None
 
 
-        return add_to_cat, sn_magnorm
+        return add_to_cat, sn_magnorm, sn_name
 
     def update_catsim(self):
         # Remove the catsim object
