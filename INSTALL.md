@@ -3,33 +3,19 @@
 The Twinkles package uses the LSST DM Stack's `afw` code, and also the LSST
 Sims tools (among other things). Here's how to get everything working.
 
-## 1. Get Anaconda Python
 
-According to the [LSST community](https://community.lsst.org/t/up-and-running-with-sims-maf-contrib/383), and
-various peopls around the DESC, it seems best to install the DM stack using `conda` - or in fact, `miniconda`.
-Click [here](http://conda.pydata.org/miniconda.html) and download python 2.7, if you don't have Anaconda python already.
-```
-bash ~/Downloads/Miniconda-latest-MacOSX-x86_64.sh
-```
-This installs miniconda into `${HOME}/miniconda2`. You should now pre-pend your `PATH` with `${HOME}/miniconda2/bin` so that
-this is becomes your default version of python.
+## 1. Install the LSST DM Stack and Sims Tools
 
+First set up a binary installation of a stack weekly, preferably the one that corresponds to the current sims tag.  Reference: https://pipelines.lsst.io/v/DM-12009/install/newinstall.html
+```
+curl -OL https://raw.githubusercontent.com/lsst/lsst/14.0/scripts/newinstall.sh
+bash newinstall.sh -ct
+```
 
-## 2. Install the LSST DM Stack and Sims Tools
-
-First you need to add the LSST "channel:"
-```
-conda config --add channels http://research.majuric.org/conda/stable
-```
-Now do:
-```
-conda install lsst-distrib
-```
-and find something else to do for half an hour. This will install the LSST packages in `${HOME}/miniconda2/pkgs/`. Then you'll need to do:
+This will install the LSST packages in `${HOME}/miniconda2/pkgs/`. Then you'll need to do:
 ```
 conda install lsst-sims
 ```
-This will upgrade some packages and downgrade others.
 
 ## 3. Get set up to use the LSST code
 
