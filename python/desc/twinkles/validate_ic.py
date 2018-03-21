@@ -165,7 +165,6 @@ class validate_ic(object):
         
         y = 3600.0 * (dec - dec0)
         x = 3600.0 * (ra - ra0) * np.cos(np.radians(dec0))
-#        print(x,y,dec,dec0,'here')
 
         return x, y
 
@@ -178,12 +177,7 @@ class validate_ic(object):
                                                 spr_agn_df['twinkles_system'].iloc[0])[0]]
         lens = db.get_lens(use_lens)
 
-#        print(lens)
-#        print(lens['XSRC'], lens['YSRC'])
         print(lens['XIMG'], lens['YIMG'])
-#        print(lens['ZSRC'])
-
-#        print(spr_agn_df['decPhoSim'].iloc[0], spr_agn_lens_df['decPhoSim'])
         
         om10.plot_lens(lens)
         
@@ -204,6 +198,7 @@ class validate_ic(object):
         #                                           spr_agn_df['decPhoSim'].iloc[3],
         #                                           spr_agn_lens_df['raPhoSim'],
         #                                           spr_agn_lens_df['decPhoSim'])
+        # offset_lens_ra, offset_lens_dec = self.offset_on_sky
 
         
         plt.scatter(offset_x1, offset_y1, c='r', marker='o', s=188, alpha=0.4, label='Catalog Image 1')
