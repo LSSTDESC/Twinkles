@@ -96,7 +96,7 @@ class sprinkler():
         om10_cat = os.path.join(twinklesDir, 'data', om10_cat)
         self.catalog = catsim_cat
         # ****** THIS ASSUMES THAT THE ENVIRONMENT VARIABLE OM10_DIR IS SET *******
-        lensdb = om10.DB(catalog=om10_cat)
+        lensdb = om10.DB(catalog=om10_cat, vb=False)
         self.lenscat = lensdb.lenses.copy()
         self.density_param = density_param
         self.bandpassDict = BandpassDict.loadTotalBandpassesFromFiles(bandpassNames=['i'])
