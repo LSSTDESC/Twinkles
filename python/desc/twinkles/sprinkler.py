@@ -170,10 +170,10 @@ class sprinkler():
         lenslines = []
         # For each galaxy in the catsim catalog
         updated_catalog = self.catalog.copy()
-        print("Running sprinkler. Catalog Length: ", len(self.catalog))
+        # print("Running sprinkler. Catalog Length: ", len(self.catalog))
         for rowNum, row in enumerate(self.catalog):
-            if rowNum == 100 or rowNum % 100000==0:
-                print("Gone through ", rowNum, " lines of catalog.")
+            # if rowNum == 100 or rowNum % 100000==0:
+            #     print("Gone through ", rowNum, " lines of catalog.")
             if not np.isnan(row[self.defs_dict['galaxyAgn_magNorm']]):
                 candidates = self.find_lens_candidates(row[self.defs_dict['galaxyAgn_redshift']],
                                                        row[self.defs_dict['galaxyAgn_magNorm']])
