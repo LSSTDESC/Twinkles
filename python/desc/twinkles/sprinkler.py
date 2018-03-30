@@ -96,7 +96,7 @@ class sprinkler():
         om10_cat = os.path.join(twinklesDir, 'data', om10_cat)
         self.catalog = catsim_cat
         # ****** THIS ASSUMES THAT THE ENVIRONMENT VARIABLE OM10_DIR IS SET *******
-        lensdb = om10.DB(catalog=om10_cat)
+        lensdb = om10.DB(catalog=om10_cat, vb=False)
         self.lenscat = lensdb.lenses.copy()
         self.density_param = density_param
         self.bandpassDict = BandpassDict.loadTotalBandpassesFromFiles(bandpassNames=['i'])
@@ -170,10 +170,10 @@ class sprinkler():
         lenslines = []
         # For each galaxy in the catsim catalog
         updated_catalog = self.catalog.copy()
-        print("Running sprinkler. Catalog Length: ", len(self.catalog))
+        # print("Running sprinkler. Catalog Length: ", len(self.catalog))
         for rowNum, row in enumerate(self.catalog):
-            if rowNum == 100 or rowNum % 100000==0:
-                print("Gone through ", rowNum, " lines of catalog.")
+            # if rowNum == 100 or rowNum % 100000==0:
+            #     print("Gone through ", rowNum, " lines of catalog.")
             if not np.isnan(row[self.defs_dict['galaxyAgn_magNorm']]):
                 candidates = self.find_lens_candidates(row[self.defs_dict['galaxyAgn_redshift']],
                                                        row[self.defs_dict['galaxyAgn_magNorm']])
