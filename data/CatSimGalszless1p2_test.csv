@@ -1,4 +1,0 @@
-#id, galtileid, raJ2000, decJ2000, redshift, a_d, b_d, pa_disk, sindexDisk, DiskHalfLightRadius, a_b, b_b, pa_bulge, sindexBulge, BulgeHalfLightRadius, mass_stellar, mass_gas, mass_halo, mass_bulge, sedFilenameDisk, sedFilenameBulge, log10BulgeToTotLSSTrFlux
-1090117, 60001090117, 9.252563e-01, -4.887149e-01, 0.5521, 0.4643, 0.3496, 153.5512, 1, 0.4643, 0.0000, 0.0000, 0.0000, 4, 0.0000, 0.2394, 0.0895, 4.3033, 0.0000, Exp.50E09.04Z.spec, None, -1000.0000
-886999, 60000886999, 9.256030e-01, -4.886511e-01, 0.5517, 0.7168, 0.2448, 325.7594, 1, 0.7168, 0.0000, 0.0000, 0.0000, 4, 0.0000, 0.2121, 0.2942, 6.7992, 0.0000, Exp.20E09.02Z.spec, None, -1000.0000
-9157159, 60009157159, 9.257373e-01, -4.887063e-01, 0.5517, 0.2588, 0.2126, 229.3344, 1, 0.2588, 0.0000, 0.0000, 0.0000, 4, 0.0000, 0.0078, 0.0383, 2.0656, 0.0000, Inst.16E09.02Z.spec, None, -1000.0000
