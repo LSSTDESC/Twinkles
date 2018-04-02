@@ -393,8 +393,12 @@ class sprinkler():
         
         current_sn_obj = self.sn_obj.fromSNState(sn_param_dict)
         current_sn_obj.mwEBVfromMaps()
+        wavelen_max = 1800.
+        wavelen_min = 30.
+        wavelen_step = 0.1
         sn_sed_obj = current_sn_obj.SNObjectSED(time=sed_mjd, 
-                                                wavelen=self.bandpassDict['i'].wavelen)
+                                                wavelen=np.arange(wavelen_min, wavelen_max,
+                                                                  wavelen_step))
         flux_500 = sn_sed_obj.flambda[np.where(sn_sed_obj.wavelen >= 499.99)][0]
 
         if flux_500 > 0.:
