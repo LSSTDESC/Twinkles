@@ -180,7 +180,9 @@ class sprinkler():
         # print("Running sprinkler. Catalog Length: ", len(self.catalog))
         for rowNum, row in enumerate(self.catalog):
             print('\nrownames')
-            print(row.dtype.names)
+            for name in row.dtype.names:
+                if 'sprinkled' in name:
+                    print(name)
             print('\n')
             # if rowNum == 100 or rowNum % 100000==0:
             #     print("Gone through ", rowNum, " lines of catalog.")
@@ -240,6 +242,7 @@ class sprinkler():
                         lensrow[self.defs_dict['galaxyDisk_redshift']] = newlens['ZSRC']
                         lensrow[self.defs_dict['galaxyAgn_redshift']] = newlens['ZSRC']
 
+                        print('setting to 1 in lensrow')
                         lensrow[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
                         lensrow[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
                         lensrow[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
@@ -280,6 +283,7 @@ class sprinkler():
                     #Convert orientation angle to west of north from east of north by *-1.0 and convert to radians
                     row[self.defs_dict['galaxyBulge_positionAngle']] = newlens['PHIE']*(-1.0)*np.pi/180.0
 
+                    print('setting to 1 in row')
                     row[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
                     row[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
                     row[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
