@@ -179,6 +179,9 @@ class sprinkler():
         updated_catalog = self.catalog.copy()
         # print("Running sprinkler. Catalog Length: ", len(self.catalog))
         for rowNum, row in enumerate(self.catalog):
+            print('\nrownames')
+            print(row.dtype.names)
+            print('\n')
             # if rowNum == 100 or rowNum % 100000==0:
             #     print("Gone through ", rowNum, " lines of catalog.")
             if not np.isnan(row[self.defs_dict['galaxyAgn_magNorm']]):
