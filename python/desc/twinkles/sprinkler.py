@@ -159,9 +159,12 @@ class sprinkler():
         #                                            self.bandpassDict)
 
         self.defs_dict = {}
+        self.logging_is_sprinkled = False
         with open(self.defs_file, 'r') as f:
             for line in f:
                 line_defs = line.split(',')
+                if 'is_sprinkled' in line_defs[1]:
+                    self.logging_is_sprinkled = True
                 if len(line_defs) > 1:
                     self.defs_dict[line_defs[0]] = line_defs[1].split('\n')[0]
 
@@ -237,9 +240,10 @@ class sprinkler():
                         lensrow[self.defs_dict['galaxyDisk_redshift']] = newlens['ZSRC']
                         lensrow[self.defs_dict['galaxyAgn_redshift']] = newlens['ZSRC']
 
-                        lensrow[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
-                        lensrow[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
-                        lensrow[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
+                        if self.logging_is_sprinkled:
+                            lensrow[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
+                            lensrow[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
+                            lensrow[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
 
                         #To get back twinklesID in lens catalog from phosim catalog id number
                         #just use np.right_shift(phosimID-28, 10). Take the floor of the last
@@ -277,9 +281,10 @@ class sprinkler():
                     #Convert orientation angle to west of north from east of north by *-1.0 and convert to radians
                     row[self.defs_dict['galaxyBulge_positionAngle']] = newlens['PHIE']*(-1.0)*np.pi/180.0
 
-                    row[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
-                    row[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
-                    row[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
+                    if self.logging_is_sprinkled:
+                        row[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
+                        row[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
+                        row[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
 
                     #Replace original entry with new entry
                     updated_catalog[rowNum] = row
@@ -347,9 +352,10 @@ class sprinkler():
                     mag_adjust = 2.5*np.log10(np.abs(use_df['mu'].iloc[i]))
                     lensrow[self.defs_dict['galaxyAgn_magNorm']] -= mag_adjust
 
-                    #lensrow[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
-                    #lensrow[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
-                    #lensrow[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
+                    if self.logging_is_sprinkled:
+                        lensrow[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
+                        lensrow[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
+                        lensrow[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
                     
                     if add_to_cat is True:
                         updated_catalog = np.append(updated_catalog, lensrow)
@@ -379,9 +385,10 @@ class sprinkler():
                 #Convert orientation angle to west of north from east of north by *-1.0 and convert to radians
                 row[self.defs_dict['galaxyBulge_positionAngle']] = use_df['theta_e'].iloc[0]*(-1.0)*np.pi/180.0
 
-                #row[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
-                #row[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
-                #row[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
+                if self.logging_is_sprinkled:
+                    row[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
+                    row[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
+                    row[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
 
                 #Replace original entry with new entry
                 updated_catalog[rowNum] = row
