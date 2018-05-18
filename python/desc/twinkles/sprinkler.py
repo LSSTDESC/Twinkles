@@ -165,6 +165,9 @@ class sprinkler():
                 if len(line_defs) > 1:
                     self.defs_dict[line_defs[0]] = line_defs[1].split('\n')[0]
 
+        print('\n\n\n')
+        print('defs file')
+        print(self.defs_file)
         for kk in self.defs_dict:
             if 'sprinkled' in kk:
                 print(kk,self.defs_dict[kk])
