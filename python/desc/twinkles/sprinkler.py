@@ -95,6 +95,7 @@ class sprinkler():
         twinklesDir = getPackageDir('Twinkles')
         om10_cat = os.path.join(twinklesDir, 'data', om10_cat)
         self.catalog = catsim_cat
+        self.catalog_column_names = catsim_cat.dtype.names
         # ****** THIS ASSUMES THAT THE ENVIRONMENT VARIABLE OM10_DIR IS SET *******
         lensdb = om10.DB(catalog=om10_cat, vb=False)
         self.lenscat = lensdb.lenses.copy()
@@ -164,6 +165,9 @@ class sprinkler():
                 if len(line_defs) > 1:
                     self.defs_dict[line_defs[0]] = line_defs[1].split('\n')[0]
 
+        for kk in self.defs_dict:
+            if 'sprinkled' in kk:
+                print(kk,self.defs_dict[kk])
 
     def sprinkle(self):
         # Define a list that we can write out to a text file
