@@ -163,9 +163,9 @@ class sprinkler():
         with open(self.defs_file, 'r') as f:
             for line in f:
                 line_defs = line.split(',')
-                if 'is_sprinkled' in line_defs[1]:
-                    self.logging_is_sprinkled = True
                 if len(line_defs) > 1:
+                    if 'is_sprinkled' in line_defs[1]:
+                        self.logging_is_sprinkled = True
                     self.defs_dict[line_defs[0]] = line_defs[1].split('\n')[0]
 
         print('\n\n\n')
