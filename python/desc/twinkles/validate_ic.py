@@ -88,13 +88,6 @@ class validate_ic(object):
 
         return df_galaxy, df_agn, df_sne
 
-    def load_sprinkler_cat(self, ic_file, sn_file_prefix):
-
-        df_galaxy, df_agn, df_sne = self.load_cat(ic_file, sn_file_prefix)
-        sprinkled_agn_df = self.process_sprinkled_agn(df_agn)
-
-        return df_sprinkled_agn, df_sprinkled_sne
-
     def process_sprinkled_agn(self, df_agn):
 
         galtileids = []
@@ -123,7 +116,7 @@ class validate_ic(object):
         sprinkled_agn['galaxy_id'] = galtileids
         sprinkled_agn['twinkles_system'] = twinkles_system
         sprinkled_agn['image_number'] = twinkles_im_num
-        sprinkled_agn['lens_galaxy_uID'] = np.left_shift(np.array(galtileids), 10) + 97
+        sprinkled_agn['lens_galaxy_uID'] = np.left_shift(np.array(galtileids, dtype=np.int), 10) + 97
             
         return sprinkled_agn
 
@@ -207,3 +200,44 @@ class validate_ic(object):
         # plt.scatter(offset_x4, offset_y4, c='r', marker='o', s=188, alpha=0.4, label='Catalog Image 4')
                 
         return 
+
+    def compare_agn_location(self, spr_agn_df, spr_agn_lens_df):
+        
+        db = om10.DB(catalog=os.path.join(os.environ['TWINKLES_DIR'], 'data', 
+                                          'twinkles_lenses_v2.fits'), vb=False)
+
+        x_offsets = []
+        y_offsets = []
+
+        for lens_gal_row in spr_agn_lens_df.iterrows():
+            lens_idx, lens_gal_df = lens_gal_row
+            u_id = lens_gal_df['uniqueId']
+
+            spr_sys_df = spr_agn_df.query('lens_galaxy_uID == %i' % u_id)
+            use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] == 
+                                                    spr_sys_df['twinkles_system'].iloc[0])[0]]
+            lens = db.get_lens(use_lens)
+            num_img = lens['NIMG']
+
+            for img_idx in range(num_img[0]):
+                # Calculate the offsets from the lens galaxy position
+                offset_x1, offset_y1 = self.offset_on_sky(spr_sys_df['raPhoSim'].iloc[img_idx], 
+                                                          spr_sys_df['decPhoSim'].iloc[img_idx],
+                                                          lens_gal_df['raPhoSim'],
+                                                          lens_gal_df['decPhoSim'])
+
+                x_offsets.append(offset_x1-lens['XIMG'][0][img_idx])
+                y_offsets.append(offset_y1-lens['YIMG'][0][img_idx])
+
+        # print(np.histogram(x_offsets))
+        # print(np.histogram(y_offsets))
+        max_x_err = np.max(np.abs(x_offsets))
+        max_y_err = np.max(np.abs(y_offsets))
+
+        if (max_x_err < 0.01) and (max_y_err < 0.01):
+            print('Pass: Max image offset error less than 0.01 arcsec')
+        else:
+            print('Fail: Max image offset error greater than 0.01 arcsec.' + 
+                  'Max x error is: %.4f arcsec. Max y error is: %.4f arcsec.' % (max_x_err, max_y_err))
+
+        return
