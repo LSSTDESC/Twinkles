@@ -415,7 +415,7 @@ class sprinkler():
         sn_param_dict['x0'] = system_df['x0']
         sn_param_dict['x1'] = system_df['x1']
         sn_param_dict['t0'] = system_df['t_start'] 
-        # sn_param_dict['t0'] = 61681.083859  #+1500. ### For testing only
+        sn_param_dict['t0'] = 62746.27  #+1500. ### For testing only
         
         current_sn_obj = self.sn_obj.fromSNState(sn_param_dict)
         current_sn_obj.mwEBVfromMaps()
