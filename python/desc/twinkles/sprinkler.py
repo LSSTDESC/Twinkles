@@ -158,14 +158,23 @@ class sprinkler():
         #             
         #                                            self.bandpassDict)
 
+        has_sn_truth_params = False
+        for name in self.catalog_column_names:
+            if 'sn_truth_params' in name:
+                has_sn_truth_params = True
+                break
+
         self.defs_dict = {}
         self.logging_is_sprinkled = False
+        self.store_sn_truth_params = False
         with open(self.defs_file, 'r') as f:
             for line in f:
                 line_defs = line.split(',')
                 if len(line_defs) > 1:
                     if 'is_sprinkled' in line_defs[1]:
                         self.logging_is_sprinkled = True
+                    if 'sn_truth_params' in line_defs[1] and has_sn_truth_params:
+                        self.store_sn_truth_params = True
                     self.defs_dict[line_defs[0]] = line_defs[1].split('\n')[0]
 
     def sprinkle(self):
@@ -348,6 +357,9 @@ class sprinkler():
                     lensrow[self.defs_dict['galaxyAgn_magNorm']] = sn_magnorm #This will need to be adjusted to proper band
                     mag_adjust = 2.5*np.log10(np.abs(use_df['mu'].iloc[i]))
                     lensrow[self.defs_dict['galaxyAgn_magNorm']] -= mag_adjust
+
+                    if self.store_sn_truth_params:
+                        lensrow[self.defs_dict['galaxyAgn_sn_truth_params']] = json.dumps(sn_param_dict)
 
                     if self.logging_is_sprinkled:
                         lensrow[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
