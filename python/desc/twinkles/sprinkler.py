@@ -338,8 +338,12 @@ class sprinkler():
                     lensrow[self.defs_dict['galtileid']] = (lensrow[self.defs_dict['galtileid']]*10000 +
                                             use_system*4 + i)
 
-                    add_to_cat, sn_magnorm, sn_fname = self.create_sn_sed(use_df.iloc[i], lensrow[self.defs_dict['galaxyAgn_raJ2000']],
-                                                                lensrow[self.defs_dict['galaxyAgn_decJ2000']], self.visit_mjd)
+                    (add_to_cat, sn_magnorm,
+                     sn_fname, sn_param_dict) = self.create_sn_sed(use_df.iloc[i],
+                                                                   lensrow[self.defs_dict['galaxyAgn_raJ2000']],
+                                                                   lensrow[self.defs_dict['galaxyAgn_decJ2000']],
+                                                                   self.visit_mjd)
+
                     lensrow[self.defs_dict['galaxyAgn_sedFilename']] = sn_fname
                     lensrow[self.defs_dict['galaxyAgn_magNorm']] = sn_magnorm #This will need to be adjusted to proper band
                     mag_adjust = 2.5*np.log10(np.abs(use_df['mu'].iloc[i]))
@@ -443,7 +447,7 @@ class sprinkler():
             sn_name = None
 
 
-        return add_to_cat, sn_magnorm, sn_name
+        return add_to_cat, sn_magnorm, sn_name, current_sn_obj.SNstate
 
     def update_catsim(self):
         # Remove the catsim object
