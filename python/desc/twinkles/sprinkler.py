@@ -365,6 +365,7 @@ class sprinkler():
                     lensrow[self.defs_dict['galaxyAgn_magNorm']] -= mag_adjust
 
                     if self.store_sn_truth_params:
+                        add_to_cat = True
                         lensrow[self.defs_dict['galaxyAgn_sn_truth_params']] = json.dumps(sn_param_dict)
 
                     if self.logging_is_sprinkled:
