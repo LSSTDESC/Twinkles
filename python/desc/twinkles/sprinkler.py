@@ -64,7 +64,8 @@ class sprinkler():
     def __init__(self, catsim_cat, visit_mjd, specFileMap, sed_path,
                  om10_cat='twinkles_lenses_v2.fits',
                  sne_cat = 'dc2_sne_cat.csv', density_param=1., cached_sprinkling=False,
-                 agn_cache_file=None, sne_cache_file=None, defs_file=None):
+                 agn_cache_file=None, sne_cache_file=None, defs_file=None,
+                 write_sn_sed=True):
         """
         Parameters
         ----------
@@ -85,6 +86,9 @@ class sprinkler():
         agn_cache_file: str
         sne_cache_file: str
         defs_file: str
+        write_sn_sed: boolean
+            Controls whether or not to actually write supernova
+            SEDs to disk (default=True)
 
         Returns
         -------
@@ -94,6 +98,7 @@ class sprinkler():
 
         twinklesDir = getPackageDir('Twinkles')
         om10_cat = os.path.join(twinklesDir, 'data', om10_cat)
+        self.write_sn_sed = write_sn_sed
         self.catalog = catsim_cat
         self.catalog_column_names = catsim_cat.dtype.names
         # ****** THIS ASSUMES THAT THE ENVIRONMENT VARIABLE OM10_DIR IS SET *******
@@ -351,7 +356,8 @@ class sprinkler():
                      sn_fname, sn_param_dict) = self.create_sn_sed(use_df.iloc[i],
                                                                    lensrow[self.defs_dict['galaxyAgn_raJ2000']],
                                                                    lensrow[self.defs_dict['galaxyAgn_decJ2000']],
-                                                                   self.visit_mjd)
+                                                                   self.visit_mjd,
+                                                                   write_sn_sed=self.write_sn_sed)
 
                     lensrow[self.defs_dict['galaxyAgn_sedFilename']] = sn_fname
                     lensrow[self.defs_dict['galaxyAgn_magNorm']] = sn_magnorm #This will need to be adjusted to proper band
@@ -421,7 +427,7 @@ class sprinkler():
 
         return lens_candidates
 
-    def create_sn_sed(self, system_df, sn_ra, sn_dec, sed_mjd):
+    def create_sn_sed(self, system_df, sn_ra, sn_dec, sed_mjd, write_sn_sed=True):
 
         sn_param_dict = copy.deepcopy(self.sn_obj.SNstate)
         sn_param_dict['_ra'] = sn_ra
@@ -446,13 +452,14 @@ class sprinkler():
         if flux_500 > 0.:
             add_to_cat = True
             sn_magnorm = current_sn_obj.catsimBandMag(self.imSimBand, sed_mjd)
-            sn_name = 'specFileGLSN_%i_%i_%.4f.txt' % (system_df['twinkles_sysno'], 
-                                                                       system_df['imno'], sed_mjd)
-            sed_filename = '%s/%s' % (self.sed_path, sn_name)
-            sn_sed_obj.writeSED(sed_filename)
-            with open(sed_filename, 'rb') as f_in, gzip.open(str(sed_filename + '.gz'), 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
-            os.remove(sed_filename)
+            if write_sn_sed:
+                sn_name = 'specFileGLSN_%i_%i_%.4f.txt' % (system_df['twinkles_sysno'],
+                                                           system_df['imno'], sed_mjd)
+                sed_filename = '%s/%s' % (self.sed_path, sn_name)
+                sn_sed_obj.writeSED(sed_filename)
+                with open(sed_filename, 'rb') as f_in, gzip.open(str(sed_filename + '.gz'), 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+                os.remove(sed_filename)
         else:
             add_to_cat = False
             sn_magnorm = np.nan
