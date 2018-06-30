@@ -453,6 +453,7 @@ class sprinkler():
         if flux_500 > 0.:
             add_to_cat = True
             sn_magnorm = current_sn_obj.catsimBandMag(self.imSimBand, sed_mjd)
+            sn_name = None
             if write_sn_sed:
                 sn_name = 'specFileGLSN_%i_%i_%.4f.txt' % (system_df['twinkles_sysno'],
                                                            system_df['imno'], sed_mjd)
