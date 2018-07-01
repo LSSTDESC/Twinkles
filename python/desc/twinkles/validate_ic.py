@@ -133,6 +133,51 @@ class validate_ic(object):
 
         return lens_gals
 
+    def process_sprinkled_sne(self, df_sne):
+
+        galtileids = []
+        twinkles_system = []
+        twinkles_im_num = []
+        galtile_list = np.genfromtxt(os.path.join(os.environ['TWINKLES_DIR'],
+                                                  'data', 'dc2_sne_cache.csv'),
+                                     delimiter=',', names=True, dtype=np.int)
+        
+        i=0
+        keep_idx = []
+        for sne_id in df_sne['uniqueId']:
+            twinkles_ids = np.right_shift(sne_id-117, 10)
+            galtileid = int(twinkles_ids/10000)
+            if galtileid in galtile_list['galtileid']:
+                keep_idx.append(i)
+                galtileids.append(galtileid)
+                twinkles_num = np.int(str(twinkles_ids)[-4:])
+                twinkles_system.append(twinkles_num // 4)
+                twinkles_im_num.append(twinkles_num % 4)
+                
+            i+=1
+
+        sprinkled_sne = df_sne.iloc[np.array(keep_idx)]
+        sprinkled_sne = sprinkled_sne.reset_index(drop=True)
+        sprinkled_sne['galaxy_id'] = galtileids
+        sprinkled_sne['twinkles_system'] = twinkles_system
+        sprinkled_sne['image_number'] = twinkles_im_num
+        sprinkled_sne['lens_galaxy_uID'] = np.left_shift(np.array(galtileids, dtype=np.int), 10) + 97
+            
+        return sprinkled_sne
+
+    def process_sne_lenses(self, sprinkled_sne_df, df_galaxy):
+
+        lens_gal_locs = []
+        for idx in sprinkled_sne_df['lens_galaxy_uID'].values:
+            matches = np.where(df_galaxy['uniqueId'] == idx)[0]
+            for match in matches:
+                lens_gal_locs.append(match)
+
+        lens_gals = df_galaxy.iloc[np.unique(lens_gal_locs)]
+        lens_gals = lens_gals.reset_index(drop=True)
+
+        return lens_gals
+
     def offset_on_sky(self, ra, dec, ra0, dec0, units='degrees'):
 
         """
@@ -168,7 +213,7 @@ class validate_ic(object):
                                           'twinkles_lenses_v2.fits'))
         use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] == 
                                                 spr_agn_df['twinkles_system'].iloc[0])[0]]
-        lens = db.get_lens(use_lens)
+        lens = db.get_lens(use_lens[0])
 
         print(lens['XIMG'], lens['YIMG'])
         
