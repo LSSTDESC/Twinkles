@@ -5,6 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import gzip
 import shutil
+from lsst.utils import getPackageDir
+from lsst.sims.photUtils import Bandpass, BandpassDict, Sed
 
 __all__ = ['validate_ic']
 
@@ -341,20 +343,21 @@ class validate_ic(object):
 
             spr_sys_df = spr_sne_df.query('lens_galaxy_uID == %i' % u_id)
             lens = df.query('twinkles_sysno == %i' % spr_sys_df['twinkles_system'].iloc[0])
-            num_img = len(lens)
+            # SNe systems might not have all images appearing in an instance catalog unlike AGN
+            img_vals = spr_sys_df['image_number'].values
 
-            for img_idx in range(num_img):
+            for img_idx in range(len(img_vals)):
                 # Calculate the offsets from the lens galaxy position
                 offset_x1, offset_y1 = self.offset_on_sky(spr_sys_df['raPhoSim'].iloc[img_idx], 
                                                           spr_sys_df['decPhoSim'].iloc[img_idx],
                                                           lens_gal_df['raPhoSim'],
                                                           lens_gal_df['decPhoSim'])
 
-                x_offsets.append(offset_x1-lens['x'].iloc[img_idx])
-                y_offsets.append(offset_y1-lens['y'].iloc[img_idx])
+                x_offsets.append(offset_x1-lens['x'].iloc[img_vals[img_idx]])
+                y_offsets.append(offset_y1-lens['y'].iloc[img_vals[img_idx]])
                 total_offsets.append((np.sqrt(x_offsets[-1]**2. + y_offsets[-1]**2.)/
-                                      np.sqrt(lens['x'].iloc[img_idx]**2. + 
-                                              lens['y'].iloc[img_idx]**2.)))
+                                      np.sqrt(lens['x'].iloc[img_vals[img_idx]]**2. + 
+                                              lens['y'].iloc[img_vals[img_idx]]**2.)))
 
         # print(np.histogram(x_offsets))
         # print(np.histogram(y_offsets))
@@ -391,6 +394,7 @@ class validate_ic(object):
         z_src_error = False
         lens_major_axis_error = False
         lens_minor_axis_error = False
+        lens_sed_error = False
         errors_string = "Errors in: "
 
         for lens_gal_row in spr_agn_lens_df.iterrows():
@@ -435,12 +439,18 @@ class validate_ic(object):
                     errors_present = True
                     lens_minor_axis_error = True
 
+            if (lens_gal_df['sedFilepath'] != 'galaxySED/%s.gz' % lens['lens_sed'][0]):
+                if lens_sed_error is False:
+                    errors_string = errors_string + "\nSED Filename. First error found in lens_gal_id: %i " % u_id
+                    errors_present = True
+                    lens_sed_error = True                    
         
         print('------------')
         print('AGN direct catalog input Results:')
 
         if errors_present is False:
-            print('Pass: All instance catalog values within 0.005 of lensed system inputs.')
+            print('Pass: All instance catalog values within 0.005 of lensed system inputs. ' +
+                  'All SED Filenames match.')
         else:
             print('Fail:')
             print(errors_string)
@@ -465,6 +475,7 @@ class validate_ic(object):
         z_src_error = False
         lens_major_axis_error = False
         lens_minor_axis_error = False
+        lens_sed_error = False
         errors_string = "Errors in: "
 
 
@@ -508,15 +519,115 @@ class validate_ic(object):
                     errors_present = True
                     lens_minor_axis_error = True
 
+            if (len(np.unique(lens['lens_sed'].values) == 1) and 
+                (lens_gal_df['sedFilepath'] != 'galaxySED/%s.gz' % lens['lens_sed'].values[0])):
+                if lens_sed_error is False:
+                    errors_string = errors_string + "\nSED Filename. First error found in lens_gal_id: %i " % u_id
+                    errors_present = True
+                    lens_sed_error = True                    
+
         
         print('------------')
         print('SNE direct catalog input Results:')
 
         if errors_present is False:
-            print('Pass: All instance catalog values within 0.005 of lensed system inputs.')
+            print('Pass: All instance catalog values within 0.005 of lensed system inputs. ' +
+                  'All SED Filenames match.')
         else:
             print('Fail:')
             print(errors_string)
+
+        print('------------')
+
+        return
+
+    def compare_agn_mags(self, spr_agn_df, spr_agn_lens_df):
+
+        """
+        This test compares the lens magnitudes.
+        """
+        
+        db = om10.DB(catalog=os.path.join(os.environ['TWINKLES_DIR'], 'data', 
+                                          'twinkles_lenses_v2.fits'), vb=False)
+
+        lens_mag_error = []
+
+        galSpecDir = 'galaxySED'
+        galDir = str(getPackageDir('sims_sed_library') + '/' + galSpecDir)
+        bandpassDict = BandpassDict.loadTotalBandpassesFromFiles(bandpassNames=['i'])
+        norm_bp = Bandpass()
+        norm_bp.imsimBandpass()
+
+        for lens_gal_row in spr_agn_lens_df.iterrows():
+
+            lens_idx, lens_gal_df = lens_gal_row
+            u_id = lens_gal_df['uniqueId']
+
+            spr_sys_df = spr_agn_df.query('lens_galaxy_uID == %i' % u_id)
+            use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] == 
+                                                    spr_sys_df['twinkles_system'].iloc[0])[0]]
+            lens = db.get_lens(use_lens)
+            num_img = lens['NIMG']
+
+            test_sed = Sed()
+            test_sed.readSED_flambda('%s/%s' % (galDir, lens['lens_sed'][0]))
+            test_sed.redshiftSED(lens['ZLENS'])
+            test_f_norm = test_sed.calcFluxNorm(lens['APMAG_I'], bandpassDict['i'])
+            test_sed.multiplyFluxNorm(test_f_norm)
+            test_mag = test_sed.calcMag(norm_bp)
+            lens_mag_error.append(test_mag - lens_gal_df['phosimMagNorm'])
+
+
+        max_lens_mag_error = np.max(np.abs(lens_mag_error))
+
+        print('------------')
+        print('AGN Magnitude Test Results:')
+
+        if max_lens_mag_error < 0.01:
+            print('Pass: Max lens phosim MagNorm error less than 0.01 mags.')
+        else:
+            print('Fail: Max lens phosim MagNorm error is greater than 0.01 mags. ' + 
+                  'Max error is: %.4f mags.' % max_lens_mag_error)
+
+        print('------------')
+
+        return
+
+    def compare_sne_mags(self, spr_sne_df, spr_sne_lens_df):
+
+        """
+        This test compares the things that get swapped in directly from the input catalog.
+        """
+
+        df = pd.read_csv(os.path.join(os.environ['TWINKLES_DIR'], 'data',
+                                      'dc2_sne_cat.csv'))
+
+        lens_mag_error = []
+
+        for lens_gal_row in spr_sne_lens_df.iterrows():
+            lens_idx, lens_gal_df = lens_gal_row
+            u_id = lens_gal_df['uniqueId']
+
+            spr_sys_df = spr_sne_df.query('lens_galaxy_uID == %i' % u_id)
+            lens = df.query('twinkles_sysno == %i' % spr_sys_df['twinkles_system'].iloc[0])
+            # SNe systems might not have all images appearing in an instance catalog unlike AGN
+            img_vals = spr_sys_df['image_number'].values
+
+            for img_idx in range(len(img_vals)):
+
+                lens_mag_error.append(lens['bulge_magnorm'].iloc[img_vals[img_idx]] -
+                                      lens_gal_df['phosimMagNorm'])
+
+        max_lens_mag_error = np.max(np.abs(lens_mag_error))
+
+        print('------------')
+        print('SNE Magnitude Test Results:')
+
+        if max_lens_mag_error < 0.01:
+            print('Pass: Max lens phosim MagNorm error less than 0.01 mags.')
+        else:
+            print('Fail: Max lens phosim MagNorm error is greater than 0.01 mags. ' + 
+                  'Max error is: %.4f mags.' % max_lens_mag_error)
 
         print('------------')
 

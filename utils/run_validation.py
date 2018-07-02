@@ -27,3 +27,7 @@ if __name__ == "__main__":
     test_agn_inputs = val_cat.compare_agn_inputs(spr_agn, agn_lens_gals)
 
     test_sne_inputs = val_cat.compare_sne_inputs(spr_sne, sne_lens_gals)
+
+    test_agn_mags = val_cat.compare_agn_mags(spr_agn, agn_lens_gals)
+
+    test_sne_mags = val_cat.compare_sne_mags(spr_sne, sne_lens_gals)
