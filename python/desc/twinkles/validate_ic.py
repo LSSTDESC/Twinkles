@@ -111,19 +111,51 @@ class validate_ic(object):
                 
             i+=1
 
+        galtileids = np.array(galtileids, dtype=np.int)
         sprinkled_agn = df_agn.iloc[np.array(keep_idx)]
         sprinkled_agn = sprinkled_agn.reset_index(drop=True)
         sprinkled_agn['galaxy_id'] = galtileids
         sprinkled_agn['twinkles_system'] = twinkles_system
         sprinkled_agn['image_number'] = twinkles_im_num
-        sprinkled_agn['lens_galaxy_uID'] = np.left_shift(np.array(galtileids, dtype=np.int), 10) + 97
+        sprinkled_agn['lens_galaxy_uID'] = np.left_shift(galtileids, 10) + 97
+        sprinkled_agn['host_galaxy_bulge_uID'] = np.array(np.left_shift(galtileids*10000
+                                                    + np.array(twinkles_system, dtype=np.int)*4 +
+                                                    np.array(twinkles_im_num, dtype=np.int), 10) + 97, dtype=np.int)
+        sprinkled_agn['host_galaxy_disk_uID'] = np.array(np.left_shift(galtileids*10000
+                                                    + np.array(twinkles_system, dtype=np.int)*4 +
+                                                    np.array(twinkles_im_num, dtype=np.int), 10) + 107, dtype=np.int)
             
         return sprinkled_agn
 
-    def process_agn_lenses(self, sprinkled_agn_df, df_galaxy):
+    def process_hosts(self, sprinkled_df, df_galaxy):
+
+        host_bulge_locs = []
+        host_disk_locs = []
+        for bulge_idx, disk_idx in zip(sprinkled_df['host_galaxy_bulge_uID'],
+                                       sprinkled_df['host_galaxy_disk_uID']):
+            bulge_matches = np.where(df_galaxy['uniqueId'] == bulge_idx)[0]
+            disk_matches = np.where(df_galaxy['uniqueId'] == disk_idx)[0]
+            for bulge_match, disk_match in zip(bulge_matches, disk_matches):
+                host_bulge_locs.append(bulge_match)
+                host_disk_locs.append(disk_match)
+
+        host_bulges = df_galaxy.iloc[np.unique(host_bulge_locs)]
+        host_bulges = host_bulges.reset_index(drop=True)
+        host_bulges['galaxy_id'] = sprinkled_df['galaxy_id']
+        host_bulges['twinkles_system'] = sprinkled_df['twinkles_system']
+        host_bulges['image_number'] = sprinkled_df['image_number']
+        host_disks = df_galaxy.iloc[np.unique(host_disk_locs)]
+        host_disks = host_disks.reset_index(drop=True)
+        host_disks['galaxy_id'] = sprinkled_df['galaxy_id']
+        host_disks['twinkles_system'] = sprinkled_df['twinkles_system']
+        host_disks['image_number'] = sprinkled_df['image_number']
+
+        return host_bulges, host_disks
+
+    def process_lenses(self, sprinkled_df, df_galaxy):
 
         lens_gal_locs = []
-        for idx in sprinkled_agn_df['lens_galaxy_uID'].values:
+        for idx in sprinkled_df['lens_galaxy_uID'].values:
             matches = np.where(df_galaxy['uniqueId'] == idx)[0]
             for match in matches:
                 lens_gal_locs.append(match)
@@ -156,27 +188,22 @@ class validate_ic(object):
                 
             i+=1
 
+        galtileids = np.array(galtileids, dtype=np.int)
         sprinkled_sne = df_sne.iloc[np.array(keep_idx)]
         sprinkled_sne = sprinkled_sne.reset_index(drop=True)
         sprinkled_sne['galaxy_id'] = galtileids
         sprinkled_sne['twinkles_system'] = twinkles_system
         sprinkled_sne['image_number'] = twinkles_im_num
         sprinkled_sne['lens_galaxy_uID'] = np.left_shift(np.array(galtileids, dtype=np.int), 10) + 97
+        sprinkled_sne['host_galaxy_bulge_uID'] = np.array(np.left_shift(galtileids*10000
+                                                    + np.array(twinkles_system, dtype=np.int)*4 +
+                                                    np.array(twinkles_im_num, dtype=np.int), 10) + 97, dtype=np.int)
+        sprinkled_sne['host_galaxy_disk_uID'] = np.array(np.left_shift(galtileids*10000
+                                                    + np.array(twinkles_system, dtype=np.int)*4 +
+                                                    np.array(twinkles_im_num, dtype=np.int), 10) + 107, dtype=np.int)
+
             
         return sprinkled_sne
-
-    def process_sne_lenses(self, sprinkled_sne_df, df_galaxy):
-
-        lens_gal_locs = []
-        for idx in sprinkled_sne_df['lens_galaxy_uID'].values:
-            matches = np.where(df_galaxy['uniqueId'] == idx)[0]
-            for match in matches:
-                lens_gal_locs.append(match)
-
-        lens_gals = df_galaxy.iloc[np.unique(lens_gal_locs)]
-        lens_gals = lens_gals.reset_index(drop=True)
-
-        return lens_gals
 
     def offset_on_sky(self, ra, dec, ra0, dec0, units='degrees'):
 
@@ -253,6 +280,7 @@ class validate_ic(object):
 
         x_offsets = []
         y_offsets = []
+        total_offsets = []
 
         for lens_gal_row in spr_agn_lens_df.iterrows():
             lens_idx, lens_gal_df = lens_gal_row
@@ -273,16 +301,223 @@ class validate_ic(object):
 
                 x_offsets.append(offset_x1-lens['XIMG'][0][img_idx])
                 y_offsets.append(offset_y1-lens['YIMG'][0][img_idx])
+                total_offsets.append((np.sqrt(x_offsets[-1]**2. + y_offsets[-1]**2.)/
+                                      np.sqrt(lens['XIMG'][0][img_idx]**2. + 
+                                              lens['YIMG'][0][img_idx]**2.)))
+
 
         # print(np.histogram(x_offsets))
         # print(np.histogram(y_offsets))
-        max_x_err = np.max(np.abs(x_offsets))
-        max_y_err = np.max(np.abs(y_offsets))
+        # print(np.histogram(total_offsets))
+        # max_x_err = np.max(np.abs(x_offsets))
+        # max_y_err = np.max(np.abs(y_offsets))
+        max_total_err = np.max(total_offsets)
 
-        if (max_x_err < 0.01) and (max_y_err < 0.01):
-            print('Pass: Max image offset error less than 0.01 arcsec')
+        print('------------')
+        print('AGN Location Test Results:')
+
+        if max_total_err < 0.01:
+            print('Pass: Max image offset error less than 1 percent')
         else:
-            print('Fail: Max image offset error greater than 0.01 arcsec.' + 
-                  'Max x error is: %.4f arcsec. Max y error is: %.4f arcsec.' % (max_x_err, max_y_err))
+            print('Fail: Max image offset error greater than 1 percent. ' + 
+                  'Max total offset error is: %.4f percent.' % max_total_err)
+
+        print('------------')
+
+        return
+
+    def compare_sne_location(self, spr_sne_df, spr_sne_lens_df):
+        
+        df = pd.read_csv(os.path.join(os.environ['TWINKLES_DIR'], 'data',
+                                      'dc2_sne_cat.csv'))
+
+        x_offsets = []
+        y_offsets = []
+        total_offsets = []
+
+        for lens_gal_row in spr_sne_lens_df.iterrows():
+            lens_idx, lens_gal_df = lens_gal_row
+            u_id = lens_gal_df['uniqueId']
+
+            spr_sys_df = spr_sne_df.query('lens_galaxy_uID == %i' % u_id)
+            lens = df.query('twinkles_sysno == %i' % spr_sys_df['twinkles_system'].iloc[0])
+            num_img = len(lens)
+
+            for img_idx in range(num_img):
+                # Calculate the offsets from the lens galaxy position
+                offset_x1, offset_y1 = self.offset_on_sky(spr_sys_df['raPhoSim'].iloc[img_idx], 
+                                                          spr_sys_df['decPhoSim'].iloc[img_idx],
+                                                          lens_gal_df['raPhoSim'],
+                                                          lens_gal_df['decPhoSim'])
+
+                x_offsets.append(offset_x1-lens['x'].iloc[img_idx])
+                y_offsets.append(offset_y1-lens['y'].iloc[img_idx])
+                total_offsets.append((np.sqrt(x_offsets[-1]**2. + y_offsets[-1]**2.)/
+                                      np.sqrt(lens['x'].iloc[img_idx]**2. + 
+                                              lens['y'].iloc[img_idx]**2.)))
+
+        # print(np.histogram(x_offsets))
+        # print(np.histogram(y_offsets))
+        # print(np.histogram(total_offsets))
+        # max_x_err = np.max(np.abs(x_offsets))
+        # max_y_err = np.max(np.abs(y_offsets))
+        max_total_err = np.max(total_offsets)
+
+        print('------------')
+        print('SNE Location Test Results:')
+
+        if max_total_err < 0.01:
+            print('Pass: Max image offset error less than 1 percent')
+        else:
+            print('Fail: Max image offset error greater than 1 percent. ' + 
+                  'Max total offset error is: %.4f percent.' % max_total_err)
+
+        print('------------')
+
+        return
+
+    def compare_agn_inputs(self, spr_agn_df, spr_agn_lens_df):
+
+        """
+        This test compares the things that get swapped in directly from the input catalog.
+        """
+        
+        db = om10.DB(catalog=os.path.join(os.environ['TWINKLES_DIR'], 'data', 
+                                          'twinkles_lenses_v2.fits'), vb=False)
+
+        errors_present = False
+        phi_error = False
+        z_lens_error = False
+        z_src_error = False
+        lens_major_axis_error = False
+        lens_minor_axis_error = False
+        errors_string = "Errors in: "
+
+        for lens_gal_row in spr_agn_lens_df.iterrows():
+
+            lens_idx, lens_gal_df = lens_gal_row
+            u_id = lens_gal_df['uniqueId']
+
+            spr_sys_df = spr_agn_df.query('lens_galaxy_uID == %i' % u_id)
+            use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] == 
+                                                    spr_sys_df['twinkles_system'].iloc[0])[0]]
+            lens = db.get_lens(use_lens)
+
+            # These should just be different by a minus sign
+            if lens['PHIE'] + lens_gal_df['positionAngle'] > 0.005:
+                if phi_error is False:
+                    errors_string = errors_string + "\nPosition Angles. First error found in lens_gal_id: %i" % u_id
+                    errors_present = True
+                    phi_error = True
+
+            # Redshifts should be identical
+            if lens['ZLENS'] - lens_gal_df['redshift'] > 0.005:
+                if z_error is False:
+                    errors_string = errors_string + "\nLens Redshifts. First error found in lens_gal_id: %i " % u_id
+                    errors_present = True
+                    z_lens_error = True
+
+            if np.max(lens['ZSRC'] - spr_sys_df['redshift'].values) > 0.005:
+                if z_src_error is False:
+                    errors_string = errors_string + "\nSource Redshifts. First error found in lens_gal_id: %i " % u_id
+                    errors_present = True
+                    z_src_error = True
+
+            if (lens_gal_df['majorAxis'] - lens['REFF']/np.sqrt(1-lens['ELLIP'])) > 0.005:
+                if lens_major_axis_error is False:
+                    errors_string = errors_string + "\nLens Major Axis. First error found in lens_gal_id: %i " % u_id
+                    errors_present = True
+                    lens_major_axis_error = True
+
+            if (lens_gal_df['minorAxis'] - lens['REFF']/np.sqrt(1+lens['ELLIP'])) > 0.005:
+                if lens_minor_axis_error is False:
+                    errors_string = errors_string + "\nLens Minor Axis. First error found in lens_gal_id: %i " % u_id
+                    errors_present = True
+                    lens_minor_axis_error = True
+
+        
+        print('------------')
+        print('AGN direct catalog input Results:')
+
+        if errors_present is False:
+            print('Pass: All instance catalog values within 0.005 of lensed system inputs.')
+        else:
+            print('Fail:')
+            print(errors_string)
+
+        print('------------')
+
+        return
+
+
+    def compare_sne_inputs(self, spr_sne_df, spr_sne_lens_df):
+
+        """
+        This test compares the things that get swapped in directly from the input catalog.
+        """
+
+        df = pd.read_csv(os.path.join(os.environ['TWINKLES_DIR'], 'data',
+                                      'dc2_sne_cat.csv'))
+
+        errors_present = False
+        phi_error = False
+        z_lens_error = False
+        z_src_error = False
+        lens_major_axis_error = False
+        lens_minor_axis_error = False
+        errors_string = "Errors in: "
+
+
+        for lens_gal_row in spr_sne_lens_df.iterrows():
+            lens_idx, lens_gal_df = lens_gal_row
+            u_id = lens_gal_df['uniqueId']
+
+            spr_sys_df = spr_sne_df.query('lens_galaxy_uID == %i' % u_id)
+            lens = df.query('twinkles_sysno == %i' % spr_sys_df['twinkles_system'].iloc[0])
+
+            # These should just be different by a minus sign
+            # Also making sure that this works for both entries in lens (should be the same anyway)
+            if np.max(lens['theta_e'] + lens_gal_df['positionAngle']) > 0.005:
+                if phi_error is False:
+                    errors_string = errors_string + "\nPosition Angles. First error found in lens_gal_id: %i" % u_id
+                    errors_present = True
+                    phi_error = True
+
+            # Redshifts should be identical
+            if np.max(lens['zl'] - lens_gal_df['redshift']) > 0.005:
+                if z_error is False:
+                    errors_string = errors_string + "\nLens Redshifts. First error found in lens_gal_id: %i " % u_id
+                    errors_present = True
+                    z_lens_error = True
+
+            if np.max(lens['zs'] - spr_sys_df['redshift'].values) > 0.005:
+                if z_src_error is False:
+                    errors_string = errors_string + "\nSource Redshifts. First error found in lens_gal_id: %i " % u_id
+                    errors_present = True
+                    z_src_error = True
+
+            if np.max((lens_gal_df['majorAxis'] - lens['r_eff']/np.sqrt(1-lens['e']))) > 0.005:
+                if lens_major_axis_error is False:
+                    errors_string = errors_string + "\nLens Major Axis. First error found in lens_gal_id: %i " % u_id
+                    errors_present = True
+                    lens_major_axis_error = True
+
+            if np.max((lens_gal_df['minorAxis'] - lens['r_eff']/np.sqrt(1+lens['e']))) > 0.005:
+                if lens_minor_axis_error is False:
+                    errors_string = errors_string + "\nLens Minor Axis. First error found in lens_gal_id: %i " % u_id
+                    errors_present = True
+                    lens_minor_axis_error = True
+
+        
+        print('------------')
+        print('SNE direct catalog input Results:')
+
+        if errors_present is False:
+            print('Pass: All instance catalog values within 0.005 of lensed system inputs.')
+        else:
+            print('Fail:')
+            print(errors_string)
+
+        print('------------')
 
         return
