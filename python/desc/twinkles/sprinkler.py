@@ -367,6 +367,7 @@ class sprinkler():
                     if self.store_sn_truth_params:
                         add_to_cat = True
                         lensrow[self.defs_dict['galaxyAgn_sn_truth_params']] = json.dumps(sn_param_dict)
+                        lensrow[self.defs_dict['galaxyAgn_sn_t0']] = sn_param_dict['t0']
 
                     if self.logging_is_sprinkled:
                         lensrow[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
