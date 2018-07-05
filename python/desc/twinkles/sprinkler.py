@@ -17,7 +17,7 @@ import shutil
 from lsst.utils import getPackageDir
 from lsst.sims.utils import SpecMap
 from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
-from lsst.sims.photUtils.matchUtils import matchBase
+from lsst.sims.catUtils.matchSED import matchBase
 from lsst.sims.photUtils import Bandpass, BandpassDict, Sed
 from lsst.sims.utils import radiansFromArcsec
 from lsst.sims.catUtils.supernovae import SNObject
