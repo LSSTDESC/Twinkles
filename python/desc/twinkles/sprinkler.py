@@ -174,13 +174,16 @@ class sprinkler():
         self.store_sn_truth_params = False
         with open(self.defs_file, 'r') as f:
             for line in f:
-                line_defs = line.split(',')
+                line_defs = line.strip().split(',')
                 if len(line_defs) > 1:
                     if 'is_sprinkled' in line_defs[1]:
                         self.logging_is_sprinkled = True
                     if 'sn_truth_params' in line_defs[1] and has_sn_truth_params:
                         self.store_sn_truth_params = True
-                    self.defs_dict[line_defs[0]] = line_defs[1].split('\n')[0]
+                    if len(line_defs) == 2:
+                        self.defs_dict[line_defs[0]] = line_defs[1]
+                    else:
+                        self.defs_dict[line_defs[0]] = tuple((ll for ll in line_defs[1:]))
 
     def sprinkle(self):
         # Define a list that we can write out to a text file
@@ -189,6 +192,11 @@ class sprinkler():
         updated_catalog = self.catalog.copy()
         # print("Running sprinkler. Catalog Length: ", len(self.catalog))
         for rowNum, row in enumerate(self.catalog):
+            if isinstance(self.defs_dict['galtileid'], tuple):
+                galtileid = row[self.defs_dict['galtileid'][0]]
+            else:
+                galtileid = row[self.defs_dict['galtileid']]
+
             # if rowNum == 100 or rowNum % 100000==0:
             #     print("Gone through ", rowNum, " lines of catalog.")
             if not np.isnan(row[self.defs_dict['galaxyAgn_magNorm']]):
@@ -197,16 +205,17 @@ class sprinkler():
                 #varString = json.loads(row[self.defs_dict['galaxyAgn_varParamStr']])
                 # varString[self.defs_dict['pars']]['t0_mjd'] = 59300.0
                 #row[self.defs_dict['galaxyAgn_varParamStr']] = json.dumps(varString)
-                np.random.seed(row[self.defs_dict['galtileid']] % (2^32 -1))
+
+                np.random.seed(galtileid % (2^32 -1))
                 pick_value = np.random.uniform()
             # If there aren't any lensed sources at this redshift from OM10 move on the next object
                 if (((len(candidates) > 0) and (pick_value <= self.density_param) and (self.cached_sprinkling is False)) | 
-                    ((self.cached_sprinkling is True) and (row[self.defs_dict['galtileid']] in self.agn_cache['galtileid'].values))):
+                    ((self.cached_sprinkling is True) and (galtileid in self.agn_cache['galtileid'].values))):
                     # Randomly choose one the lens systems
                     # (can decide with or without replacement)
                     # Sort first to make sure the same choice is made every time
                     if self.cached_sprinkling is True:
-                        twinkles_sys_cache = self.agn_cache.query('galtileid == %i' % row[self.defs_dict['galtileid']])['twinkles_system'].values[0]
+                        twinkles_sys_cache = self.agn_cache.query('galtileid == %i' % galtileid)['twinkles_system'].values[0]
                         newlens = self.lenscat[np.where(self.lenscat['twinklesId'] == twinkles_sys_cache)[0]][0]
                     else:
                         candidates = candidates[np.argsort(candidates['twinklesId'])]
@@ -256,8 +265,15 @@ class sprinkler():
                         #just use np.right_shift(phosimID-28, 10). Take the floor of the last
                         #3 numbers to get twinklesID in the twinkles lens catalog and the remainder is
                         #the image number minus 1.
-                        lensrow[self.defs_dict['galtileid']] = ((lensrow[self.defs_dict['galtileid']]+30000000)*10000 +
-                                                newlens['twinklesId']*4 + i)
+                        if not isinstance(self.defs_dict['galtileid'], tuple):
+                            lensrow[self.defs_dict['galtileid']] = ((lensrow[self.defs_dict['galtileid']]+30000000)*10000 +
+                                                    newlens['twinklesId']*4 + i)
+                        else:
+                            for col_name in self.defs_dict['galtileid']:
+
+                                lensrow[col_name] = ((lensrow[col_name]+30000000)*10000 +
+                                                        newlens['twinklesId']*4 + i)
+ 
 
                         updated_catalog = np.append(updated_catalog, lensrow)
 
@@ -297,8 +313,8 @@ class sprinkler():
                     updated_catalog[rowNum] = row
             else:
                 if self.cached_sprinkling is True:
-                    if row[self.defs_dict['galtileid']] in self.sne_cache['galtileid'].values:
-                        use_system = self.sne_cache.query('galtileid == %i' % row[self.defs_dict['galtileid']])['twinkles_system'].values
+                    if galtileid in self.sne_cache['galtileid'].values:
+                        use_system = self.sne_cache.query('galtileid == %i' % galtileid)['twinkles_system'].values
                         use_df = self.sne_catalog.query('twinkles_sysno == %i' % use_system)
                         self.used_systems.append(use_system)
                     else:
@@ -313,7 +329,7 @@ class sprinkler():
                     unused_sysno = candidate_sysno[~used_already]
                     if len(unused_sysno) == 0:
                         continue
-                    np.random.seed(row[self.defs_dict['galtileid']] % (2^32 -1))
+                    np.random.seed(galtileid % (2^32 -1))
                     use_system = np.random.choice(unused_sysno)
                     use_df = self.sne_catalog.query('twinkles_sysno == %i' % use_system)
                 
@@ -349,8 +365,14 @@ class sprinkler():
                     #just use np.right_shift(phosimID-28, 10). Take the floor of the last
                     #3 numbers to get twinklesID in the twinkles lens catalog and the remainder is
                     #the image number minus 1.
-                    lensrow[self.defs_dict['galtileid']] = ((lensrow[self.defs_dict['galtileid']]+30000000)*10000 +
-                                            use_system*4 + i)
+                    if not isinstance(self.defs_dict['galtileid'], tuple):
+                        lensrow[self.defs_dict['galtileid']] = ((lensrow[self.defs_dict['galtileid']]+30000000)*10000 +
+                                                use_system*4 + i)
+                    else:
+                        for col_name in self.defs_dict['galtileid']:
+                            lensrow[col_name] = ((lensrow[col_name]+30000000)*10000 +
+                                                    use_system*4 + i)
+ 
 
                     (add_to_cat, sn_magnorm,
                      sn_fname, sn_param_dict) = self.create_sn_sed(use_df.iloc[i],
