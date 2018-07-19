@@ -73,7 +73,7 @@ class sprinkler():
             The results array from an instance catalog.
         visit_mjd: float
             The mjd of the visit
-        specFileMap: 
+        specFileMap:
             This will tell the instance catalog where to write the files
         om10_cat: optional, defaults to 'twinkles_lenses_v2.fits
             fits file with OM10 catalog
@@ -137,7 +137,7 @@ class sprinkler():
             if re.match(key, specFileStart):
                 galSpecDir = str(val)
         self.galDir = str(getPackageDir('sims_sed_library') + '/' + galSpecDir + '/')
-        
+
         self.imSimBand = Bandpass()
         self.imSimBand.imsimBandpass()
         #self.LRG_name = 'Burst.25E09.1Z.spec'
@@ -160,7 +160,7 @@ class sprinkler():
                                                              self.bandpassDict))
         #self.src_mag_norm = matchBase().calcMagNorm(src_iband,
         #                                            [agn_sed]*len(src_iband),
-        #             
+        #
         #                                            self.bandpassDict)
 
         has_sn_truth_params = False
@@ -209,7 +209,7 @@ class sprinkler():
                 np.random.seed(galtileid % (2^32 -1))
                 pick_value = np.random.uniform()
             # If there aren't any lensed sources at this redshift from OM10 move on the next object
-                if (((len(candidates) > 0) and (pick_value <= self.density_param) and (self.cached_sprinkling is False)) | 
+                if (((len(candidates) > 0) and (pick_value <= self.density_param) and (self.cached_sprinkling is False)) |
                     ((self.cached_sprinkling is True) and (galtileid in self.agn_cache['galtileid'].values))):
                     # Randomly choose one the lens systems
                     # (can decide with or without replacement)
@@ -273,7 +273,7 @@ class sprinkler():
 
                                 lensrow[col_name] = ((lensrow[col_name]+30000000)*10000 +
                                                         newlens['twinklesId']*4 + i)
- 
+
 
                         updated_catalog = np.append(updated_catalog, lensrow)
 
@@ -297,7 +297,7 @@ class sprinkler():
                     row_lens_sed = Sed()
                     row_lens_sed.readSED_flambda(str(self.galDir + newlens['lens_sed']))
                     row_lens_sed.redshiftSED(newlens['ZLENS'], dimming=True)
-                    row[self.defs_dict['galaxyBulge_magNorm']] = matchBase().calcMagNorm([newlens['APMAG_I']], row_lens_sed, 
+                    row[self.defs_dict['galaxyBulge_magNorm']] = matchBase().calcMagNorm([newlens['APMAG_I']], row_lens_sed,
                                                                          self.bandpassDict) #Changed from i band to imsimband
                     row[self.defs_dict['galaxyBulge_majorAxis']] = radiansFromArcsec(newlens['REFF'] / np.sqrt(1 - newlens['ELLIP']))
                     row[self.defs_dict['galaxyBulge_minorAxis']] = radiansFromArcsec(newlens['REFF'] * np.sqrt(1 - newlens['ELLIP']))
@@ -332,7 +332,7 @@ class sprinkler():
                     np.random.seed(galtileid % (2^32 -1))
                     use_system = np.random.choice(unused_sysno)
                     use_df = self.sne_catalog.query('twinkles_sysno == %i' % use_system)
-                
+
                 for i in range(len(use_df)):
                     lensrow = row.copy()
                     for lensPart in ['galaxyBulge', 'galaxyDisk', 'galaxyAgn']:
@@ -372,7 +372,7 @@ class sprinkler():
                         for col_name in self.defs_dict['galtileid']:
                             lensrow[col_name] = ((lensrow[col_name]+30000000)*10000 +
                                                     use_system*4 + i)
- 
+
 
                     (add_to_cat, sn_magnorm,
                      sn_fname, sn_param_dict) = self.create_sn_sed(use_df.iloc[i],
@@ -395,7 +395,7 @@ class sprinkler():
                         lensrow[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
                         lensrow[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
                         lensrow[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
-                    
+
                     if add_to_cat is True:
                         updated_catalog = np.append(updated_catalog, lensrow)
                     else:
@@ -432,7 +432,7 @@ class sprinkler():
                 #Replace original entry with new entry
                 updated_catalog[rowNum] = row
 
-                    
+
         return updated_catalog
 
     def find_lens_candidates(self, galz, gal_mag):
@@ -445,7 +445,7 @@ class sprinkler():
         return lens_candidates
 
     def find_sne_lens_candidates(self, galz):
-        
+
         w = np.where((np.abs(np.log10(self.sne_catalog['zs']) - np.log10(galz)) <= 0.1))
         lens_candidates = self.sne_catalog.iloc[w]
 
@@ -460,15 +460,15 @@ class sprinkler():
         sn_param_dict['c'] = system_df['c']
         sn_param_dict['x0'] = system_df['x0']
         sn_param_dict['x1'] = system_df['x1']
-        sn_param_dict['t0'] = system_df['t_start'] 
+        sn_param_dict['t0'] = system_df['t_start']
         #sn_param_dict['t0'] = 62746.27  #+1500. ### For testing only
-        
+
         current_sn_obj = self.sn_obj.fromSNState(sn_param_dict)
         current_sn_obj.mwEBVfromMaps()
         wavelen_max = 1800.
         wavelen_min = 30.
         wavelen_step = 0.1
-        sn_sed_obj = current_sn_obj.SNObjectSED(time=sed_mjd, 
+        sn_sed_obj = current_sn_obj.SNObjectSED(time=sed_mjd,
                                                 wavelen=np.arange(wavelen_min, wavelen_max,
                                                                   wavelen_step))
         flux_500 = sn_sed_obj.flambda[np.where(sn_sed_obj.wavelen >= 499.99)][0]
