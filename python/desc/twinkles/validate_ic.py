@@ -584,7 +584,7 @@ class validate_ic(object):
         max_lens_mag_error = np.max(np.abs(lens_mag_error))
 
         print('------------')
-        print('AGN Magnitude Test Results:')
+        print('AGN Lens Magnitude Test Results:')
 
         if max_lens_mag_error < 0.01:
             print('Pass: Max lens phosim MagNorm error less than 0.01 mags.')
@@ -624,7 +624,7 @@ class validate_ic(object):
         max_lens_mag_error = np.max(np.abs(lens_mag_error))
 
         print('------------')
-        print('SNE Magnitude Test Results:')
+        print('SNE Lens Magnitude Test Results:')
 
         if max_lens_mag_error < 0.01:
             print('Pass: Max lens phosim MagNorm error less than 0.01 mags.')
@@ -656,6 +656,8 @@ class validate_ic(object):
 
         agn_var_params = self.load_agn_var_params()
 
+        max_magNorm_err = 0.
+
         for lens_gal_row in spr_agn_lens_df.iterrows():
 
             lens_idx, lens_gal_df = lens_gal_row
@@ -678,6 +680,7 @@ class validate_ic(object):
                                                        lens['DELAY'].data[0][i], visit_mjd,
                                                        spr_sys_df['redshift'].values[0])
 
+
                 test_sed = Sed()
                 test_sed.readSED_flambda('%s/%s' % (agnDir, 'agn.spec.gz'))
                 test_sed.redshiftSED(lens['ZSRC'])
@@ -689,28 +692,27 @@ class validate_ic(object):
                 test_sed.multiplyFluxNorm(test_f_norm_2)
                 test_mag_2 = test_sed.calcMag(norm_bp)
                 test_mag_3 = test_mag_2 + 2.5*np.log10(np.abs(mag)[i])
-                print(np.abs(mag)[i], lensed_mags.values[i], d_mags[visit_band])
                 
                 corrected_mags.append(test_mag_3)
 
-            print(corrected_mags)
-            
-            
-        #     lens_mag_error.append(test_mag - lens_gal_df['phosimMagNorm'])
+            corrected_mags = np.array(corrected_mags)
+            max_error = np.max(np.abs(corrected_mags - 
+                                      agn_var_params[str(agn_id.values[0])]
+                                      ['magNorm_static']))
 
+            if max_error > max_magNorm_err:
+                max_magNorm_err = max_error
 
-        # max_lens_mag_error = np.max(np.abs(lens_mag_error))
+        print('------------')
+        print('AGN Image Magnitude Test Results:')
 
-        # print('------------')
-        # print('AGN Magnitude Test Results:')
+        if max_magNorm_err < 0.001:
+            print('Pass: Image MagNorms are within 0.001 of correct values.')
+        else:
+            print('Fail: Max image phosim MagNorm error is greater than 0.001 mags. ' + 
+                  'Max error is: %.4f mags.' % max_magNorm_err)
 
-        # if max_lens_mag_error < 0.01:
-        #     print('Pass: Max lens phosim MagNorm error less than 0.01 mags.')
-        # else:
-        #     print('Fail: Max lens phosim MagNorm error is greater than 0.01 mags. ' + 
-        #           'Max error is: %.4f mags.' % max_lens_mag_error)
-
-        # print('------------')
+        print('------------')
 
         return
 
@@ -722,10 +724,8 @@ class validate_ic(object):
         eg_test = egvar()
         eg_test.num_variable_obj = return_num_obj
 
-        print(time_delay)
-
         var_mags = eg_test.applyAgn([[0]], var_param_dict, 
-                                    mjd+time_delay,
+                                    mjd-time_delay,
                                     redshift=np.array([redshift]))
 
         filters = ['u', 'g', 'r', 'i', 'z', 'y']
@@ -742,13 +742,14 @@ class validate_ic(object):
                                           'agn_validation_params.txt'), 'r') as f:
             for line in f:
                 line_id = line.split(',')[0]
-                line_redshift = line.split(',')[4]
+                line_magNorm = line.split(',')[3]
                 
                 var_param_dict = {x.split(':')[0][2:-1]:np.array([np.float(x.split(':')[1])]) 
                                   for x in line.split('{')[2][:-3].split(',')}
 
                 # Some munging from the way we made the dict
                 var_param_dict['seed'] = np.array(var_param_dict['eed'], dtype=int)
+                var_param_dict['magNorm_static'] = np.float(line_magNorm)
                 del var_param_dict['eed']
 
                 agn_var_params[str(line_id)] = var_param_dict
