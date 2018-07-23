@@ -8,6 +8,9 @@ import shutil
 from lsst.utils import getPackageDir
 from lsst.sims.photUtils import Bandpass, BandpassDict, Sed
 
+from lsst.sims.catUtils.mixins.VariabilityMixin import ExtraGalacticVariabilityModels as egvar
+
+
 __all__ = ['validate_ic']
 
 
@@ -541,7 +544,7 @@ class validate_ic(object):
 
         return
 
-    def compare_agn_mags(self, spr_agn_df, spr_agn_lens_df):
+    def compare_agn_lens_mags(self, spr_agn_df, spr_agn_lens_df):
 
         """
         This test compares the lens magnitudes.
@@ -593,7 +596,7 @@ class validate_ic(object):
 
         return
 
-    def compare_sne_mags(self, spr_sne_df, spr_sne_lens_df):
+    def compare_sne_lens_mags(self, spr_sne_df, spr_sne_lens_df):
 
         """
         This test compares the things that get swapped in directly from the input catalog.
@@ -632,3 +635,122 @@ class validate_ic(object):
         print('------------')
 
         return
+
+    def compare_agn_image_mags(self, spr_agn_df, spr_agn_lens_df, visit_mjd,
+                               visit_band):
+
+        """
+        This test compares the image magnitudes.
+        """
+        
+        db = om10.DB(catalog=os.path.join(os.environ['TWINKLES_DIR'], 'data', 
+                                          'twinkles_lenses_v2.fits'), vb=False)
+
+        lens_mag_error = []
+
+        agnSpecDir = 'agnSED'
+        agnDir = str(getPackageDir('sims_sed_library') + '/' + agnSpecDir)
+        bandpassDict = BandpassDict.loadTotalBandpassesFromFiles(bandpassNames=[visit_band])
+        norm_bp = Bandpass()
+        norm_bp.imsimBandpass()
+
+        agn_var_params = self.load_agn_var_params()
+
+        for lens_gal_row in spr_agn_lens_df.iterrows():
+
+            lens_idx, lens_gal_df = lens_gal_row
+            u_id = lens_gal_df['uniqueId']
+
+            spr_sys_df = spr_agn_df.query('lens_galaxy_uID == %i' % u_id)
+            agn_id = spr_sys_df['galaxy_id']
+            use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] == 
+                                                    spr_sys_df['twinkles_system'].iloc[0])[0]]
+            lens = db.get_lens(use_lens)
+            num_img = lens['NIMG']
+
+            mag = lens['MAG'].data[0]
+            lensed_mags = spr_sys_df['phosimMagNorm']
+            corrected_mags = []
+
+            for i in range(num_img.data[0]):
+            
+                d_mags = self.get_agn_variability_mags(agn_var_params[str(agn_id.values[0])],
+                                                       lens['DELAY'].data[0][i], visit_mjd,
+                                                       spr_sys_df['redshift'].values[0])
+
+                test_sed = Sed()
+                test_sed.readSED_flambda('%s/%s' % (agnDir, 'agn.spec.gz'))
+                test_sed.redshiftSED(lens['ZSRC'])
+                test_f_norm = test_sed.calcFluxNorm(lensed_mags.values[i], norm_bp)
+                test_sed.multiplyFluxNorm(test_f_norm)
+                test_mag = test_sed.calcMag(bandpassDict[visit_band])
+                test_f_norm_2 = test_sed.calcFluxNorm(test_mag - d_mags[visit_band],
+                                                      bandpassDict[visit_band])
+                test_sed.multiplyFluxNorm(test_f_norm_2)
+                test_mag_2 = test_sed.calcMag(norm_bp)
+                test_mag_3 = test_mag_2 + 2.5*np.log10(np.abs(mag)[i])
+                print(np.abs(mag)[i], lensed_mags.values[i], d_mags[visit_band])
+                
+                corrected_mags.append(test_mag_3)
+
+            print(corrected_mags)
+            
+            
+        #     lens_mag_error.append(test_mag - lens_gal_df['phosimMagNorm'])
+
+
+        # max_lens_mag_error = np.max(np.abs(lens_mag_error))
+
+        # print('------------')
+        # print('AGN Magnitude Test Results:')
+
+        # if max_lens_mag_error < 0.01:
+        #     print('Pass: Max lens phosim MagNorm error less than 0.01 mags.')
+        # else:
+        #     print('Fail: Max lens phosim MagNorm error is greater than 0.01 mags. ' + 
+        #           'Max error is: %.4f mags.' % max_lens_mag_error)
+
+        # print('------------')
+
+        return
+
+    def get_agn_variability_mags(self, var_param_dict, time_delay, mjd, redshift):
+
+        def return_num_obj(params):
+            return 1
+
+        eg_test = egvar()
+        eg_test.num_variable_obj = return_num_obj
+
+        print(time_delay)
+
+        var_mags = eg_test.applyAgn([[0]], var_param_dict, 
+                                    mjd+time_delay,
+                                    redshift=np.array([redshift]))
+
+        filters = ['u', 'g', 'r', 'i', 'z', 'y']
+        var_mag_dict = {x:y for x,y in zip(filters, var_mags)}
+
+        return var_mag_dict
+
+        
+    def load_agn_var_params(self):
+
+        agn_var_params = {}
+
+        with open(os.path.join(os.environ['TWINKLES_DIR'], 'data', 
+                                          'agn_validation_params.txt'), 'r') as f:
+            for line in f:
+                line_id = line.split(',')[0]
+                line_redshift = line.split(',')[4]
+                
+                var_param_dict = {x.split(':')[0][2:-1]:np.array([np.float(x.split(':')[1])]) 
+                                  for x in line.split('{')[2][:-3].split(',')}
+
+                # Some munging from the way we made the dict
+                var_param_dict['seed'] = np.array(var_param_dict['eed'], dtype=int)
+                del var_param_dict['eed']
+
+                agn_var_params[str(line_id)] = var_param_dict
+
+        return agn_var_params
