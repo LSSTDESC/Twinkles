@@ -20,7 +20,9 @@ class validate_ic(object):
 
         return
 
-    def load_cat(self, ic_file, sn_file_prefix):
+    def load_cat(self, ic_folder, visit_num, sn_file_prefix):
+
+        ic_file = '_gal_cat_%i.txt.gz' % visit_num
 
         i=0
         not_star_rows = []
@@ -28,68 +30,71 @@ class validate_ic(object):
         not_agn_rows = []
         not_sne_rows = []
 
-        if ic_file.endswith('.gz'):
-            reader_func = gzip.open
-        else:
-            reader_func = open
+        # if ic_file.endswith('.gz'):
+        #     reader_func = gzip.open
+        # else:
+        #     reader_func = open
 
-        with reader_func(ic_file, 'rb') as f:
-            for line in f:
+        # with reader_func(ic_file, 'rb') as f:
+        #     for line in f:
 
-                new_str = line.decode('utf8').split(' ')
+        #         new_str = line.decode('utf8').split(' ')
 
-                # Skip through the header
-                if len(new_str) < 4:
-                    not_star_rows.append(i)
-                    not_galaxy_rows.append(i)
-                    not_agn_rows.append(i)
-                    not_sne_rows.append(i)
-                    i += 1
-                    continue
+        #         # Skip through the header
+        #         if len(new_str) < 4:
+        #             not_star_rows.append(i)
+        #             not_galaxy_rows.append(i)
+        #             not_agn_rows.append(i)
+        #             not_sne_rows.append(i)
+        #             i += 1
+        #             continue
 
-                if new_str[5].startswith('starSED'):
-                    not_galaxy_rows.append(i)
-                    not_agn_rows.append(i)
-                    not_sne_rows.append(i)
-                elif new_str[5].startswith('galaxySED'):
-                    not_star_rows.append(i)
-                    not_agn_rows.append(i)
-                    not_sne_rows.append(i)
-                elif new_str[5].startswith('agnSED'):
-                    not_star_rows.append(i)
-                    not_galaxy_rows.append(i)
-                    not_sne_rows.append(i)
-                elif new_str[5].startswith(sn_file_prefix):
-                    not_star_rows.append(i)
-                    not_galaxy_rows.append(i)
-                    not_agn_rows.append(i)
-                i += 1
+        #         if new_str[5].startswith('starSED'):
+        #             not_galaxy_rows.append(i)
+        #             not_agn_rows.append(i)
+        #             not_sne_rows.append(i)
+        #         elif new_str[5].startswith('galaxySED'):
+        #             not_star_rows.append(i)
+        #             not_agn_rows.append(i)
+        #             not_sne_rows.append(i)
+        #         elif new_str[5].startswith('agnSED'):
+        #             not_star_rows.append(i)
+        #             not_galaxy_rows.append(i)
+        #             not_sne_rows.append(i)
+        #         elif new_str[5].startswith(sn_file_prefix):
+        #             not_star_rows.append(i)
+        #             not_galaxy_rows.append(i)
+        #             not_agn_rows.append(i)
+        #         i += 1
 
         base_columns = ['prefix', 'uniqueId', 'raPhoSim', 'decPhoSim',
                         'phosimMagNorm', 'sedFilepath', 'redshift',
                         'shear1', 'shear2', 'kappa', 'raOffset', 'decOffset',
                         'spatialmodel']
 
-        df_galaxy = pd.read_csv(ic_file, delimiter=' ', header=None,
+        df_galaxy = pd.read_csv(os.path.join(ic_folder, 'bulge%s' % ic_file),
+                                delimiter=' ', header=None,
                                 names=base_columns+['majorAxis', 'minorAxis',
                                                     'positionAngle', 'sindex',
                                                     'internalExtinctionModel',
                                                     'internalAv', 'internalRv',
                                                     'galacticExtinctionModel',
                                                     'galacticAv', 'galacticRv'],
-                                skiprows=not_galaxy_rows)
+                                skiprows=1)#not_galaxy_rows)
 
-        df_agn = pd.read_csv(ic_file, delimiter=' ', header=None,
+        df_agn = pd.read_csv(os.path.join(ic_folder, 'agn%s' % ic_file),
+                             delimiter=' ', header=None,
                              names=base_columns+['internalExtinctionModel',
                                                  'galacticExtinctionModel',
                                                  'galacticAv', 'galacticRv'],
-                             skiprows=not_agn_rows)
+                             skiprows=1)#not_agn_rows)
 
-        df_sne = pd.read_csv(ic_file, delimiter=' ', header=None,
+        df_sne = pd.read_csv(os.path.join(ic_folder, 'agn%s' % ic_file),
+                             delimiter=' ', header=None,
                              names=base_columns+['internalExtinctionModel',
                                                  'galacticExtinctionModel',
                                                  'galacticAv', 'galacticRv'],
-                             skiprows=not_sne_rows)
+                             skiprows=1)#not_sne_rows)
 
         return df_galaxy, df_agn, df_sne
 
@@ -210,15 +215,17 @@ class validate_ic(object):
         
         i=0
         keep_idx = []
-        for sne_id in df_sne['uniqueId']:
-            twinkles_ids = np.right_shift(sne_id-117, 10)
-            galtileid = int(twinkles_ids/10000)
-            if galtileid in galtile_list['galtileid']:
-                keep_idx.append(i)
-                galtileids.append(galtileid)
-                twinkles_num = np.int(str(twinkles_ids)[-4:])
-                twinkles_system.append(twinkles_num // 4)
-                twinkles_im_num.append(twinkles_num % 4)
+        for sne_idx, sne_row in df_sne.iterrows():
+            if sne_row['sedFilepath'].startswith('Dynamic'):
+                sne_id = sne_row['uniqueId']
+                twinkles_ids = np.right_shift(sne_id-117, 10)
+                galtileid = int(twinkles_ids/10000)
+                if galtileid in galtile_list['galtileid']:
+                    keep_idx.append(i)
+                    galtileids.append(galtileid)
+                    twinkles_num = np.int(str(twinkles_ids)[-4:])
+                    twinkles_system.append(twinkles_num // 4)
+                    twinkles_im_num.append(twinkles_num % 4)
                 
             i+=1
 
@@ -370,19 +377,26 @@ class validate_ic(object):
         x_offsets = []
         y_offsets = []
         total_offsets = []
+        images_tested = 0
 
         for lens_gal_row in spr_sne_lens_df.iterrows():
             lens_idx, lens_gal_df = lens_gal_row
             u_id = lens_gal_df['uniqueId']
 
             spr_sys_df = spr_sne_df.query('lens_galaxy_uID == %i' % u_id)
+
+            # There may be no images present in the current instance catalog
+            if len(spr_sys_df) == 0:
+                continue
+
+            # This is just to make sure there are at least some images when we expect
+            # and the previous line is not just skipping everything.
+            images_tested += 1
+
             lens = df.query('twinkles_sysno == %i' % spr_sys_df['twinkles_system'].iloc[0])
             # SNe systems might not have all images appearing in an instance catalog unlike AGN
             img_vals = spr_sys_df['image_number'].values
             
-            if spr_sys_df['twinkles_system'].iloc[0] == 1536:
-                print(lens_gal_df, spr_sys_df)
-
             for img_idx in range(len(img_vals)):
                 # Calculate the offsets from the lens galaxy position
                 offset_x1, offset_y1 = self.offset_on_sky(spr_sys_df['raPhoSim'].iloc[img_idx], 
@@ -405,6 +419,8 @@ class validate_ic(object):
 
         print('------------')
         print('SNE Location Test Results:')
+
+        print('Tested %i systems with images.' % images_tested)
 
         if max_total_err < 0.01:
             print('Pass: Max image offset error less than 1 percent')
@@ -476,7 +492,7 @@ class validate_ic(object):
                     errors_present = True
                     lens_minor_axis_error = True
 
-            if (lens_gal_df['sedFilepath'] != 'galaxySED/%s.gz' % lens['lens_sed'][0]):
+            if (lens_gal_df['sedFilepath'] != lens['lens_sed'][0]):
                 if lens_sed_error is False:
                     errors_string = errors_string + "\nSED Filename. First error found in lens_gal_id: %i " % u_id
                     errors_present = True
@@ -549,12 +565,10 @@ class validate_ic(object):
                     lens_minor_axis_error = True
 
             if (lens_gal_df['sedFilepath'] != lens['lens_sed'].values[0]):
-                print(lens_gal_df['sedFilepath'], lens['lens_sed'].values)
                 if lens_sed_error is False:
                     errors_string = errors_string + "\nSED Filename. First error found in lens_gal_id: %i " % u_id
                     errors_present = True
-                    lens_sed_error = True                    
-
+                    lens_sed_error = True
         
         print('------------')
         print('SNE direct catalog input Results:')
@@ -806,6 +820,10 @@ class validate_ic(object):
 
             lens_idx, lens_gal_df = lens_gal_row
             u_id = lens_gal_df['uniqueId']
+
+            # There may be no images present in the current instance catalog
+            if len(spr_sys_df) == 0:
+                continue
 
             spr_sys_df = spr_sne_df.query('lens_galaxy_uID == %i' % u_id)
             lens = db.get_lens(use_lens)
