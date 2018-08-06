@@ -7,7 +7,7 @@ import gzip
 import shutil
 from lsst.utils import getPackageDir
 from lsst.sims.photUtils import Bandpass, BandpassDict, Sed
-
+from lsst.sims.catUtils.supernovae import SNObject
 from lsst.sims.catUtils.mixins.VariabilityMixin import ExtraGalacticVariabilityModels as egvar
 
 
@@ -157,7 +157,7 @@ class validate_ic(object):
 
         return host_bulges, host_disks
 
-    def process_lenses(self, sprinkled_df, df_galaxy):
+    def process_agn_lenses(self, sprinkled_df, df_galaxy):
 
         lens_gal_locs = []
         for idx in sprinkled_df['lens_galaxy_uID'].values:
@@ -169,6 +169,35 @@ class validate_ic(object):
         lens_gals = lens_gals.reset_index(drop=True)
 
         return lens_gals
+
+    def process_sne_lenses(self, df_galaxy):
+
+        """
+        These must be done differently since the lens galaxy for SNe
+        will not have associated images in every instance catalog.
+        """
+
+        galtile_list = np.genfromtxt(os.path.join(os.environ['TWINKLES_DIR'],
+                                                  'data', 'dc2_sne_cache.csv'),
+                                     delimiter=',', names=True, dtype=np.int)
+
+        lens_gal_locs = []
+        twinkles_sys = []
+        for gal_row in galtile_list:
+            bulge_id = np.left_shift(gal_row['galtileid'], 10) + 97
+            match = np.where(df_galaxy['uniqueId'] == bulge_id)[0]
+            if len(match) > 1:
+                raise ValueError('Multiple galaxies with same id.')
+            elif len(match) == 1:
+                lens_gal_locs.append(match[0])
+                twinkles_sys.append(gal_row['twinkles_system'])
+
+        lens_gals = df_galaxy.iloc[lens_gal_locs]
+        lens_gals = lens_gals.reset_index(drop=True)
+        lens_gals['twinkles_system'] = twinkles_sys
+
+        return lens_gals
+                
 
     def process_sprinkled_sne(self, df_sne):
 
@@ -202,10 +231,12 @@ class validate_ic(object):
         sprinkled_sne['lens_galaxy_uID'] = np.left_shift(np.array(galtileids, dtype=np.int), 10) + 97
         sprinkled_sne['host_galaxy_bulge_uID'] = np.array(np.left_shift(galtileids*10000
                                                     + np.array(twinkles_system, dtype=np.int)*4 +
-                                                    np.array(twinkles_im_num, dtype=np.int), 10) + 97, dtype=np.int)
+                                                    np.array(twinkles_im_num, dtype=np.int), 10) + 97,
+                                                    dtype=np.int)
         sprinkled_sne['host_galaxy_disk_uID'] = np.array(np.left_shift(galtileids*10000
                                                     + np.array(twinkles_system, dtype=np.int)*4 +
-                                                    np.array(twinkles_im_num, dtype=np.int), 10) + 107, dtype=np.int)
+                                                    np.array(twinkles_im_num, dtype=np.int), 10) + 107,
+                                                    dtype=np.int)
 
             
         return sprinkled_sne
@@ -348,6 +379,9 @@ class validate_ic(object):
             lens = df.query('twinkles_sysno == %i' % spr_sys_df['twinkles_system'].iloc[0])
             # SNe systems might not have all images appearing in an instance catalog unlike AGN
             img_vals = spr_sys_df['image_number'].values
+            
+            if spr_sys_df['twinkles_system'].iloc[0] == 1536:
+                print(lens_gal_df, spr_sys_df)
 
             for img_idx in range(len(img_vals)):
                 # Calculate the offsets from the lens galaxy position
@@ -463,7 +497,7 @@ class validate_ic(object):
         return
 
 
-    def compare_sne_inputs(self, spr_sne_df, spr_sne_lens_df):
+    def compare_sne_lens_inputs(self, spr_sne_lens_df):
 
         """
         This test compares the things that get swapped in directly from the input catalog.
@@ -475,7 +509,6 @@ class validate_ic(object):
         errors_present = False
         phi_error = False
         z_lens_error = False
-        z_src_error = False
         lens_major_axis_error = False
         lens_minor_axis_error = False
         lens_sed_error = False
@@ -486,8 +519,7 @@ class validate_ic(object):
             lens_idx, lens_gal_df = lens_gal_row
             u_id = lens_gal_df['uniqueId']
 
-            spr_sys_df = spr_sne_df.query('lens_galaxy_uID == %i' % u_id)
-            lens = df.query('twinkles_sysno == %i' % spr_sys_df['twinkles_system'].iloc[0])
+            lens = df.query('twinkles_sysno == %i' % lens_gal_df['twinkles_system'])
 
             # These should just be different by a minus sign
             # Also making sure that this works for both entries in lens (should be the same anyway)
@@ -504,12 +536,6 @@ class validate_ic(object):
                     errors_present = True
                     z_lens_error = True
 
-            if np.max(lens['zs'] - spr_sys_df['redshift'].values) > 0.005:
-                if z_src_error is False:
-                    errors_string = errors_string + "\nSource Redshifts. First error found in lens_gal_id: %i " % u_id
-                    errors_present = True
-                    z_src_error = True
-
             if np.max((lens_gal_df['majorAxis'] - lens['r_eff']/np.sqrt(1-lens['e']))) > 0.005:
                 if lens_major_axis_error is False:
                     errors_string = errors_string + "\nLens Major Axis. First error found in lens_gal_id: %i " % u_id
@@ -522,8 +548,8 @@ class validate_ic(object):
                     errors_present = True
                     lens_minor_axis_error = True
 
-            if (len(np.unique(lens['lens_sed'].values) == 1) and 
-                (lens_gal_df['sedFilepath'] != 'galaxySED/%s.gz' % lens['lens_sed'].values[0])):
+            if (lens_gal_df['sedFilepath'] != lens['lens_sed'].values[0]):
+                print(lens_gal_df['sedFilepath'], lens['lens_sed'].values)
                 if lens_sed_error is False:
                     errors_string = errors_string + "\nSED Filename. First error found in lens_gal_id: %i " % u_id
                     errors_present = True
@@ -596,7 +622,7 @@ class validate_ic(object):
 
         return
 
-    def compare_sne_lens_mags(self, spr_sne_df, spr_sne_lens_df):
+    def compare_sne_lens_mags(self, spr_sne_lens_df):
 
         """
         This test compares the things that get swapped in directly from the input catalog.
@@ -611,15 +637,13 @@ class validate_ic(object):
             lens_idx, lens_gal_df = lens_gal_row
             u_id = lens_gal_df['uniqueId']
 
-            spr_sys_df = spr_sne_df.query('lens_galaxy_uID == %i' % u_id)
-            lens = df.query('twinkles_sysno == %i' % spr_sys_df['twinkles_system'].iloc[0])
-            # SNe systems might not have all images appearing in an instance catalog unlike AGN
-            img_vals = spr_sys_df['image_number'].values
+            lens = df.query('twinkles_sysno == %i' % lens_gal_df['twinkles_system'])
 
-            for img_idx in range(len(img_vals)):
-
-                lens_mag_error.append(lens['bulge_magnorm'].iloc[img_vals[img_idx]] -
-                                      lens_gal_df['phosimMagNorm'])
+            # Even though SNe images don't appear in every image the lens galaxy should always
+            # be in the instance catalog
+            
+            lens_mag_error.append(lens['bulge_magnorm'].iloc[0] -
+                                  lens_gal_df['phosimMagNorm'])
 
         max_lens_mag_error = np.max(np.abs(lens_mag_error))
 
@@ -735,6 +759,123 @@ class validate_ic(object):
 
         
     def load_agn_var_params(self):
+
+        agn_var_params = {}
+
+        with open(os.path.join(os.environ['TWINKLES_DIR'], 'data', 
+                                          'agn_validation_params.txt'), 'r') as f:
+            for line in f:
+                line_id = line.split(',')[0]
+                line_magNorm = line.split(',')[3]
+                
+                var_param_dict = {x.split(':')[0][2:-1]:np.array([np.float(x.split(':')[1])]) 
+                                  for x in line.split('{')[2][:-3].split(',')}
+
+                # Some munging from the way we made the dict
+                var_param_dict['seed'] = np.array(var_param_dict['eed'], dtype=int)
+                var_param_dict['magNorm_static'] = np.float(line_magNorm)
+                del var_param_dict['eed']
+
+                agn_var_params[str(line_id)] = var_param_dict
+
+        return agn_var_params
+
+    def compare_sne_image_mags(self, spr_agn_df, spr_agn_lens_df, visit_mjd,
+                               visit_band):
+
+        """
+        This test compares the image magnitudes.
+        """
+        
+        sn_obj = SNObject(0., 0.)
+
+        df = pd.read_csv(os.path.join(os.environ['TWINKLES_DIR'], 'data',
+                                      'dc2_sne_cat.csv'))
+
+        bandpassDict = BandpassDict.loadTotalBandpassesFromFiles(bandpassNames=[visit_band])
+        norm_bp = Bandpass()
+        norm_bp.imsimBandpass()
+
+        agn_var_params = self.load_agn_var_params()
+
+        max_magNorm_err = 0.
+
+        lens_mag_error = []
+
+        for lens_gal_row in spr_sne_lens_df.iterrows():
+
+            lens_idx, lens_gal_df = lens_gal_row
+            u_id = lens_gal_df['uniqueId']
+
+            spr_sys_df = spr_sne_df.query('lens_galaxy_uID == %i' % u_id)
+            lens = db.get_lens(use_lens)
+            img_vals = spr_sys_df['image_number'].values
+
+            mag = lens['MAG'].data[0]
+            lensed_mags = spr_sys_df['phosimMagNorm']
+            corrected_mags = []
+
+            for i in range(num_img.data[0]):
+            
+                d_mags = self.get_agn_variability_mags(agn_var_params[str(agn_id.values[0])],
+                                                       lens['DELAY'].data[0][i], visit_mjd,
+                                                       spr_sys_df['redshift'].values[0])
+
+
+                test_sed = Sed()
+                test_sed.readSED_flambda('%s/%s' % (agnDir, 'agn.spec.gz'))
+                test_sed.redshiftSED(lens['ZSRC'])
+                test_f_norm = test_sed.calcFluxNorm(lensed_mags.values[i], norm_bp)
+                test_sed.multiplyFluxNorm(test_f_norm)
+                test_mag = test_sed.calcMag(bandpassDict[visit_band])
+                test_f_norm_2 = test_sed.calcFluxNorm(test_mag - d_mags[visit_band],
+                                                      bandpassDict[visit_band])
+                test_sed.multiplyFluxNorm(test_f_norm_2)
+                test_mag_2 = test_sed.calcMag(norm_bp)
+                test_mag_3 = test_mag_2 + 2.5*np.log10(np.abs(mag)[i])
+                
+                corrected_mags.append(test_mag_3)
+
+            corrected_mags = np.array(corrected_mags)
+            max_error = np.max(np.abs(corrected_mags - 
+                                      agn_var_params[str(agn_id.values[0])]
+                                      ['magNorm_static']))
+
+            if max_error > max_magNorm_err:
+                max_magNorm_err = max_error
+
+        print('------------')
+        print('AGN Image Magnitude Test Results:')
+
+        if max_magNorm_err < 0.001:
+            print('Pass: Image MagNorms are within 0.001 of correct values.')
+        else:
+            print('Fail: Max image phosim MagNorm error is greater than 0.001 mags. ' + 
+                  'Max error is: %.4f mags.' % max_magNorm_err)
+
+        print('------------')
+
+        return
+
+    def get_sne_variability_mags(self, var_param_dict, time_delay, mjd, redshift):
+
+        def return_num_obj(params):
+            return 1
+
+        eg_test = egvar()
+        eg_test.num_variable_obj = return_num_obj
+
+        var_mags = eg_test.applyAgn([[0]], var_param_dict, 
+                                    mjd-time_delay,
+                                    redshift=np.array([redshift]))
+
+        filters = ['u', 'g', 'r', 'i', 'z', 'y']
+        var_mag_dict = {x:y for x,y in zip(filters, var_mags)}
+
+        return var_mag_dict
+
+        
+    def load_sne_var_params(self):
 
         agn_var_params = {}
 
