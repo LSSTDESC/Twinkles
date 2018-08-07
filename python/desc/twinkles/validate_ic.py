@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import gzip
 import shutil
+import copy
 from lsst.utils import getPackageDir
 from lsst.sims.photUtils import Bandpass, BandpassDict, Sed
 from lsst.sims.catUtils.supernovae import SNObject
@@ -30,43 +31,6 @@ class validate_ic(object):
         not_agn_rows = []
         not_sne_rows = []
 
-        # if ic_file.endswith('.gz'):
-        #     reader_func = gzip.open
-        # else:
-        #     reader_func = open
-
-        # with reader_func(ic_file, 'rb') as f:
-        #     for line in f:
-
-        #         new_str = line.decode('utf8').split(' ')
-
-        #         # Skip through the header
-        #         if len(new_str) < 4:
-        #             not_star_rows.append(i)
-        #             not_galaxy_rows.append(i)
-        #             not_agn_rows.append(i)
-        #             not_sne_rows.append(i)
-        #             i += 1
-        #             continue
-
-        #         if new_str[5].startswith('starSED'):
-        #             not_galaxy_rows.append(i)
-        #             not_agn_rows.append(i)
-        #             not_sne_rows.append(i)
-        #         elif new_str[5].startswith('galaxySED'):
-        #             not_star_rows.append(i)
-        #             not_agn_rows.append(i)
-        #             not_sne_rows.append(i)
-        #         elif new_str[5].startswith('agnSED'):
-        #             not_star_rows.append(i)
-        #             not_galaxy_rows.append(i)
-        #             not_sne_rows.append(i)
-        #         elif new_str[5].startswith(sn_file_prefix):
-        #             not_star_rows.append(i)
-        #             not_galaxy_rows.append(i)
-        #             not_agn_rows.append(i)
-        #         i += 1
-
         base_columns = ['prefix', 'uniqueId', 'raPhoSim', 'decPhoSim',
                         'phosimMagNorm', 'sedFilepath', 'redshift',
                         'shear1', 'shear2', 'kappa', 'raOffset', 'decOffset',
@@ -79,22 +43,19 @@ class validate_ic(object):
                                                     'internalExtinctionModel',
                                                     'internalAv', 'internalRv',
                                                     'galacticExtinctionModel',
-                                                    'galacticAv', 'galacticRv'],
-                                skiprows=1)#not_galaxy_rows)
+                                                    'galacticAv', 'galacticRv'])
 
         df_agn = pd.read_csv(os.path.join(ic_folder, 'agn%s' % ic_file),
                              delimiter=' ', header=None,
                              names=base_columns+['internalExtinctionModel',
                                                  'galacticExtinctionModel',
-                                                 'galacticAv', 'galacticRv'],
-                             skiprows=1)#not_agn_rows)
+                                                 'galacticAv', 'galacticRv'])
 
         df_sne = pd.read_csv(os.path.join(ic_folder, 'agn%s' % ic_file),
                              delimiter=' ', header=None,
                              names=base_columns+['internalExtinctionModel',
                                                  'galacticExtinctionModel',
-                                                 'galacticAv', 'galacticRv'],
-                             skiprows=1)#not_sne_rows)
+                                                 'galacticAv', 'galacticRv'])
 
         return df_galaxy, df_agn, df_sne
 
@@ -684,8 +645,6 @@ class validate_ic(object):
         db = om10.DB(catalog=os.path.join(os.environ['TWINKLES_DIR'], 'data', 
                                           'twinkles_lenses_v2.fits'), vb=False)
 
-        lens_mag_error = []
-
         agnSpecDir = 'agnSED'
         agnDir = str(getPackageDir('sims_sed_library') + '/' + agnSpecDir)
         bandpassDict = BandpassDict.loadTotalBandpassesFromFiles(bandpassNames=[visit_band])
@@ -713,7 +672,7 @@ class validate_ic(object):
             corrected_mags = []
 
             for i in range(num_img.data[0]):
-            
+
                 d_mags = self.get_agn_variability_mags(agn_var_params[str(agn_id.values[0])],
                                                        lens['DELAY'].data[0][i], visit_mjd,
                                                        spr_sys_df['redshift'].values[0])
@@ -794,7 +753,7 @@ class validate_ic(object):
 
         return agn_var_params
 
-    def compare_sne_image_mags(self, spr_agn_df, spr_agn_lens_df, visit_mjd,
+    def compare_sne_image_mags(self, spr_sne_df, spr_sne_lens_df, visit_mjd,
                                visit_band):
 
         """
@@ -810,60 +769,46 @@ class validate_ic(object):
         norm_bp = Bandpass()
         norm_bp.imsimBandpass()
 
-        agn_var_params = self.load_agn_var_params()
-
         max_magNorm_err = 0.
-
-        lens_mag_error = []
 
         for lens_gal_row in spr_sne_lens_df.iterrows():
 
             lens_idx, lens_gal_df = lens_gal_row
             u_id = lens_gal_df['uniqueId']
 
+            spr_sys_df = spr_sne_df.query('lens_galaxy_uID == %i' % u_id)
+
             # There may be no images present in the current instance catalog
             if len(spr_sys_df) == 0:
                 continue
 
-            spr_sys_df = spr_sne_df.query('lens_galaxy_uID == %i' % u_id)
-            lens = db.get_lens(use_lens)
+            lens = df.query('twinkles_sysno == %i' % spr_sys_df['twinkles_system'].iloc[0])
             img_vals = spr_sys_df['image_number'].values
 
-            mag = lens['MAG'].data[0]
+            mag = lens['mu']
             lensed_mags = spr_sys_df['phosimMagNorm']
             corrected_mags = []
 
-            for i in range(num_img.data[0]):
+            for idx, image_on in list(enumerate(img_vals)):
             
-                d_mags = self.get_agn_variability_mags(agn_var_params[str(agn_id.values[0])],
-                                                       lens['DELAY'].data[0][i], visit_mjd,
-                                                       spr_sys_df['redshift'].values[0])
-
-
-                test_sed = Sed()
-                test_sed.readSED_flambda('%s/%s' % (agnDir, 'agn.spec.gz'))
-                test_sed.redshiftSED(lens['ZSRC'])
-                test_f_norm = test_sed.calcFluxNorm(lensed_mags.values[i], norm_bp)
-                test_sed.multiplyFluxNorm(test_f_norm)
-                test_mag = test_sed.calcMag(bandpassDict[visit_band])
-                test_f_norm_2 = test_sed.calcFluxNorm(test_mag - d_mags[visit_band],
-                                                      bandpassDict[visit_band])
-                test_sed.multiplyFluxNorm(test_f_norm_2)
-                test_mag_2 = test_sed.calcMag(norm_bp)
-                test_mag_3 = test_mag_2 + 2.5*np.log10(np.abs(mag)[i])
+                magnorm = self.get_sne_variability_mags(lens.iloc[image_on],
+                                                        spr_sys_df['raPhoSim'].values[idx],
+                                                        spr_sys_df['decPhoSim'].values[idx],
+                                                        visit_mjd, sn_obj, norm_bp,
+                                                        bandpassDict[visit_band])
+                test_mag  = magnorm - 2.5*np.log10(np.abs(mag.iloc[image_on]))
                 
-                corrected_mags.append(test_mag_3)
+                corrected_mags.append(test_mag)
 
             corrected_mags = np.array(corrected_mags)
             max_error = np.max(np.abs(corrected_mags - 
-                                      agn_var_params[str(agn_id.values[0])]
-                                      ['magNorm_static']))
+                                      lensed_mags))
 
             if max_error > max_magNorm_err:
                 max_magNorm_err = max_error
 
         print('------------')
-        print('AGN Image Magnitude Test Results:')
+        print('SNe Image Magnitude Test Results:')
 
         if max_magNorm_err < 0.001:
             print('Pass: Image MagNorms are within 0.001 of correct values.')
@@ -875,42 +820,20 @@ class validate_ic(object):
 
         return
 
-    def get_sne_variability_mags(self, var_param_dict, time_delay, mjd, redshift):
+    def get_sne_variability_mags(self, system_df, sn_ra, sn_dec, visit_mjd, sn_obj,
+                                 norm_bp, visit_bp):
 
-        def return_num_obj(params):
-            return 1
+        sn_param_dict = copy.deepcopy(sn_obj.SNstate)
+        sn_param_dict['_ra'] = np.radians(sn_ra)
+        sn_param_dict['_dec'] = np.radians(sn_dec)
+        sn_param_dict['z'] = system_df['zs']
+        sn_param_dict['c'] = system_df['c']
+        sn_param_dict['x0'] = system_df['x0']
+        sn_param_dict['x1'] = system_df['x1']
+        sn_param_dict['t0'] = system_df['t_start']
 
-        eg_test = egvar()
-        eg_test.num_variable_obj = return_num_obj
+        current_sn_obj = sn_obj.fromSNState(sn_param_dict)
+        current_sn_obj.mwEBVfromMaps()
+        sn_magnorm = current_sn_obj.catsimBandMag(norm_bp, visit_mjd)
 
-        var_mags = eg_test.applyAgn([[0]], var_param_dict, 
-                                    mjd-time_delay,
-                                    redshift=np.array([redshift]))
-
-        filters = ['u', 'g', 'r', 'i', 'z', 'y']
-        var_mag_dict = {x:y for x,y in zip(filters, var_mags)}
-
-        return var_mag_dict
-
-        
-    def load_sne_var_params(self):
-
-        agn_var_params = {}
-
-        with open(os.path.join(os.environ['TWINKLES_DIR'], 'data', 
-                                          'agn_validation_params.txt'), 'r') as f:
-            for line in f:
-                line_id = line.split(',')[0]
-                line_magNorm = line.split(',')[3]
-                
-                var_param_dict = {x.split(':')[0][2:-1]:np.array([np.float(x.split(':')[1])]) 
-                                  for x in line.split('{')[2][:-3].split(',')}
-
-                # Some munging from the way we made the dict
-                var_param_dict['seed'] = np.array(var_param_dict['eed'], dtype=int)
-                var_param_dict['magNorm_static'] = np.float(line_magNorm)
-                del var_param_dict['eed']
-
-                agn_var_params[str(line_id)] = var_param_dict
-
-        return agn_var_params
+        return sn_magnorm
