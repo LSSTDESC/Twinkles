@@ -2,7 +2,6 @@ import os
 import om10
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import gzip
 import shutil
 import copy
@@ -14,6 +13,10 @@ from lsst.sims.catUtils.mixins.VariabilityMixin import ExtraGalacticVariabilityM
 
 __all__ = ['validate_ic']
 
+
+class CatalogError(Exception):
+    """Raised when Instance Catalog entries do not pass expected tests."""
+    pass
 
 class validate_ic(object):
 
@@ -237,46 +240,6 @@ class validate_ic(object):
 
         return x, y
 
-    
-    def overlay_ic_system(self, spr_agn_df, spr_agn_lens_df):
-
-        db = om10.DB(catalog=os.path.join(os.environ['TWINKLES_DIR'], 'data', 
-                                          'twinkles_lenses_v2.fits'))
-        use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] == 
-                                                spr_agn_df['twinkles_system'].iloc[0])[0]]
-        lens = db.get_lens(use_lens[0])
-
-        print(lens['XIMG'], lens['YIMG'])
-        
-        om10.plot_lens(lens)
-        
-        # Calculate the offsets from the lens galaxy position
-        offset_x1, offset_y1 = self.offset_on_sky(spr_agn_df['raPhoSim'].iloc[0], 
-                                                  spr_agn_df['decPhoSim'].iloc[0],
-                                                  spr_agn_lens_df['raPhoSim'],
-                                                  spr_agn_lens_df['decPhoSim'])
-        offset_x2, offset_y2 = self.offset_on_sky(spr_agn_df['raPhoSim'].iloc[1], 
-                                                  spr_agn_df['decPhoSim'].iloc[1],
-                                                  spr_agn_lens_df['raPhoSim'],
-                                                  spr_agn_lens_df['decPhoSim'])
-        # offset_x3, offset_y3 = self.offset_on_sky(spr_agn_df['raPhoSim'].iloc[2], 
-        #                                           spr_agn_df['decPhoSim'].iloc[2],
-        #                                           spr_agn_lens_df['raPhoSim'],
-        #                                           spr_agn_lens_df['decPhoSim'])
-        # offset_x4, offset_y4 = self.offset_on_sky(spr_agn_df['raPhoSim'].iloc[3], 
-        #                                           spr_agn_df['decPhoSim'].iloc[3],
-        #                                           spr_agn_lens_df['raPhoSim'],
-        #                                           spr_agn_lens_df['decPhoSim'])
-        # offset_lens_ra, offset_lens_dec = self.offset_on_sky
-
-        
-        plt.scatter(offset_x1, offset_y1, c='r', marker='o', s=188, alpha=0.4, label='Catalog Image 1')
-        plt.scatter(offset_x2, offset_y2, c='r', marker='o', s=188, alpha=0.4, label='Catalog Image 2')
-        # plt.scatter(offset_x3, offset_y3, c='r', marker='o', s=188, alpha=0.4, label='Catalog Image 3')
-        # plt.scatter(offset_x4, offset_y4, c='r', marker='o', s=188, alpha=0.4, label='Catalog Image 4')
-                
-        return 
-
     def compare_agn_location(self, spr_agn_df, spr_agn_lens_df):
         
         db = om10.DB(catalog=os.path.join(os.environ['TWINKLES_DIR'], 'data', 
@@ -309,12 +272,6 @@ class validate_ic(object):
                                       np.sqrt(lens['XIMG'][0][img_idx]**2. + 
                                               lens['YIMG'][0][img_idx]**2.)))
 
-
-        # print(np.histogram(x_offsets))
-        # print(np.histogram(y_offsets))
-        # print(np.histogram(total_offsets))
-        # max_x_err = np.max(np.abs(x_offsets))
-        # max_y_err = np.max(np.abs(y_offsets))
         max_total_err = np.max(total_offsets)
 
         print('------------')
@@ -323,8 +280,8 @@ class validate_ic(object):
         if max_total_err < 0.01:
             print('Pass: Max image offset error less than 1 percent')
         else:
-            print('Fail: Max image offset error greater than 1 percent. ' + 
-                  'Max total offset error is: %.4f percent.' % max_total_err)
+            raise CatalogError('\nFail: Max image offset error greater than 1 percent. ' + 
+                               'Max total offset error is: %.4f percent.' % max_total_err)
 
         print('------------')
 
@@ -371,23 +328,18 @@ class validate_ic(object):
                                       np.sqrt(lens['x'].iloc[img_vals[img_idx]]**2. + 
                                               lens['y'].iloc[img_vals[img_idx]]**2.)))
 
-        # print(np.histogram(x_offsets))
-        # print(np.histogram(y_offsets))
-        # print(np.histogram(total_offsets))
-        # max_x_err = np.max(np.abs(x_offsets))
-        # max_y_err = np.max(np.abs(y_offsets))
         max_total_err = np.max(total_offsets)
 
         print('------------')
-        print('SNE Location Test Results:')
+        print('SNe Location Test Results:')
 
         print('Tested %i systems with images.' % images_tested)
 
         if max_total_err < 0.01:
             print('Pass: Max image offset error less than 1 percent')
         else:
-            print('Fail: Max image offset error greater than 1 percent. ' + 
-                  'Max total offset error is: %.4f percent.' % max_total_err)
+            raise CatalogError('\nFail: Max image offset error greater than 1 percent. ' + 
+                               'Max total offset error is: %.4f percent.' % max_total_err)
 
         print('------------')
 
@@ -466,8 +418,7 @@ class validate_ic(object):
             print('Pass: All instance catalog values within 0.005 of lensed system inputs. ' +
                   'All SED Filenames match.')
         else:
-            print('Fail:')
-            print(errors_string)
+            raise CatalogError('\nFail:\n%s' % errors_string)
 
         print('------------')
 
@@ -532,14 +483,13 @@ class validate_ic(object):
                     lens_sed_error = True
         
         print('------------')
-        print('SNE direct catalog input Results:')
+        print('SNe Lenses direct catalog input Results:')
 
         if errors_present is False:
             print('Pass: All instance catalog values within 0.005 of lensed system inputs. ' +
                   'All SED Filenames match.')
         else:
-            print('Fail:')
-            print(errors_string)
+            raise CatalogError('\nFail:\n%s' % errors_string)
 
         print('------------')
 
@@ -590,8 +540,8 @@ class validate_ic(object):
         if max_lens_mag_error < 0.01:
             print('Pass: Max lens phosim MagNorm error less than 0.01 mags.')
         else:
-            print('Fail: Max lens phosim MagNorm error is greater than 0.01 mags. ' + 
-                  'Max error is: %.4f mags.' % max_lens_mag_error)
+            raise CatalogError('\nFail: Max lens phosim MagNorm error is greater than 0.01 mags. ' + 
+                               'Max error is: %.4f mags.' % max_lens_mag_error)
 
         print('------------')
 
@@ -623,13 +573,73 @@ class validate_ic(object):
         max_lens_mag_error = np.max(np.abs(lens_mag_error))
 
         print('------------')
-        print('SNE Lens Magnitude Test Results:')
+        print('SNe Lens Magnitude Test Results:')
 
         if max_lens_mag_error < 0.01:
             print('Pass: Max lens phosim MagNorm error less than 0.01 mags.')
         else:
-            print('Fail: Max lens phosim MagNorm error is greater than 0.01 mags. ' + 
-                  'Max error is: %.4f mags.' % max_lens_mag_error)
+            raise CatalogError('\nFail: Max lens phosim MagNorm error is greater than 0.01 mags. ' + 
+                               'Max error is: %.4f mags.' % max_lens_mag_error)
+
+        print('------------')
+
+        return
+
+    def compare_sne_image_inputs(self, spr_sne_df, spr_sne_lens_df, visit_mjd,
+                                 sne_file_loc):
+
+        """
+        This test compares the image inputs from catalog.
+        """
+
+        df = pd.read_csv(os.path.join(os.environ['TWINKLES_DIR'], 'data',
+                                      'dc2_sne_cat.csv'))
+
+        errors_present = False
+        z_s_error = False
+        sed_error = False
+        errors_string = 'Errors in:'
+
+        for lens_gal_row in spr_sne_lens_df.iterrows():
+
+            lens_idx, lens_gal_df = lens_gal_row
+            u_id = lens_gal_df['uniqueId']
+
+            spr_sys_df = spr_sne_df.query('lens_galaxy_uID == %i' % u_id)
+
+            # There may be no images present in the current instance catalog
+            if len(spr_sys_df) == 0:
+                continue
+
+            lens = df.query('twinkles_sysno == %i' % spr_sys_df['twinkles_system'].iloc[0])
+            img_vals = spr_sys_df['image_number'].values
+
+            for idx, image_on in list(enumerate(img_vals)):
+                
+                if lens['zs'].iloc[image_on] - spr_sys_df['redshift'].iloc[idx] > 0.005:
+                    if z_s_error is False:
+                        errors_string = errors_string + "\nSNe Image Redshifts. First error found in gal_id: %i " % u_id
+                        errors_present = True
+                        z_lens_error = True
+
+                sed_name = '%s/specFileGLSN_%i_%i_%.4f.txt.gz' % (sne_file_loc,
+                                                                  spr_sys_df['twinkles_system'].iloc[0],
+                                                                  image_on, visit_mjd)
+
+                if (spr_sys_df['sedFilepath'].iloc[idx] != sed_name):
+                    if sed_error is False:
+                        errors_string = errors_string + "\nSNe Image SED Filename. First error found in gal_id: %i " % u_id
+                        errors_present = True
+                        sed_error = True
+        
+        print('------------')
+        print('SNe Images direct catalog input Results:')
+
+        if errors_present is False:
+            print('Pass: All instance catalog values within 0.005 of lensed system inputs. ' +
+                  'All SED Filenames match.')
+        else:
+            raise CatalogError('\nFail:\n%s' % errors_string)
 
         print('------------')
 
@@ -706,8 +716,8 @@ class validate_ic(object):
         if max_magNorm_err < 0.001:
             print('Pass: Image MagNorms are within 0.001 of correct values.')
         else:
-            print('Fail: Max image phosim MagNorm error is greater than 0.001 mags. ' + 
-                  'Max error is: %.4f mags.' % max_magNorm_err)
+            raise CatalogError('\nFail: Max image phosim MagNorm error is greater than 0.001 mags. ' + 
+                               'Max error is: %.4f mags.' % max_magNorm_err)
 
         print('------------')
 
@@ -813,8 +823,8 @@ class validate_ic(object):
         if max_magNorm_err < 0.001:
             print('Pass: Image MagNorms are within 0.001 of correct values.')
         else:
-            print('Fail: Max image phosim MagNorm error is greater than 0.001 mags. ' + 
-                  'Max error is: %.4f mags.' % max_magNorm_err)
+            raise CatalogError('\nFail: Max image phosim MagNorm error is greater than 0.001 mags. ' + 
+                               'Max error is: %.4f mags.' % max_magNorm_err)
 
         print('------------')
 
