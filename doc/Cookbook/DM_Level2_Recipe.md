@@ -79,6 +79,7 @@ First you'll need to build the stack using tickets/DM-4302 of obs_lsstSim.  In o
 6. Build the cloned package (this is necessary even for pure python packages): `$> scons opt=3`
 7. Optionally install it in your stack: `$> scons install declare`
 
+
 This assumes the simulated images have landed in a directory called ```images```
 in the current directory.  In the images directory, you'll need a ```_mapper``` file with contents
 ```
@@ -99,6 +100,12 @@ Now you are setup to process the data
 
 Start here if you just want to exercise the DM stack.  If you didn't follow the steps above, first get the data and astrometry.net index files from
 [here](https://lsst-web.ncsa.illinois.edu/~krughoff/data/gri_data.tar.gz).  Then untar the tarball in a working directory.
+
+In terms of code, this should be possible with the current release of `lsst_apps` [winter-2016-release](https://pipelines.lsst.io/releases/notes.html#winter-2016-x2016-release-v12-0) with [installation instructions](https://pipelines.lsst.io/install/index.html). [Source the stack](https://pipelines.lsst.io/install/newinstall.html#source-the-lsst-environment-in-each-shell-session) and then setup the stack with a tag of your choice:
+```
+setup lsst_apps -t current
+```
+
 
 After you have the data, you can start following the steps below to get forced photometry in three bands.
 ```
@@ -123,6 +130,7 @@ $> makeCoaddTempExp.py output_data/ --selectId visit=870..879 --id filter=i patc
 
 # This is the second step which actually coadds the warped images.  The doInterp config option is required if there
 # are any NaNs in the image (which there will be for this set since the images do not cover the whole patch).
+# Note that 
 $> assembleCoadd.py output_data/ --selectId visit=840..849 --id filter=r patch=0,0 tract=0 --config doInterp=True --output output_data
 $> assembleCoadd.py output_data/ --selectId visit=860..869 --id filter=g patch=0,0 tract=0 --config doInterp=True --output output_data
 $> assembleCoadd.py output_data/ --selectId visit=870..879 --id filter=i patch=0,0 tract=0 --config doInterp=True --output output_data
@@ -139,9 +147,18 @@ $> mergeCoaddMeasurements.py output_data/ --id tract=0 patch=0,0 filter=g^r^i --
 $> forcedPhotCcd.py output_data/ --id tract=0 visit=840..879 sensor=1,1 raft=2,2 --config measurement.doApplyApCorr=yes --output output_data
 ```
 Once the forced photometry is done, you can look at the output by loading the measurements using the butler.  [This script](../../bin/plot_point_mags.py) shows how to start looking at the measurements.  It produces the following image.  I tried to fit both the systematic floor and the 5sigma value for each of the bands.  Results are shown in the legend of the following image.
-
+```
+# Assuming you declared the Twinkles repository as 
+# `eups declare twinkles -r . -t $USER`  from the to level Twinkles directory
+setup twinkles -t $USER -t sims
+${TWINKLES_DIR}/bin/plot_point_mags.py output_data outfile.png
+```
 ![Repeat figure](gri_err.png)
 
 You can also use the stack to make a color image from the three coadds.  See [colorim.py](../../bin/colorim.py) for the code to do this.  Note that you can also overplot the detections.
-
+```
+python ${TWINKLES_DIR}/bin/colorim.py
+```
 [![Coadd thumbnail](rgb_coadd_thumb.png)](rgb_coadd.png)
+
+### Older stuff
