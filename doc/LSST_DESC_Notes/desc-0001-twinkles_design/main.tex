@@ -1,0 +1,176 @@
+%
+% ======================================================================
+\RequirePackage{docswitch}
+% \flag is set by the user, through the makefile:
+%    make note
+%    make apj
+% etc.
+\setjournal{\flag}
+
+\documentclass[\docopts]{\docclass}
+
+% You could also define the document class directly
+%\documentclass[]{emulateapj}
+
+\input{macros}
+
+\usepackage{graphicx}
+\graphicspath{{./}{./figures/}}
+\bibliographystyle{apj}
+
+%
+% ======================================================================
+
+\begin{document}
+
+\title{ Twinkles: Science Goals, Survey Simulation and Analysis Design }
+
+\maketitlepre
+
+\begin{abstract}
+
+Accurate cosmography demands a demonstration, on plausibly realistic mock data, that astrophysical input parameters can be recovered in an end-to-end test.
+Twinkles is a project to partially fulfill this condition for the two LSST DESC time domain probes, type Ia supernovae and strong lens time delays.
+We are simulating a 10-year multi-filter LSST sky survey of a tiny (c.\ 200 square arcmin) patch of sky that has been ``sprinkled'' with an over-abundance of supernovae and strong lenses, processing the images using LSST DM stack software and then analyzing the resulting catalogs.
+During this process we aim to learn an ``error model,'' that defines the density function that could be used as the likelihood of the paramters given LSST cataloged flux measurements, and the sampling distribution in a catalog-level mock data generator.
+We envision the Twinkles project having at least two phases, corresponding to the DC1 and DC2 LSST DESC data challenge eras, that  enable a staged progression in dataset realism and analysis sophistication.
+Twinkles 1 focuses on the problem of accurate light curve extraction in annual release (Level 2) data.
+Its small dataset size but end-to-end nature make Twinkles useful as a ``pathfinder'' for the generation of other LSST DESC data challenge datasets.
+
+\end{abstract}
+
+% Keywords are ignored in the LSST DESC Note style:
+\dockeys{latex: templates, papers: awesome}
+
+\maketitlepost
+
+% ----------------------------------------------------------------------
+%
+
+\section{Introduction}
+\label{sec:intro}
+
+% Why should we do end-to-end cosmographic tests on simulated data?
+Much of astronomy involves relative measurements, where absolute calibration can be done without.
+Cosmology is different: we are interested in measuring the absolute values of global parameters, by definition.
+This drives us towards working with realistic simulated data, where we can learn how to mitigate against systematic errors introduced by the upstream image processing routines, the camera and telescope, the atmosphere, and our own Galaxy.
+Systematic errors in cosmological parameters typically arise from our assuming insufficiently accurate or flexible models for systematic effects, but they can also arise from our mis-characterizing either the uncertainty in the data (as captured by the sampling distribution) or in our model parameters (as captured by their prior PDFs).
+A good example of a source of the former ``model bias'' could be the treatment of the PSF.
+A good example of a source of the latter might be the algorithm for estimating the local sky background.
+The LSST DESC has embarked on an extensive program of ``data challenges'' (DCs, see the DESC Science Roadmap\footnote{\texttt{http://lsstdesc.org/sites/default/files/DESC\_SRM\_V1.pdf}} for details) involving simulated data of varying degrees of realism, in order to anable us to learn the appropriate functional forms for the likelihoods and priors we should employ when analyzing LSST data.
+In this Note we describe the design of one of the DC1 era challenges, Twinkles~1.
+
+The LSST Project will deliver a number of different catalogs of measurements of astronomical objects, in the form of database tables.
+These measurements will be made with a sophisticated set of algorithms, and will be accompanied by estimate of their uncertainty.
+From our point of view, these cataloged measurements are ``data,'' the constants $\boldsymbol{d}$ that appear in our target PDF, the posterior probability distribution ${\rm Pr}(\boldsymbol{\theta}|\boldsymbol{d})$ for the cosmological parameters $\boldsymbol{\theta}$.
+Our route to this goal goes through the {\it unknown} sampling distribution for $\boldsymbol{d}$ (or if you prefer, the likelihood of the model parameters), ${\rm Pr}(\boldsymbol{d}|\boldsymbol{\theta},\boldsymbol{\alpha})$.
+Schematically then, we need to be able to assign prior PDFs for the nuisance parameters $\boldsymbol{\alpha}$ that the likelihood also depends on, and then marginalize over them in order to correctly propagate the information in the data through to our understanding of cosmology.
+
+Accurate inference of physics parameters requires accurate inference of the nuisance parameters, which in turn means that 1) we need to assume a sufficiently flexible likelihood function that we can enable ourselves to learn its nuisance parameters during the inference, and 2) we need to assign accurate prior PDFs on the  hyper-parameters of our assumed likelihood.
+The design of our likelihood function can be informed by the study of plausibly realistic mock data -- and the priors on any likelihood hyperparameters can be learned from their analysis, given uninformative priors such that the posterior PDF for the error model parameters can be used as the prior PDF for the same error model parameters when we come to analyze the real data.
+Such a ``calibration to simulations'' procedure is being explored by, for example, some parts of the weak lensing community \citep[see e.g. the GREAT3 analysis][]{GREAT3}.
+More recent advances have involved internal or self-calibration procedures \citep[e.g. ``metacal'', see][]{GREAT3} that are validated on simulated data -- the development of such algorithms rely on simulated data.
+
+Two out of the LSST DESC's five primary cosmological ``probes,'' SN and SL, involve time-sequences of point source fluxes, or ``light curves.''
+In each method, ``light curve parameters,'' such as those used in the supernova fitting scheme SALT2, or the time delay between multiply-imaged quasars, need to be accurately inferred on the way to inferring cosmological parameters from an ensemble of systems.
+How accurately will we be able to measure these intermediate parameters from the light curves provided by the project?
+This is the primary question that we would like to answer in the Twinkles project, and answering it will involve deriving an appropriate function form for the LSST point source flux sampling distribution, and also prior PDFs for the hyperparameters that govern that distribution. Will a simple Gaussian centered on  the measured flux, with width equal to the uncertainty provided, be sufficient?
+Or will there be corrections to be applied, to either or both of the predicted flux and assumed sampling distribution width?
+
+As well as guiding the development of our final cosmological inference, early understanding of the error model for the LSST catalog data provides a route to generating our own simulated datasets at the catalog level.
+The sampling distribution introduced above, when fitted to the Twinkles light curve fluxes, provides exactly the distribution we need to sample from in order to make replica flux data in much larger quantities and at low computational expense \citep[see e.g.][]{TDC1}.
+These catalog-level simulations then enable us to investigate our ability to infer intermediate SALT2 or time delay parameters as a function of, for example, observing strategy.\footnote{\texttt{http://github.com/LSSTScienceCollaborations/ObservingStrategy}}
+
+To answer these questions, we simulate a large quantity of {\it image} data, and process it with an emulated LSST DM pipeline into a database with the same schema as we expect from the facility itself.
+As the first of the pixel-level DC simulations, Twinkles has something of a {\it pathfinder} role: the infrastructure software assembled to carry out the Twinkles simulations and processing will be a first iteration of an evolving system that we expect to make use of through into the LSST survey era.
+In this Note we provide a high-level overview of this system, and then refer to a set of companion Notes describing its various pieces.
+
+The next project in the Twinkles series will be undertaken in the DC2 era. The idea is for Twinkles~2 to generate a dataset of comparable size to Twinkles~1, but at an increased level of realism;
+we also plan to extend our emulated LSST DM processing to include Alert generation, in order to investigate our ability to discover supernovae and strong lens systems in the first place. Here, we assume that we know where our targets are.
+
+This Note is organized as follows.
+We start in \secref{concepts} by describing the survey properties, including its astrophysical inputs and the image simulation configuration.
+We then provide a brief overview of our emulation of the DM Level 2 pipeline, including the workflow engine that we use to manage the calculation, in \secref{pipeline}.
+In this section we also explain the phases we have gone through while developing the data production system.
+We then outline our validation tests and sketch our approach to learning an appropriate error model for the Twinkles data in \secref{analysis}, in which we also show some example early results from the R\&D phase of the project.
+Finally, we provide a brief discussion of our findings so far in \secref{discussion} before briefly concluding in \secref{conclusion}.
+
+
+% ----------------------------------------------------------------------
+
+\section{Twinkles: a Tiny Simulated LSST Sky Survey}
+\label{sec:concepts}
+
+% We start in \secref{concepts} by describing the survey properties, including its astrophysical inputs and the image simulation configuration.
+
+Twinkles concepts, including Twinkles 1 and 2 differences.
+
+Survey specifications.
+
+
+% ----------------------------------------------------------------------
+
+\section{Pipeline Development}
+\label{sec:pipeline}
+
+% We then provide a brief overview of our emulation of the DM Level 2 pipeline, including the workflow engine that we use to manage the calculation, in \secref{pipeline}.
+% In this section we also explain the phases we have gone through while developing the data production system.
+% Overview of end-to-end pipeline:
+
+Workflow diagram. Simulation pipeline (including SN and SL Sprinklers).
+DM Level 2 processing pipeline (including DIAObject creation and forced photometry).
+Catalog storage with Pserv.
+Science analysis (including light curve extraction with the Monitor).
+
+Twinkles 1 R\&D plan that we followed, so that people understand what Run 1.1 is etc).
+
+
+% \begin{figure}
+% \includegraphics[width=0.9\columnwidth]{example.png}
+% \caption{An example figure: the LSST DESC logo, copied from \code{.logos/desc-logo.png} into \code{figures/example.png}. \label{fig:example}}
+% \end{figure}
+
+% ----------------------------------------------------------------------
+
+\section{Validation and Analysis}
+\label{sec:analysis}
+
+% We then outline our validation tests and sketch our approach to learning an appropriate error model for the Twinkles data in \secref{analysis}, in which we also show some example early results from the R\&D phase of the project.
+
+% ----------------------------------------------------------------------
+
+\section{Discussion}
+\label{sec:discussion}
+
+
+% ----------------------------------------------------------------------
+
+\section{Conclusions}
+\label{sec:conclusions}
+
+Here's a summary of what we just reported.
+
+We can draw the following well-organized and neatly-formatted conclusions:
+\begin{itemize}
+  \item This is important.
+  \item We can measure some number with some precision.
+  \item This has some implications.
+\end{itemize}
+
+Here are some parting thoughts.
+
+
+% ----------------------------------------------------------------------
+
+\subsection*{Acknowledgments}
+
+\input{acknowledgments}
+
+%{\it Facilities:} \facility{LSST}
+
+% Include both collaboration papers and external citations:
+\bibliography{lsstdesc,main}
+
+\end{document}
+% ======================================================================
+%
