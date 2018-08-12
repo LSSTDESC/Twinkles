@@ -3,6 +3,7 @@ import warnings
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', 'Duplicate object type id', UserWarning)
     warnings.filterwarnings('ignore', 'duplicate object identifie', UserWarning)
+    from .astrometryUtils import *
     from .analyseICat import *
     from .calc_snr import *
     from .cleanupspectra import *
@@ -17,6 +18,7 @@ with warnings.catch_warnings():
     from .twinkles_io import *
     from .twinkles_sky import *
     from .obsHistIDOrdering import *
+    from .validateCentroidFile import *
     try:
         from .version import *
     except ImportError:
