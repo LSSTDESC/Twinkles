@@ -6,7 +6,7 @@ import gzip
 import shutil
 import copy
 from lsst.utils import getPackageDir
-from lsst.sims.photUtils import Bandpass, BandpassDict, Sed
+from lsst.sims.photUtils import Bandpass, BandpassDict, Sed, getImsimFluxNorm
 from lsst.sims.catUtils.supernovae import SNObject
 from lsst.sims.catUtils.mixins.VariabilityMixin import ExtraGalacticVariabilityModels as egvar
 
@@ -482,7 +482,7 @@ class validate_ic(object):
         Parameters
         ----------
         spr_sne_df: pandas dataframe
-            Dataframe with the sprinkled AGN images from the Instance Catalog.
+            Dataframe with the sprinkled SNe images from the Instance Catalog.
             This is the output dataframe from process_sprinkled_sne.
 
         spr_sne_lens_df: pandas dataframe
@@ -549,7 +549,19 @@ class validate_ic(object):
     def compare_agn_inputs(self, spr_agn_df, spr_agn_lens_df):
 
         """
-        This test compares the things that get swapped in directly from the input catalog.
+        This test makes sure that the AGN system properties that are replaced
+        in Instance Catalogs by the sprinkler get inserted correctly. It will raise an
+        error if the differences are outside a reasonable amount.
+
+        Parameters
+        ----------
+        spr_agn_df: pandas dataframe
+            Dataframe with the sprinkled AGN images from the Instance Catalog.
+            This is the output dataframe from process_sprinkled_agn.
+
+        spr_agn_lens_df: pandas dataframe
+            Dataframe with the sprinkled lens galaxies for the sprinkled AGN
+            systems. This is the output dataframe from process_agn_lenses.
         """
         
         db = om10.DB(catalog=self.sprinkled_agn_data, vb=False)
@@ -574,32 +586,32 @@ class validate_ic(object):
             lens = db.get_lens(use_lens)
 
             # These should just be different by a minus sign
-            if lens['PHIE'] + lens_gal_df['positionAngle'] > 0.005:
+            if np.abs(lens['PHIE'] + lens_gal_df['positionAngle']) > 0.005:
                 if phi_error is False:
                     errors_string = errors_string + "\nPosition Angles. First error found in lens_gal_id: %i" % u_id
                     errors_present = True
                     phi_error = True
 
             # Redshifts should be identical
-            if lens['ZLENS'] - lens_gal_df['redshift'] > 0.005:
+            if np.abs(lens['ZLENS'] - lens_gal_df['redshift']) > 0.005:
                 if z_error is False:
                     errors_string = errors_string + "\nLens Redshifts. First error found in lens_gal_id: %i " % u_id
                     errors_present = True
                     z_lens_error = True
 
-            if np.max(lens['ZSRC'] - spr_sys_df['redshift'].values) > 0.005:
+            if np.max(np.abs(lens['ZSRC'] - spr_sys_df['redshift'].values)) > 0.005:
                 if z_src_error is False:
                     errors_string = errors_string + "\nSource Redshifts. First error found in lens_gal_id: %i " % u_id
                     errors_present = True
                     z_src_error = True
 
-            if (lens_gal_df['majorAxis'] - lens['REFF']/np.sqrt(1-lens['ELLIP'])) > 0.005:
+            if np.abs(lens_gal_df['majorAxis'] - lens['REFF']/np.sqrt(1-lens['ELLIP'])) > 0.005:
                 if lens_major_axis_error is False:
                     errors_string = errors_string + "\nLens Major Axis. First error found in lens_gal_id: %i " % u_id
                     errors_present = True
                     lens_major_axis_error = True
 
-            if (lens_gal_df['minorAxis'] - lens['REFF']/np.sqrt(1+lens['ELLIP'])) > 0.005:
+            if np.abs(lens_gal_df['minorAxis'] - lens['REFF']*np.sqrt(1-lens['ELLIP'])) > 0.005:
                 if lens_minor_axis_error is False:
                     errors_string = errors_string + "\nLens Minor Axis. First error found in lens_gal_id: %i " % u_id
                     errors_present = True
@@ -628,7 +640,18 @@ class validate_ic(object):
     def compare_sne_lens_inputs(self, spr_sne_lens_df):
 
         """
-        This test compares the things that get swapped in directly from the input catalog.
+        This test makes sure that the SNe system lens galaxy properties that are replaced
+        in Instance Catalogs by the sprinkler get inserted correctly. It will raise an
+        error if the differences are outside a reasonable amount. The lens tests and
+        the image tests for the SNe are separated out unlike the AGN since only the
+        lens galaxies for sure show up in every Instance Catalog and extra work is
+        required to keep track of the images in compare_sne_image_inputs below.
+
+        Parameters
+        ----------
+        spr_sne_lens_df: pandas dataframe
+            Dataframe with the sprinkled lens galaxies for the sprinkled SNe
+            systems. This is the output dataframe from process_sne_lenses.
         """
 
         df = pd.read_csv(self.sprinkled_sne_data)
@@ -650,26 +673,26 @@ class validate_ic(object):
 
             # These should just be different by a minus sign
             # Also making sure that this works for both entries in lens (should be the same anyway)
-            if np.max(lens['theta_e'] + lens_gal_df['positionAngle']) > 0.005:
+            if np.max(np.abs(lens['theta_e'] + lens_gal_df['positionAngle'])) > 0.005:
                 if phi_error is False:
                     errors_string = errors_string + "\nPosition Angles. First error found in lens_gal_id: %i" % u_id
                     errors_present = True
                     phi_error = True
 
             # Redshifts should be identical
-            if np.max(lens['zl'] - lens_gal_df['redshift']) > 0.005:
-                if z_error is False:
+            if np.max(np.abs(lens['zl'] - lens_gal_df['redshift'])) > 0.005:
+                if z_lens_error is False:
                     errors_string = errors_string + "\nLens Redshifts. First error found in lens_gal_id: %i " % u_id
                     errors_present = True
                     z_lens_error = True
 
-            if np.max((lens_gal_df['majorAxis'] - lens['r_eff']/np.sqrt(1-lens['e']))) > 0.005:
+            if np.max(np.abs(lens_gal_df['majorAxis'] - lens['r_eff']/np.sqrt(1-lens['e']))) > 0.005:
                 if lens_major_axis_error is False:
                     errors_string = errors_string + "\nLens Major Axis. First error found in lens_gal_id: %i " % u_id
                     errors_present = True
                     lens_major_axis_error = True
 
-            if np.max((lens_gal_df['minorAxis'] - lens['r_eff']/np.sqrt(1+lens['e']))) > 0.005:
+            if np.max(np.abs(lens_gal_df['minorAxis'] - lens['r_eff']*np.sqrt(1-lens['e']))) > 0.005:
                 if lens_minor_axis_error is False:
                     errors_string = errors_string + "\nLens Minor Axis. First error found in lens_gal_id: %i " % u_id
                     errors_present = True
@@ -697,7 +720,19 @@ class validate_ic(object):
     def compare_agn_lens_mags(self, spr_agn_df, spr_agn_lens_df):
 
         """
-        This test compares the lens magnitudes.
+        This test makes sure that the AGN lens magnitudes replaced
+        in Instance Catalogs by the sprinkler get inserted correctly. It will raise an
+        error if the differences are outside a reasonable amount.
+
+        Parameters
+        ----------
+        spr_agn_df: pandas dataframe
+            Dataframe with the sprinkled AGN images from the Instance Catalog.
+            This is the output dataframe from process_sprinkled_agn.
+
+        spr_agn_lens_df: pandas dataframe
+            Dataframe with the sprinkled lens galaxies for the sprinkled AGN
+            systems. This is the output dataframe from process_agn_lenses.
         """
         
         db = om10.DB(catalog=self.sprinkled_agn_data, vb=False)
@@ -748,7 +783,15 @@ class validate_ic(object):
     def compare_sne_lens_mags(self, spr_sne_lens_df):
 
         """
-        This test compares the things that get swapped in directly from the input catalog.
+        This test makes sure that the SNe system lens galaxy magnitudes that are replaced
+        in Instance Catalogs by the sprinkler get inserted correctly. It will raise an
+        error if the differences are outside a reasonable amount. 
+
+        Parameters
+        ----------
+        spr_sne_lens_df: pandas dataframe
+            Dataframe with the sprinkled lens galaxies for the sprinkled SNe
+            systems. This is the output dataframe from process_sne_lenses.
         """
 
         df = pd.read_csv(self.sprinkled_sne_data)
@@ -783,10 +826,34 @@ class validate_ic(object):
         return
 
     def compare_sne_image_inputs(self, spr_sne_df, spr_sne_lens_df, visit_mjd,
-                                 sne_file_loc):
+                                 sne_file_loc, sne_SED_path):
 
         """
-        This test compares the image inputs from catalog.
+        This test makes sure that the lensed SNe properties that are added
+        to Instance Catalogs by the sprinkler get inserted correctly. It will raise an
+        error if the differences are outside a reasonable amount. The lens tests and
+        the image tests for the SNe are separated out unlike the AGN since only the
+        lens galaxies for sure show up in every Instance Catalog and extra work is
+        required to keep track of the images.
+
+        Parameters
+        ----------
+        spr_sne_df: pandas dataframe
+            Dataframe with the sprinkled SNe images from the Instance Catalog.
+            This is the output dataframe from process_sprinkled_sne.
+
+        spr_sne_lens_df: pandas dataframe
+            Dataframe with the sprinkled lens galaxies for the sprinkled SNe
+            systems. This is the output dataframe from process_sne_lenses.
+
+        visit_mjd: float
+            The MJD of the Instance Catalog visit
+
+        sne_file_loc: string
+            The folder where the dynamically generated SNe SEDs are found
+
+        sne_SED_path: string
+            The path to the folder that contains the sne_file_loc folder.
         """
 
         df = pd.read_csv(self.sprinkled_sne_data)
@@ -812,7 +879,8 @@ class validate_ic(object):
 
             for idx, image_on in list(enumerate(img_vals)):
                 
-                if lens['zs'].iloc[image_on] - spr_sys_df['redshift'].iloc[idx] > 0.005:
+                if np.abs(lens['zs'].iloc[image_on] -
+                          spr_sys_df['redshift'].iloc[idx]) > 0.005:
                     if z_s_error is False:
                         errors_string = errors_string + "\nSNe Image Redshifts. First error found in gal_id: %i " % u_id
                         errors_present = True
@@ -827,6 +895,11 @@ class validate_ic(object):
                         errors_string = errors_string + "\nSNe Image SED Filename. First error found in gal_id: %i " % u_id
                         errors_present = True
                         sed_error = True
+
+                sed_exists = os.path.isfile(os.path.join(sne_SED_path, sed_name))
+                if sed_exists is False:
+                    errors_string = str(errors_string + 
+                                        "\nSNe Image SED does not exist. First error found in gal_id: %i" % u_id)
         
         print('------------')
         print('SNe Images direct catalog input Results:')
@@ -845,7 +918,26 @@ class validate_ic(object):
                                visit_band):
 
         """
-        This test compares the image magnitudes.
+        This test makes sure that the lensed AGN image magntiudes are correct
+        for the MJD of the visit. This involves propagating the CatSim variability
+        methods forward to the give MJD. It will raise an error if the differences
+        are outside a reasonable amount.
+
+        Parameters
+        ----------
+        spr_agn_df: pandas dataframe
+            Dataframe with the sprinkled AGN images from the Instance Catalog.
+            This is the output dataframe from process_sprinkled_sne.
+
+        spr_agn_lens_df: pandas dataframe
+            Dataframe with the sprinkled lens galaxies for the sprinkled AGN
+            systems. This is the output dataframe from process_agn_lenses.
+
+        visit_mjd: float
+            The MJD of the Instance Catalog visit
+
+        visit_band: str
+            The bandpass used for the Instance Catalog
         """
         
         db = om10.DB(catalog=self.sprinkled_agn_data, vb=False)
@@ -886,7 +978,7 @@ class validate_ic(object):
                 test_sed = Sed()
                 test_sed.readSED_flambda('%s/%s' % (agnDir, 'agn.spec.gz'))
                 test_sed.redshiftSED(lens['ZSRC'])
-                test_f_norm = test_sed.calcFluxNorm(lensed_mags.values[i], norm_bp)
+                test_f_norm = getImsimFluxNorm(test_sed, lensed_mags.values[i])
                 test_sed.multiplyFluxNorm(test_f_norm)
                 test_mag = test_sed.calcMag(bandpassDict[visit_band])
                 test_f_norm_2 = test_sed.calcFluxNorm(test_mag - d_mags[visit_band],
@@ -919,6 +1011,25 @@ class validate_ic(object):
         return
 
     def get_agn_variability_mags(self, var_param_dict, time_delay, mjd, redshift):
+
+        """
+        Use CatSim variability methods to get the variability offset from the baseline
+        magnitude for AGN at the given MJD also taking into account the time delay.
+
+        Parameters
+        ----------
+        var_param_dict: dictionary
+            The AGN variability parameters from the input AGN database
+
+        time_delay: float
+            The time delay for the given image in the lensed system
+
+        mjd: float
+            The MJD for the Instance Catalog visit
+
+        redshift: float
+            The redshift of the AGN
+        """
 
         def return_num_obj(params):
             return 1
@@ -962,7 +1073,26 @@ class validate_ic(object):
                                visit_band):
 
         """
-        This test compares the image magnitudes.
+        This test makes sure that the lensed SNe image magntiudes are correct
+        for the MJD of the visit. This involves propagating the CatSim variability
+        methods forward to the give MJD. It will raise an error if the differences
+        are outside a reasonable amount.
+
+        Parameters
+        ----------
+        spr_sne_df: pandas dataframe
+            Dataframe with the sprinkled SNe images from the Instance Catalog.
+            This is the output dataframe from process_sprinkled_sne.
+
+        spr_sne_lens_df: pandas dataframe
+            Dataframe with the sprinkled lens galaxies for the sprinkled SNe
+            systems. This is the output dataframe from process_sne_lenses.
+
+        visit_mjd: float
+            The MJD of the Instance Catalog visit
+
+        visit_band: str
+            The bandpass used for the Instance Catalog
         """
         
         sn_obj = SNObject(0., 0.)
@@ -989,7 +1119,7 @@ class validate_ic(object):
             lens = df.query('twinkles_sysno == %i' % spr_sys_df['twinkles_system'].iloc[0])
             img_vals = spr_sys_df['image_number'].values
 
-            mag = lens['mu']
+            magnification = lens['mu']
             lensed_mags = spr_sys_df['phosimMagNorm']
             corrected_mags = []
 
@@ -1000,7 +1130,7 @@ class validate_ic(object):
                                                         spr_sys_df['decPhoSim'].values[idx],
                                                         visit_mjd, sn_obj, norm_bp,
                                                         bandpassDict[visit_band])
-                test_mag  = magnorm - 2.5*np.log10(np.abs(mag.iloc[image_on]))
+                test_mag  = magnorm - 2.5*np.log10(np.abs(magnification.iloc[image_on]))
                 
                 corrected_mags.append(test_mag)
 
