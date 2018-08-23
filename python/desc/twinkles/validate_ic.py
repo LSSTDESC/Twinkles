@@ -24,7 +24,36 @@ class validate_ic(object):
 
         return
 
-    def load_cat(self, ic_folder, visit_num, sn_file_prefix):
+    def load_cat(self, ic_folder, visit_num):
+
+        """
+        This method takes a visit number and a folder with instance
+        catalogs separated as those from sims_GCRCatSimInterface
+        and loads the needed instance catalogs and parses them
+        into separate pandas dataframes for the galaxy bulges where
+        the lens galaxies can be found and for extragalactic point
+        sources where the sprinkled AGN and SNe can be found.
+
+        Parameters
+        ----------
+        ic_folder: str
+            The folder where the instance catalogs are stored.
+
+        visit_num: int
+            The visit number of the instance catalogs you want to test
+
+        Returns
+        -------
+        df_galaxy: pandas dataframe
+            A pandas dataframe with the instance catalog information from
+            the bulge components of galaxies where the lens galaxies are
+            found.
+
+        df_pt_src: pandas dataframe
+            A pandas dataframe with the instance catalog information
+            for the sprinkled extragalactic point sources including the
+            sprinkled AGN and SNe.
+        """
 
         ic_file = '_gal_cat_%i.txt.gz' % visit_num
 
@@ -48,21 +77,32 @@ class validate_ic(object):
                                                     'galacticExtinctionModel',
                                                     'galacticAv', 'galacticRv'])
 
-        df_agn = pd.read_csv(os.path.join(ic_folder, 'agn%s' % ic_file),
-                             delimiter=' ', header=None,
-                             names=base_columns+['internalExtinctionModel',
-                                                 'galacticExtinctionModel',
-                                                 'galacticAv', 'galacticRv'])
+        df_pt_srcs = pd.read_csv(os.path.join(ic_folder, 'agn%s' % ic_file),
+                                 delimiter=' ', header=None,
+                                 names=base_columns+['internalExtinctionModel',
+                                                     'galacticExtinctionModel',
+                                                     'galacticAv', 'galacticRv'])
 
-        df_sne = pd.read_csv(os.path.join(ic_folder, 'agn%s' % ic_file),
-                             delimiter=' ', header=None,
-                             names=base_columns+['internalExtinctionModel',
-                                                 'galacticExtinctionModel',
-                                                 'galacticAv', 'galacticRv'])
-
-        return df_galaxy, df_agn, df_sne
+        return df_galaxy, df_pt_srcs
 
     def process_sprinkled_agn(self, df_agn):
+
+        """
+        The method parses the extragalactic point source dataframe for the
+        sprinkled AGN.
+
+        Parameters
+        ----------
+        df_agn: pandas dataframe
+            The point source dataframe from load_cat
+
+        Returns
+        -------
+        sprinkled_agn: pandas dataframe
+            A pandas dataframe with only the sprinkled AGN found in the
+            Instance Catalog with additional information on the lens
+            system and lens galaxy associated with each AGN.
+        """
 
         galtileids = []
         twinkles_system = []
@@ -71,19 +111,16 @@ class validate_ic(object):
                                                   'data', 'dc2_agn_cache.csv'),
                                      delimiter=',', names=True, dtype=np.int)
         
-        i=0
         keep_idx = []
-        for agn_id in df_agn['uniqueId']:
-            twinkles_ids = np.right_shift(agn_id-117, 10)
+        for i, agn_id in enumerate(df_agn['uniqueId']):
+            twinkles_ids = np.right_shift(agn_id, 10)
             galtileid = int(twinkles_ids/10000)
             if galtileid in galtile_list['galtileid']:
                 keep_idx.append(i)
                 galtileids.append(galtileid)
-                twinkles_num = np.int(str(twinkles_ids)[-4:])
+                twinkles_num = twinkles_ids % 10000
                 twinkles_system.append(twinkles_num // 4)
                 twinkles_im_num.append(twinkles_num % 4)
-                
-            i+=1
 
         galtileids = np.array(galtileids, dtype=np.int)
         sprinkled_agn = df_agn.iloc[np.array(keep_idx)]
@@ -92,12 +129,16 @@ class validate_ic(object):
         sprinkled_agn['twinkles_system'] = twinkles_system
         sprinkled_agn['image_number'] = twinkles_im_num
         sprinkled_agn['lens_galaxy_uID'] = np.left_shift(galtileids, 10) + 97
+        twinkles_system = np.array(twinkles_system, dtype=np.int)
+        twinkles_im_num = np.array(twinkles_im_num, dtype=np.int)
         sprinkled_agn['host_galaxy_bulge_uID'] = np.array(np.left_shift(galtileids*10000
-                                                    + np.array(twinkles_system, dtype=np.int)*4 +
-                                                    np.array(twinkles_im_num, dtype=np.int), 10) + 97, dtype=np.int)
+                                                                        + twinkles_system*4 +
+                                                                        twinkles_im_num, 10) + 97,
+                                                          dtype=np.int)
         sprinkled_agn['host_galaxy_disk_uID'] = np.array(np.left_shift(galtileids*10000
-                                                    + np.array(twinkles_system, dtype=np.int)*4 +
-                                                    np.array(twinkles_im_num, dtype=np.int), 10) + 107, dtype=np.int)
+                                                                       + twinkles_system*4 +
+                                                                       twinkles_im_num, 10) + 107,
+                                                         dtype=np.int)
             
         return sprinkled_agn
 
@@ -168,7 +209,29 @@ class validate_ic(object):
         return lens_gals
                 
 
-    def process_sprinkled_sne(self, df_sne):
+    def process_sprinkled_sne(self, df_sne, sn_file_path):
+
+        """
+        The method parses the extragalactic point source dataframe for the
+        sprinkled SNe. This will only have the sprinkled SNe that show
+        up in a given Instance Catalog, not the entire set of sprinkled SNe
+        that may show up in the field across all times.
+
+        Parameters
+        ----------
+        df_sne: pandas dataframe
+            The point source dataframe from load_cat
+
+        sne_file_path: string
+            The folder where the dynamically generated SNe SEDs are found
+
+        Returns
+        -------
+        sprinkled_sne: pandas dataframe
+            A pandas dataframe with only the sprinkled SNe found in the
+            Instance Catalog with additional information on the lens
+            system and lens galaxy associated with each SNe.
+        """
 
         galtileids = []
         twinkles_system = []
@@ -180,7 +243,7 @@ class validate_ic(object):
         i=0
         keep_idx = []
         for sne_idx, sne_row in df_sne.iterrows():
-            if sne_row['sedFilepath'].startswith('Dynamic'):
+            if sne_row['sedFilepath'].startswith(sn_file_path):
                 sne_id = sne_row['uniqueId']
                 twinkles_ids = np.right_shift(sne_id-117, 10)
                 galtileid = int(twinkles_ids/10000)

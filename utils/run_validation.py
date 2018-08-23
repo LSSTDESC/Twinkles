@@ -32,16 +32,15 @@ if __name__ == "__main__":
     print("Running tests")
     val_cat = validate_ic()
     
-    df_gal, df_agn, df_sne = val_cat.load_cat(cat_folder, visit_num,
-                                              sne_SED_file_dir)
+    df_gal, df_pt_src = val_cat.load_cat(cat_folder, visit_num)
 
-    spr_agn = val_cat.process_sprinkled_agn(df_agn)
+    spr_agn = val_cat.process_sprinkled_agn(df_pt_src)
 
     agn_lens_gals = val_cat.process_agn_lenses(spr_agn, df_gal)
     
     agn_location_test = val_cat.compare_agn_location(spr_agn, agn_lens_gals)
 
-    spr_sne = val_cat.process_sprinkled_sne(df_sne)
+    spr_sne = val_cat.process_sprinkled_sne(df_pt_src, sne_SED_file_dir)
 
     sne_lens_gals = val_cat.process_sne_lenses(df_gal)
 
