@@ -20,7 +20,64 @@ class CatalogError(Exception):
 
 class validate_ic(object):
 
-    def __init__(self):
+    def __init__(self, sne_cache_file=None, sprinkled_agn_data=None,
+                 sprinkled_sne_data=None):
+
+        """
+        Initiate with the location of the input AGN and SNe lensed
+        systems information. Also initiate with the location of the
+        cached sprinkled AGN and SNe galaxy IDs.
+
+        Parameters
+        ----------
+        agn_cache_file: str or None, default=None
+            The location of the file with the cached galaxy IDs that
+            are replaced when sprinkling in the lensed AGN systems. If None
+            then it uses the latest DESC cache in the Twinkles/data
+            directory.
+
+        sne_cache_file: str or None, default=None
+            The location of the file with the cached galaxy IDs that
+            are replaced when sprinkling in the lensed SNe systems. If None
+            then it uses the latest DESC cache in the Twinkles/data
+            directory.
+
+        sprinkled_agn_data: str or None, default=None
+            The location of the file with the set of sprinkled AGN
+            systems. If None then it will use information from the
+            Twinkles/data directory.
+
+        sprinkled_sne_data: str or None, default=None
+            The location of the file with the set of sprinkled SNe
+            systems. If None then it will use information from the
+            Twinkles/data directory.
+        """
+
+        if agn_cache_file is None:
+            self.agn_cache_file = os.path.join(os.environ['TWINKLES_DIR'],
+                                               'data', 'dc2_agn_cache.csv')
+        else:
+            self.agn_cache_file = agn_cache_file
+
+        if sne_cache_file is None:
+            self.sne_cache_file = os.path.join(os.environ['TWINKLES_DIR'],
+                                               'data', 'dc2_sne_cache.csv')
+        else:
+            self.sne_cache_file = sne_cache_file
+            
+        if sprinkled_agn_data is None:
+            self.sprinkled_agn_data = os.path.join(os.environ['TWINKLES_DIR'],
+                                                   'data',
+                                                   'twinkles_lenses_v2.fits')
+        else:
+            self.sprinkled_agn_data = sprinkled_agn_data
+
+        if sprinkled_sne_data is None:
+            self.sprinkled_sne_data = os.path.join(os.environ['TWINKLES_DIR'],
+                                                   'data',
+                                                   'dc2_sne_cat.csv')
+        else:
+            self.sprinkled_sne_data = sprinkled_sne_data
 
         return
 
@@ -107,9 +164,8 @@ class validate_ic(object):
         galtileids = []
         twinkles_system = []
         twinkles_im_num = []
-        galtile_list = np.genfromtxt(os.path.join(os.environ['TWINKLES_DIR'],
-                                                  'data', 'dc2_agn_cache.csv'),
-                                     delimiter=',', names=True, dtype=np.int)
+        galtile_list = np.genfromtxt(self.agn_cache_file, delimiter=',',
+                                     names=True, dtype=np.int)
         
         keep_idx = []
         for i, agn_id in enumerate(df_agn['uniqueId']):
@@ -144,18 +200,28 @@ class validate_ic(object):
 
     def process_hosts(self, sprinkled_df, df_galaxy):
 
+        """
+        This will take the galaxy and sprinkled point source dataframes and create
+        a new dataframe with the sprinkled hosts of the point sources.
+
+        ***Not yet ready since the final format of how hosts will be printed
+        out in sims_GCRCatSimInterface is not yet complete.***
+        """
+
         host_bulge_locs = []
         host_disk_locs = []
         for bulge_idx, disk_idx in zip(sprinkled_df['host_galaxy_bulge_uID'],
                                        sprinkled_df['host_galaxy_disk_uID']):
             bulge_matches = np.where(df_galaxy['uniqueId'] == bulge_idx)[0]
             disk_matches = np.where(df_galaxy['uniqueId'] == disk_idx)[0]
+            assert len(bulge_matches) == len(disk_matches)
             for bulge_match, disk_match in zip(bulge_matches, disk_matches):
                 host_bulge_locs.append(bulge_match)
                 host_disk_locs.append(disk_match)
 
         host_bulges = df_galaxy.iloc[np.unique(host_bulge_locs)]
         host_bulges = host_bulges.reset_index(drop=True)
+        assert len(host_bulges) == len(sprinkled_df)
         host_bulges['galaxy_id'] = sprinkled_df['galaxy_id']
         host_bulges['twinkles_system'] = sprinkled_df['twinkles_system']
         host_bulges['image_number'] = sprinkled_df['image_number']
@@ -168,6 +234,28 @@ class validate_ic(object):
         return host_bulges, host_disks
 
     def process_agn_lenses(self, sprinkled_df, df_galaxy):
+
+        """
+        Takes the sprinkled AGN dataframe and the full Instance Catalog
+        bulge dataframe and parses the latter to find the lens galaxies
+        for the lensed AGN systems.
+
+        Parameters
+        ----------
+        sprinkled_df: pandas dataframe
+            The dataframe from process_sprinkled_agn that contains the
+            sprinkled AGN in the Instance Catalog
+
+        df_galaxy: pandas dataframe
+            The dataframe from load_cat that contains the bulge information
+            from the Instance Catalog
+
+        Returns
+        -------
+        lens_gals: pandas dataframe
+            Dataframe with the lens galaxies for the sprinkled systems
+            present in the Instance Catalog
+        """
 
         lens_gal_locs = []
         for idx in sprinkled_df['lens_galaxy_uID'].values:
@@ -183,13 +271,31 @@ class validate_ic(object):
     def process_sne_lenses(self, df_galaxy):
 
         """
-        These must be done differently since the lens galaxy for SNe
-        will not have associated images in every instance catalog.
+        Takes the full Instance Catalog bulge dataframe and 
+        parses it to find the lens galaxies for the lensed SNe systems.
+        Unlike the process_agn_lenses we cannot just use the lensed AGN
+        to know which lens galaxies should be present because the lensed
+        SNe do not always show up in the Instance Catalog like the lensed AGN.
+        Since the images of the SNe will only appear based upon the mjd of the
+        Instance Catalog they may not be in the Instance Catalog but the lens
+        galaxy for the lensed SNe system should always be present. Therefore,
+        we must use a cache file with the galaxy ids that were sprinkled.
+
+        Parameters
+        ----------
+        df_galaxy: pandas dataframe
+            The dataframe from load_cat that contains the bulge information
+            from the Instance Catalog
+
+        Returns
+        -------
+        lens_gals: pandas dataframe
+            Dataframe with the lens galaxies for the sprinkled systems
+            present in the Instance Catalog
         """
 
-        galtile_list = np.genfromtxt(os.path.join(os.environ['TWINKLES_DIR'],
-                                                  'data', 'dc2_sne_cache.csv'),
-                                     delimiter=',', names=True, dtype=np.int)
+        galtile_list = np.genfromtxt(self.sne_cache_file, delimiter=',',
+                                     names=True, dtype=np.int)
 
         lens_gal_locs = []
         twinkles_sys = []
@@ -236,21 +342,20 @@ class validate_ic(object):
         galtileids = []
         twinkles_system = []
         twinkles_im_num = []
-        galtile_list = np.genfromtxt(os.path.join(os.environ['TWINKLES_DIR'],
-                                                  'data', 'dc2_sne_cache.csv'),
-                                     delimiter=',', names=True, dtype=np.int)
+        galtile_list = np.genfromtxt(self.sne_cache_file, delimiter=',',
+                                     names=True, dtype=np.int)
         
         i=0
         keep_idx = []
         for sne_idx, sne_row in df_sne.iterrows():
             if sne_row['sedFilepath'].startswith(sn_file_path):
                 sne_id = sne_row['uniqueId']
-                twinkles_ids = np.right_shift(sne_id-117, 10)
+                twinkles_ids = np.right_shift(sne_id, 10)
                 galtileid = int(twinkles_ids/10000)
                 if galtileid in galtile_list['galtileid']:
                     keep_idx.append(i)
                     galtileids.append(galtileid)
-                    twinkles_num = np.int(str(twinkles_ids)[-4:])
+                    twinkles_num = twinkles_ids % 10000
                     twinkles_system.append(twinkles_num // 4)
                     twinkles_im_num.append(twinkles_num % 4)
                 
@@ -263,14 +368,16 @@ class validate_ic(object):
         sprinkled_sne['twinkles_system'] = twinkles_system
         sprinkled_sne['image_number'] = twinkles_im_num
         sprinkled_sne['lens_galaxy_uID'] = np.left_shift(np.array(galtileids, dtype=np.int), 10) + 97
+        twinkles_system = np.array(twinkles_system, dtype=np.int)
+        twinkles_im_num = np.array(twinkles_im_num, dtype=np.int)
         sprinkled_sne['host_galaxy_bulge_uID'] = np.array(np.left_shift(galtileids*10000
-                                                    + np.array(twinkles_system, dtype=np.int)*4 +
-                                                    np.array(twinkles_im_num, dtype=np.int), 10) + 97,
-                                                    dtype=np.int)
+                                                                        + twinkles_system*4 +
+                                                                        twinkles_im_num, 10) + 97,
+                                                          dtype=np.int)
         sprinkled_sne['host_galaxy_disk_uID'] = np.array(np.left_shift(galtileids*10000
-                                                    + np.array(twinkles_system, dtype=np.int)*4 +
-                                                    np.array(twinkles_im_num, dtype=np.int), 10) + 107,
-                                                    dtype=np.int)
+                                                                       + twinkles_system*4 +
+                                                                       twinkles_im_num, 10) + 107,
+                                                         dtype=np.int)
 
             
         return sprinkled_sne
@@ -305,8 +412,7 @@ class validate_ic(object):
 
     def compare_agn_location(self, spr_agn_df, spr_agn_lens_df):
         
-        db = om10.DB(catalog=os.path.join(os.environ['TWINKLES_DIR'], 'data', 
-                                          'twinkles_lenses_v2.fits'), vb=False)
+        db = om10.DB(catalog=self.sprinkled_agn_data, vb=False)
 
         x_offsets = []
         y_offsets = []
@@ -352,8 +458,7 @@ class validate_ic(object):
 
     def compare_sne_location(self, spr_sne_df, spr_sne_lens_df):
         
-        df = pd.read_csv(os.path.join(os.environ['TWINKLES_DIR'], 'data',
-                                      'dc2_sne_cat.csv'))
+        df = pd.read_csv(self.sprinkled_sne_data)
 
         x_offsets = []
         y_offsets = []
@@ -414,8 +519,7 @@ class validate_ic(object):
         This test compares the things that get swapped in directly from the input catalog.
         """
         
-        db = om10.DB(catalog=os.path.join(os.environ['TWINKLES_DIR'], 'data', 
-                                          'twinkles_lenses_v2.fits'), vb=False)
+        db = om10.DB(catalog=self.sprinkled_agn_data, vb=False)
 
         errors_present = False
         phi_error = False
@@ -494,8 +598,7 @@ class validate_ic(object):
         This test compares the things that get swapped in directly from the input catalog.
         """
 
-        df = pd.read_csv(os.path.join(os.environ['TWINKLES_DIR'], 'data',
-                                      'dc2_sne_cat.csv'))
+        df = pd.read_csv(self.sprinkled_sne_data)
 
         errors_present = False
         phi_error = False
@@ -564,8 +667,7 @@ class validate_ic(object):
         This test compares the lens magnitudes.
         """
         
-        db = om10.DB(catalog=os.path.join(os.environ['TWINKLES_DIR'], 'data', 
-                                          'twinkles_lenses_v2.fits'), vb=False)
+        db = om10.DB(catalog=self.sprinkled_agn_data, vb=False)
 
         lens_mag_error = []
 
@@ -616,8 +718,7 @@ class validate_ic(object):
         This test compares the things that get swapped in directly from the input catalog.
         """
 
-        df = pd.read_csv(os.path.join(os.environ['TWINKLES_DIR'], 'data',
-                                      'dc2_sne_cat.csv'))
+        df = pd.read_csv(self.sprinkled_sne_data)
 
         lens_mag_error = []
 
@@ -655,8 +756,7 @@ class validate_ic(object):
         This test compares the image inputs from catalog.
         """
 
-        df = pd.read_csv(os.path.join(os.environ['TWINKLES_DIR'], 'data',
-                                      'dc2_sne_cat.csv'))
+        df = pd.read_csv(self.sprinkled_sne_data)
 
         errors_present = False
         z_s_error = False
@@ -715,8 +815,7 @@ class validate_ic(object):
         This test compares the image magnitudes.
         """
         
-        db = om10.DB(catalog=os.path.join(os.environ['TWINKLES_DIR'], 'data', 
-                                          'twinkles_lenses_v2.fits'), vb=False)
+        db = om10.DB(catalog=self.sprinkled_agn_data, vb=False)
 
         agnSpecDir = 'agnSED'
         agnDir = str(getPackageDir('sims_sed_library') + '/' + agnSpecDir)
@@ -835,8 +934,7 @@ class validate_ic(object):
         
         sn_obj = SNObject(0., 0.)
 
-        df = pd.read_csv(os.path.join(os.environ['TWINKLES_DIR'], 'data',
-                                      'dc2_sne_cat.csv'))
+        df = pd.read_csv(self.sprinkled_sne_data)
 
         bandpassDict = BandpassDict.loadTotalBandpassesFromFiles(bandpassNames=[visit_band])
         norm_bp = Bandpass()
