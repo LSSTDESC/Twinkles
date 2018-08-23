@@ -20,8 +20,8 @@ class CatalogError(Exception):
 
 class validate_ic(object):
 
-    def __init__(self, sne_cache_file=None, sprinkled_agn_data=None,
-                 sprinkled_sne_data=None):
+    def __init__(self, agn_cache_file=None, sne_cache_file=None,
+                 sprinkled_agn_data=None, sprinkled_sne_data=None):
 
         """
         Initiate with the location of the input AGN and SNe lensed
@@ -412,6 +412,22 @@ class validate_ic(object):
 
     def compare_agn_location(self, spr_agn_df, spr_agn_lens_df):
         
+        """
+        This test makes sure that the AGN images are offset from the lenses by the
+        correct amounts given by the input catalog. The test will raise an error
+        if offsets are incorrect.
+
+        Parameters
+        ----------
+        spr_agn_df: pandas dataframe
+            Dataframe with the sprinkled AGN images from the Instance Catalog.
+            This is the output dataframe from process_sprinkled_agn.
+
+        spr_agn_lens_df: pandas dataframe
+            Dataframe with the sprinkled lens galaxies for the sprinkled AGN
+            systems. This is the output dataframe from process_agn_lenses.
+        """
+
         db = om10.DB(catalog=self.sprinkled_agn_data, vb=False)
 
         x_offsets = []
@@ -458,6 +474,22 @@ class validate_ic(object):
 
     def compare_sne_location(self, spr_sne_df, spr_sne_lens_df):
         
+        """
+        This test makes sure that the SNe images are offset from the lenses by the
+        correct amounts given by the input catalog. The test will raise an error
+        if offsets are incorrect.
+
+        Parameters
+        ----------
+        spr_sne_df: pandas dataframe
+            Dataframe with the sprinkled AGN images from the Instance Catalog.
+            This is the output dataframe from process_sprinkled_sne.
+
+        spr_sne_lens_df: pandas dataframe
+            Dataframe with the sprinkled lens galaxies for the sprinkled SNe
+            systems. This is the output dataframe from process_sne_lenses.
+        """
+        
         df = pd.read_csv(self.sprinkled_sne_data)
 
         x_offsets = []
@@ -474,17 +506,18 @@ class validate_ic(object):
             # There may be no images present in the current instance catalog
             if len(spr_sys_df) == 0:
                 continue
-
-            # This is just to make sure there are at least some images when we expect
-            # and the previous line is not just skipping everything.
-            images_tested += 1
-
+ 
             lens = df.query('twinkles_sysno == %i' % spr_sys_df['twinkles_system'].iloc[0])
             # SNe systems might not have all images appearing in an instance catalog unlike AGN
             img_vals = spr_sys_df['image_number'].values
             
             for img_idx in range(len(img_vals)):
-                # Calculate the offsets from the lens galaxy position
+ 
+                # This is just to make sure there are at least some images when we expect
+                # and the test is not just skipping everything.
+                images_tested += 1
+
+               # Calculate the offsets from the lens galaxy position
                 offset_x1, offset_y1 = self.offset_on_sky(spr_sys_df['raPhoSim'].iloc[img_idx], 
                                                           spr_sys_df['decPhoSim'].iloc[img_idx],
                                                           lens_gal_df['raPhoSim'],
