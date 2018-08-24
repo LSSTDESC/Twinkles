@@ -7,7 +7,7 @@ from astroML.plotting import setup_text_plots
 
 def plot_bic(param_range,bics,lowest_comp):
     plt.clf()
-    setup_text_plots(fontsize=16, usetex=True)
+    setup_text_plots(fontsize=16, usetex=False)
     fig = plt.figure(figsize=(12, 6))
     plt.plot(param_range,bics,color='blue',lw=2, marker='o')
     plt.text(lowest_comp, bics.min() * 0.97 + .03 * bics.max(), '*',
