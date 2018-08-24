@@ -11,6 +11,9 @@ if __name__ == "__main__":
 
     visit_num = int(sys.argv[2])
 
+    # The path to the directory, 'Dynamic'
+    sne_SED_path = sys.argv[3]
+
     filter_list = ['u', 'g', 'r', 'i', 'z', 'y']
 
     print("Loading visit info")
@@ -53,7 +56,8 @@ if __name__ == "__main__":
     test_sne_image_inputs = val_cat.compare_sne_image_inputs(spr_sne,
                                                              sne_lens_gals,
                                                              visit_mjd,
-                                                             sne_SED_file_dir)
+                                                             sne_SED_file_dir,
+                                                             sne_SED_path)
 
     test_agn_lens_mags = val_cat.compare_agn_lens_mags(spr_agn, agn_lens_gals)
 
