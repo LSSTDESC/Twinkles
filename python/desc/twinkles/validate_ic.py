@@ -574,6 +574,7 @@ class validate_ic(object):
         lens_major_axis_error = False
         lens_minor_axis_error = False
         lens_sed_error = False
+        lens_sed_filepath_error = False
         errors_string = "Errors in: "
 
         for lens_gal_row in spr_agn_lens_df.iterrows():
@@ -624,14 +625,15 @@ class validate_ic(object):
                     errors_present = True
                     lens_sed_error = True                    
 
-
             sed_exists = os.path.isfile(os.path.join(getPackageDir('sims_sed_library'),
                                                      lens_gal_df['sedFilepath']))
             if sed_exists is False:
-                errors_string = str(errors_string + 
-                                    "\nAGN lens galaxy SED does not exist. First error found in gal_id: %i" % u_id)
+                if lens_sed_filepath_error is False:
+                    errors_string = str(errors_string + 
+                                        "\nAGN lens galaxy SED does not exist. First error found in gal_id: %i" % u_id)
+                    lens_sed_filepath_error = True
+                    errors_present = True
 
-        
         print('------------')
         print('AGN direct catalog input Results:')
 
@@ -671,6 +673,7 @@ class validate_ic(object):
         lens_major_axis_error = False
         lens_minor_axis_error = False
         lens_sed_error = False
+        lens_sed_filepath_error = False
         errors_string = "Errors in: "
 
 
@@ -712,6 +715,17 @@ class validate_ic(object):
                     errors_string = errors_string + "\nSED Filename. First error found in lens_gal_id: %i " % u_id
                     errors_present = True
                     lens_sed_error = True
+
+
+            sed_exists = os.path.isfile(os.path.join(getPackageDir('sims_sed_library'),
+                                                     lens_gal_df['sedFilepath']))
+            if sed_exists is False:
+                if lens_sed_filepath_error is False:
+                    errors_string = str(errors_string + 
+                                        "\nSNe lens galaxy SED does not exist. First error found in gal_id: %i" % u_id)
+                    lens_sed_filepath_error = True
+                    errors_present = True
+
         
         print('------------')
         print('SNe Lenses direct catalog input Results:')
@@ -870,6 +884,7 @@ class validate_ic(object):
         errors_present = False
         z_s_error = False
         sed_error = False
+        sed_filepath_error = False
         errors_string = 'Errors in:'
 
         for lens_gal_row in spr_sne_lens_df.iterrows():
@@ -906,9 +921,13 @@ class validate_ic(object):
                         sed_error = True
 
                 sed_exists = os.path.isfile(os.path.join(sne_SED_path, sed_name))
-                if sed_exists is False:
+
+            if sed_exists is False:
+                if sed_filepath_error is False:
                     errors_string = str(errors_string + 
-                                        "\nSNe Image SED does not exist. First error found in gal_id: %i" % u_id)
+                                        "\nSNe image SED does not exist. First error found in gal_id: %i" % u_id)
+                    sed_filepath_error = True
+                    errors_present = True
         
         print('------------')
         print('SNe Images direct catalog input Results:')
