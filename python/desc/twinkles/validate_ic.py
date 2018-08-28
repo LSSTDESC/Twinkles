@@ -623,6 +623,14 @@ class validate_ic(object):
                     errors_string = errors_string + "\nSED Filename. First error found in lens_gal_id: %i " % u_id
                     errors_present = True
                     lens_sed_error = True                    
+
+
+            sed_exists = os.path.isfile(os.path.join(getPackageDir('sims_sed_library'),
+                                                     lens_gal_df['sedFilepath']))
+            if sed_exists is False:
+                errors_string = str(errors_string + 
+                                    "\nAGN lens galaxy SED does not exist. First error found in gal_id: %i" % u_id)
+
         
         print('------------')
         print('AGN direct catalog input Results:')
