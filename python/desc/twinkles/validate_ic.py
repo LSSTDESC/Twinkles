@@ -5,6 +5,7 @@ import numpy as np
 import gzip
 import shutil
 import copy
+import json
 from lsst.utils import getPackageDir
 from lsst.sims.photUtils import Bandpass, BandpassDict, Sed, getImsimFluxNorm
 from lsst.sims.catUtils.supernovae import SNObject
@@ -1054,18 +1055,16 @@ class validate_ic(object):
         with open(os.path.join(os.environ['TWINKLES_DIR'], 'data', 
                                           'agn_validation_params.txt'), 'r') as f:
             for line in f:
-                line_id = line.split(',')[0]
-                line_magNorm = line.split(',')[3]
-                
-                var_param_dict = {x.split(':')[0][2:-1]:np.array([np.float(x.split(':')[1])]) 
-                                  for x in line.split('{')[2][:-3].split(',')}
+                if line.startswith('#'):
+                    continue
+                split_line = line.split(';')
+                line_id = split_line[0]
+                line_magNorm = split_line[3]
 
-                # Some munging from the way we made the dict
-                var_param_dict['seed'] = np.array(var_param_dict['eed'], dtype=int)
-                var_param_dict['magNorm_static'] = np.float(line_magNorm)
-                del var_param_dict['eed']
-
-                agn_var_params[str(line_id)] = var_param_dict
+                var_dict = json.loads(split_line[-2])['p']
+                new_var_dict = {key:np.array([val]) for key, val in var_dict.items()}
+                new_var_dict['magNorm_static'] = np.float(line_magNorm)
+                agn_var_params[str(line_id)] = new_var_dict
 
         return agn_var_params
 
