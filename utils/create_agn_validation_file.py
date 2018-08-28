@@ -6,6 +6,12 @@ from desc.sims.GCRCatSimInterface import agnDESCQAObject_protoDC2
 from lsst.sims.utils import ObservationMetaData
 
 class VarParCat(InstanceCatalog):
+
+    """
+    Quick test catalog to get AGN variability parameters
+    out of the catalog.
+    """
+
     column_outputs = ['galaxy_id', 'raJ2000', 'decJ2000',
                       'magNorm', 'redshift', 'varParamStr']
 
@@ -15,6 +21,19 @@ class VarParCat(InstanceCatalog):
                        'decJ2000': np.degrees}
 
 if __name__ == "__main__":
+
+    """
+    This script can just be run from the command line as:
+      python create_agn_validation_file.py
+    after a version of the DESC stack with Twinkles is
+    setup. 
+
+    The goal of this script is to create a quick catalog
+    of the uDDF field with the AGN variability parameters
+    of the objects in the uDDF field. This is then used
+    to test that the sprinkled instance catalogs are using
+    the correct variability in AGN magnitudes.
+    """
 
     field_ra = 55.064
     field_dec = -29.783
