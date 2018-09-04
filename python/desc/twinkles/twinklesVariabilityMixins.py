@@ -75,6 +75,8 @@ class TimeDelayVariability(Variability):
             nbins = int(math.ceil(duration_rest_frame/dt))+1
 
             time_dexes = np.round((expmjd_arr-start_date-t_delay)/(time_dilation*dt)).astype(int)
+            assert time_dexes.min() >= 0
+
             time_dex_map = {}
             ct_dex = 0
             for i_t_dex, t_dex in enumerate(time_dexes):
@@ -100,11 +102,11 @@ class TimeDelayVariability(Variability):
 
                 if i_time in time_dexes:
                     if isinstance(expmjd, numbers.Number):
-                        dm_val = ((expmjd-start_date)*(dx1-dx2)/time_dilation+dx2*x1-dx1*x2)/(x1-x2)
+                        dm_val = ((expmjd-start_date-t_delay)*(dx1-dx2)/time_dilation+dx2*x1-dx1*x2)/(x1-x2)
                         dMags[0][i_obj] = dm_val
                     else:
                         for i_time_out in time_dex_map[i_time]:
-                            local_end = (expmjd_arr[i_time_out]-start_date)/time_dilation
+                            local_end = (expmjd_arr[i_time_out]-start_date-t_delay)/time_dilation
                             dm_val = (local_end*(dx1-dx2)+dx2*x1-dx1*x2)/(x1-x2)
                             dMags[0][i_obj][i_time_out] = dm_val
 
