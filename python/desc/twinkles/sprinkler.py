@@ -413,7 +413,7 @@ class sprinkler():
                 row[self.defs_dict['galaxyDisk_magNorm']] = 999. #To be fixed post run1.1
                 row[self.defs_dict['galaxyAgn_sedFilename']] = None
                 #Now insert desired Bulge properties
-                row[self.defs_dict['galaxyBulge_sedFilename']] = use_df['lens_sed'].iloc[0]
+                row[self.defs_dict['galaxyBulge_sedFilename']] = defaultSpecMap[use_df['lens_sed'].iloc[0]]
                 row[self.defs_dict['galaxyBulge_redshift']] = use_df['zl'].iloc[0]
                 row[self.defs_dict['galaxyDisk_redshift']] = use_df['zl'].iloc[0]
                 row[self.defs_dict['galaxyAgn_redshift']] = use_df['zl'].iloc[0]
