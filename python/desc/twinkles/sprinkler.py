@@ -15,7 +15,7 @@ import copy
 import gzip
 import shutil
 from lsst.utils import getPackageDir
-from lsst.sims.utils import SpecMap
+from lsst.sims.utils import SpecMap, defaultSpecMap
 from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
 from lsst.sims.catUtils.matchSED import matchBase
 from lsst.sims.photUtils import Bandpass, BandpassDict, Sed
@@ -290,7 +290,7 @@ class sprinkler():
                     row[self.defs_dict['galaxyDisk_magNorm']] = 999. # To be fixed in run1.1
                     row[self.defs_dict['galaxyAgn_sedFilename']] = None
                     #Now insert desired Bulge properties
-                    row[self.defs_dict['galaxyBulge_sedFilename']] = newlens['lens_sed']
+                    row[self.defs_dict['galaxyBulge_sedFilename']] = defaultSpecMap[newlens['lens_sed']]
                     row[self.defs_dict['galaxyBulge_redshift']] = newlens['ZLENS']
                     row[self.defs_dict['galaxyDisk_redshift']] = newlens['ZLENS']
                     row[self.defs_dict['galaxyAgn_redshift']] = newlens['ZLENS']
@@ -413,7 +413,7 @@ class sprinkler():
                 row[self.defs_dict['galaxyDisk_magNorm']] = 999. #To be fixed post run1.1
                 row[self.defs_dict['galaxyAgn_sedFilename']] = None
                 #Now insert desired Bulge properties
-                row[self.defs_dict['galaxyBulge_sedFilename']] = use_df['lens_sed'].iloc[0]
+                row[self.defs_dict['galaxyBulge_sedFilename']] = defaultSpecMap[use_df['lens_sed'].iloc[0]]
                 row[self.defs_dict['galaxyBulge_redshift']] = use_df['zl'].iloc[0]
                 row[self.defs_dict['galaxyDisk_redshift']] = use_df['zl'].iloc[0]
                 row[self.defs_dict['galaxyAgn_redshift']] = use_df['zl'].iloc[0]
