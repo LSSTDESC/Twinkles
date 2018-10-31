@@ -417,7 +417,7 @@ class sprinkler():
                 row[self.defs_dict['galaxyBulge_redshift']] = use_df['zl'].iloc[0]
                 row[self.defs_dict['galaxyDisk_redshift']] = use_df['zl'].iloc[0]
                 row[self.defs_dict['galaxyAgn_redshift']] = use_df['zl'].iloc[0]
-                row[self.defs_dict['galaxyBulge_magNorm']] = use_df['bulge_magnorm'].iloc[0]
+                row[self.defs_dict['galaxyBulge_magNorm']] = use_df['lensgal_magnorm'].iloc[0]
                 # row[self.defs_dict['galaxyBulge_magNorm']] = matchBase().calcMagNorm([newlens['APMAG_I']], self.LRG, self.bandpassDict) #Changed from i band to imsimband
                 row[self.defs_dict['galaxyBulge_majorAxis']] = radiansFromArcsec(use_df['r_eff'].iloc[0] / np.sqrt(1 - use_df['e'].iloc[0]))
                 row[self.defs_dict['galaxyBulge_minorAxis']] = radiansFromArcsec(use_df['r_eff'].iloc[0] * np.sqrt(1 - use_df['e'].iloc[0]))
