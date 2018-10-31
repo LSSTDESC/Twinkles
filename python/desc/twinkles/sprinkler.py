@@ -419,8 +419,8 @@ class sprinkler():
                 row[self.defs_dict['galaxyAgn_redshift']] = use_df['zl'].iloc[0]
                 row[self.defs_dict['galaxyBulge_magNorm']] = use_df['lensgal_magnorm'].iloc[0]
                 # row[self.defs_dict['galaxyBulge_magNorm']] = matchBase().calcMagNorm([newlens['APMAG_I']], self.LRG, self.bandpassDict) #Changed from i band to imsimband
-                row[self.defs_dict['galaxyBulge_majorAxis']] = radiansFromArcsec(use_df['r_eff'].iloc[0] / np.sqrt(1 - use_df['e'].iloc[0]))
-                row[self.defs_dict['galaxyBulge_minorAxis']] = radiansFromArcsec(use_df['r_eff'].iloc[0] * np.sqrt(1 - use_df['e'].iloc[0]))
+                row[self.defs_dict['galaxyBulge_majorAxis']] = radiansFromArcsec(use_df['lensgal_reff'].iloc[0] / np.sqrt(1 - use_df['e'].iloc[0]))
+                row[self.defs_dict['galaxyBulge_minorAxis']] = radiansFromArcsec(use_df['lensgal_reff'].iloc[0] * np.sqrt(1 - use_df['e'].iloc[0]))
                 #Convert orientation angle to west of north from east of north by *-1.0 and convert to radians
                 row[self.defs_dict['galaxyBulge_positionAngle']] = use_df['theta_e'].iloc[0]*(-1.0)*np.pi/180.0
 
