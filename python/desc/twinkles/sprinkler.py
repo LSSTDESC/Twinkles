@@ -132,11 +132,7 @@ class sprinkler():
         else:
             self.defs_file = defs_file
 
-        specFileStart = 'Burst'
-        for key, val in sorted(iteritems(SpecMap.subdir_map)):
-            if re.match(key, specFileStart):
-                galSpecDir = str(val)
-        self.galDir = str(getPackageDir('sims_sed_library') + '/' + galSpecDir + '/')
+        self.sedDir = getPackageDir('sims_sed_library')
 
         self.imSimBand = Bandpass()
         self.imSimBand.imsimBandpass()
@@ -295,7 +291,9 @@ class sprinkler():
                     row[self.defs_dict['galaxyDisk_redshift']] = newlens['ZLENS']
                     row[self.defs_dict['galaxyAgn_redshift']] = newlens['ZLENS']
                     row_lens_sed = Sed()
-                    row_lens_sed.readSED_flambda(str(self.galDir + newlens['lens_sed']))
+                    row_lens_sed.readSED_flambda(os.path.join(self.sedDir,
+                                                           newlens['lens_sed']))
+
                     row_lens_sed.redshiftSED(newlens['ZLENS'], dimming=True)
                     row[self.defs_dict['galaxyBulge_magNorm']] = matchBase().calcMagNorm([newlens['APMAG_I']], row_lens_sed,
                                                                          self.bandpassDict) #Changed from i band to imsimband
