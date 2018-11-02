@@ -196,8 +196,13 @@ class sprinkler():
             # if rowNum == 100 or rowNum % 100000==0:
             #     print("Gone through ", rowNum, " lines of catalog.")
             if not np.isnan(row[self.defs_dict['galaxyAgn_magNorm']]):
-                candidates = self.find_lens_candidates(row[self.defs_dict['galaxyAgn_redshift']],
-                                                       row[self.defs_dict['galaxyAgn_magNorm']])
+
+                if not self.cached_sprinkling:
+                    candidates = self.find_lens_candidates(row[self.defs_dict['galaxyAgn_redshift']],
+                                                           row[self.defs_dict['galaxyAgn_magNorm']])
+                else:
+                    candidates = []
+
                 #varString = json.loads(row[self.defs_dict['galaxyAgn_varParamStr']])
                 # varString[self.defs_dict['pars']]['t0_mjd'] = 59300.0
                 #row[self.defs_dict['galaxyAgn_varParamStr']] = json.dumps(varString)
