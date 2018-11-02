@@ -207,8 +207,8 @@ class sprinkler():
                 # varString[self.defs_dict['pars']]['t0_mjd'] = 59300.0
                 #row[self.defs_dict['galaxyAgn_varParamStr']] = json.dumps(varString)
 
-                np.random.seed(galtileid % (2^32 -1))
-                pick_value = np.random.uniform()
+                rng = np.random.RandomState(galtileid % (2^32 -1))
+                pick_value = rng.uniform()
                 # If there aren't any lensed sources at this redshift from
                 # OM10 move on the next object
                 if (((len(candidates) > 0) and (pick_value <= self.density_param) and (self.cached_sprinkling is False)) |
@@ -221,7 +221,7 @@ class sprinkler():
                         newlens = self.lenscat[np.where(self.lenscat['twinklesId'] == twinkles_sys_cache)[0]][0]
                     else:
                         candidates = candidates[np.argsort(candidates['twinklesId'])]
-                        newlens = np.random.choice(candidates)
+                        newlens = rng.choice(candidates)
                     # Append the lens galaxy
                     # For each image, append the lens images
                     for i in range(newlens['NIMG']):
@@ -334,8 +334,8 @@ class sprinkler():
                     unused_sysno = candidate_sysno[~used_already]
                     if len(unused_sysno) == 0:
                         continue
-                    np.random.seed(galtileid % (2^32 -1))
-                    use_system = np.random.choice(unused_sysno)
+                    rng2 = np.random.RandomState(galtileid % (2^32 -1))
+                    use_system = rng2.choice(unused_sysno)
                     use_df = self.sne_catalog.query('twinkles_sysno == %i' % use_system)
 
                 for i in range(len(use_df)):
