@@ -186,6 +186,7 @@ class sprinkler():
         lenslines = []
         # For each galaxy in the catsim catalog
         updated_catalog = self.catalog.copy()
+        new_rows = []
         # print("Running sprinkler. Catalog Length: ", len(self.catalog))
         for rowNum, row in enumerate(self.catalog):
             if isinstance(self.defs_dict['galtileid'], tuple):
@@ -278,7 +279,7 @@ class sprinkler():
                                                         newlens['twinklesId']*4 + i)
 
 
-                        updated_catalog = np.append(updated_catalog, lensrow)
+                        new_rows.append(lensrow)
 
                     #Now manipulate original entry to be the lens galaxy with desired properties
                     #Start by deleting Disk and AGN properties
@@ -402,7 +403,7 @@ class sprinkler():
                         lensrow[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
 
                     if add_to_cat is True:
-                        updated_catalog = np.append(updated_catalog, lensrow)
+                        new_rows.append(lensrow)
                     else:
                         continue
                     #Now manipulate original entry to be the lens galaxy with desired properties
@@ -437,6 +438,9 @@ class sprinkler():
                 #Replace original entry with new entry
                 updated_catalog[rowNum] = row
 
+
+        if len(new_rows)>0:
+            updated_catalog = np.append(updated_catalog, new_rows)
 
         return updated_catalog
 
