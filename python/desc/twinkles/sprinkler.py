@@ -204,7 +204,8 @@ class sprinkler():
 
                 np.random.seed(galtileid % (2^32 -1))
                 pick_value = np.random.uniform()
-            # If there aren't any lensed sources at this redshift from OM10 move on the next object
+                # If there aren't any lensed sources at this redshift from
+                # OM10 move on the next object
                 if (((len(candidates) > 0) and (pick_value <= self.density_param) and (self.cached_sprinkling is False)) |
                     ((self.cached_sprinkling is True) and (galtileid in self.agn_cache['galtileid'].values))):
                     # Randomly choose one the lens systems
@@ -222,7 +223,8 @@ class sprinkler():
                         lensrow = row.copy()
                         # XIMG and YIMG are in arcseconds
                         # raPhSim and decPhoSim are in radians
-                        #Shift all parts of the lensed object, not just its agn part
+                        # Shift all parts of the lensed object,
+                        # not just its agn part
                         for lensPart in ['galaxyBulge', 'galaxyDisk', 'galaxyAgn']:
                             lens_ra = lensrow[self.defs_dict[str(lensPart+'_raJ2000')]]
                             lens_dec = lensrow[self.defs_dict[str(lensPart+'_decJ2000')]]
