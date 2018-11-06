@@ -208,12 +208,12 @@ class sprinkler():
                                                         self.agn_cache['galtileid'].values,
                                                         assume_unique=True)))[0]
 
-            valid_sn = np.where(np.logical_and(np.isnan(agn_magnorm_array),
-                                               np.in1d(galtileid_array,
-                                                       self.sne_cache['galtileid'].values)))[0]
+            valid_sne = np.where(np.logical_and(np.isnan(agn_magnorm_array),
+                                                np.in1d(galtileid_array,
+                                                        self.sne_cache['galtileid'].values)))[0]
         else:
             valid_agn = np.where(np.isfinite(agn_magnorm_array))[0]
-            valid_sn = np.where(np.isnan(agn_magnorm_array))[0]
+            valid_sne = np.where(np.isnan(agn_magnorm_array))[0]
 
         new_rows = []
         # print("Running sprinkler. Catalog Length: ", len(input_catalog))
