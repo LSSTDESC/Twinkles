@@ -414,15 +414,18 @@ class sprinkler():
                                                                self.visit_mjd,
                                                                write_sn_sed=self.write_sn_sed)
 
-                lensrow[self.defs_dict['galaxyAgn_sedFilename']] = sn_fname
-                lensrow[self.defs_dict['galaxyAgn_magNorm']] = sn_magnorm #This will need to be adjusted to proper band
-                mag_adjust = 2.5*np.log10(np.abs(use_df['mu'].iloc[i]))
-                lensrow[self.defs_dict['galaxyAgn_magNorm']] -= mag_adjust
-
                 if self.store_sn_truth_params:
                     add_to_cat = True
                     lensrow[self.defs_dict['galaxyAgn_sn_truth_params']] = json.dumps(sn_param_dict)
                     lensrow[self.defs_dict['galaxyAgn_sn_t0']] = sn_param_dict['t0']
+
+                if not add_to_cat:
+                    continue
+
+                lensrow[self.defs_dict['galaxyAgn_sedFilename']] = sn_fname
+                lensrow[self.defs_dict['galaxyAgn_magNorm']] = sn_magnorm #This will need to be adjusted to proper band
+                mag_adjust = 2.5*np.log10(np.abs(use_df['mu'].iloc[i]))
+                lensrow[self.defs_dict['galaxyAgn_magNorm']] -= mag_adjust
 
                 if self.logging_is_sprinkled:
                     lensrow[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
