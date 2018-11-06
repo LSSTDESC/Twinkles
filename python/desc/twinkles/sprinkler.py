@@ -110,7 +110,7 @@ class sprinkler():
         self.sne_catalog = pd.read_csv(os.path.join(twinklesDir, 'data', sne_cat))
         #self.sne_catalog = self.sne_catalog.iloc[:101] ### Remove this after testing
         self.used_systems = []
-        self.visit_mjd = visit_mjd
+        self._visit_mjd = visit_mjd
         self.sn_obj = SNObject(0., 0.)
         self.write_dir = specFileMap.subdir_map['(^specFileGLSN)']
         self.sed_path = sed_path
@@ -180,6 +180,14 @@ class sprinkler():
                         self.defs_dict[line_defs[0]] = line_defs[1]
                     else:
                         self.defs_dict[line_defs[0]] = tuple((ll for ll in line_defs[1:]))
+
+    @property
+    def visit_mjd(self):
+        return self._visit_mjd
+
+    @visit_mjd.setter
+    def visit_mjd(self, val):
+        self._visit_mjd = val
 
     def sprinkle(self):
         # Define a list that we can write out to a text file
