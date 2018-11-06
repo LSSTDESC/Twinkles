@@ -99,7 +99,6 @@ class sprinkler():
         twinklesDir = getPackageDir('Twinkles')
         om10_cat = os.path.join(twinklesDir, 'data', om10_cat)
         self.write_sn_sed = write_sn_sed
-        self.catalog = catsim_cat
         self.catalog_column_names = catsim_cat.dtype.names
         # ****** THIS ASSUMES THAT THE ENVIRONMENT VARIABLE OM10_DIR IS SET *******
         lensdb = om10.DB(catalog=om10_cat, vb=False)
@@ -189,14 +188,14 @@ class sprinkler():
     def visit_mjd(self, val):
         self._visit_mjd = val
 
-    def sprinkle(self):
+    def sprinkle(self, input_catalog):
         # Define a list that we can write out to a text file
         lenslines = []
         # For each galaxy in the catsim catalog
-        updated_catalog = self.catalog.copy()
+        updated_catalog = input_catalog.copy()
         new_rows = []
-        # print("Running sprinkler. Catalog Length: ", len(self.catalog))
-        for rowNum, row in enumerate(self.catalog):
+        # print("Running sprinkler. Catalog Length: ", len(input_catalog))
+        for rowNum, row in enumerate(input_catalog):
             if isinstance(self.defs_dict['galtileid'], tuple):
                 galtileid = row[self.defs_dict['galtileid'][0]]
             else:
