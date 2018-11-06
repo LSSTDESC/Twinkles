@@ -198,186 +198,79 @@ class sprinkler():
         else:
             galid_dex = self.defs_dict['galtileid']
 
+        agn_magnorm_dex = self.defs_dict['galaxyAgn_magNorm']
+        agn_magnorm_array  = np.array([row[agn_magnorm_dex] for row in input_catalog])
+
         if self.cached_sprinkling:
             galtileid_array = np.array([row[galid_dex] for row in input_catalog])
-            valid_rows = np.where(np.logical_or(np.in1d(galtileid_array,
-                                                        self.agn_cache['galtileid'].values,
-                                                        assume_unique=True),
+            valid_agn = np.where(np.logical_and(np.isfinite(agn_magnorm_array),
                                                 np.in1d(galtileid_array,
-                                                        self.sne_cache['galtileid'].values,
+                                                        self.agn_cache['galtileid'].values,
                                                         assume_unique=True)))[0]
-            print('valid rows %d' % len(valid_rows))
+
+            valid_sn = np.where(np.logical_and(np.isnan(agn_magnorm_array),
+                                               np.in1d(galtileid_array,
+                                                       self.sne_cache['galtileid'].values)))[0]
         else:
-            valid_rows = np.arange(len(input_catalog), dtype=int)
+            valid_agn = np.where(np.isfinite(agn_magnorm_array))[0]
+            valid_sn = np.where(np.isnan(agn_magnorm_array))[0]
 
         new_rows = []
         # print("Running sprinkler. Catalog Length: ", len(input_catalog))
-        for rowNum in valid_rows:
+        for rowNum in valid_agn:
             row = input_catalog[rowNum]
             galtileid = row[galid_dex]
 
-            # if rowNum == 100 or rowNum % 100000==0:
-            #     print("Gone through ", rowNum, " lines of catalog.")
-            if not np.isnan(row[self.defs_dict['galaxyAgn_magNorm']]):
+            sprinkle_object = False
+            if not self.cached_sprinkling:
+                candidates = self.find_lens_candidates(row[self.defs_dict['galaxyAgn_redshift']],
+                                                       row[self.defs_dict['galaxyAgn_magNorm']])
+                rng = np.random.RandomState(galtileid % (2^32 -1))
+                pick_value = rng.uniform()
 
-                sprinkle_object = False
-                if not self.cached_sprinkling:
-                    candidates = self.find_lens_candidates(row[self.defs_dict['galaxyAgn_redshift']],
-                                                           row[self.defs_dict['galaxyAgn_magNorm']])
-                    rng = np.random.RandomState(galtileid % (2^32 -1))
-                    pick_value = rng.uniform()
+                if len(candidates)>0 and pick_value<=self.density_param:
+                    sprinkle_object = True
 
-                    if len(candidates)>0 and pick_value<=self.density_param:
-                        sprinkle_object = True
-
-                else:
-                    if galtileid in self.agn_cache['galtileid'].values:
-                        sprinkle_object = True
-
-                #varString = json.loads(row[self.defs_dict['galaxyAgn_varParamStr']])
-                # varString[self.defs_dict['pars']]['t0_mjd'] = 59300.0
-                #row[self.defs_dict['galaxyAgn_varParamStr']] = json.dumps(varString)
-
-                # If there aren't any lensed sources at this redshift from
-                # OM10 move on the next object
-                if sprinkle_object:
-                    # Randomly choose one the lens systems
-                    # (can decide with or without replacement)
-                    # Sort first to make sure the same choice is made every time
-                    if self.cached_sprinkling is True:
-                        twinkles_sys_cache = self.agn_cache.query('galtileid == %i' % galtileid)['twinkles_system'].values[0]
-                        newlens = self.lenscat[np.where(self.lenscat['twinklesId'] == twinkles_sys_cache)[0]][0]
-                    else:
-                        candidates = candidates[np.argsort(candidates['twinklesId'])]
-                        newlens = rng.choice(candidates)
-                    # Append the lens galaxy
-                    # For each image, append the lens images
-                    for i in range(newlens['NIMG']):
-                        lensrow = row.copy()
-                        # XIMG and YIMG are in arcseconds
-                        # raPhSim and decPhoSim are in radians
-                        # Shift all parts of the lensed object,
-                        # not just its agn part
-                        for lensPart in ['galaxyBulge', 'galaxyDisk', 'galaxyAgn']:
-                            lens_ra = lensrow[self.defs_dict[str(lensPart+'_raJ2000')]]
-                            lens_dec = lensrow[self.defs_dict[str(lensPart+'_decJ2000')]]
-                            delta_ra = np.radians(newlens['XIMG'][i] / 3600.0) / np.cos(lens_dec)
-                            delta_dec = np.radians(newlens['YIMG'][i] / 3600.0)
-                            lensrow[self.defs_dict[str(lensPart + '_raJ2000')]] = lens_ra + delta_ra
-                            lensrow[self.defs_dict[str(lensPart + '_decJ2000')]] = lens_dec + delta_dec
-                        mag_adjust = 2.5*np.log10(np.abs(newlens['MAG'][i]))
-                        lensrow[self.defs_dict['galaxyAgn_magNorm']] -= mag_adjust
-                        varString = json.loads(lensrow[self.defs_dict['galaxyAgn_varParamStr']])
-                        varString[self.defs_dict['pars']]['t0Delay'] = newlens['DELAY'][i]
-                        varString[self.defs_dict['varMethodName']] = 'applyAgnTimeDelay'
-                        lensrow[self.defs_dict['galaxyAgn_varParamStr']] = json.dumps(varString)
-                        lensrow[self.defs_dict['galaxyDisk_majorAxis']] = 0.0
-                        lensrow[self.defs_dict['galaxyDisk_minorAxis']] = 0.0
-                        lensrow[self.defs_dict['galaxyDisk_positionAngle']] = 0.0
-                        lensrow[self.defs_dict['galaxyDisk_internalAv']] = 0.0
-                        lensrow[self.defs_dict['galaxyDisk_magNorm']] = 999. #np.nan To be fixed post run1.1
-                        lensrow[self.defs_dict['galaxyDisk_sedFilename']] = None
-                        lensrow[self.defs_dict['galaxyBulge_majorAxis']] = 0.0
-                        lensrow[self.defs_dict['galaxyBulge_minorAxis']] = 0.0
-                        lensrow[self.defs_dict['galaxyBulge_positionAngle']] = 0.0
-                        lensrow[self.defs_dict['galaxyBulge_internalAv']] = 0.0
-                        lensrow[self.defs_dict['galaxyBulge_magNorm']] = 999. #np.nan To be fixed post run1.1
-                        lensrow[self.defs_dict['galaxyBulge_sedFilename']] = None
-                        lensrow[self.defs_dict['galaxyBulge_redshift']] = newlens['ZSRC']
-                        lensrow[self.defs_dict['galaxyDisk_redshift']] = newlens['ZSRC']
-                        lensrow[self.defs_dict['galaxyAgn_redshift']] = newlens['ZSRC']
-
-                        if self.logging_is_sprinkled:
-                            lensrow[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
-                            lensrow[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
-                            lensrow[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
-
-                        #To get back twinklesID in lens catalog from phosim catalog id number
-                        #just use np.right_shift(phosimID-28, 10). Take the floor of the last
-                        #3 numbers to get twinklesID in the twinkles lens catalog and the remainder is
-                        #the image number minus 1.
-                        if not isinstance(self.defs_dict['galtileid'], tuple):
-                            lensrow[self.defs_dict['galtileid']] = ((lensrow[self.defs_dict['galtileid']]+int(1.5e10))*10000 +
-                                                    newlens['twinklesId']*4 + i)
-                        else:
-                            for col_name in self.defs_dict['galtileid']:
-
-                                lensrow[col_name] = ((lensrow[col_name]+int(1.5e10))*10000 +
-                                                        newlens['twinklesId']*4 + i)
-
-
-                        new_rows.append(lensrow)
-
-                    #Now manipulate original entry to be the lens galaxy with desired properties
-                    #Start by deleting Disk and AGN properties
-                    if not np.isnan(row[self.defs_dict['galaxyDisk_magNorm']]):
-                        row[self.defs_dict['galaxyDisk_majorAxis']] = 0.0
-                        row[self.defs_dict['galaxyDisk_minorAxis']] = 0.0
-                        row[self.defs_dict['galaxyDisk_positionAngle']] = 0.0
-                        row[self.defs_dict['galaxyDisk_internalAv']] = 0.0
-                        row[self.defs_dict['galaxyDisk_magNorm']] = 999. #np.nan To be fixed post run1.1
-                        row[self.defs_dict['galaxyDisk_sedFilename']] = None
-                    row[self.defs_dict['galaxyAgn_magNorm']] = None #np.nan To be fixed post run1.1
-                    row[self.defs_dict['galaxyDisk_magNorm']] = 999. # To be fixed in run1.1
-                    row[self.defs_dict['galaxyAgn_sedFilename']] = None
-                    #Now insert desired Bulge properties
-                    row[self.defs_dict['galaxyBulge_sedFilename']] = newlens['lens_sed']
-                    row[self.defs_dict['galaxyBulge_redshift']] = newlens['ZLENS']
-                    row[self.defs_dict['galaxyDisk_redshift']] = newlens['ZLENS']
-                    row[self.defs_dict['galaxyAgn_redshift']] = newlens['ZLENS']
-                    row_lens_sed = Sed()
-                    row_lens_sed.readSED_flambda(os.path.join(self.sedDir,
-                                                           newlens['lens_sed']))
-
-                    row_lens_sed.redshiftSED(newlens['ZLENS'], dimming=True)
-                    row[self.defs_dict['galaxyBulge_magNorm']] = matchBase().calcMagNorm([newlens['APMAG_I']], row_lens_sed,
-                                                                         self.bandpassDict) #Changed from i band to imsimband
-                    row[self.defs_dict['galaxyBulge_majorAxis']] = radiansFromArcsec(newlens['REFF'] / np.sqrt(1 - newlens['ELLIP']))
-                    row[self.defs_dict['galaxyBulge_minorAxis']] = radiansFromArcsec(newlens['REFF'] * np.sqrt(1 - newlens['ELLIP']))
-                    #Convert orientation angle to west of north from east of north by *-1.0 and convert to radians
-                    row[self.defs_dict['galaxyBulge_positionAngle']] = newlens['PHIE']*(-1.0)*np.pi/180.0
-
-                    if self.logging_is_sprinkled:
-                        row[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
-                        row[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
-                        row[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
-
-                    #Replace original entry with new entry
-                    updated_catalog[rowNum] = row
             else:
-                if self.cached_sprinkling is True:
-                    if galtileid in self.sne_cache['galtileid'].values:
-                        use_system = self.sne_cache.query('galtileid == %i' % galtileid)['twinkles_system'].values
-                        use_df = self.sne_catalog.query('twinkles_sysno == %i' % use_system)
-                        self.used_systems.append(use_system)
-                    else:
-                        continue
-                else:
-                    lens_sne_candidates = self.find_sne_lens_candidates(row[self.defs_dict['galaxyDisk_redshift']])
-                    candidate_sysno = np.unique(lens_sne_candidates['twinkles_sysno'])
-                    num_candidates = len(candidate_sysno)
-                    if num_candidates == 0:
-                        continue
-                    used_already = np.array([sys_num in self.used_systems for sys_num in candidate_sysno])
-                    unused_sysno = candidate_sysno[~used_already]
-                    if len(unused_sysno) == 0:
-                        continue
-                    rng2 = np.random.RandomState(galtileid % (2^32 -1))
-                    use_system = rng2.choice(unused_sysno)
-                    use_df = self.sne_catalog.query('twinkles_sysno == %i' % use_system)
+                sprinkle_object = True
 
-                for i in range(len(use_df)):
+            #varString = json.loads(row[self.defs_dict['galaxyAgn_varParamStr']])
+            # varString[self.defs_dict['pars']]['t0_mjd'] = 59300.0
+            #row[self.defs_dict['galaxyAgn_varParamStr']] = json.dumps(varString)
+
+            # If there aren't any lensed sources at this redshift from
+            # OM10 move on the next object
+            if sprinkle_object:
+                # Randomly choose one the lens systems
+                # (can decide with or without replacement)
+                # Sort first to make sure the same choice is made every time
+                if self.cached_sprinkling is True:
+                    twinkles_sys_cache = self.agn_cache.query('galtileid == %i' % galtileid)['twinkles_system'].values[0]
+                    newlens = self.lenscat[np.where(self.lenscat['twinklesId'] == twinkles_sys_cache)[0]][0]
+                else:
+                    candidates = candidates[np.argsort(candidates['twinklesId'])]
+                    newlens = rng.choice(candidates)
+                # Append the lens galaxy
+                # For each image, append the lens images
+                for i in range(newlens['NIMG']):
                     lensrow = row.copy()
+                    # XIMG and YIMG are in arcseconds
+                    # raPhSim and decPhoSim are in radians
+                    # Shift all parts of the lensed object,
+                    # not just its agn part
                     for lensPart in ['galaxyBulge', 'galaxyDisk', 'galaxyAgn']:
                         lens_ra = lensrow[self.defs_dict[str(lensPart+'_raJ2000')]]
                         lens_dec = lensrow[self.defs_dict[str(lensPart+'_decJ2000')]]
-                        delta_ra = np.radians(use_df['x'].iloc[i] / 3600.0) / np.cos(lens_dec)
-                        delta_dec = np.radians(use_df['y'].iloc[i] / 3600.0)
+                        delta_ra = np.radians(newlens['XIMG'][i] / 3600.0) / np.cos(lens_dec)
+                        delta_dec = np.radians(newlens['YIMG'][i] / 3600.0)
                         lensrow[self.defs_dict[str(lensPart + '_raJ2000')]] = lens_ra + delta_ra
                         lensrow[self.defs_dict[str(lensPart + '_decJ2000')]] = lens_dec + delta_dec
-                    # varString = json.loads(lensrow[self.defs_dict['galaxyAgn_varParamStr']])
-                    varString = 'None'
-                    lensrow[self.defs_dict['galaxyAgn_varParamStr']] = varString
+                    mag_adjust = 2.5*np.log10(np.abs(newlens['MAG'][i]))
+                    lensrow[self.defs_dict['galaxyAgn_magNorm']] -= mag_adjust
+                    varString = json.loads(lensrow[self.defs_dict['galaxyAgn_varParamStr']])
+                    varString[self.defs_dict['pars']]['t0Delay'] = newlens['DELAY'][i]
+                    varString[self.defs_dict['varMethodName']] = 'applyAgnTimeDelay'
+                    lensrow[self.defs_dict['galaxyAgn_varParamStr']] = json.dumps(varString)
                     lensrow[self.defs_dict['galaxyDisk_majorAxis']] = 0.0
                     lensrow[self.defs_dict['galaxyDisk_minorAxis']] = 0.0
                     lensrow[self.defs_dict['galaxyDisk_positionAngle']] = 0.0
@@ -390,51 +283,33 @@ class sprinkler():
                     lensrow[self.defs_dict['galaxyBulge_internalAv']] = 0.0
                     lensrow[self.defs_dict['galaxyBulge_magNorm']] = 999. #np.nan To be fixed post run1.1
                     lensrow[self.defs_dict['galaxyBulge_sedFilename']] = None
-                    z_s = use_df['zs'].iloc[i]
-                    lensrow[self.defs_dict['galaxyBulge_redshift']] = z_s
-                    lensrow[self.defs_dict['galaxyDisk_redshift']] = z_s
-                    lensrow[self.defs_dict['galaxyAgn_redshift']] = z_s
-                    #To get back twinklesID in lens catalog from phosim catalog id number
-                    #just use np.right_shift(phosimID-28, 10). Take the floor of the last
-                    #3 numbers to get twinklesID in the twinkles lens catalog and the remainder is
-                    #the image number minus 1.
-                    if not isinstance(self.defs_dict['galtileid'], tuple):
-                        lensrow[self.defs_dict['galtileid']] = ((lensrow[self.defs_dict['galtileid']]+int(1.5e10))*10000 +
-                                                use_system*4 + i)
-                    else:
-                        for col_name in self.defs_dict['galtileid']:
-                            lensrow[col_name] = ((lensrow[col_name]+int(1.5e10))*10000 +
-                                                    use_system*4 + i)
-
-
-                    (add_to_cat, sn_magnorm,
-                     sn_fname, sn_param_dict) = self.create_sn_sed(use_df.iloc[i],
-                                                                   lensrow[self.defs_dict['galaxyAgn_raJ2000']],
-                                                                   lensrow[self.defs_dict['galaxyAgn_decJ2000']],
-                                                                   self.visit_mjd,
-                                                                   write_sn_sed=self.write_sn_sed)
-
-                    lensrow[self.defs_dict['galaxyAgn_sedFilename']] = sn_fname
-                    lensrow[self.defs_dict['galaxyAgn_magNorm']] = sn_magnorm #This will need to be adjusted to proper band
-                    mag_adjust = 2.5*np.log10(np.abs(use_df['mu'].iloc[i]))
-                    lensrow[self.defs_dict['galaxyAgn_magNorm']] -= mag_adjust
-
-                    if self.store_sn_truth_params:
-                        add_to_cat = True
-                        lensrow[self.defs_dict['galaxyAgn_sn_truth_params']] = json.dumps(sn_param_dict)
-                        lensrow[self.defs_dict['galaxyAgn_sn_t0']] = sn_param_dict['t0']
+                    lensrow[self.defs_dict['galaxyBulge_redshift']] = newlens['ZSRC']
+                    lensrow[self.defs_dict['galaxyDisk_redshift']] = newlens['ZSRC']
+                    lensrow[self.defs_dict['galaxyAgn_redshift']] = newlens['ZSRC']
 
                     if self.logging_is_sprinkled:
                         lensrow[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
                         lensrow[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
                         lensrow[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
 
-                    if add_to_cat is True:
-                        new_rows.append(lensrow)
+                    #To get back twinklesID in lens catalog from phosim catalog id number
+                    #just use np.right_shift(phosimID-28, 10). Take the floor of the last
+                    #3 numbers to get twinklesID in the twinkles lens catalog and the remainder is
+                    #the image number minus 1.
+                    if not isinstance(self.defs_dict['galtileid'], tuple):
+                        lensrow[self.defs_dict['galtileid']] = ((lensrow[self.defs_dict['galtileid']]+int(1.5e10))*10000 +
+                                                                 newlens['twinklesId']*4 + i)
                     else:
-                        continue
-                    #Now manipulate original entry to be the lens galaxy with desired properties
-                    #Start by deleting Disk and AGN properties
+                        for col_name in self.defs_dict['galtileid']:
+
+                            lensrow[col_name] = ((lensrow[col_name]+int(1.5e10))*10000 +
+                                                  newlens['twinklesId']*4 + i)
+
+
+                    new_rows.append(lensrow)
+
+                #Now manipulate original entry to be the lens galaxy with desired properties
+                #Start by deleting Disk and AGN properties
                 if not np.isnan(row[self.defs_dict['galaxyDisk_magNorm']]):
                     row[self.defs_dict['galaxyDisk_majorAxis']] = 0.0
                     row[self.defs_dict['galaxyDisk_minorAxis']] = 0.0
@@ -443,27 +318,155 @@ class sprinkler():
                     row[self.defs_dict['galaxyDisk_magNorm']] = 999. #np.nan To be fixed post run1.1
                     row[self.defs_dict['galaxyDisk_sedFilename']] = None
                 row[self.defs_dict['galaxyAgn_magNorm']] = None #np.nan To be fixed post run1.1
-                row[self.defs_dict['galaxyDisk_magNorm']] = 999. #To be fixed post run1.1
+                row[self.defs_dict['galaxyDisk_magNorm']] = 999. # To be fixed in run1.1
                 row[self.defs_dict['galaxyAgn_sedFilename']] = None
                 #Now insert desired Bulge properties
-                row[self.defs_dict['galaxyBulge_sedFilename']] = use_df['lensgal_sed'].iloc[0]
-                row[self.defs_dict['galaxyBulge_redshift']] = use_df['zl'].iloc[0]
-                row[self.defs_dict['galaxyDisk_redshift']] = use_df['zl'].iloc[0]
-                row[self.defs_dict['galaxyAgn_redshift']] = use_df['zl'].iloc[0]
-                row[self.defs_dict['galaxyBulge_magNorm']] = use_df['lensgal_magnorm'].iloc[0]
-                # row[self.defs_dict['galaxyBulge_magNorm']] = matchBase().calcMagNorm([newlens['APMAG_I']], self.LRG, self.bandpassDict) #Changed from i band to imsimband
-                row[self.defs_dict['galaxyBulge_majorAxis']] = radiansFromArcsec(use_df['lensgal_reff'].iloc[0] / np.sqrt(1 - use_df['e'].iloc[0]))
-                row[self.defs_dict['galaxyBulge_minorAxis']] = radiansFromArcsec(use_df['lensgal_reff'].iloc[0] * np.sqrt(1 - use_df['e'].iloc[0]))
+                row[self.defs_dict['galaxyBulge_sedFilename']] = newlens['lens_sed']
+                row[self.defs_dict['galaxyBulge_redshift']] = newlens['ZLENS']
+                row[self.defs_dict['galaxyDisk_redshift']] = newlens['ZLENS']
+                row[self.defs_dict['galaxyAgn_redshift']] = newlens['ZLENS']
+                row_lens_sed = Sed()
+                row_lens_sed.readSED_flambda(os.path.join(self.sedDir,
+                                                          newlens['lens_sed']))
+
+                row_lens_sed.redshiftSED(newlens['ZLENS'], dimming=True)
+                row[self.defs_dict['galaxyBulge_magNorm']] = matchBase().calcMagNorm([newlens['APMAG_I']], row_lens_sed,
+                                                                         self.bandpassDict) #Changed from i band to imsimband
+                row[self.defs_dict['galaxyBulge_majorAxis']] = radiansFromArcsec(newlens['REFF'] / np.sqrt(1 - newlens['ELLIP']))
+                row[self.defs_dict['galaxyBulge_minorAxis']] = radiansFromArcsec(newlens['REFF'] * np.sqrt(1 - newlens['ELLIP']))
                 #Convert orientation angle to west of north from east of north by *-1.0 and convert to radians
-                row[self.defs_dict['galaxyBulge_positionAngle']] = use_df['theta_e'].iloc[0]*(-1.0)*np.pi/180.0
+                row[self.defs_dict['galaxyBulge_positionAngle']] = newlens['PHIE']*(-1.0)*np.pi/180.0
 
                 if self.logging_is_sprinkled:
                     row[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
                     row[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
-                    row[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
+                        row[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
 
                 #Replace original entry with new entry
                 updated_catalog[rowNum] = row
+
+        for rowNum in valid_sne:
+            row = input_catalog[rowNum]
+            galtileid = row[galid_dex]
+            if self.cached_sprinkling is True:
+                if galtileid in self.sne_cache['galtileid'].values:
+                    use_system = self.sne_cache.query('galtileid == %i' % galtileid)['twinkles_system'].values
+                    use_df = self.sne_catalog.query('twinkles_sysno == %i' % use_system)
+                    self.used_systems.append(use_system)
+                else:
+                    continue
+            else:
+                lens_sne_candidates = self.find_sne_lens_candidates(row[self.defs_dict['galaxyDisk_redshift']])
+                candidate_sysno = np.unique(lens_sne_candidates['twinkles_sysno'])
+                num_candidates = len(candidate_sysno)
+                if num_candidates == 0:
+                    continue
+                used_already = np.array([sys_num in self.used_systems for sys_num in candidate_sysno])
+                unused_sysno = candidate_sysno[~used_already]
+                if len(unused_sysno) == 0:
+                    continue
+                rng2 = np.random.RandomState(galtileid % (2^32 -1))
+                use_system = rng2.choice(unused_sysno)
+                use_df = self.sne_catalog.query('twinkles_sysno == %i' % use_system)
+
+            for i in range(len(use_df)):
+                lensrow = row.copy()
+                for lensPart in ['galaxyBulge', 'galaxyDisk', 'galaxyAgn']:
+                    lens_ra = lensrow[self.defs_dict[str(lensPart+'_raJ2000')]]
+                    lens_dec = lensrow[self.defs_dict[str(lensPart+'_decJ2000')]]
+                    delta_ra = np.radians(use_df['x'].iloc[i] / 3600.0) / np.cos(lens_dec)
+                    delta_dec = np.radians(use_df['y'].iloc[i] / 3600.0)
+                    lensrow[self.defs_dict[str(lensPart + '_raJ2000')]] = lens_ra + delta_ra
+                    lensrow[self.defs_dict[str(lensPart + '_decJ2000')]] = lens_dec + delta_dec
+                # varString = json.loads(lensrow[self.defs_dict['galaxyAgn_varParamStr']])
+                varString = 'None'
+                lensrow[self.defs_dict['galaxyAgn_varParamStr']] = varString
+                lensrow[self.defs_dict['galaxyDisk_majorAxis']] = 0.0
+                lensrow[self.defs_dict['galaxyDisk_minorAxis']] = 0.0
+                lensrow[self.defs_dict['galaxyDisk_positionAngle']] = 0.0
+                lensrow[self.defs_dict['galaxyDisk_internalAv']] = 0.0
+                lensrow[self.defs_dict['galaxyDisk_magNorm']] = 999. #np.nan To be fixed post run1.1
+                lensrow[self.defs_dict['galaxyDisk_sedFilename']] = None
+                lensrow[self.defs_dict['galaxyBulge_majorAxis']] = 0.0
+                lensrow[self.defs_dict['galaxyBulge_minorAxis']] = 0.0
+                lensrow[self.defs_dict['galaxyBulge_positionAngle']] = 0.0
+                lensrow[self.defs_dict['galaxyBulge_internalAv']] = 0.0
+                lensrow[self.defs_dict['galaxyBulge_magNorm']] = 999. #np.nan To be fixed post run1.1
+                lensrow[self.defs_dict['galaxyBulge_sedFilename']] = None
+                z_s = use_df['zs'].iloc[i]
+                lensrow[self.defs_dict['galaxyBulge_redshift']] = z_s
+                lensrow[self.defs_dict['galaxyDisk_redshift']] = z_s
+                lensrow[self.defs_dict['galaxyAgn_redshift']] = z_s
+                #To get back twinklesID in lens catalog from phosim catalog id number
+                #just use np.right_shift(phosimID-28, 10). Take the floor of the last
+                #3 numbers to get twinklesID in the twinkles lens catalog and the remainder is
+                #the image number minus 1.
+                if not isinstance(self.defs_dict['galtileid'], tuple):
+                   lensrow[self.defs_dict['galtileid']] = ((lensrow[self.defs_dict['galtileid']]+int(1.5e10))*10000 +
+                                                            use_system*4 + i)
+                else:
+                    for col_name in self.defs_dict['galtileid']:
+                        lensrow[col_name] = ((lensrow[col_name]+int(1.5e10))*10000 +
+                                              use_system*4 + i)
+
+
+                (add_to_cat, sn_magnorm,
+                 sn_fname, sn_param_dict) = self.create_sn_sed(use_df.iloc[i],
+                                                               lensrow[self.defs_dict['galaxyAgn_raJ2000']],
+                                                               lensrow[self.defs_dict['galaxyAgn_decJ2000']],
+                                                               self.visit_mjd,
+                                                               write_sn_sed=self.write_sn_sed)
+
+                lensrow[self.defs_dict['galaxyAgn_sedFilename']] = sn_fname
+                lensrow[self.defs_dict['galaxyAgn_magNorm']] = sn_magnorm #This will need to be adjusted to proper band
+                mag_adjust = 2.5*np.log10(np.abs(use_df['mu'].iloc[i]))
+                lensrow[self.defs_dict['galaxyAgn_magNorm']] -= mag_adjust
+
+                if self.store_sn_truth_params:
+                    add_to_cat = True
+                    lensrow[self.defs_dict['galaxyAgn_sn_truth_params']] = json.dumps(sn_param_dict)
+                    lensrow[self.defs_dict['galaxyAgn_sn_t0']] = sn_param_dict['t0']
+
+                if self.logging_is_sprinkled:
+                    lensrow[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
+                    lensrow[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
+                    lensrow[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
+
+                if add_to_cat is True:
+                    new_rows.append(lensrow)
+                else:
+                    continue
+                #Now manipulate original entry to be the lens galaxy with desired properties
+                #Start by deleting Disk and AGN properties
+            if not np.isnan(row[self.defs_dict['galaxyDisk_magNorm']]):
+                row[self.defs_dict['galaxyDisk_majorAxis']] = 0.0
+                row[self.defs_dict['galaxyDisk_minorAxis']] = 0.0
+                row[self.defs_dict['galaxyDisk_positionAngle']] = 0.0
+                row[self.defs_dict['galaxyDisk_internalAv']] = 0.0
+                row[self.defs_dict['galaxyDisk_magNorm']] = 999. #np.nan To be fixed post run1.1
+                row[self.defs_dict['galaxyDisk_sedFilename']] = None
+            row[self.defs_dict['galaxyAgn_magNorm']] = None #np.nan To be fixed post run1.1
+            row[self.defs_dict['galaxyDisk_magNorm']] = 999. #To be fixed post run1.1
+            row[self.defs_dict['galaxyAgn_sedFilename']] = None
+            #Now insert desired Bulge properties
+            row[self.defs_dict['galaxyBulge_sedFilename']] = use_df['lensgal_sed'].iloc[0]
+            row[self.defs_dict['galaxyBulge_redshift']] = use_df['zl'].iloc[0]
+            row[self.defs_dict['galaxyDisk_redshift']] = use_df['zl'].iloc[0]
+            row[self.defs_dict['galaxyAgn_redshift']] = use_df['zl'].iloc[0]
+            row[self.defs_dict['galaxyBulge_magNorm']] = use_df['lensgal_magnorm'].iloc[0]
+            # row[self.defs_dict['galaxyBulge_magNorm']] = matchBase().calcMagNorm([newlens['APMAG_I']], self.LRG, self.bandpassDict) #Changed from i band to imsimband
+            row[self.defs_dict['galaxyBulge_majorAxis']] = radiansFromArcsec(use_df['lensgal_reff'].iloc[0] / np.sqrt(1 - use_df['e'].iloc[0]))
+            row[self.defs_dict['galaxyBulge_minorAxis']] = radiansFromArcsec(use_df['lensgal_reff'].iloc[0] * np.sqrt(1 - use_df['e'].iloc[0]))
+            #Convert orientation angle to west of north from east of north by *-1.0 and convert to radians
+            row[self.defs_dict['galaxyBulge_positionAngle']] = use_df['theta_e'].iloc[0]*(-1.0)*np.pi/180.0
+
+            if self.logging_is_sprinkled:
+                row[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
+                row[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
+                row[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
+
+            #Replace original entry with new entry
+            updated_catalog[rowNum] = row
 
 
         if len(new_rows)>0:
