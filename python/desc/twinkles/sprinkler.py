@@ -200,20 +200,21 @@ class sprinkler():
 
         agn_magnorm_dex = self.defs_dict['galaxyAgn_magNorm']
         agn_magnorm_array  = np.array([row[agn_magnorm_dex] for row in input_catalog])
+        nan_magnorm = np.isnan(agn_magnorm_array)
 
         if self.cached_sprinkling:
             galtileid_array = np.array([row[galid_dex] for row in input_catalog])
-            valid_agn = np.where(np.logical_and(np.isfinite(agn_magnorm_array),
+            valid_agn = np.where(np.logical_and(np.logical_not(nan_magnorm),
                                                 np.in1d(galtileid_array,
                                                         self.agn_cache['galtileid'].values,
                                                         assume_unique=True)))[0]
 
-            valid_sne = np.where(np.logical_and(np.isnan(agn_magnorm_array),
+            valid_sne = np.where(np.logical_and(nan_magnorm,
                                                 np.in1d(galtileid_array,
                                                         self.sne_cache['galtileid'].values)))[0]
         else:
-            valid_agn = np.where(np.isfinite(agn_magnorm_array))[0]
-            valid_sne = np.where(np.isnan(agn_magnorm_array))[0]
+            valid_agn = np.where(np.logical_not(nan_magnorm))[0]
+            valid_sne = np.where(nan_magnorm)[0]
 
         new_rows = []
         # print("Running sprinkler. Catalog Length: ", len(input_catalog))
