@@ -254,18 +254,37 @@ class sprinkler():
 
             # Append the lens galaxy
             # For each image, append the lens images
+            default_lensrow = None
+            if newlens['IMG'] > 0:
+                default_lensrow = row.copy()
+                default_lensrow[self.defs_dict['galaxyDisk_majorAxis']] = 0.0
+                default_lensrow[self.defs_dict['galaxyDisk_minorAxis']] = 0.0
+                default_lensrow[self.defs_dict['galaxyDisk_positionAngle']] = 0.0
+                default_lensrow[self.defs_dict['galaxyDisk_internalAv']] = 0.0
+                default_lensrow[self.defs_dict['galaxyDisk_magNorm']] = 999. #np.nan To be fixed post run1.1
+                default_lensrow[self.defs_dict['galaxyDisk_sedFilename']] = None
+                default_lensrow[self.defs_dict['galaxyBulge_majorAxis']] = 0.0
+                default_lensrow[self.defs_dict['galaxyBulge_minorAxis']] = 0.0
+                default_lensrow[self.defs_dict['galaxyBulge_positionAngle']] = 0.0
+                default_lensrow[self.defs_dict['galaxyBulge_internalAv']] = 0.0
+                default_lensrow[self.defs_dict['galaxyBulge_magNorm']] = 999. #np.nan To be fixed post run1.1
+                default_lensrow[self.defs_dict['galaxyBulge_sedFilename']] = None
+                default_lensrow[self.defs_dict['galaxyBulge_redshift']] = newlens['ZSRC']
+                default_lensrow[self.defs_dict['galaxyDisk_redshift']] = newlens['ZSRC']
+                default_lensrow[self.defs_dict['galaxyAgn_redshift']] = newlens['ZSRC']
+
             for i in range(newlens['NIMG']):
-                lensrow = row.copy()
+                lensrow = default_lensrow.copy()
                 # XIMG and YIMG are in arcseconds
                 # raPhSim and decPhoSim are in radians
                 # Shift all parts of the lensed object,
                 # not just its agn part
+                delta_dec = np.radians(newlens['YIMG'][i] / 3600.0)
+                delta_ra = np.radians(newlens['XIMG'][i] / 3600.0)
                 for lensPart in ['galaxyBulge', 'galaxyDisk', 'galaxyAgn']:
                     lens_ra = lensrow[self.defs_dict[str(lensPart+'_raJ2000')]]
                     lens_dec = lensrow[self.defs_dict[str(lensPart+'_decJ2000')]]
-                    delta_ra = np.radians(newlens['XIMG'][i] / 3600.0) / np.cos(lens_dec)
-                    delta_dec = np.radians(newlens['YIMG'][i] / 3600.0)
-                    lensrow[self.defs_dict[str(lensPart + '_raJ2000')]] = lens_ra + delta_ra
+                    lensrow[self.defs_dict[str(lensPart + '_raJ2000')]] = lens_ra + delta_ra/np.cos(lens_dec)
                     lensrow[self.defs_dict[str(lensPart + '_decJ2000')]] = lens_dec + delta_dec
                 mag_adjust = 2.5*np.log10(np.abs(newlens['MAG'][i]))
                 lensrow[self.defs_dict['galaxyAgn_magNorm']] -= mag_adjust
@@ -273,21 +292,6 @@ class sprinkler():
                 varString[self.defs_dict['pars']]['t0Delay'] = newlens['DELAY'][i]
                 varString[self.defs_dict['varMethodName']] = 'applyAgnTimeDelay'
                 lensrow[self.defs_dict['galaxyAgn_varParamStr']] = json.dumps(varString)
-                lensrow[self.defs_dict['galaxyDisk_majorAxis']] = 0.0
-                lensrow[self.defs_dict['galaxyDisk_minorAxis']] = 0.0
-                lensrow[self.defs_dict['galaxyDisk_positionAngle']] = 0.0
-                lensrow[self.defs_dict['galaxyDisk_internalAv']] = 0.0
-                lensrow[self.defs_dict['galaxyDisk_magNorm']] = 999. #np.nan To be fixed post run1.1
-                lensrow[self.defs_dict['galaxyDisk_sedFilename']] = None
-                lensrow[self.defs_dict['galaxyBulge_majorAxis']] = 0.0
-                lensrow[self.defs_dict['galaxyBulge_minorAxis']] = 0.0
-                lensrow[self.defs_dict['galaxyBulge_positionAngle']] = 0.0
-                lensrow[self.defs_dict['galaxyBulge_internalAv']] = 0.0
-                lensrow[self.defs_dict['galaxyBulge_magNorm']] = 999. #np.nan To be fixed post run1.1
-                lensrow[self.defs_dict['galaxyBulge_sedFilename']] = None
-                lensrow[self.defs_dict['galaxyBulge_redshift']] = newlens['ZSRC']
-                lensrow[self.defs_dict['galaxyDisk_redshift']] = newlens['ZSRC']
-                lensrow[self.defs_dict['galaxyAgn_redshift']] = newlens['ZSRC']
 
                 if self.logging_is_sprinkled:
                     lensrow[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
@@ -371,30 +375,32 @@ class sprinkler():
                 use_system = rng2.choice(unused_sysno)
                 use_df = self.sne_catalog.query('twinkles_sysno == %i' % use_system)
 
+            default_lensrow = row.copy()
+            default_lensrow[self.defs_dict['galaxyDisk_majorAxis']] = 0.0
+            default_lensrow[self.defs_dict['galaxyDisk_minorAxis']] = 0.0
+            default_lensrow[self.defs_dict['galaxyDisk_positionAngle']] = 0.0
+            default_lensrow[self.defs_dict['galaxyDisk_internalAv']] = 0.0
+            default_lensrow[self.defs_dict['galaxyDisk_magNorm']] = 999. #np.nan To be fixed post run1.1
+            default_lensrow[self.defs_dict['galaxyDisk_sedFilename']] = None
+            default_lensrow[self.defs_dict['galaxyBulge_majorAxis']] = 0.0
+            default_lensrow[self.defs_dict['galaxyBulge_minorAxis']] = 0.0
+            default_lensrow[self.defs_dict['galaxyBulge_positionAngle']] = 0.0
+            default_lensrow[self.defs_dict['galaxyBulge_internalAv']] = 0.0
+            default_lensrow[self.defs_dict['galaxyBulge_magNorm']] = 999. #np.nan To be fixed post run1.1
+            default_lensrow[self.defs_dict['galaxyBulge_sedFilename']] = None
+            varString = 'None'
+            default_lensrow[self.defs_dict['galaxyAgn_varParamStr']] = varString
+
             for i in range(len(use_df)):
-                lensrow = row.copy()
+                lensrow = default_lensrow.copy()
+                delta_ra = np.radians(use_df['x'].iloc[i] / 3600.0)
+                delta_dec = np.radians(use_df['y'].iloc[i] / 3600.0)
                 for lensPart in ['galaxyBulge', 'galaxyDisk', 'galaxyAgn']:
                     lens_ra = lensrow[self.defs_dict[str(lensPart+'_raJ2000')]]
                     lens_dec = lensrow[self.defs_dict[str(lensPart+'_decJ2000')]]
-                    delta_ra = np.radians(use_df['x'].iloc[i] / 3600.0) / np.cos(lens_dec)
-                    delta_dec = np.radians(use_df['y'].iloc[i] / 3600.0)
-                    lensrow[self.defs_dict[str(lensPart + '_raJ2000')]] = lens_ra + delta_ra
+                    lensrow[self.defs_dict[str(lensPart + '_raJ2000')]] = lens_ra + delta_ra/np.cos(lens_dec)
                     lensrow[self.defs_dict[str(lensPart + '_decJ2000')]] = lens_dec + delta_dec
                 # varString = json.loads(lensrow[self.defs_dict['galaxyAgn_varParamStr']])
-                varString = 'None'
-                lensrow[self.defs_dict['galaxyAgn_varParamStr']] = varString
-                lensrow[self.defs_dict['galaxyDisk_majorAxis']] = 0.0
-                lensrow[self.defs_dict['galaxyDisk_minorAxis']] = 0.0
-                lensrow[self.defs_dict['galaxyDisk_positionAngle']] = 0.0
-                lensrow[self.defs_dict['galaxyDisk_internalAv']] = 0.0
-                lensrow[self.defs_dict['galaxyDisk_magNorm']] = 999. #np.nan To be fixed post run1.1
-                lensrow[self.defs_dict['galaxyDisk_sedFilename']] = None
-                lensrow[self.defs_dict['galaxyBulge_majorAxis']] = 0.0
-                lensrow[self.defs_dict['galaxyBulge_minorAxis']] = 0.0
-                lensrow[self.defs_dict['galaxyBulge_positionAngle']] = 0.0
-                lensrow[self.defs_dict['galaxyBulge_internalAv']] = 0.0
-                lensrow[self.defs_dict['galaxyBulge_magNorm']] = 999. #np.nan To be fixed post run1.1
-                lensrow[self.defs_dict['galaxyBulge_sedFilename']] = None
                 z_s = use_df['zs'].iloc[i]
                 lensrow[self.defs_dict['galaxyBulge_redshift']] = z_s
                 lensrow[self.defs_dict['galaxyDisk_redshift']] = z_s
