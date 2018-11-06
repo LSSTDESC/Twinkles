@@ -193,34 +193,54 @@ class sprinkler():
         lenslines = []
         # For each galaxy in the catsim catalog
         updated_catalog = input_catalog.copy()
+        if isinstance(self.defs_dict['galtileid'], tuple):
+            galid_dex = self.defs_dict['galtileid'][0]
+        else:
+            galid_dex = self.defs_dict['galtileid']
+
+        if self.cached_sprinkling:
+            galtileid_array = np.array([row[galid_dex] for row in input_catalog])
+            valid_rows = np.where(np.logical_or(np.in1d(galtileid_array,
+                                                        self.agn_cache['galtileid'].values,
+                                                        assume_unique=True),
+                                                np.in1d(galtileid_array,
+                                                        self.sne_cache['galtileid'].values,
+                                                        assume_unique=True)))[0]
+            print('valid rows %d' % len(valid_rows))
+        else:
+            valid_rows = np.arange(len(input_catalog), dtype=int)
+
         new_rows = []
         # print("Running sprinkler. Catalog Length: ", len(input_catalog))
-        for rowNum, row in enumerate(input_catalog):
-            if isinstance(self.defs_dict['galtileid'], tuple):
-                galtileid = row[self.defs_dict['galtileid'][0]]
-            else:
-                galtileid = row[self.defs_dict['galtileid']]
+        for rowNum in valid_rows:
+            row = input_catalog[rowNum]
+            galtileid = row[galid_dex]
 
             # if rowNum == 100 or rowNum % 100000==0:
             #     print("Gone through ", rowNum, " lines of catalog.")
             if not np.isnan(row[self.defs_dict['galaxyAgn_magNorm']]):
 
+                sprinkle_object = False
                 if not self.cached_sprinkling:
                     candidates = self.find_lens_candidates(row[self.defs_dict['galaxyAgn_redshift']],
                                                            row[self.defs_dict['galaxyAgn_magNorm']])
+                    rng = np.random.RandomState(galtileid % (2^32 -1))
+                    pick_value = rng.uniform()
+
+                    if len(candidates)>0 and pick_value<=self.density_param:
+                        sprinkle_object = True
+
                 else:
-                    candidates = []
+                    if galtileid in self.agn_cache['galtileid'].values:
+                        sprinkle_object = True
 
                 #varString = json.loads(row[self.defs_dict['galaxyAgn_varParamStr']])
                 # varString[self.defs_dict['pars']]['t0_mjd'] = 59300.0
                 #row[self.defs_dict['galaxyAgn_varParamStr']] = json.dumps(varString)
 
-                rng = np.random.RandomState(galtileid % (2^32 -1))
-                pick_value = rng.uniform()
                 # If there aren't any lensed sources at this redshift from
                 # OM10 move on the next object
-                if (((len(candidates) > 0) and (pick_value <= self.density_param) and (self.cached_sprinkling is False)) |
-                    ((self.cached_sprinkling is True) and (galtileid in self.agn_cache['galtileid'].values))):
+                if sprinkle_object:
                     # Randomly choose one the lens systems
                     # (can decide with or without replacement)
                     # Sort first to make sure the same choice is made every time
