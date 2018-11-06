@@ -340,7 +340,7 @@ class sprinkler():
                 if self.logging_is_sprinkled:
                     row[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
                     row[self.defs_dict['galaxyBulge_is_sprinkled']] = 1
-                        row[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
+                    row[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
 
                 #Replace original entry with new entry
                 updated_catalog[rowNum] = row
