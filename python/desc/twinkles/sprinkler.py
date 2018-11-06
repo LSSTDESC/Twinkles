@@ -255,7 +255,7 @@ class sprinkler():
             # Append the lens galaxy
             # For each image, append the lens images
             default_lensrow = None
-            if newlens['IMG'] > 0:
+            if newlens['NIMG'] > 0:
                 default_lensrow = row.copy()
                 default_lensrow[self.defs_dict['galaxyDisk_majorAxis']] = 0.0
                 default_lensrow[self.defs_dict['galaxyDisk_minorAxis']] = 0.0
