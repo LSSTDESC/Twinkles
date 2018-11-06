@@ -203,15 +203,20 @@ class sprinkler():
         nan_magnorm = np.isnan(agn_magnorm_array)
 
         if self.cached_sprinkling:
+            if not hasattr(self, '_unq_agn_gid'):
+                self._unq_agn_gid = np.unique(self.agn_cache['galtileid'].values)
+                self._unq_sne_gid = np.unique(self.sne_cache['galtileid'].values)
+
             galtileid_array = np.array([row[galid_dex] for row in input_catalog])
             valid_agn = np.where(np.logical_and(np.logical_not(nan_magnorm),
                                                 np.in1d(galtileid_array,
-                                                        self.agn_cache['galtileid'].values,
+                                                        self._unq_agn_gid,
                                                         assume_unique=True)))[0]
 
             valid_sne = np.where(np.logical_and(nan_magnorm,
                                                 np.in1d(galtileid_array,
-                                                        self.sne_cache['galtileid'].values)))[0]
+                                                        self._unq_sne_gid,
+                                                        assume_unique=True)))[0]
         else:
             valid_agn = np.where(np.logical_not(nan_magnorm))[0]
             valid_sne = np.where(nan_magnorm)[0]
