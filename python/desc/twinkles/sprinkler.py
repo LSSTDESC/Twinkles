@@ -281,7 +281,7 @@ class sprinkler():
                 # not just its agn part
                 delta_dec = np.radians(newlens['YIMG'][i] / 3600.0)
                 delta_ra = np.radians(newlens['XIMG'][i] / 3600.0)
-                for lensPart in ['galaxyBulge', 'galaxyDisk', 'galaxyAgn']:
+                for lensPart in ['galaxyAgn']:
                     lens_ra = lensrow[self.defs_dict[str(lensPart+'_raJ2000')]]
                     lens_dec = lensrow[self.defs_dict[str(lensPart+'_decJ2000')]]
                     lensrow[self.defs_dict[str(lensPart + '_raJ2000')]] = lens_ra + delta_ra/np.cos(lens_dec)
@@ -395,7 +395,7 @@ class sprinkler():
                 lensrow = default_lensrow.copy()
                 delta_ra = np.radians(use_df['x'].iloc[i] / 3600.0)
                 delta_dec = np.radians(use_df['y'].iloc[i] / 3600.0)
-                for lensPart in ['galaxyBulge', 'galaxyDisk', 'galaxyAgn']:
+                for lensPart in ['galaxyAgn']:
                     lens_ra = lensrow[self.defs_dict[str(lensPart+'_raJ2000')]]
                     lens_dec = lensrow[self.defs_dict[str(lensPart+'_decJ2000')]]
                     lensrow[self.defs_dict[str(lensPart + '_raJ2000')]] = lens_ra + delta_ra/np.cos(lens_dec)
