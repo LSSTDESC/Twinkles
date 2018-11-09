@@ -281,11 +281,10 @@ class sprinkler():
                 # not just its agn part
                 delta_dec = np.radians(newlens['YIMG'][i] / 3600.0)
                 delta_ra = np.radians(newlens['XIMG'][i] / 3600.0)
-                for lensPart in ['galaxyAgn']:
-                    lens_ra = lensrow[self.defs_dict[str(lensPart+'_raJ2000')]]
-                    lens_dec = lensrow[self.defs_dict[str(lensPart+'_decJ2000')]]
-                    lensrow[self.defs_dict[str(lensPart + '_raJ2000')]] = lens_ra + delta_ra/np.cos(lens_dec)
-                    lensrow[self.defs_dict[str(lensPart + '_decJ2000')]] = lens_dec + delta_dec
+                lens_ra = lensrow[self.defs_dict['raJ2000']]
+                lens_dec = lensrow[self.defs_dict['decJ2000']]
+                lensrow[self.defs_dict['raJ2000']] = lens_ra + delta_ra/np.cos(lens_dec)
+                lensrow[self.defs_dict['decJ2000']] = lens_dec + delta_dec
                 mag_adjust = 2.5*np.log10(np.abs(newlens['MAG'][i]))
                 lensrow[self.defs_dict['galaxyAgn_magNorm']] -= mag_adjust
                 varString = json.loads(lensrow[self.defs_dict['galaxyAgn_varParamStr']])
@@ -395,11 +394,10 @@ class sprinkler():
                 lensrow = default_lensrow.copy()
                 delta_ra = np.radians(use_df['x'].iloc[i] / 3600.0)
                 delta_dec = np.radians(use_df['y'].iloc[i] / 3600.0)
-                for lensPart in ['galaxyAgn']:
-                    lens_ra = lensrow[self.defs_dict[str(lensPart+'_raJ2000')]]
-                    lens_dec = lensrow[self.defs_dict[str(lensPart+'_decJ2000')]]
-                    lensrow[self.defs_dict[str(lensPart + '_raJ2000')]] = lens_ra + delta_ra/np.cos(lens_dec)
-                    lensrow[self.defs_dict[str(lensPart + '_decJ2000')]] = lens_dec + delta_dec
+                lens_ra = lensrow[self.defs_dict['raJ2000']]
+                lens_dec = lensrow[self.defs_dict['decJ2000']]
+                lensrow[self.defs_dict['raJ2000']] = lens_ra + delta_ra/np.cos(lens_dec)
+                lensrow[self.defs_dict['decJ2000']] = lens_dec + delta_dec
                 # varString = json.loads(lensrow[self.defs_dict['galaxyAgn_varParamStr']])
                 z_s = use_df['zs'].iloc[i]
                 lensrow[self.defs_dict['galaxyBulge_redshift']] = z_s
@@ -420,8 +418,8 @@ class sprinkler():
 
                 (add_to_cat, sn_magnorm,
                  sn_fname, sn_param_dict) = self.create_sn_sed(use_df.iloc[i],
-                                                               lensrow[self.defs_dict['galaxyAgn_raJ2000']],
-                                                               lensrow[self.defs_dict['galaxyAgn_decJ2000']],
+                                                               lensrow[self.defs_dict['raJ2000']],
+                                                               lensrow[self.defs_dict['decJ2000']],
                                                                self.visit_mjd,
                                                                write_sn_sed=self.write_sn_sed)
 

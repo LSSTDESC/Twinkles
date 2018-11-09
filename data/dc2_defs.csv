@@ -9,12 +9,8 @@ galaxyAgn_varParamStr,varParamStr
 pars,p
 varMethodName,m
 galtileid,galaxy_id
-galaxyBulge_raJ2000,raJ2000
-galaxyDisk_raJ2000,raJ2000
-galaxyAgn_raJ2000,raJ2000
-galaxyBulge_decJ2000,decJ2000
-galaxyDisk_decJ2000,decJ2000
-galaxyAgn_decJ2000,decJ2000
+raJ2000,raJ2000
+decJ2000,decJ2000
 galaxyDisk_majorAxis,disk_descqa_majorAxis
 galaxyDisk_minorAxis,disk_descqa_minorAxis
 galaxyDisk_positionAngle,positionAngle
