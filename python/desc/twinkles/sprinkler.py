@@ -5,6 +5,7 @@ Created on Feb 6, 2015
 '''
 from __future__ import absolute_import, division, print_function
 from future.utils import iteritems
+import time
 import om10
 import numpy as np
 import re
@@ -95,7 +96,7 @@ class sprinkler():
         updated_catalog:
             A new results array with lens systems added.
         """
-
+        t_start = time.time()
         twinklesDir = getPackageDir('Twinkles')
         om10_cat = os.path.join(twinklesDir, 'data', om10_cat)
         self.write_sn_sed = write_sn_sed
@@ -179,6 +180,10 @@ class sprinkler():
                         self.defs_dict[line_defs[0]] = line_defs[1]
                     else:
                         self.defs_dict[line_defs[0]] = tuple((ll for ll in line_defs[1:]))
+
+        duration = time.time()-t_start
+        duration /= 3600.0
+        print('initialized sprinkler in %e hours' % duration)
 
     @property
     def visit_mjd(self):
