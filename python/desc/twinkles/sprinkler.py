@@ -93,8 +93,8 @@ class sprinkler():
 
         Returns
         -------
-        updated_catalog:
-            A new results array with lens systems added.
+        input_catalog:
+            results array with lens systems added.
         """
         t_start = time.time()
         twinklesDir = getPackageDir('Twinkles')
@@ -197,7 +197,6 @@ class sprinkler():
         # Define a list that we can write out to a text file
         lenslines = []
         # For each galaxy in the catsim catalog
-        updated_catalog = input_catalog.copy()
         if isinstance(self.defs_dict['galtileid'], tuple):
             galid_dex = self.defs_dict['galtileid'][0]
         else:
@@ -353,7 +352,7 @@ class sprinkler():
                 row[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
 
             #Replace original entry with new entry
-            updated_catalog[rowNum] = row
+            input_catalog[rowNum] = row
 
         for rowNum in valid_sne:
             row = input_catalog[rowNum]
@@ -480,13 +479,13 @@ class sprinkler():
                 row[self.defs_dict['galaxyDisk_is_sprinkled']] = 1
 
             #Replace original entry with new entry
-            updated_catalog[rowNum] = row
+            input_catalog[rowNum] = row
 
 
         if len(new_rows)>0:
-            updated_catalog = np.append(updated_catalog, new_rows)
+            input_catalog = np.append(input_catalog, new_rows)
 
-        return updated_catalog
+        return input_catalog
 
     def find_lens_candidates(self, galz, gal_mag):
         # search the OM10 catalog for all sources +- 0.1 dex in redshift
