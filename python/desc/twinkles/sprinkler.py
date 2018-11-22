@@ -432,9 +432,6 @@ class sprinkler():
                     lensrow[self.defs_dict['galaxyAgn_sn_truth_params']] = json.dumps(sn_param_dict)
                     lensrow[self.defs_dict['galaxyAgn_sn_t0']] = sn_param_dict['t0']
 
-                if not add_to_cat:
-                    continue
-
                 lensrow[self.defs_dict['galaxyAgn_sedFilename']] = sn_fname
                 lensrow[self.defs_dict['galaxyAgn_magNorm']] = sn_magnorm #This will need to be adjusted to proper band
                 mag_adjust = 2.5*np.log10(np.abs(use_df['mu'].iloc[i]))
@@ -447,8 +444,7 @@ class sprinkler():
 
                 if add_to_cat is True:
                     new_rows.append(lensrow)
-                else:
-                    continue
+
                 #Now manipulate original entry to be the lens galaxy with desired properties
                 #Start by deleting Disk and AGN properties
             if not np.isnan(row[self.defs_dict['galaxyDisk_magNorm']]):
