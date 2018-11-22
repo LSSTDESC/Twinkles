@@ -167,11 +167,12 @@ class validate_ic(object):
         twinkles_im_num = []
         galtile_list = np.genfromtxt(self.agn_cache_file, delimiter=',',
                                      names=True, dtype=np.int)
-        
+
+        id_offset = int(1.5e10)
         keep_idx = []
         for i, agn_id in enumerate(df_agn['uniqueId']):
             twinkles_ids = np.right_shift(agn_id, 10)
-            galtileid = int(twinkles_ids/10000)
+            galtileid = int(twinkles_ids)//10000-id_offset
             if galtileid in galtile_list['galtileid']:
                 keep_idx.append(i)
                 galtileids.append(galtileid)
@@ -348,11 +349,12 @@ class validate_ic(object):
         
         i=0
         keep_idx = []
+        id_offset = int(1.5e10)
         for sne_idx, sne_row in df_sne.iterrows():
             if sne_row['sedFilepath'].startswith(sn_file_path):
                 sne_id = sne_row['uniqueId']
                 twinkles_ids = np.right_shift(sne_id, 10)
-                galtileid = int(twinkles_ids/10000)
+                galtileid = int(twinkles_ids)//10000 - id_offset
                 if galtileid in galtile_list['galtileid']:
                     keep_idx.append(i)
                     galtileids.append(galtileid)
@@ -698,19 +700,21 @@ class validate_ic(object):
                     errors_present = True
                     z_lens_error = True
 
-            if np.max(np.abs(lens_gal_df['majorAxis'] - lens['r_eff']/np.sqrt(1-lens['e']))) > 0.005:
+            d_a = np.max(np.abs(lens_gal_df['majorAxis'] - lens['lensgal_reff']/np.sqrt(1-lens['e'])))
+            if d_a > 0.005:
                 if lens_major_axis_error is False:
                     errors_string = errors_string + "\nLens Major Axis. First error found in lens_gal_id: %i " % u_id
                     errors_present = True
                     lens_major_axis_error = True
 
-            if np.max(np.abs(lens_gal_df['minorAxis'] - lens['r_eff']*np.sqrt(1-lens['e']))) > 0.005:
+            d_b = np.max(np.abs(lens_gal_df['minorAxis'] - lens['lensgal_reff']*np.sqrt(1-lens['e'])))
+            if d_b > 0.005:
                 if lens_minor_axis_error is False:
                     errors_string = errors_string + "\nLens Minor Axis. First error found in lens_gal_id: %i " % u_id
                     errors_present = True
                     lens_minor_axis_error = True
 
-            if (lens_gal_df['sedFilepath'] != lens['lens_sed'].values[0]):
+            if (lens_gal_df['sedFilepath'] != lens['lensgal_sed'].values[0]):
                 if lens_sed_error is False:
                     errors_string = errors_string + "\nSED Filename. First error found in lens_gal_id: %i " % u_id
                     errors_present = True
@@ -780,7 +784,7 @@ class validate_ic(object):
             num_img = lens['NIMG']
 
             test_sed = Sed()
-            test_sed.readSED_flambda('%s/%s' % (galDir, lens['lens_sed'][0]))
+            test_sed.readSED_flambda('%s/%s' % (galDir, lens['lensgal_sed'][0]))
             test_sed.redshiftSED(lens['ZLENS'])
             test_f_norm = test_sed.calcFluxNorm(lens['APMAG_I'], bandpassDict['i'])
             test_sed.multiplyFluxNorm(test_f_norm)
