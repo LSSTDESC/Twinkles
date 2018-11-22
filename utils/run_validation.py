@@ -41,8 +41,21 @@ if __name__ == "__main__":
 
     sne_SED_file_dir = 'Dynamic'
 
+    twinkles_data_dir = os.path.join(os.environ['TWINKLES_DIR'], 'data')
+    agn_cache_file_name = os.path.join(twinkles_data_dir,
+                                       'cosmoDC2_v1.0_agn_cache.csv')
+    sne_cache_file_name = os.path.join(twinkles_data_dir,
+                                       'cosmoDC2_v1.0_sne_cache.csv')
+    sprinkled_agn_data_name = os.path.join(twinkles_data_dir,
+                                           'cosmoDC2_v1.0_matched_AGN.fits')
+    sprinkled_sne_data_name = os.path.join(twinkles_data_dir,
+                                           'cosmoDC2_v1.0_sne_cat.csv')
+
     print("Running tests")
-    val_cat = validate_ic()
+    val_cat = validate_ic(agn_cache_file=agn_cache_file_name,
+                          sne_cache_file=sne_cache_file_name,
+                          sprinkled_agn_data=sprinkled_agn_data_name,
+                          sprinkled_sne_data=sprinkled_sne_data_name)
     
     df_gal, df_pt_src = val_cat.load_cat(cat_folder, visit_num)
 
