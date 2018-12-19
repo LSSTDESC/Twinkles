@@ -21,6 +21,7 @@ galaxyBulge_majorAxis,bulge_descqa_majorAxis
 galaxyBulge_minorAxis,bulge_descqa_minorAxis
 galaxyBulge_positionAngle,positionAngle
 galaxyBulge_internalAv,bulgeInternalAv
+galaxyBulge_internalRv,bulgeInternalRv
 galaxyBulge_magNorm,bulgeMagNorm
 galaxyBulge_sedFilename,bulgeSedFilename
 galaxyBulge_redshift,redshift
