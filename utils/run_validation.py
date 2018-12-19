@@ -43,13 +43,13 @@ if __name__ == "__main__":
 
     twinkles_data_dir = os.path.join(os.environ['TWINKLES_DIR'], 'data')
     agn_cache_file_name = os.path.join(twinkles_data_dir,
-                                       'cosmoDC2_v1.0_agn_cache.csv')
+                                       'cosmoDC2_v1.1.4_agn_cache.csv')
     sne_cache_file_name = os.path.join(twinkles_data_dir,
-                                       'cosmoDC2_v1.0_sne_cache.csv')
+                                       'cosmoDC2_v1.1.4_sne_cache.csv')
     sprinkled_agn_data_name = os.path.join(twinkles_data_dir,
-                                           'cosmoDC2_v1.0_matched_AGN.fits')
+                                           'cosmoDC2_v1.1.4_matched_AGN.fits')
     sprinkled_sne_data_name = os.path.join(twinkles_data_dir,
-                                           'cosmoDC2_v1.0_sne_cat.csv')
+                                           'cosmoDC2_v1.1.4_sne_cat.csv')
 
     print("Running tests")
     val_cat = validate_ic(agn_cache_file=agn_cache_file_name,
