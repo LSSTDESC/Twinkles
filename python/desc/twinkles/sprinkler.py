@@ -108,7 +108,7 @@ class sprinkler():
         self.lenscat = lensdb.lenses.copy()
         self.density_param = density_param
         self.bandpassDict = BandpassDict.loadTotalBandpassesFromFiles(bandpassNames=['i'])
-        lsst_band_indexes = {'u':0, 'g':1, 'r':2, 'i':3, 'z':4, 'y':5}
+        self.lsst_band_indexes = {'u':0, 'g':1, 'r':2, 'i':3, 'z':4, 'y':5}
 
         self.sne_catalog = pd.read_csv(os.path.join(twinklesDir, 'data', sne_cat))
         #self.sne_catalog = self.sne_catalog.iloc[:101] ### Remove this after testing
@@ -343,7 +343,7 @@ class sprinkler():
 
             row_lens_sed.redshiftSED(newlens['ZLENS'], dimming=True)
             # Get the correct magnorm to maintain galaxy colors
-            row[self.defs_dict['galaxyBulge_magNorm']] = newlens['sed_magNorm'][lsst_band_indexes[catalog_band]]
+            row[self.defs_dict['galaxyBulge_magNorm']] = newlens['sed_magNorm'][self.lsst_band_indexes[catalog_band]]
             row[self.defs_dict['galaxyBulge_majorAxis']] = radiansFromArcsec(newlens['REFF'] / np.sqrt(1 - newlens['ELLIP']))
             row[self.defs_dict['galaxyBulge_minorAxis']] = radiansFromArcsec(newlens['REFF'] * np.sqrt(1 - newlens['ELLIP']))
             #Convert orientation angle to west of north from east of north by *-1.0 and convert to radians
