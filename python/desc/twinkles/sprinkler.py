@@ -63,7 +63,7 @@ class sprinklerCompound(GalaxyTileCompoundObj):
 
 class sprinkler():
     def __init__(self, catsim_cat, visit_mjd, specFileMap, sed_path,
-                 catalog_band, om10_cat='twinkles_lenses_v2.fits',
+                 om10_cat='twinkles_lenses_v2.fits',
                  sne_cat='dc2_sne_cat.csv', density_param=1., cached_sprinkling=False,
                  agn_cache_file=None, sne_cache_file=None, defs_file=None,
                  write_sn_sed=True):
@@ -78,8 +78,6 @@ class sprinkler():
             This will tell the instance catalog where to write the files
         sed_path: str
             This tells where to write out SNe SED files
-        catalog_band: str
-            The bandpass of the instance catalog
         om10_cat: optional, defaults to 'twinkles_lenses_v2.fits
             fits file with OM10 catalog
         sne_cat: optional, defaults to 'dc2_sne_cat.csv'
@@ -198,7 +196,7 @@ class sprinkler():
     def visit_mjd(self, val):
         self._visit_mjd = val
 
-    def sprinkle(self, input_catalog):
+    def sprinkle(self, input_catalog, catalog_band):
         # Define a list that we can write out to a text file
         lenslines = []
         # For each galaxy in the catsim catalog
