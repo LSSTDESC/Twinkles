@@ -2,13 +2,13 @@ import numpy as np
 import pandas as pd
 import os
 import sys
+import argparse
 import GCRCatalogs
 import pandas as pd
 from GCR import GCRQuery
 from lsst.sims.photUtils import Sed, Bandpass, BandpassDict
 sys.path.append('/global/homes/b/brycek/DC2/sims_GCRCatSimInterface/workspace/sed_cache/')
 from SedFitter import sed_from_galacticus_mags
-
 
 def load_limited_cat(dc2_df_system, catalog):
 
@@ -93,7 +93,8 @@ def match_up_glsn(dc2_df_system, data_df):
     
     gcr_glsn_match = np.array(gcr_glsn_match)
     np.savetxt('gcr_glsn_match.txt', gcr_glsn_match)
-
+    keep_rows = np.array(keep_rows)
+    np.savetxt('keep_rows_sn.txt', keep_rows)
 
 def get_catalog_mags(catalog):
 
@@ -192,8 +193,14 @@ def get_30_band_mags(gcr_glsn_match, data_df, catalog):
 
 if __name__ == "__main__":
 
-    catalog_version = sys.argv[1]
-    glsn_cat = sys.argv[2]
+    parser = argparse.ArgumentParser()
+    parser.add_argument("cat_version", type=str,
+                        help="CosmoDC2 catalog name from gcr-catalogs.")
+    parser.add_argument("glsn_cat", type=str,
+                        help="Location of graviationally lensed SNe catalog.")
+    args = parser.parse_args()
+    catalog_version = args.cat_version
+    glsn_cat = args.glsn_cat
 
     dc2_df_system = pd.read_hdf(glsn_cat, key='system')
     dc2_df_image = pd.read_hdf(glsn_cat, key='image')
@@ -209,6 +216,7 @@ if __name__ == "__main__":
 
     data_df = pd.read_csv('sn_matching_checkpoint_2.csv')
     gcr_glsn_match = np.genfromtxt('gcr_glsn_match.txt')
+    keep_rows = np.genfromtxt('keep_rows_sn.txt')
 
     sed_name, magNorm, av, rv = get_30_band_mags(gcr_glsn_match, data_df, catalog)
 
@@ -244,8 +252,9 @@ if __name__ == "__main__":
     for keep_idx in range(len(keep_rows)):
         results_dict[str(dc2_df_system['sysno'].iloc[keep_rows[keep_idx]])] = {'z':gcr_glsn_match[:, 0][keep_idx],
                                                                                'sed_name':sed_name_array[keep_idx],
-                                                                               'magNorm':mag_norm_glsne[keep_idx]}
-
+                                                                               'magNorm':mag_norm_glsne[keep_idx],
+                                                                               'lens_av':av_array[keep_idx],
+                                                                               'lens_rv':rv_array[keep_idx]}
     keep_systems = dc2_df_system['sysno'].iloc[keep_rows].values
 
     final_df_z = []
@@ -256,6 +265,8 @@ if __name__ == "__main__":
     final_df_magNorm_i = []
     final_df_magNorm_z = []
     final_df_magNorm_y = []
+    final_df_lens_av = []
+    final_df_lens_rv = []
     
     keep_in_df = []
     
@@ -270,6 +281,8 @@ if __name__ == "__main__":
             final_df_magNorm_i.append(results_dict[str(twinkles_sys)]['magNorm'][3])
             final_df_magNorm_z.append(results_dict[str(twinkles_sys)]['magNorm'][4])
             final_df_magNorm_y.append(results_dict[str(twinkles_sys)]['magNorm'][5])
+            final_df_lens_av.append(results_dict[str(twinkles_sys)]['lens_av'])
+            final_df_lens_rv.append(results_dict[str(twinkles_sys)]['lens_rv'])
 
     final_df = dc2_df_system.iloc[keep_in_df]
     final_df = final_df.reset_index(drop=True)
@@ -281,6 +294,8 @@ if __name__ == "__main__":
     final_df['lensgal_magnorm_z'] = final_df_magNorm_z
     final_df['lensgal_magnorm_y'] = final_df_magNorm_y
     final_df['lensgal_sed'] = final_df_lens_sed
+    final_df['lens_av'] = final_df_lens_av
+    final_df['lens_rv'] = final_df_lens_rv
 
     final_df.to_hdf('/global/cscratch1/sd/brycek/glsne_%s.h5' % catalog_version, key='system', format='table')
     dc2_df_image.to_hdf('/global/cscratch1/sd/brycek/glsne_%s.h5' % catalog_version, mode='a', key='image', format='table')

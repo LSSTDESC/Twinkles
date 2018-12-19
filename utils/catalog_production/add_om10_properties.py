@@ -1,6 +1,7 @@
 import numpy as np
 import urllib
 import os
+import argparse
 from sklearn.cross_validation import train_test_split
 from astroML.plotting import setup_text_plots
 import empiriciSN
@@ -16,7 +17,6 @@ from lsst.sims.photUtils import Sed, Bandpass, BandpassDict
 
 def get_sl2s_data():
     filename = '../../data/SonnenfeldEtal2013_Table3.csv'
-    ! wc -l $filename
 
     z = np.array([])
     z_err = np.array([])
@@ -324,7 +324,11 @@ def get_30_band_mags(gcr_om10_match, data_df, catalog):
 
 if __name__ == "__main__":
 
-    sys.argv[1] = catalog_version
+    parser = argparse.ArgumentParser()
+    parser.add_argument("cat_version", type=str,
+                        help="CosmoDC2 catalog name from gcr-catalogs.")
+    args = parser.parse_args()
+    catalog_version = args.cat_version
 
 
     twinkles_lenses, log_m, twinkles_log_m_1comp = estimate_stellar_masses_om10()
@@ -354,6 +358,11 @@ if __name__ == "__main__":
 
     sed_name, magNorm, av, rv = get_30_band_mags(gcr_gal_id, gcr_z, data_df, catalog)
 
+    sed_name_array = np.array(sed_name)
+    magNorm_array = np.array(magNorm)
+    av_array = np.array(av)
+    rv_array = np.array(rv)
+
     test_bandpassDict = BandpassDict.loadTotalBandpassesFromFiles()
     imsimband = Bandpass()
     imsimband.imsimBandpass()
@@ -377,6 +386,8 @@ if __name__ == "__main__":
             col_list.append(fits.Column(name=col.name, format=col.format, array=gcr_r_eff_1comp))
     col_list.append(fits.Column(name='lens_sed', format='40A', array=sed_name_array))
     col_list.append(fits.Column(name='sed_magNorm', format='6D', array=mag_norm_om10))
+    col_list.append(fits.Column(name='lens_av', format='D', array=av_array))
+    col_list.append(fits.Column(name='lens_rv', format='D', array=rv_array))
 
     cols = fits.ColDefs(col_list)
     tbhdu = fits.BinTableHDU.from_columns(cols)

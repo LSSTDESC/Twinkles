@@ -9,3 +9,7 @@ in progress but these will run the same code as the notebooks:
   * Script: add_glsn_properties.py
 * MatchingLensGalaxies-SN.ipynb
   * Script: add_om10_properties.py
+
+To Do (From previous review by Scott):
+* Check random number generation. Change to np.random.RandomState
+  where they are still necessary (some are not being used).
