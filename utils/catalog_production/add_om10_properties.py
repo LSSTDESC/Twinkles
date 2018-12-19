@@ -16,7 +16,9 @@ from lsst.sims.photUtils import Sed, Bandpass, BandpassDict
 
 
 def get_sl2s_data():
-    filename = '../../data/SonnenfeldEtal2013_Table3.csv'
+
+    filename = os.path.join(os.environ['TWINKLES_DIR'], 'data',
+                            'SonnenfeldEtal2013_Table3.csv')
 
     z = np.array([])
     z_err = np.array([])
@@ -131,7 +133,8 @@ def estimate_stellar_masses_om10():
     X, Xerr = get_sl2s_data()
 
     # Load in cached om10 catalog
-    hdulist = fits.open('../../data/om10_qso_mock.fits')
+    filename = filename = os.path.join(os.environ['TWINKLES_DIR'], 'data', 'om10_qso_mock.fits')
+    hdulist = fits.open(filename)
     twinkles_lenses = hdulist[1].data
 
     # Predict a mass for each galaxy:
