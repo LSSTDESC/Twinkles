@@ -63,8 +63,8 @@ class sprinklerCompound(GalaxyTileCompoundObj):
 
 class sprinkler():
     def __init__(self, catsim_cat, visit_mjd, specFileMap, sed_path,
-                 om10_cat='twinkles_lenses_v2.fits',
-                 sne_cat = 'dc2_sne_cat.csv', density_param=1., cached_sprinkling=False,
+                 catalog_band, om10_cat='twinkles_lenses_v2.fits',
+                 sne_cat='dc2_sne_cat.csv', density_param=1., cached_sprinkling=False,
                  agn_cache_file=None, sne_cache_file=None, defs_file=None,
                  write_sn_sed=True):
         """
@@ -76,6 +76,10 @@ class sprinkler():
             The mjd of the visit
         specFileMap:
             This will tell the instance catalog where to write the files
+        sed_path: str
+            This tells where to write out SNe SED files
+        catalog_band: str
+            The bandpass of the instance catalog
         om10_cat: optional, defaults to 'twinkles_lenses_v2.fits
             fits file with OM10 catalog
         sne_cat: optional, defaults to 'dc2_sne_cat.csv'
@@ -106,6 +110,7 @@ class sprinkler():
         self.lenscat = lensdb.lenses.copy()
         self.density_param = density_param
         self.bandpassDict = BandpassDict.loadTotalBandpassesFromFiles(bandpassNames=['i'])
+        lsst_band_indexes = {'u':0, 'g':1, 'r':2, 'i':3, 'z':4, 'y':5}
 
         self.sne_catalog = pd.read_csv(os.path.join(twinklesDir, 'data', sne_cat))
         #self.sne_catalog = self.sne_catalog.iloc[:101] ### Remove this after testing
@@ -339,12 +344,14 @@ class sprinkler():
                                                       newlens['lens_sed']))
 
             row_lens_sed.redshiftSED(newlens['ZLENS'], dimming=True)
-            row[self.defs_dict['galaxyBulge_magNorm']] = matchBase().calcMagNorm([newlens['APMAG_I']], row_lens_sed,
-                                                                     self.bandpassDict) #Changed from i band to imsimband
+            # Get the correct magnorm to maintain galaxy colors
+            row[self.defs_dict['galaxyBulge_magNorm']] = newlens['sed_magNorm'][lsst_band_indexes[catalog_band]]
             row[self.defs_dict['galaxyBulge_majorAxis']] = radiansFromArcsec(newlens['REFF'] / np.sqrt(1 - newlens['ELLIP']))
             row[self.defs_dict['galaxyBulge_minorAxis']] = radiansFromArcsec(newlens['REFF'] * np.sqrt(1 - newlens['ELLIP']))
             #Convert orientation angle to west of north from east of north by *-1.0 and convert to radians
             row[self.defs_dict['galaxyBulge_positionAngle']] = newlens['PHIE']*(-1.0)*np.pi/180.0
+            row[self.defs_dict['galaxyBulge_internalAv']] = newlens['lens_av']
+            row[self.defs_dict['galaxyBulge_internalRv']] = newlens['lens_rv']
 
             if self.logging_is_sprinkled:
                 row[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
@@ -462,12 +469,14 @@ class sprinkler():
             row[self.defs_dict['galaxyBulge_redshift']] = use_df['zl'].iloc[0]
             row[self.defs_dict['galaxyDisk_redshift']] = use_df['zl'].iloc[0]
             row[self.defs_dict['galaxyAgn_redshift']] = use_df['zl'].iloc[0]
-            row[self.defs_dict['galaxyBulge_magNorm']] = use_df['lensgal_magnorm'].iloc[0]
+            row[self.defs_dict['galaxyBulge_magNorm']] = use_df['lensgal_magnorm_%s' % catalog_band].iloc[0]
             # row[self.defs_dict['galaxyBulge_magNorm']] = matchBase().calcMagNorm([newlens['APMAG_I']], self.LRG, self.bandpassDict) #Changed from i band to imsimband
             row[self.defs_dict['galaxyBulge_majorAxis']] = radiansFromArcsec(use_df['lensgal_reff'].iloc[0] / np.sqrt(1 - use_df['e'].iloc[0]))
             row[self.defs_dict['galaxyBulge_minorAxis']] = radiansFromArcsec(use_df['lensgal_reff'].iloc[0] * np.sqrt(1 - use_df['e'].iloc[0]))
             #Convert orientation angle to west of north from east of north by *-1.0 and convert to radians
             row[self.defs_dict['galaxyBulge_positionAngle']] = use_df['theta_e'].iloc[0]*(-1.0)*np.pi/180.0
+            row[self.defs_dict['galaxyBulge_internalAv']] = use_df['lens_av'].iloc[0]
+            row[self.defs_dict['galaxyBulge_internalRv']] = use_df['lens_rv'].iloc[0]
 
             if self.logging_is_sprinkled:
                 row[self.defs_dict['galaxyAgn_is_sprinkled']] = 1
