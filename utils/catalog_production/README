@@ -1,0 +1,15 @@
+These are script versions of the notebooks that are used
+to create sprinkler inputs based upon the cosmoDC2 catalogs
+and the OM10 and Gravitationally Lensed SNe catalogs.
+
+Putting these into an easier to use pipeline is still a work
+in progress but these will run the same code as the notebooks:
+
+* MatchingLensGalaxies.ipynb
+  * Script: add_glsn_properties.py
+* MatchingLensGalaxies-SN.ipynb
+  * Script: add_om10_properties.py
+
+To Do (From previous review by Scott):
+* Check random number generation. Change to np.random.RandomState
+  where they are still necessary (some are not being used).
