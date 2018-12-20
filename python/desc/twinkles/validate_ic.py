@@ -509,11 +509,16 @@ class validate_ic(object):
             # There may be no images present in the current instance catalog
             if len(spr_sys_df) == 0:
                 continue
+
+            twinkles_system = spr_sys_df['twinkles_system'].iloc[0]
  
             lens = df.query('twinkles_sysno == %i' % spr_sys_df['twinkles_system'].iloc[0])
+            #print(lens.columns)
+            #exit()
+
             # SNe systems might not have all images appearing in an instance catalog unlike AGN
             img_vals = spr_sys_df['image_number'].values
-            
+
             for img_idx in range(len(img_vals)):
  
                 # This is just to make sure there are at least some images when we expect
@@ -528,9 +533,26 @@ class validate_ic(object):
 
                 x_offsets.append(offset_x1-lens['x'].iloc[img_vals[img_idx]])
                 y_offsets.append(offset_y1-lens['y'].iloc[img_vals[img_idx]])
+
+                gross_cos_dec = np.cos(np.radians(spr_sys_df['decPhoSim']))
+                dra_shld = lens['lensgal_x'].iloc[img_vals[img_idx]] - lens['x'].iloc[img_vals[img_idx]]
+                ddec_shld = lens['lensgal_y'].iloc[img_vals[img_idx]] - lens['y'].iloc[img_vals[img_idx]]
+
                 total_offsets.append((np.sqrt(x_offsets[-1]**2. + y_offsets[-1]**2.)/
                                       np.sqrt(lens['x'].iloc[img_vals[img_idx]]**2. + 
                                               lens['y'].iloc[img_vals[img_idx]]**2.)))
+
+                if total_offsets[-1]>0.01 or twinkles_system==1953:
+                    print(offset_x1, dra_shld)
+                    print(offset_y1, ddec_shld)
+                    print(u_id, twinkles_system, u_id//1024)
+                    print(spr_sys_df['uniqueId'].iloc[img_idx])
+                    print(spr_sys_df['raPhoSim'].iloc[img_idx], lens_gal_df['raPhoSim'])
+                    print(spr_sys_df['decPhoSim'].iloc[img_idx], lens_gal_df['decPhoSim'])
+                    print(img_vals)
+                    print('')
+
+
 
         max_total_err = np.max(total_offsets)
 
