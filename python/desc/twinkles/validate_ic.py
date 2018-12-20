@@ -947,12 +947,14 @@ class validate_ic(object):
                         errors_present = True
                         sed_error = True
 
-                sed_exists = os.path.isfile(os.path.join(sne_SED_path, sed_name))
+                sed_full_path = os.path.join(sne_SED_path, sed_name)
+                sed_exists = os.path.isfile(sed_full_path)
 
             if sed_exists is False:
                 if sed_filepath_error is False:
                     errors_string = str(errors_string + 
                                         "\nSNe image SED does not exist. First error found in gal_id: %i" % u_id)
+                    errors_string += "\n%s\ndoes not exist" % sed_full_path
                     sed_filepath_error = True
                     errors_present = True
         
