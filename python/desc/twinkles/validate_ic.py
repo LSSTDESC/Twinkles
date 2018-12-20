@@ -177,8 +177,8 @@ class validate_ic(object):
                 keep_idx.append(i)
                 galtileids.append(galtileid)
                 twinkles_num = twinkles_ids % 10000
-                twinkles_system.append(twinkles_num // 4)
-                twinkles_im_num.append(twinkles_num % 4)
+                twinkles_system.append(twinkles_num // 8)
+                twinkles_im_num.append(twinkles_num % 8)
 
         galtileids = np.array(galtileids, dtype=np.int)
         sprinkled_agn = df_agn.iloc[np.array(keep_idx)]
@@ -190,11 +190,11 @@ class validate_ic(object):
         twinkles_system = np.array(twinkles_system, dtype=np.int)
         twinkles_im_num = np.array(twinkles_im_num, dtype=np.int)
         sprinkled_agn['host_galaxy_bulge_uID'] = np.array(np.left_shift(galtileids*10000
-                                                                        + twinkles_system*4 +
+                                                                        + twinkles_system*8 +
                                                                         twinkles_im_num, 10) + 97,
                                                           dtype=np.int)
         sprinkled_agn['host_galaxy_disk_uID'] = np.array(np.left_shift(galtileids*10000
-                                                                       + twinkles_system*4 +
+                                                                       + twinkles_system*8 +
                                                                        twinkles_im_num, 10) + 107,
                                                          dtype=np.int)
             
@@ -359,8 +359,8 @@ class validate_ic(object):
                     keep_idx.append(i)
                     galtileids.append(galtileid)
                     twinkles_num = twinkles_ids % 10000
-                    twinkles_system.append(twinkles_num // 4)
-                    twinkles_im_num.append(twinkles_num % 4)
+                    twinkles_system.append(twinkles_num // 8)
+                    twinkles_im_num.append(twinkles_num % 8)
                 
             i+=1
 
@@ -374,11 +374,11 @@ class validate_ic(object):
         twinkles_system = np.array(twinkles_system, dtype=np.int)
         twinkles_im_num = np.array(twinkles_im_num, dtype=np.int)
         sprinkled_sne['host_galaxy_bulge_uID'] = np.array(np.left_shift(galtileids*10000
-                                                                        + twinkles_system*4 +
+                                                                        + twinkles_system*8 +
                                                                         twinkles_im_num, 10) + 97,
                                                           dtype=np.int)
         sprinkled_sne['host_galaxy_disk_uID'] = np.array(np.left_shift(galtileids*10000
-                                                                       + twinkles_system*4 +
+                                                                       + twinkles_system*8 +
                                                                        twinkles_im_num, 10) + 107,
                                                          dtype=np.int)
 
