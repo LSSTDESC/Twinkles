@@ -788,8 +788,7 @@ class validate_ic(object):
 
         lens_mag_error = []
 
-        galSpecDir = 'galaxySED'
-        galDir = str(getPackageDir('sims_sed_library') + '/' + galSpecDir)
+        galDir = str(getPackageDir('sims_sed_library'))
         bandpassDict = BandpassDict.loadTotalBandpassesFromFiles(bandpassNames=['i'])
         norm_bp = Bandpass()
         norm_bp.imsimBandpass()
@@ -806,7 +805,7 @@ class validate_ic(object):
             num_img = lens['NIMG']
 
             test_sed = Sed()
-            test_sed.readSED_flambda('%s/%s' % (galDir, lens['lensgal_sed'][0]))
+            test_sed.readSED_flambda('%s/%s' % (galDir, lens['lens_sed'][0]))
             test_sed.redshiftSED(lens['ZLENS'])
             test_f_norm = test_sed.calcFluxNorm(lens['APMAG_I'], bandpassDict['i'])
             test_sed.multiplyFluxNorm(test_f_norm)
