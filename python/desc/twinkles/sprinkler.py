@@ -310,12 +310,12 @@ class sprinkler():
                 #the image number minus 1.
                 if not isinstance(self.defs_dict['galtileid'], tuple):
                     lensrow[self.defs_dict['galtileid']] = ((lensrow[self.defs_dict['galtileid']]+int(1.5e10))*10000 +
-                                                             newlens['twinklesId']*4 + i)
+                                                             newlens['twinklesId']*8 + i)
                 else:
                     for col_name in self.defs_dict['galtileid']:
 
                         lensrow[col_name] = ((lensrow[col_name]+int(1.5e10))*10000 +
-                                              newlens['twinklesId']*4 + i)
+                                              newlens['twinklesId']*8 + i)
 
 
                 new_rows.append(lensrow)
@@ -424,11 +424,11 @@ class sprinkler():
                 #the image number minus 1.
                 if not isinstance(self.defs_dict['galtileid'], tuple):
                    lensrow[self.defs_dict['galtileid']] = ((lensrow[self.defs_dict['galtileid']]+int(1.5e10))*10000 +
-                                                            use_system*4 + i)
+                                                            use_system*8 + i)
                 else:
                     for col_name in self.defs_dict['galtileid']:
                         lensrow[col_name] = ((lensrow[col_name]+int(1.5e10))*10000 +
-                                              use_system*4 + i)
+                                              use_system*8 + i)
 
 
                 (add_to_cat, sn_magnorm,
