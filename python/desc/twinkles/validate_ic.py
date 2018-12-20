@@ -172,11 +172,11 @@ class validate_ic(object):
         keep_idx = []
         for i, agn_id in enumerate(df_agn['uniqueId']):
             twinkles_ids = np.right_shift(agn_id, 10)
-            galtileid = int(twinkles_ids)//10000-id_offset
+            galtileid = int(twinkles_ids)//100000-id_offset
             if galtileid in galtile_list['galtileid']:
                 keep_idx.append(i)
                 galtileids.append(galtileid)
-                twinkles_num = twinkles_ids % 10000
+                twinkles_num = twinkles_ids % 100000
                 twinkles_system.append(twinkles_num // 8)
                 twinkles_im_num.append(twinkles_num % 8)
 
@@ -189,11 +189,11 @@ class validate_ic(object):
         sprinkled_agn['lens_galaxy_uID'] = np.left_shift(galtileids, 10) + 97
         twinkles_system = np.array(twinkles_system, dtype=np.int)
         twinkles_im_num = np.array(twinkles_im_num, dtype=np.int)
-        sprinkled_agn['host_galaxy_bulge_uID'] = np.array(np.left_shift(galtileids*10000
+        sprinkled_agn['host_galaxy_bulge_uID'] = np.array(np.left_shift(galtileids*100000
                                                                         + twinkles_system*8 +
                                                                         twinkles_im_num, 10) + 97,
                                                           dtype=np.int)
-        sprinkled_agn['host_galaxy_disk_uID'] = np.array(np.left_shift(galtileids*10000
+        sprinkled_agn['host_galaxy_disk_uID'] = np.array(np.left_shift(galtileids*100000
                                                                        + twinkles_system*8 +
                                                                        twinkles_im_num, 10) + 107,
                                                          dtype=np.int)
@@ -354,11 +354,11 @@ class validate_ic(object):
             if sne_row['sedFilepath'].startswith(sn_file_path):
                 sne_id = sne_row['uniqueId']
                 twinkles_ids = np.right_shift(sne_id, 10)
-                galtileid = int(twinkles_ids)//10000 - id_offset
+                galtileid = int(twinkles_ids)//100000 - id_offset
                 if galtileid in galtile_list['galtileid']:
                     keep_idx.append(i)
                     galtileids.append(galtileid)
-                    twinkles_num = twinkles_ids % 10000
+                    twinkles_num = twinkles_ids % 100000
                     twinkles_system.append(twinkles_num // 8)
                     twinkles_im_num.append(twinkles_num % 8)
                 
@@ -373,11 +373,11 @@ class validate_ic(object):
         sprinkled_sne['lens_galaxy_uID'] = np.left_shift(np.array(galtileids, dtype=np.int), 10) + 97
         twinkles_system = np.array(twinkles_system, dtype=np.int)
         twinkles_im_num = np.array(twinkles_im_num, dtype=np.int)
-        sprinkled_sne['host_galaxy_bulge_uID'] = np.array(np.left_shift(galtileids*10000
+        sprinkled_sne['host_galaxy_bulge_uID'] = np.array(np.left_shift(galtileids*100000
                                                                         + twinkles_system*8 +
                                                                         twinkles_im_num, 10) + 97,
                                                           dtype=np.int)
-        sprinkled_sne['host_galaxy_disk_uID'] = np.array(np.left_shift(galtileids*10000
+        sprinkled_sne['host_galaxy_disk_uID'] = np.array(np.left_shift(galtileids*100000
                                                                        + twinkles_system*8 +
                                                                        twinkles_im_num, 10) + 107,
                                                          dtype=np.int)
