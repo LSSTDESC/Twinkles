@@ -403,6 +403,12 @@ class sprinkler():
                 lensrow = default_lensrow.copy()
                 delta_ra = np.radians(use_df['x'].iloc[i] / 3600.0)
                 delta_dec = np.radians(use_df['y'].iloc[i] / 3600.0)
+                if use_system == 1953:
+                    print("writing 1953: %d -- %e %e" %
+                          (i,
+                           np.degrees(delta_ra)*3600.0,
+                           np.degrees(delta_dec)*3600.0))
+
                 lens_ra = lensrow[self.defs_dict['raJ2000']]
                 lens_dec = lensrow[self.defs_dict['decJ2000']]
                 lensrow[self.defs_dict['raJ2000']] = lens_ra + delta_ra/np.cos(lens_dec)
