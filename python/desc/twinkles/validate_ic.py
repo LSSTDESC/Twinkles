@@ -943,6 +943,7 @@ class validate_ic(object):
                 if (spr_sys_df['sedFilepath'].iloc[idx] != sed_name):
                     if sed_error is False:
                         errors_string = errors_string + "\nSNe Image SED Filename. First error found in gal_id: %i " % u_id
+                        errors_string += '\n%s\nis not\n%s\n' % (spr_sys_df['sedFilepath'].iloc[idx], sed_name)
                         errors_present = True
                         sed_error = True
 
