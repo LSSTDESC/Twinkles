@@ -309,12 +309,12 @@ class sprinkler():
                 #3 numbers to get twinklesID in the twinkles lens catalog and the remainder is
                 #the image number minus 1.
                 if not isinstance(self.defs_dict['galtileid'], tuple):
-                    lensrow[self.defs_dict['galtileid']] = ((lensrow[self.defs_dict['galtileid']]+int(1.5e10))*10000 +
+                    lensrow[self.defs_dict['galtileid']] = ((lensrow[self.defs_dict['galtileid']]+int(1.5e10))*100000 +
                                                              newlens['twinklesId']*8 + i)
                 else:
                     for col_name in self.defs_dict['galtileid']:
 
-                        lensrow[col_name] = ((lensrow[col_name]+int(1.5e10))*10000 +
+                        lensrow[col_name] = ((lensrow[col_name]+int(1.5e10))*100000 +
                                               newlens['twinklesId']*8 + i)
 
 
@@ -423,11 +423,11 @@ class sprinkler():
                 #3 numbers to get twinklesID in the twinkles lens catalog and the remainder is
                 #the image number minus 1.
                 if not isinstance(self.defs_dict['galtileid'], tuple):
-                   lensrow[self.defs_dict['galtileid']] = ((lensrow[self.defs_dict['galtileid']]+int(1.5e10))*10000 +
+                   lensrow[self.defs_dict['galtileid']] = ((lensrow[self.defs_dict['galtileid']]+int(1.5e10))*100000 +
                                                             use_system*8 + i)
                 else:
                     for col_name in self.defs_dict['galtileid']:
-                        lensrow[col_name] = ((lensrow[col_name]+int(1.5e10))*10000 +
+                        lensrow[col_name] = ((lensrow[col_name]+int(1.5e10))*100000 +
                                               use_system*8 + i)
 
 
