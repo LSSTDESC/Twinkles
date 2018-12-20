@@ -770,8 +770,9 @@ class validate_ic(object):
 
         """
         This test makes sure that the AGN lens magnitudes replaced
-        in Instance Catalogs by the sprinkler get inserted correctly. It will raise an
-        error if the differences are outside a reasonable amount.
+        in Instance Catalogs by the sprinkler get inserted correctly.
+        It will raise an error if the differences are outside a
+        reasonable amount.
 
         Parameters
         ----------
