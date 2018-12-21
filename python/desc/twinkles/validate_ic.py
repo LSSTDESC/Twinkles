@@ -794,6 +794,8 @@ class validate_ic(object):
         norm_bp = Bandpass()
         norm_bp.imsimBandpass()
 
+        dust_wavelen = None
+
         for lens_gal_row in spr_agn_lens_df.iterrows():
 
             lens_idx, lens_gal_df = lens_gal_row
@@ -806,13 +808,26 @@ class validate_ic(object):
             num_img = lens['NIMG']
 
             test_sed = Sed()
-            test_sed.readSED_flambda('%s/%s' % (galDir, lens['lens_sed'][0]))
-            test_sed.redshiftSED(lens['ZLENS'])
-            test_f_norm = test_sed.calcFluxNorm(lens['APMAG_I'], bandpassDict['i'])
-            test_sed.multiplyFluxNorm(test_f_norm)
-            test_mag = test_sed.calcMag(norm_bp)
-            lens_mag_error.append(test_mag - lens_gal_df['phosimMagNorm'])
+            test_sed.readSED_flambda(os.path.join(galDir,
+                                                  lens_gal_df['sedFilepath']))
 
+            fnorm = getImsimFluxNorm(test_sed, lens_gal_df['phosimMagNorm'])
+            test_sed.multiplyFluxNorm(fnorm)
+
+            if (dust_wavelen is None or
+                not np.array_equal(test_sed.wavelen, dust_wavelen)):
+
+                dust_wavelen = np.copy(test_sed.wavelen)
+                a_x, b_x = test_sed.setupCCM_ab()
+
+            test_sed.addDust(a_x, b_x,
+                             A_v=lens_gal_df['internalAv'],
+                             R_v=lens_gal_df['internalRv'])
+
+            test_sed.redshiftSED(lens_gal_df['redshift'], dimming=True)
+            test_i_mag = test_sed.calcMag(bandpassDict['i'])
+            print(test_i_mag, lens['APMAG_I'])
+            lens_mag_error.append(test_i_mag-lens['APMAG_I'])
 
         max_lens_mag_error = np.max(np.abs(lens_mag_error))
 
