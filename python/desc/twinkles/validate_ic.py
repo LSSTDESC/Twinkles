@@ -826,9 +826,12 @@ class validate_ic(object):
 
             test_sed.redshiftSED(lens_gal_df['redshift'], dimming=True)
             test_i_mag = test_sed.calcMag(bandpassDict['i'])
-            print(test_i_mag, lens['APMAG_I'])
-            lens_mag_error.append(test_i_mag-lens['APMAG_I'])
+            dmag = test_i_mag-lens['APMAG_I']
+            lens_mag_error.append(dmag)
 
+        lens_mag_error = np.array(lens_mag_error)
+        print(lens_mag_error.min(),np.median(lens_mag_error),
+              lens_mag_error.max())
         max_lens_mag_error = np.max(np.abs(lens_mag_error))
 
         print('------------')
