@@ -3,13 +3,15 @@ import lsst.sims.photUtils as sims_photUtils
 import numpy as np
 import os
 
-data_dir = os.path.join(os.environ['TWINKLES_DIR'], 'data')
-assert os.path.isdir(data_dir)
+import argparse
 
-fits_file_name = os.path.join(data_dir, 'twinkles_lenses_cosmoDC2_v1.1.4.fits')
-assert os.path.isfile(fits_file_name)
+parser = argparse.ArgumentParser()
+parser.add_argument('--fits_file', type=str)
+args = parser.parse_args()
 
-twinkles_data = fits.open(fits_file_name)[1].data
+assert os.path.isfile(args.fits_file)
+
+twinkles_data = fits.open(args.fits_file)[1].data
 
 sed_dir = os.environ['SIMS_SED_LIBRARY_DIR']
 bp_dict = sims_photUtils.BandpassDict.loadTotalBandpassesFromFiles()
