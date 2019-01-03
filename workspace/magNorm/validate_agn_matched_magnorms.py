@@ -1,4 +1,4 @@
-import GCRCatalogs
+#import GCRCatalogs
 import astropy.io.fits as fits
 import lsst.sims.photUtils as sims_photUtils
 import numpy as np
@@ -19,13 +19,13 @@ gal_to_twink = np.genfromtxt(gal_to_twink_file,
                              delimiter=',', skip_header=1)
 
 
-gcr_cat = GCRCatalogs.load_catalog('cosmoDC2_v1.1.4_image')
-gcr_cat_q = gcr_cat.get_quantities(['galaxy_id', 'redshift_true'])
+#gcr_cat = GCRCatalogs.load_catalog('cosmoDC2_v1.1.4_image')
+#gcr_cat_q = gcr_cat.get_quantities(['galaxy_id', 'redshift_true'])
 
-overlap = np.where(np.in1d(gcr_cat_q['galaxy_id'], gal_to_twink['galaxy_id']))
+#overlap = np.where(np.in1d(gcr_cat_q['galaxy_id'], gal_to_twink['galaxy_id']))
 
-galaxy_id = gcr_cat_q['galaxy_id'][overlap]
-redshift = gcr_cat_q['redshift_true'][overlap]
+#galaxy_id = gcr_cat_q['galaxy_id'][overlap]
+#redshift = gcr_cat_q['redshift_true'][overlap]
 
 fits_file_name = os.path.join(data_dir, 'cosmoDC2_v1.1.4_matched_AGN.fits')
 assert os.path.isfile(fits_file_name)
@@ -47,10 +47,10 @@ with open('i_mag_validation.txt', 'w') as out_file:
         av = twinkles_data['lens_av'][idx]
         rv = twinkles_data['lens_rv'][idx]
 
-        valid = np.where(gal_to_twink['twinkles_id']==t_id)[0]
-        g_id = gal_to_twink['galaxy_id'][valid]
-        valid = np.where(galaxy_id==g_id)[0]
-        zz = redshift[valid]
+        #valid = np.where(gal_to_twink['twinkles_id']==t_id)[0]
+        #g_id = gal_to_twink['galaxy_id'][valid]
+        #valid = np.where(galaxy_id==g_id)[0]
+        zz = twinkles_data['ZSRC'][idx]
 
         spec = sims_photUtils.Sed()
         full_file_name = os.path.join(sed_dir, sed_name)
@@ -68,4 +68,4 @@ with open('i_mag_validation.txt', 'w') as out_file:
         if abs_d_mag > max_dmag:
             print('d_mag %e: is %e shld %e' % (d_mag, i_mag, apmag_i))
             max_dmag = abs_d_mag
-        out_file.write('%d %e %e %e %e\n' % (g_id, i_mag, apmag_i, d_mag, zz))
+        out_file.write('%e %e %e %e\n' % (i_mag, apmag_i, d_mag, zz))
