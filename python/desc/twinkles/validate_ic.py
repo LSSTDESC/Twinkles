@@ -768,7 +768,7 @@ class validate_ic(object):
 
         return
 
-    def compare_agn_lens_mags(self, spr_agn_df, spr_agn_lens_df):
+    def compare_agn_lens_mags(self, spr_agn_df, spr_agn_lens_df, bandpass_name):
 
         """
         This test makes sure that the AGN lens magnitudes replaced
@@ -785,6 +785,10 @@ class validate_ic(object):
         spr_agn_lens_df: pandas dataframe
             Dataframe with the sprinkled lens galaxies for the sprinkled AGN
             systems. This is the output dataframe from process_agn_lenses.
+
+        bandpass_name: str
+            one of 'ugrizy' (whatever the InstanceCatalog being validated
+            corresponds to)
         """
         
         db = om10.DB(catalog=self.sprinkled_agn_data, vb=False)
@@ -809,26 +813,38 @@ class validate_ic(object):
             lens = db.get_lens(use_lens)
             num_img = lens['NIMG']
 
-            test_sed = Sed()
-            test_sed.readSED_flambda(os.path.join(galDir,
-                                                  lens_gal_df['sedFilepath']))
+            # Because we allow magNorm to change between
+            # bandpasses, we can only compare directly to
+            # OM10's APMAG_I if this InstanceCatalog is actually
+            # in the i-band.  If we are not in the i-band, we will
+            # just have to compare magnorms
+            if bandpass_name != 'i':
+                bandpass_int = {'u':0, 'g':1, 'r':2,
+                                'i':3, 'z':4, 'y':5}[bandpass_name]
+                magnorm_shld = lens['sed_magNorm'][0][bandpass_int]
+                dmag = lens_gal_df['phosimMagNorm'] - magnorm_shld
+            elif bandpass_name == 'i':
+                test_sed = Sed()
+                test_sed.readSED_flambda(os.path.join(galDir,
+                                                      lens_gal_df['sedFilepath']))
 
-            fnorm = getImsimFluxNorm(test_sed, lens_gal_df['phosimMagNorm'])
-            test_sed.multiplyFluxNorm(fnorm)
+                fnorm = getImsimFluxNorm(test_sed, lens_gal_df['phosimMagNorm'])
+                test_sed.multiplyFluxNorm(fnorm)
 
-            if (dust_wavelen is None or
-                not np.array_equal(test_sed.wavelen, dust_wavelen)):
+                if (dust_wavelen is None or
+                    not np.array_equal(test_sed.wavelen, dust_wavelen)):
 
-                dust_wavelen = np.copy(test_sed.wavelen)
-                a_x, b_x = test_sed.setupCCM_ab()
+                    dust_wavelen = np.copy(test_sed.wavelen)
+                    a_x, b_x = test_sed.setupCCM_ab()
 
-            test_sed.addDust(a_x, b_x,
-                             A_v=lens_gal_df['internalAv'],
-                             R_v=lens_gal_df['internalRv'])
+                test_sed.addDust(a_x, b_x,
+                                 A_v=lens_gal_df['internalAv'],
+                                 R_v=lens_gal_df['internalRv'])
 
-            test_sed.redshiftSED(lens_gal_df['redshift'], dimming=True)
-            test_i_mag = test_sed.calcMag(bandpassDict['i'])
-            dmag = test_i_mag-lens['APMAG_I']
+                test_sed.redshiftSED(lens_gal_df['redshift'], dimming=True)
+                test_i_mag = test_sed.calcMag(bandpassDict['i'])
+                dmag = test_i_mag-lens['APMAG_I']
+
             lens_mag_error.append(dmag)
 
         lens_mag_error = np.array(lens_mag_error)

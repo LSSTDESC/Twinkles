@@ -81,7 +81,8 @@ if __name__ == "__main__":
                                                              sne_SED_file_dir,
                                                              sne_SED_path)
 
-    test_agn_lens_mags = val_cat.compare_agn_lens_mags(spr_agn, agn_lens_gals)
+    test_agn_lens_mags = val_cat.compare_agn_lens_mags(spr_agn, agn_lens_gals,
+                                                       visit_band)
 
     test_sne_lens_mags = val_cat.compare_sne_lens_mags(sne_lens_gals,
                                                        visit_band)
