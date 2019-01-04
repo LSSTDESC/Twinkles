@@ -837,7 +837,8 @@ class validate_ic(object):
         max_lens_mag_error = np.max(np.abs(lens_mag_error))
 
         print('------------')
-        print('AGN Lens Magnitude Test Results:')
+        print('AGN Lens Magnitude Test Results (%d systems):' %
+              len(lens_mag_error))
 
         if max_lens_mag_error < 0.01:
             print('Pass: Max lens phosim MagNorm error less than 0.01 mags.')
