@@ -847,7 +847,7 @@ class validate_ic(object):
 
         return
 
-    def compare_sne_lens_mags(self, spr_sne_lens_df):
+    def compare_sne_lens_mags(self, spr_sne_lens_df, bandpass_name):
 
         """
         This test makes sure that the SNe system lens galaxy magnitudes that are replaced
@@ -859,6 +859,9 @@ class validate_ic(object):
         spr_sne_lens_df: pandas dataframe
             Dataframe with the sprinkled lens galaxies for the sprinkled SNe
             systems. This is the output dataframe from process_sne_lenses.
+
+        bandpass_name: str
+            one of 'ugrizy'
         """
 
         df = pd.read_csv(self.sprinkled_sne_data)
@@ -873,8 +876,9 @@ class validate_ic(object):
 
             # Even though SNe images don't appear in every image the lens galaxy should always
             # be in the instance catalog
-            
-            lens_mag_error.append(lens['bulge_magnorm'].iloc[0] -
+
+            magnorm_name = 'lensgal_magnorm_%s' % bandpass_name
+            lens_mag_error.append(lens[magnorm_name].iloc[0] -
                                   lens_gal_df['phosimMagNorm'])
 
         max_lens_mag_error = np.max(np.abs(lens_mag_error))

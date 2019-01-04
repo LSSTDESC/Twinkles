@@ -83,7 +83,8 @@ if __name__ == "__main__":
 
     test_agn_lens_mags = val_cat.compare_agn_lens_mags(spr_agn, agn_lens_gals)
 
-    test_sne_lens_mags = val_cat.compare_sne_lens_mags(sne_lens_gals)
+    test_sne_lens_mags = val_cat.compare_sne_lens_mags(sne_lens_gals,
+                                                       visit_band)
 
     test_agn_image_mags = val_cat.compare_agn_image_mags(spr_agn, agn_lens_gals,
                                                          visit_mjd, visit_band)
