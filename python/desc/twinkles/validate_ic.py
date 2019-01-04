@@ -544,18 +544,6 @@ class validate_ic(object):
                                       np.sqrt(lens['x'].iloc[img_vals[img_idx]]**2. + 
                                               lens['y'].iloc[img_vals[img_idx]]**2.)))
 
-                if total_offsets[-1]>0.01 or twinkles_system==1953:
-                    print(offset_x1, dra_shld)
-                    print(offset_y1, ddec_shld)
-                    print(u_id, twinkles_system, u_id//1024)
-                    print(spr_sys_df['uniqueId'].iloc[img_idx])
-                    print(spr_sys_df['raPhoSim'].iloc[img_idx], lens_gal_df['raPhoSim'])
-                    print(spr_sys_df['decPhoSim'].iloc[img_idx], lens_gal_df['decPhoSim'])
-                    print(img_vals)
-                    print('')
-
-
-
         max_total_err = np.max(total_offsets)
 
         print('------------')
@@ -848,8 +836,6 @@ class validate_ic(object):
             lens_mag_error.append(dmag)
 
         lens_mag_error = np.array(lens_mag_error)
-        print(lens_mag_error.min(),np.median(lens_mag_error),
-              lens_mag_error.max())
         max_lens_mag_error = np.max(np.abs(lens_mag_error))
 
         print('------------')
