@@ -1,4 +1,5 @@
 import os
+import sqlite3
 import om10
 import pandas as pd
 import numpy as np
@@ -7,6 +8,7 @@ import shutil
 import copy
 import json
 from lsst.utils import getPackageDir
+import lsst.sims.utils.htmModule as htm
 from lsst.sims.photUtils import Bandpass, BandpassDict, Sed, getImsimFluxNorm
 from lsst.sims.catUtils.supernovae import SNObject
 from lsst.sims.catUtils.mixins.VariabilityMixin import ExtraGalacticVariabilityModels as egvar
@@ -1127,22 +1129,52 @@ class validate_ic(object):
 
         
     def load_agn_var_params(self):
+        """
+        Load parameters for AGN in the DDF.  Currently, the method
+        loads from a hard-coded sqlite database; in the future, we will
+        make the database name a user-defined parameter.
+        """
+
+        db_file = '/global/projecta/projectdirs/lsst'
+        db_file = os.path.join(db_file, 'groups', 'SSim', 'DC2')
+        db_file = os.path.join(db_file, 'cosmoDC2_v1.1.4')
+        db_file = os.path.join(db_file, 'agn_db_mbh7_mi30_sf4.db')
+
+        if not os.path.isfile(db_file):
+            raise RuntimeError("\n%s\n\nis not a file\n" % db_file)
+
+        agn_param_query = 'SELECT galaxy_id, magNorm, varParamStr '
+        agn_param_query += 'FROM agn_params'
+
+        # only select those AGN that are in the DDF
+        ddf_halfspace = htm.halfSpaceFromRaDec(53.125, -28.100, 0.6)
+        htm_8_bounds = ddf_halfspace.findAllTrixels(8)
+
+        agn_param_query += ' WHERE ('
+        for i_bound, bound in enumerate(htm_8_bounds):
+            if i_bound>0:
+                agn_param_query += ' OR '
+            if bound[0] == bound[1]:
+                agn_param_query += 'htmid_8==%d' % bound[0]
+            else:
+                agn_param_query += '(htmid_8>=%d AND htmid_i<=%d)' % (bound[0],
+                                                                       bound[1])
+        agn_param_query += ')'
+
+        with sqlite3.connect(db_file) as conn:
+            c = conn.cursor()
+            results = c.execute(agn_param_query).fetchall()
 
         agn_var_params = {}
 
-        with open(os.path.join(os.environ['TWINKLES_DIR'], 'data', 
-                                          'agn_validation_params.txt'), 'r') as f:
-            for line in f:
-                if line.startswith('#'):
-                    continue
-                split_line = line.split(';')
-                line_id = split_line[0]
-                line_magNorm = split_line[3]
-
-                var_dict = json.loads(split_line[-2])['p']
-                new_var_dict = {key:np.array([val]) for key, val in var_dict.items()}
-                new_var_dict['magNorm_static'] = np.float(line_magNorm)
-                agn_var_params[str(line_id)] = new_var_dict
+        for line in results:
+            line_id = int(line[0])
+            line_magNorm = float(line[1])
+            var_dict = json.loads(line[2])['p']
+            new_var_dict = {key:np.array([val])
+                            for key, val in var_dict.items()}
+            new_var_dict['magNorm_static'] = np.float(line_magNorm)
+            agn_var_params[str(line_id)] = new_var_dict
 
         return agn_var_params
 
