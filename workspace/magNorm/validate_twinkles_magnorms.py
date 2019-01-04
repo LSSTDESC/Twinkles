@@ -41,6 +41,8 @@ with open('i_mag_validation.txt', 'w') as out_file:
         spec.redshiftSED(zz, dimming=True)
         i_mag = spec.calcMag(bp_dict['i'])
         d_mag = i_mag-apmag_i
+        if twinkles_data['LENSID'][idx] == 180815:
+            print(i_mag,apmag_i,d_mag)
         abs_d_mag = np.abs(i_mag-apmag_i)
         if abs_d_mag > max_dmag:
             print('d_mag %e: is %e shld %e' % (d_mag, i_mag, apmag_i))

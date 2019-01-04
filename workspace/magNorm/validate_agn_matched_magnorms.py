@@ -5,6 +5,7 @@ import numpy as np
 import os
 
 data_dir = os.path.join(os.environ['TWINKLES_DIR'], 'data')
+print('data_dir: %s' % data_dir)
 assert os.path.isdir(data_dir)
 
 # load the mapping between galaxy_id and twinklesId
@@ -50,7 +51,7 @@ with open('i_mag_validation.txt', 'w') as out_file:
         #valid = np.where(gal_to_twink['twinkles_id']==t_id)[0]
         #g_id = gal_to_twink['galaxy_id'][valid]
         #valid = np.where(galaxy_id==g_id)[0]
-        zz = twinkles_data['ZSRC'][idx]
+        zz = twinkles_data['ZLENS'][idx]
 
         spec = sims_photUtils.Sed()
         full_file_name = os.path.join(sed_dir, sed_name)
@@ -66,6 +67,9 @@ with open('i_mag_validation.txt', 'w') as out_file:
         d_mag = i_mag-apmag_i
         abs_d_mag = np.abs(i_mag-apmag_i)
         if abs_d_mag > max_dmag:
-            print('d_mag %e: is %e shld %e' % (d_mag, i_mag, apmag_i))
+            print('d_mag %e: is %e shld %e; %d' %
+                 (d_mag, i_mag, apmag_i, twinkles_data['LENSID'][idx]))
+            print('av %e rv %e zz %e sed %s magnorm %e AP %e' %
+            (av, rv, zz, sed_name,i_magnorm,apmag_i))
             max_dmag = abs_d_mag
         out_file.write('%e %e %e %e\n' % (i_mag, apmag_i, d_mag, zz))
