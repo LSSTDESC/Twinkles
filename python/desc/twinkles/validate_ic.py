@@ -1259,8 +1259,9 @@ class validate_ic(object):
         if max_magNorm_err < 0.001:
             print('Pass: Image MagNorms are within 0.001 of correct values.')
         else:
+            max_dex = np.argmax(np.abs(corrected_mags-lensed_mags))
             raise CatalogError('\nFail: Max image phosim MagNorm error is greater than 0.001 mags. ' + 
-                               'Max error is: %.4f mags.' % max_magNorm_err)
+                               'Max error is: %.4f mags (of %e).' % (max_magNorm_err, lensed_mags[max_dex]))
 
         print('------------')
 
