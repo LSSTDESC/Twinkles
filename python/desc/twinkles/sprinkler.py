@@ -237,7 +237,7 @@ class sprinkler():
             if not self.cached_sprinkling:
                 candidates = self.find_lens_candidates(row[self.defs_dict['galaxyAgn_redshift']],
                                                        row[self.defs_dict['galaxyAgn_magNorm']])
-                rng = np.random.RandomState(galtileid % (2^32 -1))
+                rng = np.random.RandomState(galtileid % (2**32 -1))
                 pick_value = rng.uniform()
 
                 if len(candidates) == 0 or pick_value>self.density_param:
@@ -379,7 +379,7 @@ class sprinkler():
                 unused_sysno = candidate_sysno[~used_already]
                 if len(unused_sysno) == 0:
                     continue
-                rng2 = np.random.RandomState(galtileid % (2^32 -1))
+                rng2 = np.random.RandomState(galtileid % (2**32 -1))
                 use_system = rng2.choice(unused_sysno)
                 use_df = self.sne_catalog.query('twinkles_sysno == %i' % use_system)
 
