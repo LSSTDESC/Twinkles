@@ -1247,9 +1247,18 @@ class validate_ic(object):
                 corrected_mags.append(test_mag)
 
             corrected_mags = np.array(corrected_mags)
-            max_error = np.max(np.abs(corrected_mags - 
-                                      lensed_mags))
+            d_mag = np.abs(corrected_mags-lensed_mags)
+            bright_mask = lensed_mags<30.0
 
+            # more lax criterion for dim SNe
+            dim_dmag = d_mag[~bright_mask]
+            if len(dim_dmag) > 0:
+                dim_dmag_max = dim_dmag.max()
+                if dim_dmag_max > 0.01:
+                    raise CatalogError("Among dim SNe, max dmag is %e" %
+                                       (dim_dmag_max))
+
+            max_error = d_mag[bright_mask].max()
             if max_error > max_magNorm_err:
                 max_magNorm_err = max_error
 
