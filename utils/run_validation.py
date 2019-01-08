@@ -1,6 +1,7 @@
 import os
 import sys
 import argparse
+import numpy as np
 from desc.twinkles import validate_ic
 
 if __name__ == "__main__":
@@ -58,6 +59,26 @@ if __name__ == "__main__":
                           sprinkled_sne_data=sprinkled_sne_data_name)
     
     df_gal, df_pt_src = val_cat.load_cat(cat_folder, visit_num)
+
+    # Verify that the InstanceCatalog pipline ignored
+    # the Sersic components of rows corresponding to
+    # duplicate images of AGN (those rows would have
+    # galaxy_id == (galaxy_id+1.5e10)*100000 as per
+    # the uniqueId mangling scheme in the sprinkler)
+    df_gal_galaxy_id = df_gal['uniqueId'].values//1024
+    large_galaxy_id = df_gal_galaxy_id>1.0e11
+    if large_galaxy_id.any():
+        raise RuntimeError("Some galaxies that should have been "
+                           "replaced by the sprinkler were not.")
+
+    # Make sure that none of the point sources have magNorm
+    # placeholders (999 or None) by the time they reach the
+    # InstanceCatalog
+    pt_src_magnorm = df_pt_src['phosimMagNorm'].values
+    invalid_magnorm = (pt_src_magnorm>900.0) | np.isnan(pt_src_magnorm)
+
+    if invalid_magnorm.any():
+        raise RuntimeError("Some point sources have invalid magNorms")
 
     spr_agn = val_cat.process_sprinkled_agn(df_pt_src)
 
