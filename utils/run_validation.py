@@ -2,7 +2,7 @@ import os
 import sys
 import argparse
 import numpy as np
-from desc.twinkles import validate_ic
+from desc.twinkles.validation import validate_ic
 
 if __name__ == "__main__":
 
