@@ -1248,7 +1248,7 @@ class validate_ic(object):
 
             corrected_mags = np.array(corrected_mags)
             d_mag = np.abs(corrected_mags-lensed_mags)
-            bright_mask = lensed_mags<30.0
+            bright_mask = lensed_mags<26.0
 
             # more lax criterion for dim SNe
             dim_dmag = d_mag[~bright_mask]
