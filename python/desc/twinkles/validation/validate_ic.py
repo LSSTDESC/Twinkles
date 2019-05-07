@@ -1267,9 +1267,6 @@ class validate_ic(object):
             max_error = d_mag[bright_mask].max()
             if max_error > max_magNorm_err:
                 max_magNorm_err = max_error
-                max_dex = np.argmax(d_mag[bright_mask])
-                offending_mag = lensed_mags[bright_mask][max_dex]
-                print('err %e mag %e' % (max_error, offending_mag))
 
         print('------------')
         print('SNe Image Magnitude Test Results:')
