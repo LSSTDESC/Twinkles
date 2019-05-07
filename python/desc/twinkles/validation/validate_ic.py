@@ -1248,7 +1248,13 @@ class validate_ic(object):
 
             corrected_mags = np.array(corrected_mags)
             d_mag = np.abs(corrected_mags-lensed_mags)
-            bright_mask = lensed_mags<26.0
+
+            # these are the "single image depth designed" from
+            # table 1 of the LSST overview paper (with an extra
+            # magnitude added on)
+            bright_cutoff = {'u':24.9, 'g':26.0, 'r':25.7,
+                            'i':25.0, 'z':24.3, 'y':23.1}[visit_band]
+            bright_mask = lensed_mags<bright_cutoff
 
             # more lax criterion for dim SNe
             dim_dmag = d_mag[~bright_mask]
