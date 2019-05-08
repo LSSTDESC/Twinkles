@@ -10,6 +10,7 @@ import json
 from lsst.utils import getPackageDir
 import lsst.sims.utils.htmModule as htm
 from lsst.sims.photUtils import Bandpass, BandpassDict, Sed, getImsimFluxNorm
+from lsst.sims.photUtils import calcSNR_m5, PhotometricParameters
 from lsst.sims.catUtils.supernovae import SNObject
 from lsst.sims.catUtils.mixins.VariabilityMixin import ExtraGalacticVariabilityModels as egvar
 
@@ -55,6 +56,12 @@ class validate_ic(object):
             systems. If None then it will use information from the
             Twinkles/data directory.
         """
+
+        self.lsst_bp_dict = BandpassDict.loadTotalBandpassesFromFiles()
+        self.phot_params = PhotometricParameters(exptime=30.0, nexp=1)
+        self.sn_gamma_dict = {}
+        for bp in 'ugrizy':
+            self.sn_gamma_dict[bp] = None
 
         if agn_cache_file is None:
             self.agn_cache_file = os.path.join(os.environ['TWINKLES_DIR'],
@@ -1215,7 +1222,7 @@ class validate_ic(object):
         norm_bp = Bandpass()
         norm_bp.imsimBandpass()
 
-        max_magNorm_err = 0.
+        max_flux_err = 0.
 
         for lens_gal_row in spr_sne_lens_df.iterrows():
 
@@ -1232,11 +1239,11 @@ class validate_ic(object):
             img_vals = spr_sys_df['image_number'].values
 
             magnification = lens['mu']
-            lensed_mags = spr_sys_df['phosimMagNorm']
+            lensed_mags = spr_sys_df['phosimMagNorm'].values
             corrected_mags = []
 
             for idx, image_on in list(enumerate(img_vals)):
-            
+
                 magnorm = self.get_sne_variability_mags(lens.iloc[image_on],
                                                         spr_sys_df['raPhoSim'].values[idx],
                                                         spr_sys_df['decPhoSim'].values[idx],
@@ -1249,11 +1256,26 @@ class validate_ic(object):
             corrected_mags = np.array(corrected_mags)
             d_mag = np.abs(corrected_mags-lensed_mags)
 
+            dummy_sed = Sed()
+            flux_truth = dummy_sed.fluxFromMag(lensed_mags)
+            flux_instcat = dummy_sed.fluxFromMag(corrected_mags)
+            dflux = np.abs(flux_truth-flux_instcat)
+
             # these are the "single image depth designed" from
             # table 1 of the LSST overview paper (with an extra
             # magnitude added on)
             fiducial_m5 = {'u':24.9, 'g':26.0, 'r':25.7,
                            'i':25.0, 'z':24.3, 'y':23.1}[visit_band]
+
+            (snr,
+             gamma) = calcSNR_m5(lensed_mags, self.lsst_bp_dict[visit_band],
+                                 fiducial_m5, self.phot_params,
+                                 gamma=self.sn_gamma_dict[visit_band])
+
+            self.sn_gamma_dict[visit_band] = gamma
+            noise = flux_truth/snr
+            dflux_over_noise = dflux/noise
+
             bright_mask = lensed_mags<fiducial_m5
 
             # more lax criterion for dim SNe
@@ -1264,23 +1286,24 @@ class validate_ic(object):
                     raise CatalogError("Among dim SNe, max dmag is %e" %
                                        (dim_dmag_max))
 
-            max_error = d_mag[bright_mask].max()
-            if max_error > max_magNorm_err:
-                max_magNorm_err = max_error
-                max_dex = np.argmax(d_mag[bright_mask])
-                offending_mag = lensed_mags[bright_mask][max_dex]
-                print('err %e mag %e (fiducial_m5 %e)' %
-                      (max_error, offending_mag, fiducial_m5))
+            max_error = dflux_over_noise.max()
+            if max_error > max_flux_err:
+                max_flux_err = max_error
+                max_dex = np.argmax(dflux_over_noise)
+                offending_mag = lensed_mags[max_dex]
+                offending_dmag = lensed_mags[max_dex]-corrected_mags[max_dex]
+                print('err %e mag %e dmag %e (fiducial_m5 %e)' %
+                      (max_error, offending_mag, offending_dmag, fiducial_m5))
 
         print('------------')
         print('SNe Image Magnitude Test Results:')
 
-        if max_magNorm_err < 0.001:
+        if max_flux_err < 0.1:
             print('Pass: Image MagNorms are within 0.001 of correct values.')
         else:
-            max_dex = np.argmax(np.abs(corrected_mags-lensed_mags))
-            raise CatalogError('\nFail: Max image phosim MagNorm error is greater than 0.001 mags. ' + 
-                               'Max error is: %.4f mags.' % (max_magNorm_err))
+            raise CatalogError('\nFail: Max discrepancy in flux ' +
+                               'is greater than 0.1 * noise. ' +
+                               'Max dflux/noise is: %.4f .' % (max_flux_err))
 
         print('------------')
 
