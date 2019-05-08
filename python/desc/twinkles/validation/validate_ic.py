@@ -1252,9 +1252,9 @@ class validate_ic(object):
             # these are the "single image depth designed" from
             # table 1 of the LSST overview paper (with an extra
             # magnitude added on)
-            bright_cutoff = {'u':24.9, 'g':26.0, 'r':25.7,
-                            'i':25.0, 'z':24.3, 'y':23.1}[visit_band]
-            bright_mask = lensed_mags<bright_cutoff
+            fiducial_m5 = {'u':24.9, 'g':26.0, 'r':25.7,
+                           'i':25.0, 'z':24.3, 'y':23.1}[visit_band]
+            bright_mask = lensed_mags<fiducial_m5
 
             # more lax criterion for dim SNe
             dim_dmag = d_mag[~bright_mask]
@@ -1269,8 +1269,8 @@ class validate_ic(object):
                 max_magNorm_err = max_error
                 max_dex = np.argmax(d_mag[bright_mask])
                 offending_mag = lensed_mags[bright_mask][max_dex]
-                print('err %e mag %e (cutoff %e)' %
-                      (max_error, offending_mag, bright_cutoff))
+                print('err %e mag %e (fiducial_m5 %e)' %
+                      (max_error, offending_mag, fiducial_m5))
 
         print('------------')
         print('SNe Image Magnitude Test Results:')
