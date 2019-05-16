@@ -268,6 +268,9 @@ class validate_ic(object):
             present in the Instance Catalog
         """
 
+        if len(sprinkled_df) == 0:
+            return []
+
         lens_gal_locs = []
         for idx in sprinkled_df['lens_galaxy_uID'].values:
             matches = np.where(df_galaxy['uniqueId'] == idx)[0]
@@ -440,6 +443,12 @@ class validate_ic(object):
             systems. This is the output dataframe from process_agn_lenses.
         """
 
+        if len(spr_agn_df)==0 or len(spr_agn_lens_df)==0:
+            if len(spr_agn_df) != len(spr_agn_lens_df):
+                msg = "\nlen(spr_agn_df): %d\n" % len(spr_agn_df)
+                msg += "len(spr_agn_lens_df): %d\n" % len(spr_agn_lens_df)
+                raise RuntimeError(msg)
+            return
         db = om10.DB(catalog=self.sprinkled_agn_data, vb=False)
 
         x_offsets = []
@@ -501,7 +510,14 @@ class validate_ic(object):
             Dataframe with the sprinkled lens galaxies for the sprinkled SNe
             systems. This is the output dataframe from process_sne_lenses.
         """
-        
+        if len(spr_sne_lens_df)==0:
+            # spr_sne_df could have len 0 b/c SNe transience
+            if len(spr_sn_df)!=len(spr_sne_lens_df):
+                msg = "\nlen(spr_sn_df) %d\n" % len(spr_sn_df)
+                msg += "len(spr_sne_lens_df) %d\n" % len(spr_sne_lens_df)
+                raise RuntimeError(msg)
+            return
+
         df = pd.read_csv(self.sprinkled_sne_data)
 
         x_offsets = []
@@ -585,7 +601,14 @@ class validate_ic(object):
             Dataframe with the sprinkled lens galaxies for the sprinkled AGN
             systems. This is the output dataframe from process_agn_lenses.
         """
-        
+
+        if len(spr_agn_df)==0 or len(spr_agn_lens_df)==0:
+            if len(spr_agn_df) != len(spr_agn_lens_df):
+                msg = "\nlen(spr_agn_df): %d\n" % len(spr_agn_df)
+                msg += "len(spr_agn_lens_df): %d\n" % len(spr_agn_lens_df)
+                raise RuntimeError(msg)
+            return
+
         db = om10.DB(catalog=self.sprinkled_agn_data, vb=False)
 
         errors_present = False
@@ -686,6 +709,9 @@ class validate_ic(object):
             systems. This is the output dataframe from process_sne_lenses.
         """
 
+        if len(spr_sne_lens_df) == 0:
+            return
+
         df = pd.read_csv(self.sprinkled_sne_data)
 
         errors_present = False
@@ -785,7 +811,13 @@ class validate_ic(object):
             one of 'ugrizy' (whatever the InstanceCatalog being validated
             corresponds to)
         """
-        
+        if len(spr_agn_df)==0 or len(spr_agn_lens_df)==0:
+            if len(spr_agn_df)!=len(spr_agn_lens_df):
+                msg = "\nlen(spr_agn_df): %d\n" % len(spr_agn_df)
+                msg += "len(spr_agn_lens_df): %d\n" % len(spr_agn_lens_df)
+                raise RuntimeError(msg)
+            return
+
         db = om10.DB(catalog=self.sprinkled_agn_data, vb=False)
 
         lens_mag_error = []
@@ -876,6 +908,9 @@ class validate_ic(object):
             one of 'ugrizy'
         """
 
+        if len(spr_sne_lens_df)==0:
+            return
+
         df = pd.read_csv(self.sprinkled_sne_data)
 
         lens_mag_error = []
@@ -938,6 +973,13 @@ class validate_ic(object):
         sne_SED_path: string
             The path to the folder that contains the sne_file_loc folder.
         """
+        if len(spr_sne_lens_df)==0:
+            # spr_sne_df could have len 0 b/c SNe transience
+            if len(spr_sn_df)!=len(spr_sne_lens_df):
+                msg = "\nlen(spr_sn_df) %d\n" % len(spr_sn_df)
+                msg += "len(spr_sne_lens_df) %d\n" % len(spr_sne_lens_df)
+                raise RuntimeError(msg)
+            return
 
         df = pd.read_csv(self.sprinkled_sne_data)
 
@@ -1030,7 +1072,13 @@ class validate_ic(object):
         visit_band: str
             The bandpass used for the Instance Catalog
         """
-        
+        if len(spr_agn_df)==0 or len(spr_agn_lens_df)==0:
+            if len(spr_agn_df) != len(spr_agn_lens_df):
+                msg = "\nlen(spr_agn_df): %d\n" % len(spr_agn_df)
+                msg += "len(spr_agn_lens_df): %d\n" % len(spr_agn_lens_df)
+                raise RuntimeError(msg)
+            return
+
         db = om10.DB(catalog=self.sprinkled_agn_data, vb=False)
 
         agnSpecDir = 'agnSED'
@@ -1213,7 +1261,14 @@ class validate_ic(object):
         visit_band: str
             The bandpass used for the Instance Catalog
         """
-        
+        if len(spr_sne_lens_df)==0:
+            # spr_sne_df could have len==0 b/c SNe transience
+            if len(spr_sne_lens_df) != len(spr_sne_df):
+                msg = "\nlen(spr_sne_df): %d\n" % len(spr_sne_df)
+                msg += "len(spr_sne_lens_df): %d\n" % len(spr_sne_lens_df)
+                raise RuntimeError(msg)
+            return
+
         sn_obj = SNObject(0., 0.)
 
         df = pd.read_csv(self.sprinkled_sne_data)
