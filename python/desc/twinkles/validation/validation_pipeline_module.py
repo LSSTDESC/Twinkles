@@ -52,7 +52,7 @@ def validation_pipeline(cat_folder, visit_num, sne_SED_path):
                           sne_cache_file=sne_cache_file_name,
                           sprinkled_agn_data=sprinkled_agn_data_name,
                           sprinkled_sne_data=sprinkled_sne_data_name)
-    
+
     df_gal, df_pt_src = val_cat.load_cat(cat_folder, visit_num)
 
     # Verify that the InstanceCatalog pipline ignored

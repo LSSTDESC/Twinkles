@@ -74,7 +74,7 @@ class validate_ic(object):
                                                'data', 'dc2_sne_cache.csv')
         else:
             self.sne_cache_file = sne_cache_file
-            
+
         if sprinkled_agn_data is None:
             self.sprinkled_agn_data = os.path.join(os.environ['TWINKLES_DIR'],
                                                    'data',
@@ -206,7 +206,7 @@ class validate_ic(object):
                                                                        + twinkles_system*8 +
                                                                        twinkles_im_num, 10) + 107,
                                                          dtype=np.int)
-            
+
         return sprinkled_agn
 
     def process_hosts(self, sprinkled_df, df_galaxy):
@@ -285,7 +285,7 @@ class validate_ic(object):
     def process_sne_lenses(self, df_galaxy):
 
         """
-        Takes the full Instance Catalog bulge dataframe and 
+        Takes the full Instance Catalog bulge dataframe and
         parses it to find the lens galaxies for the lensed SNe systems.
         Unlike the process_agn_lenses we cannot just use the lensed AGN
         to know which lens galaxies should be present because the lensed
@@ -327,7 +327,7 @@ class validate_ic(object):
         lens_gals['twinkles_system'] = twinkles_sys
 
         return lens_gals
-                
+
 
     def process_sprinkled_sne(self, df_sne, sn_file_path):
 
@@ -358,7 +358,7 @@ class validate_ic(object):
         twinkles_im_num = []
         galtile_list = np.genfromtxt(self.sne_cache_file, delimiter=',',
                                      names=True, dtype=np.int)
-        
+
         i=0
         keep_idx = []
         id_offset = int(1.5e10)
@@ -373,7 +373,7 @@ class validate_ic(object):
                     twinkles_num = twinkles_ids % 100000
                     twinkles_system.append(twinkles_num // 8)
                     twinkles_im_num.append(twinkles_num % 8)
-                
+
             i+=1
 
         galtileids = np.array(galtileids, dtype=np.int)
@@ -394,14 +394,14 @@ class validate_ic(object):
                                                                        twinkles_im_num, 10) + 107,
                                                          dtype=np.int)
 
-            
+
         return sprinkled_sne
 
     def offset_on_sky(self, ra, dec, ra0, dec0, units='degrees'):
 
         """
         Subtract off a reference sky position and convert to simple cartesians in arcsec:
-        
+
         Parameters
         ----------
         ra, dec : float, float
@@ -410,7 +410,7 @@ class validate_ic(object):
             Reference position (degrees)
         units : string
             'degrees' or 'radians'
-    
+
         Returns
         -------
         x, y : float, float
@@ -419,14 +419,14 @@ class validate_ic(object):
 
         if units == 'radians':
             ra, dec = np.degrees(ra), np.degrees(dec)
-        
+
         y = 3600.0 * (dec - dec0)
         x = 3600.0 * (ra - ra0) * np.cos(np.radians(dec0))
 
         return x, y
 
     def compare_agn_location(self, spr_agn_df, spr_agn_lens_df):
-        
+
         """
         This test makes sure that the AGN images are offset from the lenses by the
         correct amounts given by the input catalog. The test will raise an error
@@ -460,14 +460,14 @@ class validate_ic(object):
             u_id = lens_gal_df['uniqueId']
 
             spr_sys_df = spr_agn_df.query('lens_galaxy_uID == %i' % u_id)
-            use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] == 
+            use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] ==
                                                     spr_sys_df['twinkles_system'].iloc[0])[0]]
             lens = db.get_lens(use_lens)
             num_img = lens['NIMG']
 
             for img_idx in range(num_img[0]):
                 # Calculate the offsets from the lens galaxy position
-                offset_x1, offset_y1 = self.offset_on_sky(spr_sys_df['raPhoSim'].iloc[img_idx], 
+                offset_x1, offset_y1 = self.offset_on_sky(spr_sys_df['raPhoSim'].iloc[img_idx],
                                                           spr_sys_df['decPhoSim'].iloc[img_idx],
                                                           lens_gal_df['raPhoSim'],
                                                           lens_gal_df['decPhoSim'])
@@ -475,7 +475,7 @@ class validate_ic(object):
                 x_offsets.append(offset_x1-lens['XIMG'][0][img_idx])
                 y_offsets.append(offset_y1-lens['YIMG'][0][img_idx])
                 total_offsets.append((np.sqrt(x_offsets[-1]**2. + y_offsets[-1]**2.)/
-                                      np.sqrt(lens['XIMG'][0][img_idx]**2. + 
+                                      np.sqrt(lens['XIMG'][0][img_idx]**2. +
                                               lens['YIMG'][0][img_idx]**2.)))
 
         max_total_err = np.max(total_offsets)
@@ -486,7 +486,7 @@ class validate_ic(object):
         if max_total_err < 0.01:
             print('Pass: Max image offset error less than 1 percent')
         else:
-            raise CatalogError('\nFail: Max image offset error greater than 1 percent. ' + 
+            raise CatalogError('\nFail: Max image offset error greater than 1 percent. ' +
                                'Max total offset error is: %.4f percent.' % max_total_err)
 
         print('------------')
@@ -494,7 +494,7 @@ class validate_ic(object):
         return
 
     def compare_sne_location(self, spr_sne_df, spr_sne_lens_df):
-        
+
         """
         This test makes sure that the SNe images are offset from the lenses by the
         correct amounts given by the input catalog. The test will raise an error
@@ -536,7 +536,7 @@ class validate_ic(object):
                 continue
 
             twinkles_system = spr_sys_df['twinkles_system'].iloc[0]
- 
+
             lens = df.query('twinkles_sysno == %i' % spr_sys_df['twinkles_system'].iloc[0])
             #print(lens.columns)
             #exit()
@@ -545,13 +545,13 @@ class validate_ic(object):
             img_vals = spr_sys_df['image_number'].values
 
             for img_idx in range(len(img_vals)):
- 
+
                 # This is just to make sure there are at least some images when we expect
                 # and the test is not just skipping everything.
                 images_tested += 1
 
                # Calculate the offsets from the lens galaxy position
-                offset_x1, offset_y1 = self.offset_on_sky(spr_sys_df['raPhoSim'].iloc[img_idx], 
+                offset_x1, offset_y1 = self.offset_on_sky(spr_sys_df['raPhoSim'].iloc[img_idx],
                                                           spr_sys_df['decPhoSim'].iloc[img_idx],
                                                           lens_gal_df['raPhoSim'],
                                                           lens_gal_df['decPhoSim'])
@@ -564,7 +564,7 @@ class validate_ic(object):
                 ddec_shld = lens['lensgal_y'].iloc[img_vals[img_idx]] - lens['y'].iloc[img_vals[img_idx]]
 
                 total_offsets.append((np.sqrt(x_offsets[-1]**2. + y_offsets[-1]**2.)/
-                                      np.sqrt(lens['x'].iloc[img_vals[img_idx]]**2. + 
+                                      np.sqrt(lens['x'].iloc[img_vals[img_idx]]**2. +
                                               lens['y'].iloc[img_vals[img_idx]]**2.)))
 
         max_total_err = np.max(total_offsets)
@@ -577,7 +577,7 @@ class validate_ic(object):
         if max_total_err < 0.01:
             print('Pass: Max image offset error less than 1 percent')
         else:
-            raise CatalogError('\nFail: Max image offset error greater than 1 percent. ' + 
+            raise CatalogError('\nFail: Max image offset error greater than 1 percent. ' +
                                'Max total offset error is: %.4f percent.' % max_total_err)
 
         print('------------')
@@ -627,7 +627,7 @@ class validate_ic(object):
             u_id = lens_gal_df['uniqueId']
 
             spr_sys_df = spr_agn_df.query('lens_galaxy_uID == %i' % u_id)
-            use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] == 
+            use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] ==
                                                     spr_sys_df['twinkles_system'].iloc[0])[0]]
             lens = db.get_lens(use_lens)
 
@@ -667,13 +667,13 @@ class validate_ic(object):
                 if lens_sed_error is False:
                     errors_string = errors_string + "\nSED Filename. First error found in lens_gal_id: %i " % u_id
                     errors_present = True
-                    lens_sed_error = True                    
+                    lens_sed_error = True
 
             sed_exists = os.path.isfile(os.path.join(getPackageDir('sims_sed_library'),
                                                      lens_gal_df['sedFilepath']))
             if sed_exists is False:
                 if lens_sed_filepath_error is False:
-                    errors_string = str(errors_string + 
+                    errors_string = str(errors_string +
                                         "\nAGN lens galaxy SED does not exist. First error found in gal_id: %i" % u_id)
                     lens_sed_filepath_error = True
                     errors_present = True
@@ -770,12 +770,12 @@ class validate_ic(object):
                                                      lens_gal_df['sedFilepath']))
             if sed_exists is False:
                 if lens_sed_filepath_error is False:
-                    errors_string = str(errors_string + 
+                    errors_string = str(errors_string +
                                         "\nSNe lens galaxy SED does not exist. First error found in gal_id: %i" % u_id)
                     lens_sed_filepath_error = True
                     errors_present = True
 
-        
+
         print('------------')
         print('SNe Lenses direct catalog input Results:')
 
@@ -835,7 +835,7 @@ class validate_ic(object):
             u_id = lens_gal_df['uniqueId']
 
             spr_sys_df = spr_agn_df.query('lens_galaxy_uID == %i' % u_id)
-            use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] == 
+            use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] ==
                                                     spr_sys_df['twinkles_system'].iloc[0])[0]]
             lens = db.get_lens(use_lens)
             num_img = lens['NIMG']
@@ -884,7 +884,7 @@ class validate_ic(object):
         if max_lens_mag_error < 0.01:
             print('Pass: Max lens phosim MagNorm error less than 0.01 mags.')
         else:
-            raise CatalogError('\nFail: Max lens phosim MagNorm error is greater than 0.01 mags. ' + 
+            raise CatalogError('\nFail: Max lens phosim MagNorm error is greater than 0.01 mags. ' +
                                'Max error is: %.4f mags.' % max_lens_mag_error)
 
         print('------------')
@@ -896,7 +896,7 @@ class validate_ic(object):
         """
         This test makes sure that the SNe system lens galaxy magnitudes that are replaced
         in Instance Catalogs by the sprinkler get inserted correctly. It will raise an
-        error if the differences are outside a reasonable amount. 
+        error if the differences are outside a reasonable amount.
 
         Parameters
         ----------
@@ -936,7 +936,7 @@ class validate_ic(object):
         if max_lens_mag_error < 0.01:
             print('Pass: Max lens phosim MagNorm error less than 0.01 mags.')
         else:
-            raise CatalogError('\nFail: Max lens phosim MagNorm error is greater than 0.01 mags. ' + 
+            raise CatalogError('\nFail: Max lens phosim MagNorm error is greater than 0.01 mags. ' +
                                'Max error is: %.4f mags.' % max_lens_mag_error)
 
         print('------------')
@@ -1004,7 +1004,7 @@ class validate_ic(object):
             img_vals = spr_sys_df['image_number'].values
 
             for idx, image_on in list(enumerate(img_vals)):
-                
+
                 if np.abs(lens['zs'].iloc[image_on] -
                           spr_sys_df['redshift'].iloc[idx]) > 0.005:
                     if z_s_error is False:
@@ -1028,12 +1028,12 @@ class validate_ic(object):
 
             if sed_exists is False:
                 if sed_filepath_error is False:
-                    errors_string = str(errors_string + 
+                    errors_string = str(errors_string +
                                         "\nSNe image SED does not exist. First error found in gal_id: %i" % u_id)
                     errors_string += "\n%s\ndoes not exist" % sed_full_path
                     sed_filepath_error = True
                     errors_present = True
-        
+
         print('------------')
         print('SNe Images direct catalog input Results:')
 
@@ -1098,7 +1098,7 @@ class validate_ic(object):
 
             spr_sys_df = spr_agn_df.query('lens_galaxy_uID == %i' % u_id)
             agn_id = spr_sys_df['galaxy_id']
-            use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] == 
+            use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] ==
                                                     spr_sys_df['twinkles_system'].iloc[0])[0]]
             lens = db.get_lens(use_lens)
             num_img = lens['NIMG']
@@ -1125,11 +1125,11 @@ class validate_ic(object):
                 test_sed.multiplyFluxNorm(test_f_norm_2)
                 test_mag_2 = test_sed.calcMag(norm_bp)
                 test_mag_3 = test_mag_2 + 2.5*np.log10(np.abs(mag)[i])
-                
+
                 corrected_mags.append(test_mag_3)
 
             corrected_mags = np.array(corrected_mags)
-            max_error = np.max(np.abs(corrected_mags - 
+            max_error = np.max(np.abs(corrected_mags -
                                       agn_var_params[str(agn_id.values[0])]
                                       ['magNorm_static']))
 
@@ -1142,7 +1142,7 @@ class validate_ic(object):
         if max_magNorm_err < 0.001:
             print('Pass: Image MagNorms are within 0.001 of correct values.')
         else:
-            raise CatalogError('\nFail: Max image phosim MagNorm error is greater than 0.001 mags. ' + 
+            raise CatalogError('\nFail: Max image phosim MagNorm error is greater than 0.001 mags. ' +
                                'Max error is: %.4f mags.' % max_magNorm_err)
 
         print('------------')
@@ -1176,7 +1176,7 @@ class validate_ic(object):
         eg_test = egvar()
         eg_test.num_variable_obj = return_num_obj
 
-        var_mags = eg_test.applyAgn([[0]], var_param_dict, 
+        var_mags = eg_test.applyAgn([[0]], var_param_dict,
                                     mjd-time_delay,
                                     redshift=np.array([redshift]))
 
@@ -1185,7 +1185,7 @@ class validate_ic(object):
 
         return var_mag_dict
 
-        
+
     def load_agn_var_params(self):
         """
         Load parameters for AGN in the DDF.  Currently, the method
@@ -1305,7 +1305,7 @@ class validate_ic(object):
                                                         visit_mjd, sn_obj, norm_bp,
                                                         bandpassDict[visit_band])
                 test_mag  = magnorm - 2.5*np.log10(np.abs(magnification.iloc[image_on]))
-                
+
                 corrected_mags.append(test_mag)
 
             corrected_mags = np.array(corrected_mags)
