@@ -1279,6 +1279,9 @@ class validate_ic(object):
 
         max_flux_err = 0.
 
+        print('------------')
+        print('SNe Image Magnitude Test Results:')
+
         for lens_gal_row in spr_sne_lens_df.iterrows():
 
             lens_idx, lens_gal_df = lens_gal_row
@@ -1349,9 +1352,6 @@ class validate_ic(object):
                 offending_dmag = lensed_mags[max_dex]-corrected_mags[max_dex]
                 print('err %e mag %e dmag %e (fiducial_m5 %e)' %
                       (max_error, offending_mag, offending_dmag, fiducial_m5))
-
-        print('------------')
-        print('SNe Image Magnitude Test Results:')
 
         if max_flux_err < 0.1:
             print('Pass: Image MagNorms are within 0.001 of correct values.')
