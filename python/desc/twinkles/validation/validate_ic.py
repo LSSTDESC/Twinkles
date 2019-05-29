@@ -1333,6 +1333,7 @@ class validate_ic(object):
             self.sn_gamma_dict[visit_band] = gamma
             noise = flux_truth/snr
             dflux_over_noise = dflux/noise
+            dflux_over_flux = dflux/flux_truth
 
             bright_mask = lensed_mags<fiducial_m5
 
@@ -1344,6 +1345,21 @@ class validate_ic(object):
                     raise CatalogError("Among dim SNe, max dmag is %e" %
                                        (dim_dmag_max))
 
+            valid = np.logical_or(dflux_over_noise<0.1,
+                                  dflux_over_flux<0.01)
+
+            invalid = np.logical_not(valid)
+
+            if invalid.any():
+                msg = '\nFail:\n'
+                msg += 'mag dmag dflux/noise dflux/flux\n'
+                for mm, dm, dfn, dff in zip(lensed_mags[invalid],
+                                            d_mag[invalid],
+                                            dflux_over_noise[invalid],
+                                            dflux_over_flux[invalid]):
+                    msg += '%.2e %.2e %.2e %.2e\n' % (mm, dm, dfn, dff)
+                raise CatalogError(msg)
+
             max_error = dflux_over_noise.max()
             if max_error > max_flux_err:
                 max_flux_err = max_error
@@ -1353,13 +1369,7 @@ class validate_ic(object):
                 print('err %e mag %e dmag %e (fiducial_m5 %e)' %
                       (max_error, offending_mag, offending_dmag, fiducial_m5))
 
-        if max_flux_err < 0.1:
-            print('Pass: Image MagNorms are within 0.001 of correct values.')
-        else:
-            raise CatalogError('\nFail: Max discrepancy in flux ' +
-                               'is greater than 0.1 * noise. ' +
-                               'Max dflux/noise is: %.4f .' % (max_flux_err))
-
+        print('Pass: Image MagNorms are within 0.001 of correct values.')
         print('------------')
 
         return
