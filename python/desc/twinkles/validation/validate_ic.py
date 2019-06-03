@@ -518,6 +518,9 @@ class validate_ic(object):
                 raise RuntimeError(msg)
             return
 
+        if len(spr_sne_df)==0:
+            return
+
         df = pd.read_csv(self.sprinkled_sne_data)
 
         x_offsets = []
