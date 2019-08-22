@@ -105,7 +105,7 @@ class sprinkler():
         self.catalog_column_names = catsim_cat.dtype.names
         # ****** THIS ASSUMES THAT THE ENVIRONMENT VARIABLE OM10_DIR IS SET *******
         lensdb = fits.open(om10_cat)
-        self.lenscat = lensdb[1].data
+        self.lenscat = lensdb[1].data.copy()
         self.density_param = density_param
         self.bandpassDict = BandpassDict.loadTotalBandpassesFromFiles(bandpassNames=['i'])
         self.lsst_band_indexes = {'u':0, 'g':1, 'r':2, 'i':3, 'z':4, 'y':5}
