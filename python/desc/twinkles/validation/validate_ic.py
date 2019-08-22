@@ -1,12 +1,12 @@
 import os
 import sqlite3
-import om10
 import pandas as pd
 import numpy as np
 import gzip
 import shutil
 import copy
 import json
+from astropy.io import fits
 from lsst.utils import getPackageDir
 import lsst.sims.utils.htmModule as htm
 from lsst.sims.photUtils import Bandpass, BandpassDict, Sed, getImsimFluxNorm
@@ -449,7 +449,9 @@ class validate_ic(object):
                 msg += "len(spr_agn_lens_df): %d\n" % len(spr_agn_lens_df)
                 raise RuntimeError(msg)
             return
-        db = om10.DB(catalog=self.sprinkled_agn_data, vb=False)
+
+        db = fits.open(self.sprinkled_agn_data)
+        lensdb = db[1].data
 
         x_offsets = []
         y_offsets = []
@@ -460,9 +462,9 @@ class validate_ic(object):
             u_id = lens_gal_df['uniqueId']
 
             spr_sys_df = spr_agn_df.query('lens_galaxy_uID == %i' % u_id)
-            use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] ==
-                                                    spr_sys_df['twinkles_system'].iloc[0])[0]]
-            lens = db.get_lens(use_lens)
+            use_lens = np.where(lensdb['twinklesId'] ==
+                                spr_sys_df['twinkles_system'].iloc[0])[0]
+            lens = lensdb[use_lens]
             num_img = lens['NIMG']
 
             for img_idx in range(num_img[0]):
@@ -612,7 +614,8 @@ class validate_ic(object):
                 raise RuntimeError(msg)
             return
 
-        db = om10.DB(catalog=self.sprinkled_agn_data, vb=False)
+        db = fits.open(self.sprinkled_agn_data)
+        lensdb = db[1].data
 
         errors_present = False
         phi_error = False
@@ -630,9 +633,9 @@ class validate_ic(object):
             u_id = lens_gal_df['uniqueId']
 
             spr_sys_df = spr_agn_df.query('lens_galaxy_uID == %i' % u_id)
-            use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] ==
-                                                    spr_sys_df['twinkles_system'].iloc[0])[0]]
-            lens = db.get_lens(use_lens)
+            use_lens = np.where(lensdb['twinklesId'] ==
+                                spr_sys_df['twinkles_system'].iloc[0])[0]
+            lens = lensdb[use_lens]
 
             # These should just be different by a minus sign
             if np.abs(lens['PHIE'] + lens_gal_df['positionAngle']) > 0.005:
@@ -821,7 +824,8 @@ class validate_ic(object):
                 raise RuntimeError(msg)
             return
 
-        db = om10.DB(catalog=self.sprinkled_agn_data, vb=False)
+        db = fits.open(self.sprinkled_agn_data)
+        lensdb = db[1].data
 
         lens_mag_error = []
 
@@ -838,9 +842,10 @@ class validate_ic(object):
             u_id = lens_gal_df['uniqueId']
 
             spr_sys_df = spr_agn_df.query('lens_galaxy_uID == %i' % u_id)
-            use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] ==
-                                                    spr_sys_df['twinkles_system'].iloc[0])[0]]
-            lens = db.get_lens(use_lens)
+            use_lens = np.where(lensdb['twinklesId'] ==
+                                spr_sys_df['twinkles_system'].iloc[0])[0]
+            lens = lensdb[use_lens]
+
             num_img = lens['NIMG']
 
             # Because we allow magNorm to change between
@@ -1082,7 +1087,8 @@ class validate_ic(object):
                 raise RuntimeError(msg)
             return
 
-        db = om10.DB(catalog=self.sprinkled_agn_data, vb=False)
+        db = fits.open(self.sprinkled_agn_data)
+        lensdb = db[1].data
 
         agnSpecDir = 'agnSED'
         agnDir = str(getPackageDir('sims_sed_library') + '/' + agnSpecDir)
@@ -1101,19 +1107,19 @@ class validate_ic(object):
 
             spr_sys_df = spr_agn_df.query('lens_galaxy_uID == %i' % u_id)
             agn_id = spr_sys_df['galaxy_id']
-            use_lens = db.lenses['LENSID'][np.where(db.lenses['twinklesId'] ==
-                                                    spr_sys_df['twinkles_system'].iloc[0])[0]]
-            lens = db.get_lens(use_lens)
-            num_img = lens['NIMG']
+            use_lens = np.where(lensdb['twinklesId'] ==
+                                spr_sys_df['twinkles_system'].iloc[0])[0]
+            lens = lensdb[use_lens]
+            num_img = lens['NIMG'][0]
 
-            mag = lens['MAG'].data[0]
+            mag = lens['MAG'][0]
             lensed_mags = spr_sys_df['phosimMagNorm']
             corrected_mags = []
 
-            for i in range(num_img.data[0]):
+            for i in range(num_img):
 
                 d_mags = self.get_agn_variability_mags(agn_var_params[str(agn_id.values[0])],
-                                                       lens['DELAY'].data[0][i], visit_mjd,
+                                                       lens['DELAY'][0][i], visit_mjd,
                                                        spr_sys_df['redshift'].values[0])
 
 
