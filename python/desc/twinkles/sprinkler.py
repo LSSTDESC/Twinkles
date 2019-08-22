@@ -6,7 +6,6 @@ Created on Feb 6, 2015
 from __future__ import absolute_import, division, print_function
 from future.utils import iteritems
 import time
-import om10
 import numpy as np
 import re
 import json
@@ -15,6 +14,7 @@ import pandas as pd
 import copy
 import gzip
 import shutil
+from astropy.io import fits
 from lsst.utils import getPackageDir
 from lsst.sims.utils import SpecMap, defaultSpecMap
 from lsst.sims.catUtils.baseCatalogModels import GalaxyTileCompoundObj
@@ -104,8 +104,8 @@ class sprinkler():
         self.write_sn_sed = write_sn_sed
         self.catalog_column_names = catsim_cat.dtype.names
         # ****** THIS ASSUMES THAT THE ENVIRONMENT VARIABLE OM10_DIR IS SET *******
-        lensdb = om10.DB(catalog=om10_cat, vb=False)
-        self.lenscat = lensdb.lenses.copy()
+        lensdb = fits.open(om10_cat)
+        self.lenscat = lensdb[1].data
         self.density_param = density_param
         self.bandpassDict = BandpassDict.loadTotalBandpassesFromFiles(bandpassNames=['i'])
         self.lsst_band_indexes = {'u':0, 'g':1, 'r':2, 'i':3, 'z':4, 'y':5}
