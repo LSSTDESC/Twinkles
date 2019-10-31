@@ -159,17 +159,19 @@ Gravitational Lens Sprinkling Setup
 
 #. Install and setup `OM10 <https://github.com/drphilmarshall/OM10>`_.
 
-#. Open an SSH tunnel for database connection to UW. See
-`here <https://confluence.lsstcorp.org/display/SIM/Accessing+the+UW+CATSIM+Database>`_ for more information.
-This is where the objects that will populate the catalog are stored.
+#. Open an SSH tunnel for database connection to UW. See `here <https://confluence.lsstcorp.org/display/SIM/Accessing+the+UW+CATSIM+Database>`_ for more information. This is where the objects that will populate the catalog are stored.
 
-#. You'll also need the OpSim sqlite repository from `this page <https://confluence.lsstcorp.org/display/SIM/OpSim+Datasets+for+Cadence+Workshop+LSST2015>`_
+#. You'll also need the OpSim sqlite repository from `this page <https://www.lsst.org/scientists/simulations/opsim/opsim-survey-data>`_
 
-#. Now you're ready to go with:
+#. Edit `this file <../../setup/setup_locations_template.sh>`_ with your Opsim Directory location and save it as setup/setup_location.sh.
+
+#. Source `setup/setup_twinkles.sh <../../setup/setup_twinkles.sh>`_.
+
+#. Now cd to the  `bin <../../bin>`_ directory you're ready to go with:
 
 .. code-block:: bash
 
-    python generatePhosimInput.py
+    python generatePhosimInput.py obsHistID --OpSimDBDir /path/to/opsimDB --outfile /write/to/here.txt --opsimDB opsimDBfile.db
 
 
 Supernova Sprinkling Setup
