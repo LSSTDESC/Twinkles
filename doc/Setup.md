@@ -30,7 +30,7 @@ establish an SSH tunnel through a shared account on one of the University of
 Washington computers.  Below, we present the instructions for setting up to
 connect via the SSH tunnel.  To connect via the whitelist, see the appropriate
 section in [this
-document](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Cookbook/Sims_Recipe.md).
+document](https://github.com/DarkEnergyScienceCollaboration/Twinkles/blob/master/doc/Cookbook/Sims_phoSimGen.md).
 
 #### Instructions to enable connection via the SSH tunnel
 
@@ -85,3 +85,39 @@ $> ./phosim ~/TwinklesData/phoSim_example.txt --sensor="R22_S11" -c examples/nob
 ```
 Images show up in the "output" directory.
 
+### 5) Setup OM10
+
+OM10 is needed to interact with our catalog of lensed AGN systems. Download and install following
+the directions located in its repository [here](https://github.com/drphilmarshall/OM10).
+
+### 6) Download an LSST Opsim Database
+
+An Opsim database contains information on all the LSST pointings in a particular LSST survey simulation
+and you can download a version [here](https://www.lsst.org/scientists/simulations/opsim/opsim-survey-data).
+We will need this to gather information on the pointings that apply to Twinkles field throughout the simulated
+survey.
+
+### 7) Run Twinkles setup scripts
+
+After setting up the LSST stack in step 1 we need to tell `eups` where the Twinkles repo is with the following
+command from the main twinkles directory:
+
+`source setup/declare_eups.sh`
+
+We also now want to setup Twinkles with:
+
+`source setup/setup_twinkles.sh`
+
+### 8) Run your own Twinkles simulation!
+
+You're now ready! Use the following command to run our production script:
+
+`python bin/generatePhoSimInput.py --OpSimDBDir /path/to/OpSim/DB/ --outfile my_phosim_catalog.txt <visit #>`
+
+where your Opsim database from step 6 is specified along with the desired location of your output instance catalog.
+The visit # corresponds to the ObsHistID from Opsim that specifies which pointing you'd like to simulate, but if you
+are just testing try `220`.
+
+## Learn More
+
+For more information on what's going on inside the simulation see our [sims cookbook documentation](Cookbook/sims_phoSimGen.md)
