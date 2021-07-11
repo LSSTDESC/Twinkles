@@ -33,3 +33,14 @@ script:
 
 after_success:
   - coveralls
+  - cd doc
+  - pip install -r requirements.txt
+  - sphinx-build -b html -a -n -W -d _build/doctree . _build/html
+  - ltd-mason-travis --html-dir _build/html
+
+env:
+  global:
+    - LTD_MASON_BUILD=true  # set to false if using a build matrix, ask @jonathansick
+    - LTD_MASON_PRODUCT="twinkles"
+    - secure: "ovWt3roijhvicikgEHAEHgF5NuP0Y0zXZYak/Yk66jYQYJk4ZfUmdyP8PObyrivUZafb60G/capBpb44unt6skOfEm24BPtDNPETa+O6QSRQP0STmLCHQPmQPcRfQ0vYj31KVeZnWEG4zCy857ORGhgonJGycaJLCM61V/0NNM4="
+    - secure: "FWLPgN9IcOmOES7KOaBAxA2SRh/xAltZJGcc4sZheF0lUUzTgMmrEu6GhIs3ogWfeKxjGDMLiimY7d8+0taqoLSO1hGeCkWoujJ9mrShvBpaRSIzSHDMtqu45LY6/yMuwnpDJdQ1t6WFwUZGKSJ7XZiIbBTVPD7PJNtB4KgYymE="
